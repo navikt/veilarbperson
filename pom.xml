@@ -16,6 +16,9 @@
         <version>3</version>
     </parent>
 
+    <modules>
+        <module>ear</module>
+    </modules>
 
     <properties>
         <slf4j.version>1.7.21</slf4j.version>
