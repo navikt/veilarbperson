@@ -43,7 +43,7 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
-            <!-- ??  -->
+            <!-- Server setup -->
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
@@ -52,8 +52,24 @@
         </dependencies>
     </dependencyManagement>
 
-    <build>
+    <distributionManagement>
+        <repository>
+            <id>m2internal</id>
+            <name>NAV Maven2 Internal Repository</name>
+            <url>dav:http://maven.adeo.no/nexus/content/repositories/m2internal</url>
+        </repository>
+        <snapshotRepository>
+            <id>m2snapshot</id>
+            <name>NAV Maven2 Snapshot Repository</name>
+            <url>http://maven.adeo.no/nexus/content/repositories/m2snapshot</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
 
-    </build>
+    <scm>
+        <developerConnection>scm:git:http://stash.devillo.no/scm/fo/veilarbperson.git</developerConnection>
+        <url>http://stash.devillo.no/projects/FO/repos/veilarbperson</url>
+        <tag>HEAD</tag>
+    </scm>
 
 </project>
