@@ -26,8 +26,6 @@
                 <version>6.1.53</version>
                 <configuration>
                     <envConfigUrl>https://envconfig.adeo.no/conf</envConfigUrl>
-                    <username>admin</username>
-                    <password>admin</password>
                     <apps>${project.parent.artifactId}:${project.version}</apps>
                 </configuration>
             </plugin>
