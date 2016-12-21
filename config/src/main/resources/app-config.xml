@@ -9,6 +9,8 @@
         <ear groupId="no.nav.fo" artifactId="veilarbperson-ear"/>
     </artifacts>
 
+    <selftestPagePath>veilarbperson/internal/selftest</selftestPagePath>
+
     <loadBalancer isAlive="/veilarbperson/internal/isAlive" />
 
 </application>
