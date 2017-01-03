@@ -5,8 +5,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class RestServlet {
 
-    @RequestMapping(value = "/person", produces = "application/json")
-    public String index() {
+    @RequestMapping(value = "/person/{fnr}", produces = "application/json")
+    public String person(@PathVariable String fnr) {
+        return getPerson(fnr);
+    }
+
+    private String getPerson(String fnr) {
         return "{\"fornavn\": \"Liv\"," +
                 "\"etternavn\": \"Ullmann\"}";
     }
