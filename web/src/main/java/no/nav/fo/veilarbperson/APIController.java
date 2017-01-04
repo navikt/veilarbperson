@@ -3,7 +3,7 @@ package no.nav.fo.veilarbperson;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class RestServlet {
+public class APIController {
 
     @RequestMapping(value = "/person/{fnr}", produces = "application/json")
     public String person(@PathVariable String fnr) {
@@ -11,6 +11,7 @@ public class RestServlet {
     }
 
     private String getPerson(String fnr) {
+
         return "{\"fornavn\": \"Liv\"," +
                 "\"etternavn\": \"Ullmann\"}";
     }
