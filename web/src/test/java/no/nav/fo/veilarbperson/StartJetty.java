@@ -13,6 +13,7 @@ public class StartJetty {
         Jetty jetty = usingWar()
                 .at("/veilarbperson")
                 .port(PORT)
+                .overrideWebXml()
                 .buildJetty();
         jetty.startAnd(first(waitFor(gotKeypress())).then(jetty.stop));
     }
