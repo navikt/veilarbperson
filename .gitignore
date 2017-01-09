@@ -5,3 +5,4 @@ target/
 *.orig
 .idea/
 *.bak
+*.properties
