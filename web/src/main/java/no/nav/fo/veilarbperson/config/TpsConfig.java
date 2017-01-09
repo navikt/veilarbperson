@@ -29,7 +29,7 @@ public class TpsConfig {
     }
 
     private CXFClient<PersonV2> factory() {
-        return new CXFClient<>(PersonV2.class).address("https://wasapp-t4.adeo.no/tpsws/Person_v2");
+        return new CXFClient<>(PersonV2.class).address(getProperty("personv2.endpoint.url"));
     }
 
 }
