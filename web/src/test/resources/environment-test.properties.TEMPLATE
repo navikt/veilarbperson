@@ -1,3 +1,5 @@
+no.nav.modig.core.context.subjectHandlerImplementationClass=no.nav.modig.core.context.StaticSubjectHandler
+
 no.nav.modig.security.systemuser.password=BYTT_MEG
 no.nav.modig.security.systemuser.username=BYTT_MEG
 

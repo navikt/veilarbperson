@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "no.nav.fo.veilarbperson")
+@Import({ServiceConfig.class})
 public class ApplicationConfig {
 
 }
