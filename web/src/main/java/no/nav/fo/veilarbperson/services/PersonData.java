@@ -6,6 +6,7 @@ public class PersonData{
     public String etternavn;
     public String sammensattNavn;
     public String personnummer;
+    public String fodselsdato;
 
     public PersonData medFornavn(String fornavn){
         this.fornavn = fornavn;
@@ -29,6 +30,11 @@ public class PersonData{
 
     public PersonData medPersonnummer(String personnummer){
         this.personnummer = personnummer;
+        return this;
+    }
+
+    public PersonData medFodselsdato(String fodselsdato){
+        this.fodselsdato = fodselsdato;
         return this;
     }
 

@@ -37,6 +37,10 @@
             <artifactId>jackson-databind</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+        </dependency>
 
         <!-- Spring -->
         <dependency>
