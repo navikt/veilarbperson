@@ -29,6 +29,7 @@
         <spring.version>4.3.4.RELEASE</spring.version>
         <common-web.version>4.0.5</common-web.version>
         <common-types.version>1.2</common-types.version>
+        <jackson.version>2.7.2</jackson.version>
     </properties>
 
     <dependencyManagement>
@@ -50,6 +51,16 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
 
 

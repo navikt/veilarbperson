@@ -17,21 +17,21 @@ public class PersonService{
     @Autowired
     private PersonV2 personV2;
 
-    public String  hentNavn(String ident) {
+    public PersonData hentNavn(String ident) {
         final HentKjerneinformasjonRequest request = new HentKjerneinformasjonRequest().withIdent(ident);
 
         try {
             HentKjerneinformasjonResponse wsPerson = personV2.hentKjerneinformasjon(request);
-            return tilNavn(wsPerson.getPerson());
-
+            PersonData personData = PersonDataMapper.tilPersonData(wsPerson.getPerson());
+            return personData;
         } catch (HentKjerneinformasjonSikkerhetsbegrensning ikkeTilgang) {
             logger.error("Ikke tilgang til " + ident);
             ikkeTilgang.printStackTrace();
-            return "Du har ikke tilgang til å se navnet.";
+            return new PersonData();
         } catch (HentKjerneinformasjonPersonIkkeFunnet ikkeFunnet) {
             logger.error("Finner ikke " + ident);
             ikkeFunnet.printStackTrace();
-            return "Vi finner ikke navnet";
+            return new PersonData();
         }
     }
 

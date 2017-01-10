@@ -1,5 +1,6 @@
 package no.nav.fo.veilarbperson;
 
+import no.nav.fo.veilarbperson.services.PersonData;
 import no.nav.fo.veilarbperson.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,16 +12,9 @@ public class APIController {
     PersonService personService;
 
     @RequestMapping(value = "/person/{fnr}", produces = "application/json")
-    public String person(@PathVariable String fnr) {
-        return getPerson(fnr);
+    public PersonData person(@PathVariable String fnr) {
+        return personService.hentNavn(fnr);
     }
 
-    private String getPerson(String fnr) {
-
-        String navn = personService.hentNavn(fnr);
-
-        return "{\"fornavn\": \"" + navn + "\"," +
-                "\"etternavn\": \"Ullmann\"}";
-    }
 }
 
