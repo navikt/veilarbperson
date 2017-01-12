@@ -1,5 +1,7 @@
 package no.nav.fo.veilarbperson.services;
 
+import java.util.List;
+
 public class PersonData{
     public String fornavn;
     public String mellomnavn;
@@ -8,6 +10,8 @@ public class PersonData{
     public String personnummer;
     public String fodselsdato;
     public String kjoenn;
+    public List<Barn> barn;
+
 
     public PersonData medFornavn(String fornavn){
         this.fornavn = fornavn;
@@ -41,6 +45,11 @@ public class PersonData{
 
     public PersonData medKjoenn(String kjoenn){
         this.kjoenn = kjoenn;
+        return this;
+    }
+
+    public PersonData medBarn(List<Barn> barn){
+        this.barn = barn;
         return this;
     }
 
