@@ -14,10 +14,11 @@ class PersonDataMapper{
                 .medEtternavn(person.getPersonnavn().getEtternavn())
                 .medSammensattNavn(person.getPersonnavn().getSammensattNavn())
                 .medPersonnummer(person.getIdent().getIdent())
-                .medFodselsdato(fodseldatoString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()));
+                .medFodselsdato(fodseldatoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
+                .medKjoenn(person.getKjoenn().getKjoenn().getValue());
     }
 
-    private static String fodseldatoString(GregorianCalendar foedselsdato) {
+    private static String fodseldatoTilString(GregorianCalendar foedselsdato) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         formatter.setTimeZone(foedselsdato.getTimeZone());
         return formatter.format(foedselsdato.getTime());
