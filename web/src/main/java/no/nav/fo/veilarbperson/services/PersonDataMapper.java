@@ -1,7 +1,6 @@
 package no.nav.fo.veilarbperson.services;
 
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.Familierelasjon;
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.Person;
+import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -30,10 +29,16 @@ class PersonDataMapper{
     }
 
     private static Barn familierelasjonTilBarn(Familierelasjon familierelasjon) {
+
+        Person person = familierelasjon.getTilPerson();
+
         return new Barn()
-                .medFornavn(familierelasjon.getTilPerson().getPersonnavn().getFornavn())
-                .medEtternavn(familierelasjon.getTilPerson().getPersonnavn().getEtternavn())
-                .medSammensattnavn(familierelasjon.getTilPerson().getPersonnavn().getSammensattNavn());
+                .medFornavn(person.getPersonnavn().getFornavn())
+                .medEtternavn(person.getPersonnavn().getEtternavn())
+                .medSammensattnavn(person.getPersonnavn().getSammensattNavn())
+                .medHarSammeBosted(familierelasjon.isHarSammeBosted())
+                .medPersonnummer(person.getIdent().getIdent());
+
     }
 
     private static String fodseldatoTilString(GregorianCalendar foedselsdato) {
