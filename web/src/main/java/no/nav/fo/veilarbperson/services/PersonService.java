@@ -17,7 +17,7 @@ public class PersonService{
     @Autowired
     private PersonV2 personV2;
 
-    public PersonData hentNavn(String ident) {
+    public PersonData hentPerson(String ident) {
         final HentKjerneinformasjonRequest request = new HentKjerneinformasjonRequest().withIdent(ident);
 
         try {

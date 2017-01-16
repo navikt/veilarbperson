@@ -13,7 +13,7 @@ public class APIController {
 
     @RequestMapping(value = "/person/{fnr}", produces = "application/json")
     public PersonData person(@PathVariable String fnr) {
-        return personService.hentNavn(fnr);
+        return personService.hentPerson(fnr);
     }
 
 }
