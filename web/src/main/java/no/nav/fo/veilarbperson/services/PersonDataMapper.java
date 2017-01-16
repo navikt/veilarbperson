@@ -4,6 +4,8 @@ import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
 
@@ -18,7 +20,14 @@ class PersonDataMapper{
                 .medPersonnummer(person.getIdent().getIdent())
                 .medFodselsdato(fodseldatoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
                 .medKjoenn(person.getKjoenn().getKjoenn().getValue())
-                .medBarn(harFraRolleITilBarn(person.getHarFraRolleI()));
+                .medBarn(harFraRolleITilBarn(person.getHarFraRolleI()))
+                .medDiskresjonskode(kanskjeDiskresjonskode(person));
+    }
+
+    private static String kanskjeDiskresjonskode(Person person) {
+        return ofNullable(person.getDiskresjonskode())
+        .map(Diskresjonskoder::getValue)
+        .orElse("");
     }
 
     private static List<Barn> harFraRolleITilBarn(List<Familierelasjon> harFraRolleI) {

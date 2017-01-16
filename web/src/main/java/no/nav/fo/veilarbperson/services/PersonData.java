@@ -11,6 +11,7 @@ public class PersonData{
     public String fodselsdato;
     public String kjoenn;
     public List<Barn> barn;
+    public String diskresjonskode;
 
 
     public PersonData medFornavn(String fornavn){
@@ -53,4 +54,8 @@ public class PersonData{
         return this;
     }
 
+    public PersonData medDiskresjonskode(String diskresjonskode) {
+        this.diskresjonskode = diskresjonskode;
+        return this;
+    }
 }
