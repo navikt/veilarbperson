@@ -1,7 +1,6 @@
 package no.nav.fo.veilarbperson.config;
 
 import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
-import no.nav.modig.security.ws.UserSAMLOutInterceptor;
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;
 import no.nav.tjeneste.virksomhet.person.v2.PersonV2;
@@ -16,11 +15,12 @@ import static no.nav.sbl.dialogarena.types.Pingable.Ping.lyktes;
 @Configuration
 public class TpsConfig {
 
-    private static final String PERSON_TPS_MOCK_KEY = "personv2.withmock";
+    private static final String PERSON_TPS_MOCK_KEY = "personservice.withmock";
 
     @Bean
     public PersonV2 personPortType() {
-        PersonV2 prod = factory().withOutInterceptor(new UserSAMLOutInterceptor()).build();
+        //PersonV2 prod = factory().withOutInterceptor(new UserSAMLOutInterceptor()).build();
+        PersonV2 prod = factory().withOutInterceptor(new TestOutInterceptor()).build();
         PersonV2 mock = new PersonMock();
 
         return createMetricsProxyWithInstanceSwitcher("TPS", prod, mock, PERSON_TPS_MOCK_KEY, PersonV2.class);
@@ -42,7 +42,7 @@ public class TpsConfig {
     }
 
     private CXFClient<PersonV2> factory() {
-        return new CXFClient<>(PersonV2.class).address(getProperty("personv2.endpoint.url"));
+        return new CXFClient<>(PersonV2.class).address(getProperty("person.endpoint.url"));
     }
 
 }

@@ -10,14 +10,19 @@
     </artifacts>
 
     <security serviceUserResourceAlias="srvveilarbperson">
-        <logins>
-        </logins>
+        <logins />
     </security>
 
     <selftest>
         <path>veilarbperson/internal/selftest</path>
         <humanReadablePath>veilarbperson/internal/selftest</humanReadablePath>
     </selftest>
+
+    <resources>
+        <webservice alias="virksomhet:Person_v2" mapToProperty="person.endpoint" />
+        <applicationCertificate alias="srvveilarbperson" />
+    </resources>
+
 
     <loadBalancer isAlive="/veilarbperson/internal/isAlive" />
 
