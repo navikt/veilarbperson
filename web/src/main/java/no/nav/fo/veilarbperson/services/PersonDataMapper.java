@@ -21,7 +21,25 @@ class PersonDataMapper{
                 .medFodselsdato(fodseldatoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
                 .medKjoenn(person.getKjoenn().getKjoenn().getValue())
                 .medBarn(harFraRolleITilBarn(person.getHarFraRolleI()))
-                .medDiskresjonskode(kanskjeDiskresjonskode(person));
+                .medDiskresjonskode(kanskjeDiskresjonskode(person))
+                .medKontonummer(kanskjeKontonummer(person));
+    }
+
+    private static String kanskjeKontonummer(Person person) {
+        Bankkonto bankkonto = person.getBankkonto();
+        String kontonummer = null;
+
+        if(bankkonto instanceof BankkontoNorge){
+            BankkontoNorge bankkontoNorge = (BankkontoNorge) bankkonto;
+            kontonummer = bankkontoNorge.getBankkonto().getBankkontonummer();
+        }
+
+        if(bankkonto instanceof BankkontoUtland){
+            BankkontoUtland bankkontoUtland = (BankkontoUtland) bankkonto;
+            kontonummer =  bankkontoUtland.getBankkontoUtland().getBankkontonummer();
+        }
+
+        return kontonummer;
     }
 
     private static String kanskjeDiskresjonskode(Person person) {
