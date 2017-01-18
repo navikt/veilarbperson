@@ -22,7 +22,6 @@
         <dependency>
             <groupId>no.nav.sbl.dialogarena</groupId>
             <artifactId>organisasjonenhet-v1-tjenestespesifikasjon</artifactId>
-            <version>1.0.6</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -41,6 +40,10 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>xml-apis</groupId>

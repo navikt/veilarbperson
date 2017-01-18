@@ -1,5 +1,7 @@
 package no.nav.fo.veilarbperson.services;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 public class PersonData{
@@ -75,7 +77,8 @@ public class PersonData{
         return this.behandlendeEnhet;
     }
 
-    public String hentAnsvarligEnhetsnummer() {
+    @JsonIgnore
+    public String getAnsvarligEnhetsnummer() {
         return this.ansvarligEnhetsnummer;
     }
 }
