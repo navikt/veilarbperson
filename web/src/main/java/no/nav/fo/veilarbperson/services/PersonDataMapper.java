@@ -11,7 +11,7 @@ import static java.util.stream.Collectors.toList;
 
 class PersonDataMapper{
 
-    public static PersonData tilPersonData(Person person){
+    public static PersonData tilPersonData(WSPerson person){
         return new PersonData()
                 .medFornavn(person.getPersonnavn().getFornavn())
                 .medMellomnavn(person.getPersonnavn().getMellomnavn())
@@ -25,39 +25,44 @@ class PersonDataMapper{
                 .medKontonummer(kanskjeKontonummer(person));
     }
 
-    private static String kanskjeKontonummer(Person person) {
-        Bankkonto bankkonto = person.getBankkonto();
+    private static String kanskjeKontonummer(WSPerson person) {
+        WSBankkonto bankkonto = person.getBankkonto();
         String kontonummer = null;
 
-        if(bankkonto instanceof BankkontoNorge){
-            BankkontoNorge bankkontoNorge = (BankkontoNorge) bankkonto;
+        if(bankkonto instanceof WSBankkontoNorge){
+            WSBankkontoNorge bankkontoNorge = (WSBankkontoNorge) bankkonto;
             kontonummer = bankkontoNorge.getBankkonto().getBankkontonummer();
         }
 
-        if(bankkonto instanceof BankkontoUtland){
-            BankkontoUtland bankkontoUtland = (BankkontoUtland) bankkonto;
-            kontonummer =  bankkontoUtland.getBankkontoUtland().getBankkontonummer();
+            if(bankkonto instanceof WSBankkontoUtland){
+            WSBankkontoUtland WSBankkontoUtland = (WSBankkontoUtland) bankkonto;
+            kontonummer =  WSBankkontoUtland.getBankkontoUtland().getBankkontonummer();
         }
 
         return kontonummer;
     }
 
-    private static String kanskjeDiskresjonskode(Person person) {
+    private static String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
-        .map(Diskresjonskoder::getValue)
-        .orElse("");
+                //.filter(diskresjonskode -> aksepterteKoder(diskresjonskode))
+                .map(WSDiskresjonskoder::getValue)
+                .orElse(null);
     }
 
-    private static List<Barn> harFraRolleITilBarn(List<Familierelasjon> harFraRolleI) {
+    private static boolean aksepterteKoder(WSDiskresjonskoder diskresjonskode) {
+        return "6".equals(diskresjonskode.getValue()) || "7".equals(diskresjonskode.getValue());
+    }
+
+    private static List<Barn> harFraRolleITilBarn(List<WSFamilierelasjon> harFraRolleI) {
        return  harFraRolleI.stream()
                 .filter(familierelasjon -> "BARN".equals(familierelasjon.getTilRolle().getValue()))
                 .map(barnWS -> familierelasjonTilBarn(barnWS))
                 .collect(toList());
     }
 
-    private static Barn familierelasjonTilBarn(Familierelasjon familierelasjon) {
+    private static Barn familierelasjonTilBarn(WSFamilierelasjon familierelasjon) {
 
-        Person person = familierelasjon.getTilPerson();
+        WSPerson person = familierelasjon.getTilPerson();
 
         return new Barn()
                 .medFornavn(person.getPersonnavn().getFornavn())
