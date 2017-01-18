@@ -15,12 +15,14 @@ public class PersonMock implements PersonV2 {
     }
 
     @Override
-    public WSHentSikkerhetstiltakResponse hentSikkerhetstiltak(WSHentSikkerhetstiltakRequest hentSikkerhetstiltakRequest) throws HentSikkerhetstiltakPersonIkkeFunnet {
+    public WSHentSikkerhetstiltakResponse hentSikkerhetstiltak(WSHentSikkerhetstiltakRequest hentSikkerhetstiltakRequest)
+            throws HentSikkerhetstiltakPersonIkkeFunnet {
         return null;
     }
 
     @Override
-    public WSHentKjerneinformasjonResponse hentKjerneinformasjon(WSHentKjerneinformasjonRequest hentKjerneinformasjonRequest) throws HentKjerneinformasjonSikkerhetsbegrensning, HentKjerneinformasjonPersonIkkeFunnet {
+    public WSHentKjerneinformasjonResponse hentKjerneinformasjon(WSHentKjerneinformasjonRequest hentKjerneinformasjonRequest)
+            throws HentKjerneinformasjonSikkerhetsbegrensning, HentKjerneinformasjonPersonIkkeFunnet {
         return null;
     }
 }
