@@ -13,6 +13,11 @@ public class PersonData{
     private List<Barn> barn;
     private String diskresjonskode;
     private String kontonummer;
+    private String statsborgerskap;
+
+    public String getStatsborgerskap() {
+        return statsborgerskap;
+    }
 
     public String getFornavn() {
         return fornavn;
@@ -101,6 +106,11 @@ public class PersonData{
 
     public PersonData withKontonummer(String kontonummer) {
         this.kontonummer = kontonummer;
+        return this;
+    }
+
+    public PersonData withStatsborgerskap(String statsborgerskap) {
+        this.statsborgerskap = statsborgerskap;
         return this;
     }
 }
