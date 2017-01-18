@@ -12,13 +12,14 @@ public class PersonData{
     private String personnummer;
     private String fodselsdato;
     private String kjoenn;
-    private List<Barn> barn;
+    private List<Familiemedlem> barn;
     private String diskresjonskode;
     private String kontonummer;
     private String ansvarligEnhetsnummer;
     private Enhet behandlendeEnhet;
     private String telefon;
     private String epost;
+    private String partner;
 
     public String getFornavn() {
         return fornavn;
@@ -48,7 +49,7 @@ public class PersonData{
         return kjoenn;
     }
 
-    public List<Barn> getBarn() {
+    public List<Familiemedlem> getBarn() {
         return barn;
     }
 
@@ -104,7 +105,7 @@ public class PersonData{
         return this;
     }
 
-    public PersonData withBarn(List<Barn> barn){
+    public PersonData withBarn(List<Familiemedlem> barn){
         this.barn = barn;
         return this;
     }

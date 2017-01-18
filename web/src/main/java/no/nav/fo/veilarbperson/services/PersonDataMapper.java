@@ -61,18 +61,18 @@ class PersonDataMapper{
                 .orElse(null);
     }
 
-    private static List<Barn> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
+    private static List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
        return  familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
                 .map(barnWS -> familierelasjonTilBarn(barnWS))
                 .collect(toList());
     }
 
-    private static Barn familierelasjonTilBarn(WSFamilierelasjon familierelasjon) {
+    private static Familiemedlem familierelasjonTilBarn(WSFamilierelasjon familierelasjon) {
 
         WSPerson person = familierelasjon.getTilPerson();
 
-        return new Barn()
+        return new Familiemedlem()
                 .withFornavn(person.getPersonnavn().getFornavn())
                 .withEtternavn(person.getPersonnavn().getEtternavn())
                 .withSammensattnavn(person.getPersonnavn().getSammensattNavn())

@@ -1,7 +1,7 @@
 package no.nav.fo.veilarbperson.services;
 
 
-public class Barn {
+public class Familiemedlem {
 
     private String fornavn;
     private String etternavn;
@@ -29,28 +29,28 @@ public class Barn {
         return harSammeBosted;
     }
 
-    public Barn withFornavn(String fornavn){
+    public Familiemedlem withFornavn(String fornavn){
         this.fornavn = fornavn;
         return this;
     }
 
-    public Barn withEtternavn(String etternavn){
+    public Familiemedlem withEtternavn(String etternavn){
         this.etternavn = etternavn;
         return this;
     }
 
-    public Barn withSammensattnavn(String sammensattNavn){
+    public Familiemedlem withSammensattnavn(String sammensattNavn){
         this.sammensattNavn = sammensattNavn;
         return this;
     }
 
 
-    public Barn withHarSammeBosted(Boolean borHjemme){
+    public Familiemedlem withHarSammeBosted(Boolean borHjemme){
         this.harSammeBosted = borHjemme;
         return this;
     }
 
-    public Barn withPersonnummer(String personnummer){
+    public Familiemedlem withPersonnummer(String personnummer){
         this.personnummer = personnummer;
         return this;
     }
