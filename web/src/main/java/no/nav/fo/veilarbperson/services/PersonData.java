@@ -15,6 +15,7 @@ public class PersonData{
     private String kontonummer;
     private String telefon;
     private String epost;
+    private String sikkerhetstiltak;
 
     public String getFornavn() {
         return fornavn;
@@ -64,6 +65,9 @@ public class PersonData{
         return epost;
     }
 
+    public String getSikkerhetstiltak() {
+        return sikkerhetstiltak;
+    }
 
     public PersonData withFornavn(String fornavn){
         this.fornavn = fornavn;
@@ -112,6 +116,11 @@ public class PersonData{
 
     public PersonData withKontonummer(String kontonummer) {
         this.kontonummer = kontonummer;
+        return this;
+    }
+
+    public PersonData withSikkerhetstiltak(String sikkerhetstiltak) {
+        this.sikkerhetstiltak = sikkerhetstiltak;
         return this;
     }
 
