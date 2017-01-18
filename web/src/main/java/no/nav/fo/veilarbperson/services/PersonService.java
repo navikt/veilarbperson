@@ -1,5 +1,6 @@
 package no.nav.fo.veilarbperson.services;
 
+import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;
 import no.nav.tjeneste.virksomhet.person.v2.*;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v2.meldinger.HentKjerneinformasjonRequest;
