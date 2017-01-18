@@ -17,7 +17,7 @@ public class PersonFletter {
         PersonData personData = personService.hentPerson(fnr);
 
         if (personData.getAnsvarligEnhetsnummer() != null) {
-            personData.medBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getAnsvarligEnhetsnummer()));
+            personData.withBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getAnsvarligEnhetsnummer()));
         }
         //TODO: Fyll personData med mer data fra TPS, Digital kontaktinfo. norg2, felles kodeverk og TPSWS-egensatt
 

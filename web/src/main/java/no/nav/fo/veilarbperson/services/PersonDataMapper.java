@@ -25,7 +25,7 @@ class PersonDataMapper{
                 .withBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .withDiskresjonskode(kanskjeDiskresjonskode(person))
                 .withKontonummer(kanskjeKontonummer(person))
-                .medAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person));
+                .withAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person));
     }
 
     private static String ansvarligEnhetsnummer(WSPerson person) {

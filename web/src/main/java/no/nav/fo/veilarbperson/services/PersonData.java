@@ -108,12 +108,12 @@ public class PersonData{
         return this;
     }
 
-    public PersonData medAnsvarligEnhetsnummer(String enhetsnummer) {
+    public PersonData withAnsvarligEnhetsnummer(String enhetsnummer) {
         this.ansvarligEnhetsnummer = enhetsnummer;
         return this;
     }
 
-    public PersonData medBehandlendeEnhet(Enhet enhet) {
+    public PersonData withBehandlendeEnhet(Enhet enhet) {
         this.behandlendeEnhet = enhet;
         return this;
     }

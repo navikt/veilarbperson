@@ -12,7 +12,7 @@ public class Enhet {
         this.enhetsnummer = enhetsnummer;
     }
 
-    public Enhet medEnhetsnummer(String enhetsnummer) {
+    public Enhet withEnhetsnummer(String enhetsnummer) {
         setEnhetsnummer(enhetsnummer);
         return this;
     }
@@ -25,7 +25,7 @@ public class Enhet {
         this.navn = navn;
     }
 
-    public Enhet medNavn(String navn) {
+    public Enhet withNavn(String navn) {
         setNavn(navn);
         return this;
     }

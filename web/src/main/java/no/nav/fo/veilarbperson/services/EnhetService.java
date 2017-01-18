@@ -8,9 +8,6 @@ import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.meldinger.WSFinnNAVKontor
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
-
-import static java.util.Optional.of;
 
 public class EnhetService {
 
@@ -32,8 +29,8 @@ public class EnhetService {
     private Enhet mapTilEnhet(WSDetaljertEnhet wsEnhet) {
         if (wsEnhet != null) {
             return new Enhet()
-                    .medEnhetsnummer(wsEnhet.getEnhetId())
-                    .medNavn(wsEnhet.getNavn());
+                    .withEnhetsnummer(wsEnhet.getEnhetId())
+                    .withNavn(wsEnhet.getNavn());
         }
         return null;
     }
