@@ -1,7 +1,7 @@
 package  no.nav.fo.veilarbperson.config;
 
 import no.nav.fo.veilarbperson.PersonFletter;
-import no.nav.fo.veilarbperson.dkif.DigitalKontaktinformasjonService;
+import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.services.PersonService;
 import org.springframework.context.annotation.Bean;
 
@@ -14,7 +14,7 @@ public class ServiceConfig {
     PersonFletter personFletter(){ return new PersonFletter(); }
 
     @Bean
-    DigitalKontaktinformasjonService dkifService() {
+    DigitalKontaktinformasjonService digitalKontaktinformasjonService() {
         return new DigitalKontaktinformasjonService();
     }
 }

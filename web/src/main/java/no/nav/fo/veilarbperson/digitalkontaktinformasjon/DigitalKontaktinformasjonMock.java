@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.dkif;
+package no.nav.fo.veilarbperson.digitalkontaktinformasjon;
 
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.meldinger.*;
