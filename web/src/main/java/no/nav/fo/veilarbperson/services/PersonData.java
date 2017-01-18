@@ -13,12 +13,13 @@ public class PersonData{
     private List<Barn> barn;
     private String diskresjonskode;
     private String kontonummer;
+    private String telefon;
+    private String epost;
     private String statsborgerskap;
 
     public String getStatsborgerskap() {
         return statsborgerskap;
     }
-
     public String getFornavn() {
         return fornavn;
     }
@@ -58,6 +59,15 @@ public class PersonData{
     public String getKontonummer() {
         return kontonummer;
     }
+
+    public String getTelefon() {
+        return telefon;
+    }
+
+    public String getEpost() {
+        return epost;
+    }
+
 
     public PersonData withFornavn(String fornavn){
         this.fornavn = fornavn;
@@ -106,6 +116,16 @@ public class PersonData{
 
     public PersonData withKontonummer(String kontonummer) {
         this.kontonummer = kontonummer;
+        return this;
+    }
+
+    public PersonData withTelefon(String telefon) {
+        this.telefon = telefon;
+        return this;
+    }
+
+    public PersonData withEpost(String epost) {
+        this.epost = epost;
         return this;
     }
 
