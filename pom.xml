@@ -30,6 +30,8 @@
         <common-web.version>4.0.5</common-web.version>
         <common-types.version>1.2</common-types.version>
         <jackson.version>2.7.2</jackson.version>
+        <mockito.version>1.10.19</mockito.version>
+        <hamcrest.version>1.3</hamcrest.version>
     </properties>
 
     <dependencyManagement>
@@ -41,6 +43,11 @@
                 <groupId>no.nav.sbl.dialogarena</groupId>
                 <artifactId>person-v2-tjenestespesifikasjon</artifactId>
                 <version>2.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.sbl</groupId>
+                <artifactId>dkif-tjenestespesifikasjon</artifactId>
+                <version>1.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>
