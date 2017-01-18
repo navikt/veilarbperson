@@ -2,8 +2,6 @@ package no.nav.fo.veilarbperson.services;
 
 import no.nav.fo.veilarbperson.domain.Sivilstand;
 
-import no.nav.fo.veilarbperson.domain.Sivilstand;
-
 import java.util.List;
 
 public class PersonData{
