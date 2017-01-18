@@ -31,7 +31,9 @@
         <common-types.version>1.2</common-types.version>
         <jackson.version>2.7.2</jackson.version>
         <xml-apis.version>1.4.01</xml-apis.version>
-        <modig-security-ws.version>1.0.30</modig-security-ws.version>
+        <modig-security.version>1.0.30</modig-security.version>
+        <person-v2.version>3.0.0</person-v2.version>
+        <cxf-api.version>2.7.18</cxf-api.version>
     </properties>
 
     <dependencyManagement>
@@ -42,12 +44,12 @@
             <dependency>
                 <groupId>no.nav.sbl.dialogarena</groupId>
                 <artifactId>person-v2-tjenestespesifikasjon</artifactId>
-                <version>3.0.0</version>
+                <version>${person-v2.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-api</artifactId>
-                <version>2.7.18</version>
+                <version>${cxf-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -96,7 +98,7 @@
             <dependency>
                 <groupId>no.nav.modig</groupId>
                 <artifactId>modig-security-ws</artifactId>
-                <version>${modig-security-ws.version}</version>
+                <version>${modig-security.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -120,6 +122,13 @@
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
                 <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.modig</groupId>
+                <artifactId>modig-security-core</artifactId>
+                <version>${modig-security.version}</version>
+                <scope>test</scope>
+                <type>test-jar</type>
             </dependency>
 
             <!-- Server setup -->
