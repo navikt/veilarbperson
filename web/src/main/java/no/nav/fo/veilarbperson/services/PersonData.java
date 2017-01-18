@@ -13,6 +13,7 @@ public class PersonData{
     public List<Barn> barn;
     public String diskresjonskode;
     public String kontonummer;
+    public boolean egenAnsatt;
 
 
     public PersonData medFornavn(String fornavn){
@@ -62,6 +63,11 @@ public class PersonData{
 
     public PersonData medKontonummer(String kontonummer) {
         this.kontonummer = kontonummer;
+        return this;
+    }
+
+    public PersonData medEgenAnsatt(boolean egenAnsatt) {
+        this.egenAnsatt = egenAnsatt;
         return this;
     }
 }

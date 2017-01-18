@@ -23,6 +23,11 @@
         <applicationCertificate alias="srvveilarbperson" />
     </resources>
 
+    <resources>
+        <webservice alias="virksomhet:EgenAnsatt_v1" mapToProperty="egenansatt.endpoint" />
+        <applicationCertificate alias="srvveilarbperson" />
+    </resources>
+
 
     <loadBalancer isAlive="/veilarbperson/internal/isAlive" />
 
