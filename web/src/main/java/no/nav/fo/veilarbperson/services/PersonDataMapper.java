@@ -24,7 +24,17 @@ class PersonDataMapper{
                 .withKjoenn(person.getKjoenn().getKjoenn().getValue())
                 .withBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .withDiskresjonskode(kanskjeDiskresjonskode(person))
-                .withKontonummer(kanskjeKontonummer(person));
+                .withKontonummer(kanskjeKontonummer(person))
+                .withStatsborgerskap(kanskjeStatsborgerskap(person));
+    }
+
+    private static String kanskjeStatsborgerskap(WSPerson person) {
+        String statsborgerskap = null;
+        Optional<WSStatsborgerskap> wsStatsborgerskap = ofNullable(person.getStatsborgerskap());
+        if (wsStatsborgerskap.isPresent()){
+            statsborgerskap =  person.getStatsborgerskap().getLand().getValue();
+        }
+        return statsborgerskap;
     }
 
     private static String kanskjeKontonummer(WSPerson person) {
@@ -37,8 +47,8 @@ class PersonDataMapper{
         }
 
             if(bankkonto instanceof WSBankkontoUtland){
-            WSBankkontoUtland WSBankkontoUtland = (WSBankkontoUtland) bankkonto;
-            kontonummer =  WSBankkontoUtland.getBankkontoUtland().getBankkontonummer();
+            WSBankkontoUtland wsBankkontoUtland = (WSBankkontoUtland) bankkonto;
+            kontonummer =  wsBankkontoUtland.getBankkontoUtland().getBankkontonummer();
         }
 
         return kontonummer;

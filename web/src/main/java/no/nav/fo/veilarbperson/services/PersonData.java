@@ -15,8 +15,12 @@ public class PersonData{
     private String kontonummer;
     private String telefon;
     private String epost;
+    private String statsborgerskap;
     private String sikkerhetstiltak;
 
+    public String getStatsborgerskap() {
+        return statsborgerskap;
+    }
     public String getFornavn() {
         return fornavn;
     }
@@ -131,6 +135,11 @@ public class PersonData{
 
     public PersonData withEpost(String epost) {
         this.epost = epost;
+        return this;
+    }
+
+    public PersonData withStatsborgerskap(String statsborgerskap) {
+        this.statsborgerskap = statsborgerskap;
         return this;
     }
 }
