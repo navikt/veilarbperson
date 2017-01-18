@@ -1,5 +1,7 @@
 package no.nav.fo.veilarbperson.services;
 
+import no.nav.fo.veilarbperson.domain.Sivilstand;
+
 import java.util.List;
 
 public class PersonData{
@@ -14,6 +16,7 @@ public class PersonData{
     public String diskresjonskode;
     public String kontonummer;
     public String sikkerhetstiltak;
+    public Sivilstand sivilstand;
 
 
     public PersonData medFornavn(String fornavn){
@@ -68,6 +71,11 @@ public class PersonData{
 
     public PersonData medSikkerhetstiltak(String sikkerhetstiltak) {
         this.sikkerhetstiltak = sikkerhetstiltak;
+        return this;
+    }
+
+    public PersonData medSivilstand(Sivilstand sivilstand) {
+        this.sivilstand = sivilstand;
         return this;
     }
 }

@@ -1,5 +1,6 @@
 package no.nav.fo.veilarbperson.services;
 
+import no.nav.fo.veilarbperson.domain.Sivilstand;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import java.text.SimpleDateFormat;
@@ -18,11 +19,12 @@ class PersonDataMapper{
                 .medEtternavn(person.getPersonnavn().getEtternavn())
                 .medSammensattNavn(person.getPersonnavn().getSammensattNavn())
                 .medPersonnummer(person.getIdent().getIdent())
-                .medFodselsdato(fodseldatoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
+                .medFodselsdato(datoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
                 .medKjoenn(person.getKjoenn().getKjoenn().getValue())
                 .medBarn(harFraRolleITilBarn(person.getHarFraRolleI()))
                 .medDiskresjonskode(kanskjeDiskresjonskode(person))
-                .medKontonummer(kanskjeKontonummer(person));
+                .medKontonummer(kanskjeKontonummer(person))
+                .medSivilstand(hentSivilstand(person));
     }
 
     private static String kanskjeKontonummer(WSPerson person) {
@@ -73,9 +75,16 @@ class PersonDataMapper{
 
     }
 
-    private static String fodseldatoTilString(GregorianCalendar foedselsdato) {
+    private static Sivilstand hentSivilstand(WSPerson person) {
+        WSSivilstand wsSivilstand = person.getSivilstand();
+        return new Sivilstand()
+                .medSivilstand(wsSivilstand.getSivilstand().getValue())
+                .medFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
+    }
+
+    private static String datoTilString(GregorianCalendar dato) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        formatter.setTimeZone(foedselsdato.getTimeZone());
-        return formatter.format(foedselsdato.getTime());
+        formatter.setTimeZone(dato.getTimeZone());
+        return formatter.format(dato.getTime());
     }
 }
