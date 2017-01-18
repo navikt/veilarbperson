@@ -19,7 +19,7 @@ public class PersonData{
     private Enhet behandlendeEnhet;
     private String telefon;
     private String epost;
-    private String partner;
+    private Familiemedlem partner;
 
     public String getFornavn() {
         return fornavn;
@@ -61,6 +61,15 @@ public class PersonData{
         return kontonummer;
     }
 
+    public Enhet getBehandlendeEnhet() {
+        return this.behandlendeEnhet;
+    }
+
+    @JsonIgnore
+    public String getAnsvarligEnhetsnummer() {
+        return this.ansvarligEnhetsnummer;
+    }
+
     public String getTelefon() {
         return telefon;
     }
@@ -69,6 +78,9 @@ public class PersonData{
         return epost;
     }
 
+    public Familiemedlem getPartner() {
+        return this.partner;
+    }
 
     public PersonData withFornavn(String fornavn){
         this.fornavn = fornavn;
@@ -130,15 +142,6 @@ public class PersonData{
         return this;
     }
 
-    public Enhet getBehandlendeEnhet() {
-        return this.behandlendeEnhet;
-    }
-
-    @JsonIgnore
-    public String getAnsvarligEnhetsnummer() {
-        return this.ansvarligEnhetsnummer;
-    }
-
     public PersonData withTelefon(String telefon) {
         this.telefon = telefon;
         return this;
@@ -146,6 +149,11 @@ public class PersonData{
 
     public PersonData withEpost(String epost) {
         this.epost = epost;
+        return this;
+    }
+
+    public PersonData withPartner(Familiemedlem partner) {
+        this.partner = partner;
         return this;
     }
 }

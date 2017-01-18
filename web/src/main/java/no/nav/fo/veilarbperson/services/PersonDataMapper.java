@@ -2,6 +2,7 @@ package no.nav.fo.veilarbperson.services;
 
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -12,6 +13,7 @@ import static java.util.stream.Collectors.toList;
 class PersonDataMapper{
 
     private static final String BARN = "BARN";
+    private static final String EKTEFELLE = "EKTE";
 
     public static PersonData tilPersonData(WSPerson person){
         return new PersonData()
@@ -25,14 +27,19 @@ class PersonDataMapper{
                 .withBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .withDiskresjonskode(kanskjeDiskresjonskode(person))
                 .withKontonummer(kanskjeKontonummer(person))
-                .withAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person));
+                .withAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person))
+                .withPartner(partner(person.getHarFraRolleI()));
     }
 
-    private static String ansvarligEnhetsnummer(WSPerson person) {
-        if (person instanceof WSBruker) {
-            WSAnsvarligEnhet ansvarligEnhet = ((WSBruker) person).getHarAnsvarligEnhet();
-            if (ansvarligEnhet != null && ansvarligEnhet.getEnhet() != null) {
-                    return ansvarligEnhet.getEnhet().getOrganisasjonselementID();
+    private static Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
+        for (WSFamilierelasjon relasjon : familierelasjoner) {
+            if (EKTEFELLE.equals(relasjon.getTilRolle().getValue())) {
+                WSPerson person = relasjon.getTilPerson();
+                return new Familiemedlem()
+                        .withFornavn(person.getPersonnavn().getFornavn())
+                        .withEtternavn(person.getPersonnavn().getEtternavn())
+                        .withSammensattnavn(person.getPersonnavn().getSammensattNavn())
+                        .withPersonnummer(person.getIdent().getIdent());
             }
         }
         return null;
@@ -79,6 +86,16 @@ class PersonDataMapper{
                 .withHarSammeBosted(familierelasjon.isHarSammeBosted())
                 .withPersonnummer(person.getIdent().getIdent());
 
+    }
+
+    private static String ansvarligEnhetsnummer(WSPerson person) {
+        if (person instanceof WSBruker) {
+            WSAnsvarligEnhet ansvarligEnhet = ((WSBruker) person).getHarAnsvarligEnhet();
+            if (ansvarligEnhet != null && ansvarligEnhet.getEnhet() != null) {
+                return ansvarligEnhet.getEnhet().getOrganisasjonselementID();
+            }
+        }
+        return null;
     }
 
     private static String fodseldatoTilString(GregorianCalendar foedselsdato) {
