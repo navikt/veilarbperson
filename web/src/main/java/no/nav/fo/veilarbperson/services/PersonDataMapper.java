@@ -46,13 +46,8 @@ class PersonDataMapper{
 
     private static String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
-                //.filter(diskresjonskode -> aksepterteKoder(diskresjonskode))
                 .map(WSDiskresjonskoder::getValue)
                 .orElse(null);
-    }
-
-    private static boolean aksepterteKoder(WSDiskresjonskoder diskresjonskode) {
-        return "6".equals(diskresjonskode.getValue()) || "7".equals(diskresjonskode.getValue());
     }
 
     private static List<Barn> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {

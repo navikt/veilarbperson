@@ -1,12 +1,12 @@
 package no.nav.fo.veilarbperson.services;
 
 import no.nav.tjeneste.virksomhet.person.v2.*;
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
+import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSNorskIdent;
+import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSPersonidenter;
 import no.nav.tjeneste.virksomhet.person.v2.meldinger.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.apache.commons.lang3.text.WordUtils.capitalize;
 import static org.slf4j.LoggerFactory.getLogger;
 
 //TODO: Sende feilmeldinger tilbake til frontend
@@ -51,12 +51,6 @@ public class PersonService{
             hentSikkerhetstiltakPersonIkkeFunnet.printStackTrace();
             return false;
         }
-    }
-
-    private String tilNavn(WSPerson person) {
-        final String navnFraTps = person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getEtternavn();
-
-        return capitalize(navnFraTps.toLowerCase(), '-', ' ');
     }
 
 }
