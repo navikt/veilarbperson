@@ -22,8 +22,8 @@ public class PersonFletter {
         try {
             kontaktinformasjon = digitalKontaktinformasjonService.hentDigitalKontaktinformasjon(fnr);
             personData
-                    .medTelefon(kontaktinformasjon.getTelefon())
-                    .medEpost(kontaktinformasjon.getEpost());
+                    .withTelefon(kontaktinformasjon.getTelefon())
+                    .withEpost(kontaktinformasjon.getEpost());
         } catch (HentDigitalKontaktinformasjonSikkerhetsbegrensing | HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet | HentDigitalKontaktinformasjonPersonIkkeFunnet hentDigitalKontaktinformasjonSikkerhetsbegrensing) {
             hentDigitalKontaktinformasjonSikkerhetsbegrensing.printStackTrace();
         }
