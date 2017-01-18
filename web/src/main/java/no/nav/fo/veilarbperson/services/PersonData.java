@@ -14,6 +14,7 @@ public class PersonData{
     public String diskresjonskode;
     public String telefon;
     public String epost;
+    public String kontonummer;
 
 
     public PersonData medFornavn(String fornavn){
@@ -58,6 +59,11 @@ public class PersonData{
 
     public PersonData medDiskresjonskode(String diskresjonskode) {
         this.diskresjonskode = diskresjonskode;
+        return this;
+    }
+
+    public PersonData medKontonummer(String kontonummer) {
+        this.kontonummer = kontonummer;
         return this;
     }
 
