@@ -9,19 +9,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static java.lang.System.getProperty;
+import static no.nav.sbl.dialogarena.common.cxf.InstanceSwitcher.createMetricsProxyWithInstanceSwitcher;
 
 
 @Configuration
 public class Norg2Config {
 
-    private static final String NORG2_ENDPOINT_KEY = "norg2.endpoint.url";
+    private static final String ENHET_NORG2_ENDPOINT_KEY = "organisasjonenhet.endpoint.url";
+    private static final String ENHET_NORG2_MOCK_KEY = "organisasjonenhet.endpoint.url";
 
     @Bean
     public OrganisasjonEnhetV1 organisasjonEnhetPortType() {
-        return factory().withOutInterceptor(new SystemSAMLOutInterceptor()).build();
+        OrganisasjonEnhetV1 prod = factory().withOutInterceptor(new SystemSAMLOutInterceptor()).build();
+        OrganisasjonEnhetV1 mock = new OrganisasjonEnhetMock();
+        return createMetricsProxyWithInstanceSwitcher("NORG2", prod, mock, ENHET_NORG2_MOCK_KEY, OrganisasjonEnhetV1.class);
     }
 
     private CXFClient<OrganisasjonEnhetV1> factory() {
-        return new CXFClient<>(OrganisasjonEnhetV1.class).address(getProperty(NORG2_ENDPOINT_KEY));
+        return new CXFClient<>(OrganisasjonEnhetV1.class).address(getProperty(ENHET_NORG2_ENDPOINT_KEY));
     }
 }
