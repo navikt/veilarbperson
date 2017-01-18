@@ -13,7 +13,7 @@ public class PersonData{
     public List<Barn> barn;
     public String diskresjonskode;
     private String ansvarligEnhetsnummer;
-    public Enhet behandlendeEnhet;
+    private Enhet behandlendeEnhet;
 
 
     public PersonData medFornavn(String fornavn){
@@ -69,6 +69,10 @@ public class PersonData{
     public PersonData medBehandlendeEnhet(Enhet enhet) {
         this.behandlendeEnhet = enhet;
         return this;
+    }
+
+    public Enhet getBehandlendeEnhet() {
+        return this.behandlendeEnhet;
     }
 
     public String hentAnsvarligEnhetsnummer() {

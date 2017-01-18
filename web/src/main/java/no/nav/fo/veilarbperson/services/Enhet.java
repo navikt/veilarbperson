@@ -1,35 +1,32 @@
 package no.nav.fo.veilarbperson.services;
 
 public class Enhet {
-    public String enhetsnummer;
-    public String navn;
+    private String enhetsnummer;
+    private String navn;
 
-
-
-    public String hentEnhetsnummer() {
+    public String getEnhetsnummer() {
         return enhetsnummer;
     }
 
-    public void settEnhetsnummer(String enhetsnummer) {
+    public void setEnhetsnummer(String enhetsnummer) {
         this.enhetsnummer = enhetsnummer;
     }
 
     public Enhet medEnhetsnummer(String enhetsnummer) {
-        settEnhetsnummer(enhetsnummer);
+        setEnhetsnummer(enhetsnummer);
         return this;
     }
 
-    public String hentNavn() {
+    public String getNavn() {
         return navn;
     }
 
-    public void settNavn(String navn) {
+    public void setNavn(String navn) {
         this.navn = navn;
     }
 
     public Enhet medNavn(String navn) {
-        settNavn(navn);
+        setNavn(navn);
         return this;
     }
-
 }
