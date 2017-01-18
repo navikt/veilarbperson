@@ -30,6 +30,8 @@
         <common-web.version>4.0.5</common-web.version>
         <common-types.version>1.2</common-types.version>
         <jackson.version>2.7.2</jackson.version>
+        <xml-apis.version>1.4.01</xml-apis.version>
+        <modig-security-ws.version>1.0.30</modig-security-ws.version>
     </properties>
 
     <dependencyManagement>
@@ -65,7 +67,7 @@
             <dependency>
                 <groupId>xml-apis</groupId>
                 <artifactId>xml-apis</artifactId>
-                <version>1.4.01</version>
+                <version>${xml-apis.version}</version>
             </dependency>
 
 
@@ -87,9 +89,14 @@
                 <version>${common-types.version}</version>
             </dependency>
             <dependency>
+                <groupId>no.nav.sbl.dialogarena</groupId>
+                <artifactId>common-cxf</artifactId>
+                <version>3.2.18</version>
+            </dependency>
+            <dependency>
                 <groupId>no.nav.modig</groupId>
                 <artifactId>modig-security-ws</artifactId>
-                <version>1.0.30</version>
+                <version>${modig-security-ws.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -101,11 +108,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
-                <groupId>no.nav.sbl.dialogarena</groupId>
-                <artifactId>common-cxf</artifactId>
-                <version>3.2.18</version>
-            </dependency>
 
             <!-- Logging -->
             <dependency>
@@ -116,7 +118,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
-                <version>1.7.21</version>
+                <version>${slf4j.version}</version>
                 <scope>runtime</scope>
             </dependency>
 
