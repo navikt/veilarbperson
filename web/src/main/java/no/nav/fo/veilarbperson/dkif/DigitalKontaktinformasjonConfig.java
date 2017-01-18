@@ -42,7 +42,6 @@ public class DigitalKontaktinformasjonConfig {
     }
 
     private CXFClient<DigitalKontaktinformasjonV1> factory() {
-        System.out.println((getProperty("dkif.endpoint.url")));
         return new CXFClient<>(DigitalKontaktinformasjonV1.class).address(getProperty("dkif.endpoint.url"));
     }
 }
