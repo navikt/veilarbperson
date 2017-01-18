@@ -17,6 +17,8 @@ public class PersonData{
     private String kontonummer;
     private String ansvarligEnhetsnummer;
     private Enhet behandlendeEnhet;
+    private String telefon;
+    private String epost;
 
     public String getFornavn() {
         return fornavn;
@@ -57,6 +59,15 @@ public class PersonData{
     public String getKontonummer() {
         return kontonummer;
     }
+
+    public String getTelefon() {
+        return telefon;
+    }
+
+    public String getEpost() {
+        return epost;
+    }
+
 
     public PersonData withFornavn(String fornavn){
         this.fornavn = fornavn;
@@ -125,5 +136,15 @@ public class PersonData{
     @JsonIgnore
     public String getAnsvarligEnhetsnummer() {
         return this.ansvarligEnhetsnummer;
+    }
+
+    public PersonData withTelefon(String telefon) {
+        this.telefon = telefon;
+        return this;
+    }
+
+    public PersonData withEpost(String epost) {
+        this.epost = epost;
+        return this;
     }
 }

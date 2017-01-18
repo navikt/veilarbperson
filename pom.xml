@@ -33,7 +33,10 @@
         <xml-apis.version>1.4.01</xml-apis.version>
         <modig-security.version>1.0.30</modig-security.version>
         <person-v2.version>3.0.0</person-v2.version>
+        <dkif.version>1.2</dkif.version>
         <cxf-api.version>2.7.18</cxf-api.version>
+        <mockito.version>1.10.19</mockito.version>
+        <hamcrest.version>1.3</hamcrest.version>
     </properties>
 
     <dependencyManagement>
@@ -45,6 +48,11 @@
                 <groupId>no.nav.sbl.dialogarena</groupId>
                 <artifactId>person-v2-tjenestespesifikasjon</artifactId>
                 <version>${person-v2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.sbl</groupId>
+                <artifactId>dkif-tjenestespesifikasjon</artifactId>
+                <version>${dkif.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.nav.sbl.dialogarena</groupId>
