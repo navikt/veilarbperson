@@ -12,19 +12,31 @@ import static java.util.stream.Collectors.toList;
 
 class PersonDataMapper{
 
+    private static final String BARN = "BARN";
+
     public static PersonData tilPersonData(WSPerson person){
         return new PersonData()
-                .medFornavn(person.getPersonnavn().getFornavn())
-                .medMellomnavn(person.getPersonnavn().getMellomnavn())
-                .medEtternavn(person.getPersonnavn().getEtternavn())
-                .medSammensattNavn(person.getPersonnavn().getSammensattNavn())
-                .medPersonnummer(person.getIdent().getIdent())
-                .medFodselsdato(datoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
-                .medKjoenn(person.getKjoenn().getKjoenn().getValue())
-                .medBarn(harFraRolleITilBarn(person.getHarFraRolleI()))
-                .medDiskresjonskode(kanskjeDiskresjonskode(person))
-                .medKontonummer(kanskjeKontonummer(person))
-                .medSivilstand(hentSivilstand(person));
+                .withFornavn(person.getPersonnavn().getFornavn())
+                .withMellomnavn(person.getPersonnavn().getMellomnavn())
+                .withEtternavn(person.getPersonnavn().getEtternavn())
+                .withSammensattNavn(person.getPersonnavn().getSammensattNavn())
+                .withPersonnummer(person.getIdent().getIdent())
+                .withFodselsdato((datoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar())))
+                .withKjoenn(person.getKjoenn().getKjoenn().getValue())
+                .withBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
+                .withDiskresjonskode(kanskjeDiskresjonskode(person))
+                .withKontonummer(kanskjeKontonummer(person))
+                .withStatsborgerskap(kanskjeStatsborgerskap(person))
+                .withSivilstand(hentSivilstand(person));
+    }
+
+    private static String kanskjeStatsborgerskap(WSPerson person) {
+        String statsborgerskap = null;
+        Optional<WSStatsborgerskap> wsStatsborgerskap = ofNullable(person.getStatsborgerskap());
+        if (wsStatsborgerskap.isPresent()){
+            statsborgerskap =  person.getStatsborgerskap().getLand().getValue();
+        }
+        return statsborgerskap;
     }
 
     private static String kanskjeKontonummer(WSPerson person) {
@@ -37,8 +49,8 @@ class PersonDataMapper{
         }
 
             if(bankkonto instanceof WSBankkontoUtland){
-            WSBankkontoUtland WSBankkontoUtland = (WSBankkontoUtland) bankkonto;
-            kontonummer =  WSBankkontoUtland.getBankkontoUtland().getBankkontonummer();
+            WSBankkontoUtland wsBankkontoUtland = (WSBankkontoUtland) bankkonto;
+            kontonummer =  wsBankkontoUtland.getBankkontoUtland().getBankkontonummer();
         }
 
         return kontonummer;
@@ -46,18 +58,13 @@ class PersonDataMapper{
 
     private static String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
-                //.filter(diskresjonskode -> aksepterteKoder(diskresjonskode))
                 .map(WSDiskresjonskoder::getValue)
                 .orElse(null);
     }
 
-    private static boolean aksepterteKoder(WSDiskresjonskoder diskresjonskode) {
-        return "6".equals(diskresjonskode.getValue()) || "7".equals(diskresjonskode.getValue());
-    }
-
-    private static List<Barn> harFraRolleITilBarn(List<WSFamilierelasjon> harFraRolleI) {
-       return  harFraRolleI.stream()
-                .filter(familierelasjon -> "BARN".equals(familierelasjon.getTilRolle().getValue()))
+    private static List<Barn> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
+       return  familierelasjoner.stream()
+                .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
                 .map(barnWS -> familierelasjonTilBarn(barnWS))
                 .collect(toList());
     }
@@ -67,11 +74,11 @@ class PersonDataMapper{
         WSPerson person = familierelasjon.getTilPerson();
 
         return new Barn()
-                .medFornavn(person.getPersonnavn().getFornavn())
-                .medEtternavn(person.getPersonnavn().getEtternavn())
-                .medSammensattnavn(person.getPersonnavn().getSammensattNavn())
-                .medHarSammeBosted(familierelasjon.isHarSammeBosted())
-                .medPersonnummer(person.getIdent().getIdent());
+                .withFornavn(person.getPersonnavn().getFornavn())
+                .withEtternavn(person.getPersonnavn().getEtternavn())
+                .withSammensattnavn(person.getPersonnavn().getSammensattNavn())
+                .withHarSammeBosted(familierelasjon.isHarSammeBosted())
+                .withPersonnummer(person.getIdent().getIdent());
 
     }
 
