@@ -15,16 +15,16 @@ class PersonDataMapper{
 
     public static PersonData tilPersonData(WSPerson person){
         return new PersonData()
-                .medFornavn(person.getPersonnavn().getFornavn())
-                .medMellomnavn(person.getPersonnavn().getMellomnavn())
-                .medEtternavn(person.getPersonnavn().getEtternavn())
-                .medSammensattNavn(person.getPersonnavn().getSammensattNavn())
-                .medPersonnummer(person.getIdent().getIdent())
-                .medFodselsdato(fodseldatoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
-                .medKjoenn(person.getKjoenn().getKjoenn().getValue())
-                .medBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
-                .medDiskresjonskode(kanskjeDiskresjonskode(person))
-                .medKontonummer(kanskjeKontonummer(person));
+                .withFornavn(person.getPersonnavn().getFornavn())
+                .withMellomnavn(person.getPersonnavn().getMellomnavn())
+                .withEtternavn(person.getPersonnavn().getEtternavn())
+                .withSammensattNavn(person.getPersonnavn().getSammensattNavn())
+                .withPersonnummer(person.getIdent().getIdent())
+                .withFodselsdato(fodseldatoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
+                .withKjoenn(person.getKjoenn().getKjoenn().getValue())
+                .withBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
+                .withDiskresjonskode(kanskjeDiskresjonskode(person))
+                .withKontonummer(kanskjeKontonummer(person));
     }
 
     private static String kanskjeKontonummer(WSPerson person) {
@@ -67,11 +67,11 @@ class PersonDataMapper{
         WSPerson person = familierelasjon.getTilPerson();
 
         return new Barn()
-                .medFornavn(person.getPersonnavn().getFornavn())
-                .medEtternavn(person.getPersonnavn().getEtternavn())
-                .medSammensattnavn(person.getPersonnavn().getSammensattNavn())
-                .medHarSammeBosted(familierelasjon.isHarSammeBosted())
-                .medPersonnummer(person.getIdent().getIdent());
+                .withFornavn(person.getPersonnavn().getFornavn())
+                .withEtternavn(person.getPersonnavn().getEtternavn())
+                .withSammensattnavn(person.getPersonnavn().getSammensattNavn())
+                .withHarSammeBosted(familierelasjon.isHarSammeBosted())
+                .withPersonnummer(person.getIdent().getIdent());
 
     }
 
