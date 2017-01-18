@@ -2,7 +2,6 @@ package no.nav.fo.veilarbperson.services;
 
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -31,15 +30,11 @@ class PersonDataMapper{
                 .withPartner(partner(person.getHarFraRolleI()));
     }
 
-    private static Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
-        for (WSFamilierelasjon relasjon : familierelasjoner) {
-            if (EKTEFELLE.equals(relasjon.getTilRolle().getValue())) {
-                WSPerson person = relasjon.getTilPerson();
-                return new Familiemedlem()
-                        .withFornavn(person.getPersonnavn().getFornavn())
-                        .withEtternavn(person.getPersonnavn().getEtternavn())
-                        .withSammensattnavn(person.getPersonnavn().getSammensattNavn())
-                        .withPersonnummer(person.getIdent().getIdent());
+    private static String ansvarligEnhetsnummer(WSPerson person) {
+        if (person instanceof WSBruker) {
+            WSAnsvarligEnhet ansvarligEnhet = ((WSBruker) person).getHarAnsvarligEnhet();
+            if (ansvarligEnhet != null && ansvarligEnhet.getEnhet() != null) {
+                return ansvarligEnhet.getEnhet().getOrganisasjonselementID();
             }
         }
         return null;
@@ -71,11 +66,20 @@ class PersonDataMapper{
     private static List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
        return  familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
-                .map(barnWS -> familierelasjonTilBarn(barnWS))
+                .map(barnWS -> familierelasjonTilFamiliemedlem(barnWS))
                 .collect(toList());
     }
+    
+    private static Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
+        for (WSFamilierelasjon relasjon : familierelasjoner) {
+            if (EKTEFELLE.equals(relasjon.getTilRolle().getValue())) {
+                return familierelasjonTilFamiliemedlem(relasjon);
+            }
+        }
+        return null;
+    }
 
-    private static Familiemedlem familierelasjonTilBarn(WSFamilierelasjon familierelasjon) {
+    private static Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
 
         WSPerson person = familierelasjon.getTilPerson();
 
@@ -86,16 +90,6 @@ class PersonDataMapper{
                 .withHarSammeBosted(familierelasjon.isHarSammeBosted())
                 .withPersonnummer(person.getIdent().getIdent());
 
-    }
-
-    private static String ansvarligEnhetsnummer(WSPerson person) {
-        if (person instanceof WSBruker) {
-            WSAnsvarligEnhet ansvarligEnhet = ((WSBruker) person).getHarAnsvarligEnhet();
-            if (ansvarligEnhet != null && ansvarligEnhet.getEnhet() != null) {
-                return ansvarligEnhet.getEnhet().getOrganisasjonselementID();
-            }
-        }
-        return null;
     }
 
     private static String fodseldatoTilString(GregorianCalendar foedselsdato) {
