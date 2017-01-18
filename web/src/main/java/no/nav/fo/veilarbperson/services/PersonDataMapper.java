@@ -11,6 +11,8 @@ import static java.util.stream.Collectors.toList;
 
 class PersonDataMapper{
 
+    private static final String BARN = "BARN";
+
     public static PersonData tilPersonData(WSPerson person){
         return new PersonData()
                 .medFornavn(person.getPersonnavn().getFornavn())
@@ -20,7 +22,7 @@ class PersonDataMapper{
                 .medPersonnummer(person.getIdent().getIdent())
                 .medFodselsdato(fodseldatoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
                 .medKjoenn(person.getKjoenn().getKjoenn().getValue())
-                .medBarn(harFraRolleITilBarn(person.getHarFraRolleI()))
+                .medBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .medDiskresjonskode(kanskjeDiskresjonskode(person))
                 .medKontonummer(kanskjeKontonummer(person));
     }
@@ -53,9 +55,9 @@ class PersonDataMapper{
         return "6".equals(diskresjonskode.getValue()) || "7".equals(diskresjonskode.getValue());
     }
 
-    private static List<Barn> harFraRolleITilBarn(List<WSFamilierelasjon> harFraRolleI) {
-       return  harFraRolleI.stream()
-                .filter(familierelasjon -> "BARN".equals(familierelasjon.getTilRolle().getValue()))
+    private static List<Barn> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
+       return  familierelasjoner.stream()
+                .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
                 .map(barnWS -> familierelasjonTilBarn(barnWS))
                 .collect(toList());
     }
