@@ -2,15 +2,15 @@ package no.nav.fo.veilarbperson.services;
 
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;
 import no.nav.tjeneste.virksomhet.person.v2.*;
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.Person;
-import no.nav.tjeneste.virksomhet.person.v2.meldinger.HentKjerneinformasjonRequest;
-import no.nav.tjeneste.virksomhet.person.v2.meldinger.HentKjerneinformasjonResponse;
+import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSNorskIdent;
+import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSPersonidenter;
+import no.nav.tjeneste.virksomhet.person.v2.meldinger.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.apache.commons.lang3.text.WordUtils.capitalize;
 import static org.slf4j.LoggerFactory.getLogger;
 
+//TODO: Sende feilmeldinger tilbake til frontend
 public class PersonService{
 
     private static final Logger logger = getLogger(PersonService.class);
@@ -19,10 +19,10 @@ public class PersonService{
     private PersonV2 personV2;
 
     public PersonData hentPerson(String ident) {
-        final HentKjerneinformasjonRequest request = new HentKjerneinformasjonRequest().withIdent(ident);
+        final WSHentKjerneinformasjonRequest request = new WSHentKjerneinformasjonRequest().withIdent(ident);
 
         try {
-            HentKjerneinformasjonResponse wsPerson = personV2.hentKjerneinformasjon(request);
+            WSHentKjerneinformasjonResponse wsPerson = personV2.hentKjerneinformasjon(request);
             PersonData personData = PersonDataMapper.tilPersonData(wsPerson.getPerson());
             return personData;
         } catch (HentKjerneinformasjonSikkerhetsbegrensning ikkeTilgang) {
@@ -36,10 +36,22 @@ public class PersonService{
         }
     }
 
-    private String tilNavn(Person person) {
-        final String navnFraTps = person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getEtternavn();
+    public Boolean hentSikkerhetstiltak(String ident){
+        WSNorskIdent norskIdent = new WSNorskIdent()
+                .withIdent(ident)
+                .withType(new WSPersonidenter()
+                        .withValue("fnr"));
+        final WSHentSikkerhetstiltakRequest request = new WSHentSikkerhetstiltakRequest().withIdent(norskIdent);
 
-        return capitalize(navnFraTps.toLowerCase(), '-', ' ');
+        try{
+            WSHentSikkerhetstiltakResponse wsSikkerhetstiltak = personV2.hentSikkerhetstiltak(request);
+            wsSikkerhetstiltak.getSikkerhetstiltak();
+            return true;
+        } catch (HentSikkerhetstiltakPersonIkkeFunnet hentSikkerhetstiltakPersonIkkeFunnet) {
+            logger.error("Finner ikke " + ident);
+            hentSikkerhetstiltakPersonIkkeFunnet.printStackTrace();
+            return false;
+        }
     }
 
 }

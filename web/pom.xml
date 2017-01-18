@@ -28,10 +28,6 @@
             <artifactId>cxf-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <scope>runtime</scope>
@@ -110,7 +106,7 @@
         <dependency>
             <groupId>no.nav.modig</groupId>
             <artifactId>modig-security-core</artifactId>
-            <version>1.0.9</version>
+            <version>1.0.30</version>
             <scope>test</scope>
             <type>test-jar</type>
         </dependency>

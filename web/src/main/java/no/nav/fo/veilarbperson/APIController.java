@@ -15,10 +15,10 @@ public class APIController {
     @Autowired
     PersonFletter personFletter;
 
-    @RequestMapping(value = "/person/{fnr}", produces = "application/json")
-    public PersonData person(@PathVariable String fnr) {
-        logger.info("Henter persondata med fnr:" + fnr );
-        return personFletter.hentPerson(fnr);
+    @RequestMapping(value = "/person/{personnummer}", produces = "application/json")
+    public PersonData person(@PathVariable String personnummer) {
+        logger.info("Henter persondata med personnummer: " + personnummer );
+        return personFletter.hentPerson(personnummer);
     }
 
 }

@@ -11,23 +11,26 @@ import static java.util.stream.Collectors.toList;
 
 class PersonDataMapper{
 
-    public static PersonData tilPersonData(Person person){
+    private static final String BARN = "BARN";
+
+    public static PersonData tilPersonData(WSPerson person){
         return new PersonData()
-                .medFornavn(person.getPersonnavn().getFornavn())
-                .medMellomnavn(person.getPersonnavn().getMellomnavn())
-                .medEtternavn(person.getPersonnavn().getEtternavn())
-                .medSammensattNavn(person.getPersonnavn().getSammensattNavn())
-                .medPersonnummer(person.getIdent().getIdent())
-                .medFodselsdato(fodseldatoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
-                .medKjoenn(person.getKjoenn().getKjoenn().getValue())
-                .medBarn(harFraRolleITilBarn(person.getHarFraRolleI()))
-                .medDiskresjonskode(kanskjeDiskresjonskode(person))
+                .withFornavn(person.getPersonnavn().getFornavn())
+                .withMellomnavn(person.getPersonnavn().getMellomnavn())
+                .withEtternavn(person.getPersonnavn().getEtternavn())
+                .withSammensattNavn(person.getPersonnavn().getSammensattNavn())
+                .withPersonnummer(person.getIdent().getIdent())
+                .withFodselsdato(fodseldatoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
+                .withKjoenn(person.getKjoenn().getKjoenn().getValue())
+                .withBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
+                .withDiskresjonskode(kanskjeDiskresjonskode(person))
+                .withKontonummer(kanskjeKontonummer(person))
                 .medAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person));
     }
 
-    private static String ansvarligEnhetsnummer(Person person) {
-        if (person instanceof Bruker) {
-            AnsvarligEnhet ansvarligEnhet = ((Bruker) person).getHarAnsvarligEnhet();
+    private static String ansvarligEnhetsnummer(WSPerson person) {
+        if (person instanceof WSBruker) {
+            WSAnsvarligEnhet ansvarligEnhet = ((WSBruker) person).getHarAnsvarligEnhet();
             if (ansvarligEnhet != null && ansvarligEnhet.getEnhet() != null) {
                     return ansvarligEnhet.getEnhet().getOrganisasjonselementID();
             }
@@ -35,29 +38,46 @@ class PersonDataMapper{
         return null;
     }
 
-    private static String kanskjeDiskresjonskode(Person person) {
-        return ofNullable(person.getDiskresjonskode())
-        .map(Diskresjonskoder::getValue)
-        .orElse("");
+    private static String kanskjeKontonummer(WSPerson person) {
+        WSBankkonto bankkonto = person.getBankkonto();
+        String kontonummer = null;
+
+        if(bankkonto instanceof WSBankkontoNorge){
+            WSBankkontoNorge bankkontoNorge = (WSBankkontoNorge) bankkonto;
+            kontonummer = bankkontoNorge.getBankkonto().getBankkontonummer();
+        }
+
+            if(bankkonto instanceof WSBankkontoUtland){
+            WSBankkontoUtland WSBankkontoUtland = (WSBankkontoUtland) bankkonto;
+            kontonummer =  WSBankkontoUtland.getBankkontoUtland().getBankkontonummer();
+        }
+
+        return kontonummer;
     }
 
-    private static List<Barn> harFraRolleITilBarn(List<Familierelasjon> harFraRolleI) {
-       return  harFraRolleI.stream()
-                .filter(familierelasjon -> "BARN".equals(familierelasjon.getTilRolle().getValue()))
+    private static String kanskjeDiskresjonskode(WSPerson person) {
+        return ofNullable(person.getDiskresjonskode())
+                .map(WSDiskresjonskoder::getValue)
+                .orElse(null);
+    }
+
+    private static List<Barn> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
+       return  familierelasjoner.stream()
+                .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
                 .map(barnWS -> familierelasjonTilBarn(barnWS))
                 .collect(toList());
     }
 
-    private static Barn familierelasjonTilBarn(Familierelasjon familierelasjon) {
+    private static Barn familierelasjonTilBarn(WSFamilierelasjon familierelasjon) {
 
-        Person person = familierelasjon.getTilPerson();
+        WSPerson person = familierelasjon.getTilPerson();
 
         return new Barn()
-                .medFornavn(person.getPersonnavn().getFornavn())
-                .medEtternavn(person.getPersonnavn().getEtternavn())
-                .medSammensattnavn(person.getPersonnavn().getSammensattNavn())
-                .medHarSammeBosted(familierelasjon.isHarSammeBosted())
-                .medPersonnummer(person.getIdent().getIdent());
+                .withFornavn(person.getPersonnavn().getFornavn())
+                .withEtternavn(person.getPersonnavn().getEtternavn())
+                .withSammensattnavn(person.getPersonnavn().getSammensattNavn())
+                .withHarSammeBosted(familierelasjon.isHarSammeBosted())
+                .withPersonnummer(person.getIdent().getIdent());
 
     }
 
