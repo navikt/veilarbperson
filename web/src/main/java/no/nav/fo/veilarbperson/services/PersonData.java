@@ -12,7 +12,8 @@ public class PersonData{
     public String kjoenn;
     public List<Barn> barn;
     public String diskresjonskode;
-    private Enhet behandlendeEnhet;
+    private String ansvarligEnhetsnummer;
+    public Enhet behandlendeEnhet;
 
 
     public PersonData medFornavn(String fornavn){
@@ -60,8 +61,17 @@ public class PersonData{
         return this;
     }
 
-    public PersonData medEnhet(Enhet enhet) {
+    public PersonData medAnsvarligEnhetsnummer(String enhetsnummer) {
+        this.ansvarligEnhetsnummer = enhetsnummer;
+        return this;
+    }
+
+    public PersonData medBehandlendeEnhet(Enhet enhet) {
         this.behandlendeEnhet = enhet;
         return this;
+    }
+
+    public String hentAnsvarligEnhetsnummer() {
+        return this.ansvarligEnhetsnummer;
     }
 }

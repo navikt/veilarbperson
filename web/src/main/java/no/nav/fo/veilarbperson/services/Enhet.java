@@ -1,8 +1,8 @@
 package no.nav.fo.veilarbperson.services;
 
 public class Enhet {
-    private String enhetsnummer;
-    private String navn;
+    public String enhetsnummer;
+    public String navn;
 
 
 

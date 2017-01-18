@@ -21,7 +21,18 @@ class PersonDataMapper{
                 .medFodselsdato(fodseldatoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
                 .medKjoenn(person.getKjoenn().getKjoenn().getValue())
                 .medBarn(harFraRolleITilBarn(person.getHarFraRolleI()))
-                .medDiskresjonskode(kanskjeDiskresjonskode(person));
+                .medDiskresjonskode(kanskjeDiskresjonskode(person))
+                .medAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person));
+    }
+
+    private static String ansvarligEnhetsnummer(Person person) {
+        if (person instanceof Bruker) {
+            AnsvarligEnhet ansvarligEnhet = ((Bruker) person).getHarAnsvarligEnhet();
+            if (ansvarligEnhet != null && ansvarligEnhet.getEnhet() != null) {
+                    return ansvarligEnhet.getEnhet().getOrganisasjonselementID();
+            }
+        }
+        return null;
     }
 
     private static String kanskjeDiskresjonskode(Person person) {

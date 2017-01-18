@@ -1,6 +1,5 @@
 package no.nav.fo.veilarbperson;
 
-import no.nav.fo.veilarbperson.services.Enhet;
 import no.nav.fo.veilarbperson.services.EnhetService;
 import no.nav.fo.veilarbperson.services.PersonData;
 import no.nav.fo.veilarbperson.services.PersonService;
@@ -14,17 +13,15 @@ public class PersonFletter {
     @Autowired
     EnhetService enhetService;
 
-    public PersonData hentPerson(String fnr){
+    public PersonData hentPerson(String fnr) {
         PersonData personData = personService.hentPerson(fnr);
 
-
-        Enhet enhet = hentNavKontor();
+        if (personData.hentAnsvarligEnhetsnummer() != null) {
+            personData.medBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.hentAnsvarligEnhetsnummer()));
+        }
         //TODO: Fyll personData med mer data fra TPS, Digital kontaktinfo. norg2, felles kodeverk og TPSWS-egensatt
 
         return personData;
     }
 
-    private Enhet hentNavKontor() {
-        return enhetService.hentBehandlendeEnhet("0121");
-    }
 }
