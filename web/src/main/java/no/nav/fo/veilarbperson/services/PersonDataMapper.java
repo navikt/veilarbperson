@@ -47,8 +47,8 @@ class PersonDataMapper{
         }
 
             if(bankkonto instanceof WSBankkontoUtland){
-            WSBankkontoUtland WSBankkontoUtland = (WSBankkontoUtland) bankkonto;
-            kontonummer =  WSBankkontoUtland.getBankkontoUtland().getBankkontonummer();
+            WSBankkontoUtland wsBankkontoUtland = (WSBankkontoUtland) bankkonto;
+            kontonummer =  wsBankkontoUtland.getBankkontoUtland().getBankkontonummer();
         }
 
         return kontonummer;
