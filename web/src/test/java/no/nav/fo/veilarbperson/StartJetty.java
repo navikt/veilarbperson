@@ -10,9 +10,11 @@ public class StartJetty {
     private static final int PORT = 8488;
 
     public static void main(String []args) {
+
         Jetty jetty = usingWar()
                 .at("/veilarbperson")
                 .port(PORT)
+                .loadProperties("/environment-test.properties")
                 .overrideWebXml()
                 .buildJetty();
         jetty.startAnd(first(waitFor(gotKeypress())).then(jetty.stop));

@@ -29,10 +29,49 @@
         <spring.version>4.3.4.RELEASE</spring.version>
         <common-web.version>4.0.5</common-web.version>
         <common-types.version>1.2</common-types.version>
+        <jackson.version>2.7.2</jackson.version>
+        <xml-apis.version>1.4.01</xml-apis.version>
+        <modig-security.version>1.0.30</modig-security.version>
+        <person-v2.version>3.0.0</person-v2.version>
+        <cxf-api.version>2.7.18</cxf-api.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+
+
+            <!-- Consumer  -->
+            <dependency>
+                <groupId>no.nav.sbl.dialogarena</groupId>
+                <artifactId>person-v2-tjenestespesifikasjon</artifactId>
+                <version>${person-v2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-api</artifactId>
+                <version>${cxf-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xml-apis</groupId>
+                <artifactId>xml-apis</artifactId>
+                <version>${xml-apis.version}</version>
+            </dependency>
+
 
             <!-- Nav felles -->
             <dependency>
@@ -51,6 +90,26 @@
                 <artifactId>common-types</artifactId>
                 <version>${common-types.version}</version>
             </dependency>
+            <dependency>
+                <groupId>no.nav.sbl.dialogarena</groupId>
+                <artifactId>common-cxf</artifactId>
+                <version>3.2.18</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.modig</groupId>
+                <artifactId>modig-security-ws</artifactId>
+                <version>${modig-security.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-impl</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
             <!-- Logging -->
             <dependency>
@@ -61,8 +120,15 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
-                <version>1.7.21</version>
+                <version>${slf4j.version}</version>
                 <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.modig</groupId>
+                <artifactId>modig-security-core</artifactId>
+                <version>${modig-security.version}</version>
+                <scope>test</scope>
+                <type>test-jar</type>
             </dependency>
 
             <!-- Server setup -->
@@ -94,7 +160,11 @@
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
