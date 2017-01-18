@@ -85,8 +85,8 @@ class PersonDataMapper{
     private static Sivilstand hentSivilstand(WSPerson person) {
         WSSivilstand wsSivilstand = person.getSivilstand();
         return new Sivilstand()
-                .medSivilstand(wsSivilstand.getSivilstand().getValue())
-                .medFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
+                .withSivilstand(wsSivilstand.getSivilstand().getValue())
+                .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
     }
 
     private static String datoTilString(GregorianCalendar dato) {

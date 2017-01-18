@@ -12,12 +12,12 @@ public class Sivilstand {
         return fraDato;
     }
 
-    public Sivilstand medSivilstand(String siviltilstand) {
+    public Sivilstand withSivilstand(String siviltilstand) {
         this.sivilstand = siviltilstand;
         return this;
     }
 
-    public Sivilstand medFraDato(String fraDato) {
+    public Sivilstand withFraDato(String fraDato) {
         this.fraDato = fraDato;
         return this;
     }
