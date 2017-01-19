@@ -21,7 +21,7 @@ class PersonDataMapper{
                 .withEtternavn(person.getPersonnavn().getEtternavn())
                 .withSammensattNavn(person.getPersonnavn().getSammensattNavn())
                 .withPersonnummer(person.getIdent().getIdent())
-                .withFodselsdato((datoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar())))
+                .withFodselsdato(datoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
                 .withKjoenn(person.getKjoenn().getKjoenn().getValue())
                 .withBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .withDiskresjonskode(kanskjeDiskresjonskode(person))
