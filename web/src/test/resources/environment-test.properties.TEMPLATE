@@ -6,7 +6,7 @@ no.nav.modig.security.systemuser.username=BYTT_MEG
 person.endpoint.url=https://wasapp-t4.adeo.no/tpsws/Person_v2
 personv2.withmock=false
 
-organisasjonenhet.endpoint.url=https://app-t5.adeo.no/norg2/ws/OrganisasjonEnhet/v1
+organisasjonenhet.endpoint.url=https://app-t4.adeo.no/norg2/ws/OrganisasjonEnhet/v1
 organisasjonenhet.withmock=false
 
 digitalkontaktinformasjon.endpoint.url=https://app-t4.adeo.no/digital-kontaktinformasjon/DigitalKontaktinformasjon/v1
