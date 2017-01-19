@@ -8,25 +8,17 @@ public class Enhet {
         return enhetsnummer;
     }
 
-    public void setEnhetsnummer(String enhetsnummer) {
-        this.enhetsnummer = enhetsnummer;
-    }
-
-    public Enhet withEnhetsnummer(String enhetsnummer) {
-        setEnhetsnummer(enhetsnummer);
-        return this;
-    }
-
     public String getNavn() {
         return navn;
     }
 
-    public void setNavn(String navn) {
-        this.navn = navn;
+    public Enhet withEnhetsnummer(String enhetsnummer) {
+        this.enhetsnummer = enhetsnummer;
+        return this;
     }
 
     public Enhet withNavn(String navn) {
-        setNavn(navn);
+        this.navn = navn;
         return this;
     }
 }

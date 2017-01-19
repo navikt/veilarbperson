@@ -1,6 +1,7 @@
 package no.nav.fo.veilarbperson.services;
 
 import no.nav.fo.veilarbperson.domain.Sivilstand;
+import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.informasjon.WSEnhet;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import java.text.SimpleDateFormat;
@@ -35,10 +36,10 @@ class PersonDataMapper{
 
     private static String ansvarligEnhetsnummer(WSPerson person) {
         if (person instanceof WSBruker) {
-            WSAnsvarligEnhet ansvarligEnhet = ((WSBruker) person).getHarAnsvarligEnhet();
-            if (ansvarligEnhet != null && ansvarligEnhet.getEnhet() != null) {
-                return ansvarligEnhet.getEnhet().getOrganisasjonselementID();
-            }
+            return Optional.of(person)
+                    .map(wsPerson -> ((WSBruker) wsPerson).getHarAnsvarligEnhet())
+                    .map(WSAnsvarligEnhet::getEnhet)
+                    .map(WSOrganisasjonsenhet::getOrganisasjonselementID).orElse(null);
         }
         return null;
     }
