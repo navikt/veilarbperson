@@ -1,6 +1,7 @@
 package no.nav.fo.veilarbperson.services;
 
 import no.nav.fo.veilarbperson.domain.Sivilstand;
+import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.informasjon.WSEnhet;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import java.text.SimpleDateFormat;
@@ -13,6 +14,7 @@ import static java.util.stream.Collectors.toList;
 class PersonDataMapper{
 
     private static final String BARN = "BARN";
+    private static final String EKTEFELLE = "EKTE";
 
     public static PersonData tilPersonData(WSPerson person){
         return new PersonData()
@@ -26,8 +28,20 @@ class PersonDataMapper{
                 .withBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .withDiskresjonskode(kanskjeDiskresjonskode(person))
                 .withKontonummer(kanskjeKontonummer(person))
+                .withAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person))
                 .withStatsborgerskap(kanskjeStatsborgerskap(person))
-                .withSivilstand(hentSivilstand(person));
+                .withSivilstand(hentSivilstand(person))
+                .withPartner(partner(person.getHarFraRolleI()));
+    }
+
+    private static String ansvarligEnhetsnummer(WSPerson person) {
+        if (person instanceof WSBruker) {
+            return Optional.of(person)
+                    .map(wsPerson -> ((WSBruker) wsPerson).getHarAnsvarligEnhet())
+                    .map(WSAnsvarligEnhet::getEnhet)
+                    .map(WSOrganisasjonsenhet::getOrganisasjonselementID).orElse(null);
+        }
+        return null;
     }
 
     private static String kanskjeStatsborgerskap(WSPerson person) {
@@ -62,18 +76,27 @@ class PersonDataMapper{
                 .orElse(null);
     }
 
-    private static List<Barn> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
+    private static List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
        return  familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
-                .map(barnWS -> familierelasjonTilBarn(barnWS))
+                .map(barnWS -> familierelasjonTilFamiliemedlem(barnWS))
                 .collect(toList());
     }
 
-    private static Barn familierelasjonTilBarn(WSFamilierelasjon familierelasjon) {
+    private static Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
+        for (WSFamilierelasjon relasjon : familierelasjoner) {
+            if (EKTEFELLE.equals(relasjon.getTilRolle().getValue())) {
+                return familierelasjonTilFamiliemedlem(relasjon);
+            }
+        }
+        return null;
+    }
+
+    private static Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
 
         WSPerson person = familierelasjon.getTilPerson();
 
-        return new Barn()
+        return new Familiemedlem()
                 .withFornavn(person.getPersonnavn().getFornavn())
                 .withEtternavn(person.getPersonnavn().getEtternavn())
                 .withSammensattnavn(person.getPersonnavn().getSammensattNavn())
