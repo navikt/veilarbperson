@@ -1,7 +1,5 @@
 package no.nav.fo.veilarbperson.services;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import no.nav.fo.veilarbperson.domain.Sivilstand;
 
 import java.util.List;
@@ -73,7 +71,6 @@ public class PersonData{
         return this.behandlendeEnhet;
     }
 
-    @JsonIgnore
     public String getAnsvarligEnhetsnummer() {
         return this.ansvarligEnhetsnummer;
     }
