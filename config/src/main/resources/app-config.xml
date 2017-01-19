@@ -20,9 +20,9 @@
 
     <resources>
         <webservice alias="virksomhet:Person_v2" mapToProperty="person.endpoint" />
+        <webservice alias="virksomhet:DigitalKontakinformasjon_v1" mapToProperty="digitalkontaktinformasjon.endpoint" />
         <applicationCertificate alias="srvveilarbperson" />
     </resources>
-
 
     <loadBalancer isAlive="/veilarbperson/internal/isAlive" />
 
