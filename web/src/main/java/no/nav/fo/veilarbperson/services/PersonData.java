@@ -1,5 +1,7 @@
 package no.nav.fo.veilarbperson.services;
 
+import no.nav.fo.veilarbperson.domain.Sivilstand;
+
 import java.util.List;
 
 public class PersonData{
@@ -17,6 +19,7 @@ public class PersonData{
     private String epost;
     private String statsborgerskap;
     private String sikkerhetstiltak;
+    private Sivilstand sivilstand;
 
     public String getStatsborgerskap() {
         return statsborgerskap;
@@ -71,6 +74,10 @@ public class PersonData{
 
     public String getSikkerhetstiltak() {
         return sikkerhetstiltak;
+    }
+
+    public Sivilstand getSivilstand(){
+        return sivilstand;
     }
 
     public PersonData withFornavn(String fornavn){
@@ -140,6 +147,11 @@ public class PersonData{
 
     public PersonData withStatsborgerskap(String statsborgerskap) {
         this.statsborgerskap = statsborgerskap;
+        return this;
+    }
+
+    public PersonData withSivilstand(Sivilstand sivilstand) {
+        this.sivilstand = sivilstand;
         return this;
     }
 }
