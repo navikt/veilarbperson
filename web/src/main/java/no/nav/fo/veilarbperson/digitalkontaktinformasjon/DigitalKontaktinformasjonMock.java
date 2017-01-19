@@ -6,7 +6,10 @@ import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.meldinger.*;
 public class DigitalKontaktinformasjonMock implements DigitalKontaktinformasjonV1 {
 
     @Override
-    public WSHentSikkerDigitalPostadresseBolkResponse hentSikkerDigitalPostadresseBolk(WSHentSikkerDigitalPostadresseBolkRequest wsHentSikkerDigitalPostadresseBolkRequest) throws HentSikkerDigitalPostadresseBolkForMangeForespoersler, HentSikkerDigitalPostadresseBolkSikkerhetsbegrensing {
+    public WSHentSikkerDigitalPostadresseBolkResponse hentSikkerDigitalPostadresseBolk(
+            WSHentSikkerDigitalPostadresseBolkRequest wsHentSikkerDigitalPostadresseBolkRequest)
+            throws HentSikkerDigitalPostadresseBolkForMangeForespoersler,
+            HentSikkerDigitalPostadresseBolkSikkerhetsbegrensing {
         return null;
     }
 
@@ -21,17 +24,28 @@ public class DigitalKontaktinformasjonMock implements DigitalKontaktinformasjonV
     }
 
     @Override
-    public WSHentSikkerDigitalPostadresseResponse hentSikkerDigitalPostadresse(WSHentSikkerDigitalPostadresseRequest wsHentSikkerDigitalPostadresseRequest) throws HentSikkerDigitalPostadresseKontaktinformasjonIkkeFunnet, HentSikkerDigitalPostadresseSikkerhetsbegrensing, HentSikkerDigitalPostadressePersonIkkeFunnet {
+    public WSHentSikkerDigitalPostadresseResponse hentSikkerDigitalPostadresse(
+            WSHentSikkerDigitalPostadresseRequest wsHentSikkerDigitalPostadresseRequest) throws
+            HentSikkerDigitalPostadresseKontaktinformasjonIkkeFunnet,
+            HentSikkerDigitalPostadresseSikkerhetsbegrensing,
+            HentSikkerDigitalPostadressePersonIkkeFunnet {
         return null;
     }
 
     @Override
-    public WSHentDigitalKontaktinformasjonBolkResponse hentDigitalKontaktinformasjonBolk(WSHentDigitalKontaktinformasjonBolkRequest wsHentDigitalKontaktinformasjonBolkRequest) throws HentDigitalKontaktinformasjonBolkForMangeForespoersler, HentDigitalKontaktinformasjonBolkSikkerhetsbegrensing {
+    public WSHentDigitalKontaktinformasjonBolkResponse hentDigitalKontaktinformasjonBolk(
+            WSHentDigitalKontaktinformasjonBolkRequest wsHentDigitalKontaktinformasjonBolkRequest) throws
+            HentDigitalKontaktinformasjonBolkForMangeForespoersler,
+            HentDigitalKontaktinformasjonBolkSikkerhetsbegrensing {
         return null;
     }
 
     @Override
-    public WSHentDigitalKontaktinformasjonResponse hentDigitalKontaktinformasjon(WSHentDigitalKontaktinformasjonRequest wsHentDigitalKontaktinformasjonRequest) throws HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet, HentDigitalKontaktinformasjonSikkerhetsbegrensing, HentDigitalKontaktinformasjonPersonIkkeFunnet {
+    public WSHentDigitalKontaktinformasjonResponse hentDigitalKontaktinformasjon(
+            WSHentDigitalKontaktinformasjonRequest wsHentDigitalKontaktinformasjonRequest) throws
+            HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet,
+            HentDigitalKontaktinformasjonSikkerhetsbegrensing,
+            HentDigitalKontaktinformasjonPersonIkkeFunnet {
         return null;
     }
 }

@@ -10,7 +10,11 @@ public class DigitalKontaktinformasjonService {
     @Autowired
     private DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1;
 
-    public DigitalKontaktinformasjon hentDigitalKontaktinformasjon(String personnummer) throws HentDigitalKontaktinformasjonSikkerhetsbegrensing, HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet, HentDigitalKontaktinformasjonPersonIkkeFunnet {
+    public DigitalKontaktinformasjon hentDigitalKontaktinformasjon(String personnummer) throws
+            HentDigitalKontaktinformasjonSikkerhetsbegrensing,
+            HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet,
+            HentDigitalKontaktinformasjonPersonIkkeFunnet {
+
         WSHentDigitalKontaktinformasjonRequest request = new WSHentDigitalKontaktinformasjonRequest()
                 .withPersonident(personnummer);
 

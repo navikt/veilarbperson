@@ -2,6 +2,8 @@ package no.nav.fo.veilarbperson.services;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import no.nav.fo.veilarbperson.domain.Sivilstand;
+
 import java.util.List;
 
 public class PersonData{
@@ -19,8 +21,14 @@ public class PersonData{
     private Enhet behandlendeEnhet;
     private String telefon;
     private String epost;
+    private String statsborgerskap;
+    private String sikkerhetstiltak;
+    private Sivilstand sivilstand;
     private Familiemedlem partner;
 
+    public String getStatsborgerskap() {
+        return statsborgerskap;
+    }
     public String getFornavn() {
         return fornavn;
     }
@@ -78,6 +86,13 @@ public class PersonData{
         return epost;
     }
 
+    public String getSikkerhetstiltak() {
+        return sikkerhetstiltak;
+    }
+
+    public Sivilstand getSivilstand(){
+        return sivilstand;
+    }
     public Familiemedlem getPartner() {
         return this.partner;
     }
@@ -142,6 +157,11 @@ public class PersonData{
         return this;
     }
 
+    public PersonData withSikkerhetstiltak(String sikkerhetstiltak) {
+        this.sikkerhetstiltak = sikkerhetstiltak;
+        return this;
+    }
+
     public PersonData withTelefon(String telefon) {
         this.telefon = telefon;
         return this;
@@ -149,6 +169,16 @@ public class PersonData{
 
     public PersonData withEpost(String epost) {
         this.epost = epost;
+        return this;
+    }
+
+    public PersonData withStatsborgerskap(String statsborgerskap) {
+        this.statsborgerskap = statsborgerskap;
+        return this;
+    }
+
+    public PersonData withSivilstand(Sivilstand sivilstand) {
+        this.sivilstand = sivilstand;
         return this;
     }
 
