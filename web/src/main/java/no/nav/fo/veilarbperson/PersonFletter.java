@@ -34,7 +34,9 @@ public class PersonFletter {
             personData
                     .withTelefon(kontaktinformasjon.getTelefon())
                     .withEpost(kontaktinformasjon.getEpost());
-        } catch (HentDigitalKontaktinformasjonSikkerhetsbegrensing | HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet | HentDigitalKontaktinformasjonPersonIkkeFunnet hentDigitalKontaktinformasjonSikkerhetsbegrensing) {
+        } catch (HentDigitalKontaktinformasjonSikkerhetsbegrensing |
+                HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet |
+                HentDigitalKontaktinformasjonPersonIkkeFunnet hentDigitalKontaktinformasjonSikkerhetsbegrensing) {
             hentDigitalKontaktinformasjonSikkerhetsbegrensing.printStackTrace();
         }
     }
