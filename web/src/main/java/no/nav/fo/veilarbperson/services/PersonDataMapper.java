@@ -13,6 +13,8 @@ import static java.util.stream.Collectors.toList;
 class PersonDataMapper{
 
     private static final String BARN = "BARN";
+    private static final String KODE_6 = "6";
+    private static final String KODE_7 = "7";
 
     public static PersonData tilPersonData(WSPerson person){
         return new PersonData()
@@ -58,6 +60,7 @@ class PersonDataMapper{
 
     private static String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
+                .filter(diskresjonskode -> KODE_6.equals(diskresjonskode.getValue()) || KODE_7.equals(diskresjonskode.getValue()))
                 .map(WSDiskresjonskoder::getValue)
                 .orElse(null);
     }
