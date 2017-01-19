@@ -12,13 +12,14 @@ public class PersonData{
     private String personnummer;
     private String fodselsdato;
     private String kjoenn;
-    private List<Barn> barn;
+    private List<Familiemedlem> barn;
     private String diskresjonskode;
     private String kontonummer;
     private String ansvarligEnhetsnummer;
     private Enhet behandlendeEnhet;
     private String telefon;
     private String epost;
+    private Familiemedlem partner;
 
     public String getFornavn() {
         return fornavn;
@@ -48,7 +49,7 @@ public class PersonData{
         return kjoenn;
     }
 
-    public List<Barn> getBarn() {
+    public List<Familiemedlem> getBarn() {
         return barn;
     }
 
@@ -60,6 +61,15 @@ public class PersonData{
         return kontonummer;
     }
 
+    public Enhet getBehandlendeEnhet() {
+        return this.behandlendeEnhet;
+    }
+
+    @JsonIgnore
+    public String getAnsvarligEnhetsnummer() {
+        return this.ansvarligEnhetsnummer;
+    }
+
     public String getTelefon() {
         return telefon;
     }
@@ -68,6 +78,9 @@ public class PersonData{
         return epost;
     }
 
+    public Familiemedlem getPartner() {
+        return this.partner;
+    }
 
     public PersonData withFornavn(String fornavn){
         this.fornavn = fornavn;
@@ -104,7 +117,7 @@ public class PersonData{
         return this;
     }
 
-    public PersonData withBarn(List<Barn> barn){
+    public PersonData withBarn(List<Familiemedlem> barn){
         this.barn = barn;
         return this;
     }
@@ -129,15 +142,6 @@ public class PersonData{
         return this;
     }
 
-    public Enhet getBehandlendeEnhet() {
-        return this.behandlendeEnhet;
-    }
-
-    @JsonIgnore
-    public String getAnsvarligEnhetsnummer() {
-        return this.ansvarligEnhetsnummer;
-    }
-
     public PersonData withTelefon(String telefon) {
         this.telefon = telefon;
         return this;
@@ -145,6 +149,11 @@ public class PersonData{
 
     public PersonData withEpost(String epost) {
         this.epost = epost;
+        return this;
+    }
+
+    public PersonData withPartner(Familiemedlem partner) {
+        this.partner = partner;
         return this;
     }
 }

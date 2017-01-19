@@ -12,6 +12,7 @@ import static java.util.stream.Collectors.toList;
 class PersonDataMapper{
 
     private static final String BARN = "BARN";
+    private static final String EKTEFELLE = "EKTE";
 
     public static PersonData tilPersonData(WSPerson person){
         return new PersonData()
@@ -25,14 +26,15 @@ class PersonDataMapper{
                 .withBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .withDiskresjonskode(kanskjeDiskresjonskode(person))
                 .withKontonummer(kanskjeKontonummer(person))
-                .withAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person));
+                .withAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person))
+                .withPartner(partner(person.getHarFraRolleI()));
     }
 
     private static String ansvarligEnhetsnummer(WSPerson person) {
         if (person instanceof WSBruker) {
             WSAnsvarligEnhet ansvarligEnhet = ((WSBruker) person).getHarAnsvarligEnhet();
             if (ansvarligEnhet != null && ansvarligEnhet.getEnhet() != null) {
-                    return ansvarligEnhet.getEnhet().getOrganisasjonselementID();
+                return ansvarligEnhet.getEnhet().getOrganisasjonselementID();
             }
         }
         return null;
@@ -61,18 +63,27 @@ class PersonDataMapper{
                 .orElse(null);
     }
 
-    private static List<Barn> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
+    private static List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
        return  familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
-                .map(barnWS -> familierelasjonTilBarn(barnWS))
+                .map(barnWS -> familierelasjonTilFamiliemedlem(barnWS))
                 .collect(toList());
     }
+    
+    private static Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
+        for (WSFamilierelasjon relasjon : familierelasjoner) {
+            if (EKTEFELLE.equals(relasjon.getTilRolle().getValue())) {
+                return familierelasjonTilFamiliemedlem(relasjon);
+            }
+        }
+        return null;
+    }
 
-    private static Barn familierelasjonTilBarn(WSFamilierelasjon familierelasjon) {
+    private static Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
 
         WSPerson person = familierelasjon.getTilPerson();
 
-        return new Barn()
+        return new Familiemedlem()
                 .withFornavn(person.getPersonnavn().getFornavn())
                 .withEtternavn(person.getPersonnavn().getEtternavn())
                 .withSammensattnavn(person.getPersonnavn().getSammensattNavn())
