@@ -25,6 +25,10 @@
         <applicationCertificate alias="srvveilarbperson" />
     </resources>
 
+    <exposed-services>
+        <exposedRest path="/veilarbperson" name="veilArbPersonAPI"/>
+    </exposed-services>
+
     <loadBalancer isAlive="/veilarbperson/internal/isAlive" />
 
 </application>
