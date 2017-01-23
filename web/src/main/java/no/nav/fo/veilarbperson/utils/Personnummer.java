@@ -2,6 +2,10 @@ package no.nav.fo.veilarbperson.utils;
 
 public class Personnummer {
 
+    public static final int INDIVIDNUMMER_1900_TIL_1999 = 500;
+    public static final int INDIVIDNUMMER_1854_TIL_1899 = 750;
+    public static final int INDIVIDSIFFER_1940_TIL_1999 = 900;
+
     public static String personnummerTilKjoenn(String personnummer) {
         if (Integer.parseInt(personnummer.substring(8, 9)) % 2 == 0) {
             return "K";
@@ -14,6 +18,9 @@ public class Personnummer {
         final String aar = personnummerTilAarstall(personnummer);
         final String maaned = personnummerTilMaaned(personnummer);
         final String dag = personnummerTilDag(personnummer);
+        if (aar == null || maaned == null || dag == null) {
+            return null;
+        }
         return aar + "-" + maaned + "-" + dag;
     }
 
@@ -21,14 +28,16 @@ public class Personnummer {
         int aarsiffer = Integer.parseInt(personnummer.substring(4, 6));
         int individsiffer = Integer.parseInt(personnummer.substring(6, 9));
         int aarstall;
-        if (individsiffer < 500) {
+        if (individsiffer < INDIVIDNUMMER_1900_TIL_1999) {
             aarstall = 1900 + aarsiffer;
-        } else if (individsiffer < 750 && aarsiffer >= 54) {
-            aarstall = 1800 + aarsiffer;
-        } else if (individsiffer < 900 || aarsiffer < 40) {
+        } else if (aarsiffer < 40) {
             aarstall = 2000 + aarsiffer;
-        } else {
+        } else if (individsiffer < INDIVIDNUMMER_1854_TIL_1899 && aarsiffer >= 54) {
+            aarstall = 1800 + aarsiffer;
+        } else if (individsiffer >= INDIVIDSIFFER_1940_TIL_1999 && aarsiffer >= 40){
             aarstall = 1900 + aarsiffer;
+        } else {
+            return null;
         }
         return Integer.toString(aarstall);
     }

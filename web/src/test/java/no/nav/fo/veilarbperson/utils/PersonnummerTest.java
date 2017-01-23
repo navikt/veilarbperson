@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static no.nav.fo.veilarbperson.utils.Personnummer.personnummerTilFodselsdato;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public class PersonnummerTest {
@@ -35,7 +36,10 @@ public class PersonnummerTest {
     public static final String FODSELSNUMMER_1999 = "1999-05-17";
     public static final String FODSELSNUMMER_1930 = "1930-08-15";
     public static final String FODSELSNUMMER_1854 = "1854-12-31";
-    
+
+    public static final String UGYLDIG_PERSONNUMMER_1 = "01025075087";
+    public static final String UGYLDIG_PERSONNUMMER_2 = "01014055033";
+
     @Test
     public void fodtI2039() {
         assertThat(personnummerTilFodselsdato(PERSONNUMMER_2039), is(FODSELSNUMMER_2039));
@@ -76,5 +80,11 @@ public class PersonnummerTest {
         assertThat(personnummerTilFodselsdato(PERSONNUMMER_1854), is(FODSELSNUMMER_1854));
         assertThat(personnummerTilFodselsdato(D_NUMMER_1854), is(FODSELSNUMMER_1854));
         assertThat(personnummerTilFodselsdato(H_NUMMER_1854), is(FODSELSNUMMER_1854));
+    }
+
+    @Test
+    public void ugyldigPersonnummerFeiler() {
+        assertNull(personnummerTilFodselsdato(UGYLDIG_PERSONNUMMER_1));
+        assertNull(personnummerTilFodselsdato(UGYLDIG_PERSONNUMMER_2));
     }
 }
