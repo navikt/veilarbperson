@@ -1,9 +1,7 @@
 package no.nav.fo.veilarbperson.config;
 
 
-import no.nav.tjeneste.pip.egenansatt.v1.EgenAnsattV1;
-import no.nav.tjeneste.pip.egenansatt.v1.meldinger.HentErEgenAnsattEllerIFamilieMedEgenAnsattRequest;
-import no.nav.tjeneste.pip.egenansatt.v1.meldinger.HentErEgenAnsattEllerIFamilieMedEgenAnsattResponse;
+import no.nav.tjeneste.pip.egen.ansatt.v1.*;
 
 public class EgenAnsattMock implements EgenAnsattV1 {
     @Override
@@ -12,7 +10,7 @@ public class EgenAnsattMock implements EgenAnsattV1 {
     }
 
     @Override
-    public HentErEgenAnsattEllerIFamilieMedEgenAnsattResponse hentErEgenAnsattEllerIFamilieMedEgenAnsatt(HentErEgenAnsattEllerIFamilieMedEgenAnsattRequest request) {
+    public WSHentErEgenAnsattEllerIFamilieMedEgenAnsattResponse hentErEgenAnsattEllerIFamilieMedEgenAnsatt(WSHentErEgenAnsattEllerIFamilieMedEgenAnsattRequest request) {
         return null;
     }
 }
