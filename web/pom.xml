@@ -104,6 +104,11 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>no.nav.modig</groupId>
             <artifactId>modig-security-core</artifactId>
             <version>1.0.30</version>
@@ -115,7 +120,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
