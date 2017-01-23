@@ -1,12 +1,14 @@
 package no.nav.fo.veilarbperson.services;
 
+import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;
+import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
 import no.nav.tjeneste.virksomhet.person.v2.*;
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
+import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSNorskIdent;
+import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSPersonidenter;
 import no.nav.tjeneste.virksomhet.person.v2.meldinger.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.apache.commons.lang3.text.WordUtils.capitalize;
 import static org.slf4j.LoggerFactory.getLogger;
 
 //TODO: Sende feilmeldinger tilbake til frontend
@@ -35,28 +37,23 @@ public class PersonService{
         }
     }
 
-    public Boolean hentSikkerhetstiltak(String ident){
+    public Sikkerhetstiltak hentSikkerhetstiltak(String ident) throws HentSikkerhetstiltakPersonIkkeFunnet {
+        final WSHentSikkerhetstiltakRequest request = lagRequest(ident);
+
+        WSHentSikkerhetstiltakResponse wsSikkerhetstiltak = personV2.hentSikkerhetstiltak(request);
+
+        String sikkerhetstiltaksbeskrivelse = wsSikkerhetstiltak
+                .getSikkerhetstiltak()
+                .getSikkerhetstiltaksbeskrivelse();
+        return new Sikkerhetstiltak().medSikkerhetstiltaksbeskrivelse(sikkerhetstiltaksbeskrivelse);
+    }
+
+    private WSHentSikkerhetstiltakRequest lagRequest(String ident) {
         WSNorskIdent norskIdent = new WSNorskIdent()
                 .withIdent(ident)
                 .withType(new WSPersonidenter()
                         .withValue("fnr"));
-        final WSHentSikkerhetstiltakRequest request = new WSHentSikkerhetstiltakRequest().withIdent(norskIdent);
-
-        try{
-            WSHentSikkerhetstiltakResponse wsSikkerhetstiltak = personV2.hentSikkerhetstiltak(request);
-            wsSikkerhetstiltak.getSikkerhetstiltak();
-            return true;
-        } catch (HentSikkerhetstiltakPersonIkkeFunnet hentSikkerhetstiltakPersonIkkeFunnet) {
-            logger.error("Finner ikke " + ident);
-            hentSikkerhetstiltakPersonIkkeFunnet.printStackTrace();
-            return false;
-        }
-    }
-
-    private String tilNavn(WSPerson person) {
-        final String navnFraTps = person.getPersonnavn().getFornavn() + " " + person.getPersonnavn().getEtternavn();
-
-        return capitalize(navnFraTps.toLowerCase(), '-', ' ');
+        return new WSHentSikkerhetstiltakRequest().withIdent(norskIdent);
     }
 
 }

@@ -21,7 +21,6 @@ public class TpsConfig {
 
     @Bean
     public PersonV2 personPortType() {
-        //PersonV2 prod = factory().withOutInterceptor(new UserSAMLOutInterceptor()).build();
         PersonV2 prod = factory().withOutInterceptor(new TestOutInterceptor()).build();
         PersonV2 mock = new PersonMock();
 

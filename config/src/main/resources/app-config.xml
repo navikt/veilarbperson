@@ -20,14 +20,15 @@
 
     <resources>
         <webservice alias="virksomhet:Person_v2" mapToProperty="person.endpoint" />
-        <applicationCertificate alias="srvveilarbperson" />
-    </resources>
-
-    <resources>
         <webservice alias="virksomhet:EgenAnsatt_v1" mapToProperty="egenansatt.endpoint" />
+        <webservice alias="virksomhet:OrganisasjonEnhet_v1" mapToProperty="organisasjonenhet.endpoint" />
+        <webservice alias="virksomhet:DigitalKontakinformasjon_v1" mapToProperty="digitalkontaktinformasjon.endpoint" />
         <applicationCertificate alias="srvveilarbperson" />
     </resources>
 
+    <exposed-services>
+        <exposedRest path="/veilarbperson" name="veilArbPersonAPI"/>
+    </exposed-services>
 
     <loadBalancer isAlive="/veilarbperson/internal/isAlive" />
 

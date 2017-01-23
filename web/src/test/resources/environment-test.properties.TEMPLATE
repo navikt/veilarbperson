@@ -7,3 +7,8 @@ person.endpoint.url=https://wasapp-t4.adeo.no/tpsws/Person_v2
 egenansatt.endpoint.url=https://wasapp-t4.adeo.no/tpsws/EgenAnsatt_v1
 personv2.withmock=false
 egenansatt.withmock=false
+
+organisasjonenhet.endpoint.url=https://app-t4.adeo.no/norg2/ws/OrganisasjonEnhet/v1
+organisasjonenhet.withmock=false
+
+digitalkontaktinformasjon.endpoint.url=https://app-t4.adeo.no/digital-kontaktinformasjon/DigitalKontaktinformasjon/v1

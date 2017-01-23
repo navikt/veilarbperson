@@ -1,5 +1,7 @@
 package no.nav.fo.veilarbperson.services;
 
+import no.nav.fo.veilarbperson.domain.Sivilstand;
+import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.informasjon.WSEnhet;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import java.text.SimpleDateFormat;
@@ -12,19 +14,43 @@ import static java.util.stream.Collectors.toList;
 class PersonDataMapper{
 
     private static final String BARN = "BARN";
+    private static final String EKTEFELLE = "EKTE";
 
     public static PersonData tilPersonData(WSPerson person){
         return new PersonData()
-                .medFornavn(person.getPersonnavn().getFornavn())
-                .medMellomnavn(person.getPersonnavn().getMellomnavn())
-                .medEtternavn(person.getPersonnavn().getEtternavn())
-                .medSammensattNavn(person.getPersonnavn().getSammensattNavn())
-                .medPersonnummer(person.getIdent().getIdent())
-                .medFodselsdato(fodseldatoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
-                .medKjoenn(person.getKjoenn().getKjoenn().getValue())
-                .medBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
-                .medDiskresjonskode(kanskjeDiskresjonskode(person))
-                .medKontonummer(kanskjeKontonummer(person));
+                .withFornavn(person.getPersonnavn().getFornavn())
+                .withMellomnavn(person.getPersonnavn().getMellomnavn())
+                .withEtternavn(person.getPersonnavn().getEtternavn())
+                .withSammensattNavn(person.getPersonnavn().getSammensattNavn())
+                .withPersonnummer(person.getIdent().getIdent())
+                .withFodselsdato(datoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
+                .withKjoenn(person.getKjoenn().getKjoenn().getValue())
+                .withBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
+                .withDiskresjonskode(kanskjeDiskresjonskode(person))
+                .withKontonummer(kanskjeKontonummer(person))
+                .withAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person))
+                .withStatsborgerskap(kanskjeStatsborgerskap(person))
+                .withSivilstand(hentSivilstand(person))
+                .withPartner(partner(person.getHarFraRolleI()));
+    }
+
+    private static String ansvarligEnhetsnummer(WSPerson person) {
+        if (person instanceof WSBruker) {
+            return Optional.of(person)
+                    .map(wsPerson -> ((WSBruker) wsPerson).getHarAnsvarligEnhet())
+                    .map(WSAnsvarligEnhet::getEnhet)
+                    .map(WSOrganisasjonsenhet::getOrganisasjonselementID).orElse(null);
+        }
+        return null;
+    }
+
+    private static String kanskjeStatsborgerskap(WSPerson person) {
+        String statsborgerskap = null;
+        Optional<WSStatsborgerskap> wsStatsborgerskap = ofNullable(person.getStatsborgerskap());
+        if (wsStatsborgerskap.isPresent()){
+            statsborgerskap =  person.getStatsborgerskap().getLand().getValue();
+        }
+        return statsborgerskap;
     }
 
     private static String kanskjeKontonummer(WSPerson person) {
@@ -37,8 +63,8 @@ class PersonDataMapper{
         }
 
             if(bankkonto instanceof WSBankkontoUtland){
-            WSBankkontoUtland WSBankkontoUtland = (WSBankkontoUtland) bankkonto;
-            kontonummer =  WSBankkontoUtland.getBankkontoUtland().getBankkontonummer();
+            WSBankkontoUtland wsBankkontoUtland = (WSBankkontoUtland) bankkonto;
+            kontonummer =  wsBankkontoUtland.getBankkontoUtland().getBankkontonummer();
         }
 
         return kontonummer;
@@ -46,38 +72,49 @@ class PersonDataMapper{
 
     private static String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
-                //.filter(diskresjonskode -> aksepterteKoder(diskresjonskode))
                 .map(WSDiskresjonskoder::getValue)
                 .orElse(null);
     }
 
-    private static boolean aksepterteKoder(WSDiskresjonskoder diskresjonskode) {
-        return "6".equals(diskresjonskode.getValue()) || "7".equals(diskresjonskode.getValue());
-    }
-
-    private static List<Barn> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
+    private static List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
        return  familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
-                .map(barnWS -> familierelasjonTilBarn(barnWS))
+                .map(barnWS -> familierelasjonTilFamiliemedlem(barnWS))
                 .collect(toList());
     }
 
-    private static Barn familierelasjonTilBarn(WSFamilierelasjon familierelasjon) {
+    private static Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
+        for (WSFamilierelasjon relasjon : familierelasjoner) {
+            if (EKTEFELLE.equals(relasjon.getTilRolle().getValue())) {
+                return familierelasjonTilFamiliemedlem(relasjon);
+            }
+        }
+        return null;
+    }
+
+    private static Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
 
         WSPerson person = familierelasjon.getTilPerson();
 
-        return new Barn()
-                .medFornavn(person.getPersonnavn().getFornavn())
-                .medEtternavn(person.getPersonnavn().getEtternavn())
-                .medSammensattnavn(person.getPersonnavn().getSammensattNavn())
-                .medHarSammeBosted(familierelasjon.isHarSammeBosted())
-                .medPersonnummer(person.getIdent().getIdent());
+        return new Familiemedlem()
+                .withFornavn(person.getPersonnavn().getFornavn())
+                .withEtternavn(person.getPersonnavn().getEtternavn())
+                .withSammensattnavn(person.getPersonnavn().getSammensattNavn())
+                .withHarSammeBosted(familierelasjon.isHarSammeBosted())
+                .withPersonnummer(person.getIdent().getIdent());
 
     }
 
-    private static String fodseldatoTilString(GregorianCalendar foedselsdato) {
+    private static Sivilstand hentSivilstand(WSPerson person) {
+        WSSivilstand wsSivilstand = person.getSivilstand();
+        return new Sivilstand()
+                .withSivilstand(wsSivilstand.getSivilstand().getValue())
+                .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
+    }
+
+    private static String datoTilString(GregorianCalendar dato) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        formatter.setTimeZone(foedselsdato.getTimeZone());
-        return formatter.format(foedselsdato.getTime());
+        formatter.setTimeZone(dato.getTimeZone());
+        return formatter.format(dato.getTime());
     }
 }
