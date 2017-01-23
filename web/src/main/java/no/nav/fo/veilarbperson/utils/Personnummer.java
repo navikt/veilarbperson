@@ -38,7 +38,7 @@ public class Personnummer {
         if (maanedsiffer > 12) {
             maanedsiffer -= 40;
         }
-        return Integer.toString(maanedsiffer);
+        return String.format("%02d", maanedsiffer);
     }
 
     private static String personnummerTilDag(String personnummer) {
@@ -46,6 +46,6 @@ public class Personnummer {
         if (dagsiffer > 31) {
             dagsiffer -= 40;
         }
-        return Integer.toString(dagsiffer);
+        return String.format("%02d", dagsiffer);
     }
 }
