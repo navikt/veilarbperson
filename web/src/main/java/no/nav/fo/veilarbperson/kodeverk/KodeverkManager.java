@@ -17,6 +17,10 @@ public class KodeverkManager {
         return getBeskrivelseForKode("Landkoder", kode, NORSK_SPRAK);
     }
 
+    public Optional<String> getBeskrivelseForSivilstand(String kode) {
+        return getBeskrivelseForKode("Sivilstander", kode, NORSK_SPRAK);
+    }
+
     private Optional<String> getBeskrivelseForKode(String kodeverkRef, String kode, String spraak) {
         XMLHentKodeverkRequest kodeverkRequest = new XMLHentKodeverkRequest()
                 .withNavn(kodeverkRef);

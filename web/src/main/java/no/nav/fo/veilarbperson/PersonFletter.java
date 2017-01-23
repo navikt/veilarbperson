@@ -3,6 +3,7 @@ package no.nav.fo.veilarbperson;
 import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjon;
 import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
+import no.nav.fo.veilarbperson.domain.Sivilstand;
 import no.nav.fo.veilarbperson.kodeverk.KodeverkManager;
 import no.nav.fo.veilarbperson.services.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
@@ -40,6 +41,12 @@ public class PersonFletter {
     private void oppdaterKodeverksvariabler(PersonData personData) {
         personData.withStatsborgerskap(kodeverkManager.getBeskrivelseForLandkode(personData.getStatsborgerskap())
                 .orElse(personData.getStatsborgerskap()));
+
+        String sivilstandKode = personData.getSivilstand().getSivilstand();
+        Sivilstand sivilstand = personData.getSivilstand()
+                .withSivilstand(kodeverkManager.getBeskrivelseForSivilstand(sivilstandKode)
+                        .orElse(sivilstandKode));
+        personData.withSivilstand(sivilstand);
     }
 
     private void hentDigitalKontaktinformasjon(String fnr, PersonData personData) {
