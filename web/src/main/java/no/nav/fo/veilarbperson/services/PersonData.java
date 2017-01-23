@@ -1,5 +1,6 @@
 package no.nav.fo.veilarbperson.services;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import no.nav.fo.veilarbperson.domain.Sivilstand;
 
 import java.util.List;
@@ -11,6 +12,8 @@ public class PersonData{
     private String sammensattNavn;
     private String personnummer;
     private String fodselsdato;
+
+    @JsonProperty("kjonn")
     private String kjoenn;
     private List<Familiemedlem> barn;
     private String diskresjonskode;
