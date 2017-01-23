@@ -185,7 +185,7 @@ public class PersonData{
         return this;
     }
 
-    public PersonData medEgenAnsatt(boolean egenAnsatt) {
+    public PersonData withEgenAnsatt(boolean egenAnsatt) {
         this.egenAnsatt = egenAnsatt;
         return this;
     }

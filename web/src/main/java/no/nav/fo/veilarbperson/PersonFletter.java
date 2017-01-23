@@ -27,7 +27,7 @@ public class PersonFletter {
 
     public PersonData hentPerson(String fnr){
         PersonData personData = personService.hentPerson(fnr);
-        personData.medEgenAnsatt(egenAnsattService.erEgenAnsatt(fnr));
+        personData.withEgenAnsatt(egenAnsattService.erEgenAnsatt(fnr));
 
         if (personData.getAnsvarligEnhetsnummer() != null) {
             personData.withBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getAnsvarligEnhetsnummer()));

@@ -3,7 +3,7 @@ package no.nav.fo.veilarbperson.config;
 
 import no.nav.tjeneste.pip.egen.ansatt.v1.*;
 
-public class EgenAnsattMock implements EgenAnsattV1 {
+class EgenAnsattMock implements EgenAnsattV1 {
     @Override
     public void ping() {
 
