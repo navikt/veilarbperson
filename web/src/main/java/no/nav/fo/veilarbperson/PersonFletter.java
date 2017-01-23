@@ -1,11 +1,10 @@
 package no.nav.fo.veilarbperson;
 
-import no.nav.fo.veilarbperson.services.EnhetService;
 import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjon;
 import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
-import no.nav.fo.veilarbperson.services.PersonData;
-import no.nav.fo.veilarbperson.services.PersonService;
+import no.nav.fo.veilarbperson.kodeverk.KodeverkManager;
+import no.nav.fo.veilarbperson.services.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.person.v2.HentSikkerhetstiltakPersonIkkeFunnet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,9 @@ public class PersonFletter {
     @Autowired
     DigitalKontaktinformasjonService digitalKontaktinformasjonService;
 
+    @Autowired
+    KodeverkManager kodeverkManager;
+
     public PersonData hentPerson(String fnr){
         PersonData personData = personService.hentPerson(fnr);
 
@@ -30,10 +32,14 @@ public class PersonFletter {
 
         hentPersondata(fnr, personData);
         hentDigitalKontaktinformasjon(fnr, personData);
-
-        //TODO: Fyll personData med mer data fra TPS, Digital kontaktinfo. norg2, felles kodeverk og TPSWS-egensatt
+        oppdaterKodeverksvariabler(personData);
 
         return personData;
+    }
+
+    private void oppdaterKodeverksvariabler(PersonData personData) {
+        personData.withStatsborgerskap(kodeverkManager.getBeskrivelseForLandkode(personData.getStatsborgerskap())
+                .orElse(personData.getStatsborgerskap()));
     }
 
     private void hentDigitalKontaktinformasjon(String fnr, PersonData personData) {
