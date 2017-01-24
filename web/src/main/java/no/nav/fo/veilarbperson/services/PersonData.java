@@ -23,6 +23,7 @@ public class PersonData{
     private String sikkerhetstiltak;
     private Sivilstand sivilstand;
     private Familiemedlem partner;
+    private boolean egenAnsatt;
 
     public String getStatsborgerskap() {
         return statsborgerskap;
@@ -92,6 +93,10 @@ public class PersonData{
     }
     public Familiemedlem getPartner() {
         return this.partner;
+    }
+
+    public boolean isEgenAnsatt() {
+        return egenAnsatt;
     }
 
     public PersonData withFornavn(String fornavn){
@@ -181,6 +186,11 @@ public class PersonData{
 
     public PersonData withPartner(Familiemedlem partner) {
         this.partner = partner;
+        return this;
+    }
+
+    public PersonData withEgenAnsatt(boolean egenAnsatt) {
+        this.egenAnsatt = egenAnsatt;
         return this;
     }
 }

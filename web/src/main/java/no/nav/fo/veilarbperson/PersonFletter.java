@@ -4,6 +4,7 @@ import no.nav.fo.veilarbperson.services.EnhetService;
 import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjon;
 import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
+import no.nav.fo.veilarbperson.services.EgenAnsattService;
 import no.nav.fo.veilarbperson.services.PersonData;
 import no.nav.fo.veilarbperson.services.PersonService;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
@@ -16,6 +17,9 @@ public class PersonFletter {
     PersonService personService;
 
     @Autowired
+    EgenAnsattService egenAnsattService;
+
+    @Autowired
     EnhetService enhetService;
 
     @Autowired
@@ -23,6 +27,7 @@ public class PersonFletter {
 
     public PersonData hentPerson(String fnr){
         PersonData personData = personService.hentPerson(fnr);
+        personData.withEgenAnsatt(egenAnsattService.erEgenAnsatt(fnr));
 
         if (personData.getAnsvarligEnhetsnummer() != null) {
             personData.withBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getAnsvarligEnhetsnummer()));
