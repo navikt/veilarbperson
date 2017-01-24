@@ -22,15 +22,15 @@ public class KodeverkConfig {
     }
 
     @Bean
-    public Pingable digitalKontaktinformasjonPing() {
+    public Pingable kodeverkPing() {
         final KodeverkPortType kodeverkPortType = factory()
                 .build();
         return () -> {
             try {
                 kodeverkPortType.ping();
-                return lyktes("kodeverk");
+                return lyktes("KODEVERK");
             } catch (Exception e) {
-                return feilet("kodeverk", e);
+                return feilet("KODEVERK", e);
             }
         };
     }

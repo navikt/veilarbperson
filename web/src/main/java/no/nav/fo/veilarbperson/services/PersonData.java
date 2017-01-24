@@ -1,5 +1,6 @@
 package no.nav.fo.veilarbperson.services;
 
+import no.nav.fo.veilarbperson.domain.Bostedsadresse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import no.nav.fo.veilarbperson.domain.Sivilstand;
 
@@ -26,6 +27,8 @@ public class PersonData{
     private String sikkerhetstiltak;
     private Sivilstand sivilstand;
     private Familiemedlem partner;
+    private Bostedsadresse bostedsadresse;
+
     private boolean egenAnsatt;
 
     public String getStatsborgerskap() {
@@ -97,6 +100,11 @@ public class PersonData{
     public Familiemedlem getPartner() {
         return this.partner;
     }
+
+    public Bostedsadresse getBostedsadresse() {
+        return bostedsadresse;
+    }
+
 
     public boolean isEgenAnsatt() {
         return egenAnsatt;
@@ -189,6 +197,11 @@ public class PersonData{
 
     public PersonData withPartner(Familiemedlem partner) {
         this.partner = partner;
+        return this;
+    }
+
+    public PersonData withBostedsadresse(Bostedsadresse bostedsadresse) {
+        this.bostedsadresse = bostedsadresse;
         return this;
     }
 
