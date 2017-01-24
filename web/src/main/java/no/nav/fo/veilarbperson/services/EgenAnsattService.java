@@ -11,8 +11,11 @@ public class EgenAnsattService {
 
     private static final Logger LOG = getLogger(EgenAnsattService.class);
 
-    @Autowired
-    private EgenAnsattV1 egenAnsattV1;
+    private final EgenAnsattV1 egenAnsattV1;
+
+    public EgenAnsattService(EgenAnsattV1 egenAnsattV1) {
+        this.egenAnsattV1 = egenAnsattV1;
+    }
 
     public boolean erEgenAnsatt(String ident) {
         final WSHentErEgenAnsattEllerIFamilieMedEgenAnsattRequest request = new WSHentErEgenAnsattEllerIFamilieMedEgenAnsattRequest().withIdent(ident);

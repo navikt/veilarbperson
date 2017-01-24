@@ -11,8 +11,11 @@ import java.util.List;
 
 public class EnhetService {
 
-    @Autowired
-    private OrganisasjonEnhetV1 organisasjonenhet;
+    private final OrganisasjonEnhetV1 organisasjonenhet;
+
+    public EnhetService(OrganisasjonEnhetV1 organisasjonenhet) {
+        this.organisasjonenhet = organisasjonenhet;
+    }
 
     public Enhet hentBehandlendeEnhet(String geografiskNedslagsfelt) {
         WSFinnNAVKontorForGeografiskNedslagsfeltBolkRequest request = new WSFinnNAVKontorForGeografiskNedslagsfeltBolkRequest().withGeografiskNedslagsfeltListe(geografiskNedslagsfelt);

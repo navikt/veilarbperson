@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class DigitalKontaktinformasjonService {
 
-    @Autowired
-    private DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1;
+    private final DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1;
+
+    public DigitalKontaktinformasjonService(DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1) {
+        this.digitalKontaktinformasjonV1 = digitalKontaktinformasjonV1;
+    }
 
     public DigitalKontaktinformasjon hentDigitalKontaktinformasjon(String personnummer) throws
             HentDigitalKontaktinformasjonSikkerhetsbegrensing,
