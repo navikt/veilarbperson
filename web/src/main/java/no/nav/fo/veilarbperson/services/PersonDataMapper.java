@@ -5,7 +5,6 @@ import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import no.nav.fo.veilarbperson.domain.Sivilstand;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -50,8 +49,9 @@ class PersonDataMapper{
             if(strukturertadresse.getLandkode() != null) {
                 bostedsadresse.withLandkode(strukturertadresse.getLandkode().getValue());
             }
-            if( strukturertadresse instanceof  WSGateadresse){
-                bostedsadresse.withGateadresse(wsGateadresseTilGateAdresse((WSGateadresse) strukturertadresse));
+            if(strukturertadresse instanceof  WSGateadresse){
+                bostedsadresse.withGateadresse(tilGateAdresse((WSGateadresse) strukturertadresse));
+            }
             }
         }
 
@@ -75,6 +75,15 @@ class PersonDataMapper{
         gateadresse.withPostnummer(wsGateadresse.getPoststed().getValue());
 
         return gateadresse;
+
+    private static Gateadresse tilGateAdresse(WSGateadresse wsGateadresse) {
+        return new Gateadresse()
+                .withGatenavn(ofNullable(wsGateadresse.getGatenavn()).orElse(null))
+                .withHusnummer(ofNullable(wsGateadresse.getHusnummer()).orElse(null))
+                .withHusbokstav(ofNullable(wsGateadresse.getHusbokstav()).orElse(null))
+                .withGatenummer(ofNullable(wsGateadresse.getGatenummer()).orElse(null))
+                .withPostnummer(ofNullable(wsGateadresse.getPoststed().getValue()).orElse(null))
+                .withKommunenummer(ofNullable(wsGateadresse.getKommunenummer()).orElse(null));
     }
 
 
