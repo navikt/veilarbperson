@@ -1,15 +1,17 @@
 package no.nav.fo.veilarbperson.services;
 
 import no.nav.fo.veilarbperson.domain.Sivilstand;
-import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.informasjon.WSEnhet;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-
+import static no.nav.fo.veilarbperson.utils.Personnummer.personnummerTilFodselsdato;
+import static no.nav.fo.veilarbperson.utils.Personnummer.personnummerTilKjoenn;
 
 class PersonDataMapper{
 
@@ -95,14 +97,16 @@ class PersonDataMapper{
     private static Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
 
         WSPerson person = familierelasjon.getTilPerson();
+        final String personnummer = person.getIdent().getIdent();
 
         return new Familiemedlem()
                 .withFornavn(person.getPersonnavn().getFornavn())
                 .withEtternavn(person.getPersonnavn().getEtternavn())
                 .withSammensattnavn(person.getPersonnavn().getSammensattNavn())
                 .withHarSammeBosted(familierelasjon.isHarSammeBosted())
-                .withPersonnummer(person.getIdent().getIdent());
-
+                .withPersonnummer(personnummer)
+                .withFodselsdato(personnummerTilFodselsdato(personnummer))
+                .withKjoenn(personnummerTilKjoenn(personnummer));
     }
 
     private static Sivilstand hentSivilstand(WSPerson person) {
