@@ -3,8 +3,6 @@ package no.nav.fo.veilarbperson.config;
 import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.*;
-import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.meldinger.*;
-import no.nav.tjeneste.virksomhet.person.v2.PersonV2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

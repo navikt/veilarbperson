@@ -3,7 +3,6 @@ package no.nav.fo.veilarbperson.services;
 
 import no.nav.tjeneste.pip.egen.ansatt.v1.*;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
