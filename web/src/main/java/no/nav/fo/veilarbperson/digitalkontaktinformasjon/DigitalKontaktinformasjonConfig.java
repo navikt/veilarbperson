@@ -33,9 +33,9 @@ public class DigitalKontaktinformasjonConfig {
         return () -> {
             try {
                 digitalKontaktinformasjonV1.ping();
-                return lyktes("digitalKontaktinformasjonV1");
+                return lyktes("DIGITALKONTAKTINFORMASJON_V1");
             } catch (Exception e) {
-                return feilet("digitalKontaktinformasjonV1", e);
+                return feilet("DIGITALKONTAKTINFORMASJON_V1", e);
             }
         };
     }
