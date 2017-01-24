@@ -12,3 +12,4 @@ organisasjonenhet.endpoint.url=https://app-t4.adeo.no/norg2/ws/OrganisasjonEnhet
 organisasjonenhet.withmock=false
 
 digitalkontaktinformasjon.endpoint.url=https://app-t4.adeo.no/digital-kontaktinformasjon/DigitalKontaktinformasjon/v1
+kodeverk.endpoint.url=https://modapp-t4.adeo.no/kodeverk

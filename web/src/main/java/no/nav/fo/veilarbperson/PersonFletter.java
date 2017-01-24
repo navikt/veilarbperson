@@ -1,9 +1,11 @@
 package no.nav.fo.veilarbperson;
 
-import no.nav.fo.veilarbperson.services.EnhetService;
 import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjon;
 import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
+import no.nav.fo.veilarbperson.domain.Sivilstand;
+import no.nav.fo.veilarbperson.kodeverk.KodeverkManager;
+import no.nav.fo.veilarbperson.services.*;
 import no.nav.fo.veilarbperson.services.EgenAnsattService;
 import no.nav.fo.veilarbperson.services.PersonData;
 import no.nav.fo.veilarbperson.services.PersonService;
@@ -25,6 +27,9 @@ public class PersonFletter {
     @Autowired
     DigitalKontaktinformasjonService digitalKontaktinformasjonService;
 
+    @Autowired
+    KodeverkManager kodeverkManager;
+
     public PersonData hentPerson(String fnr){
         PersonData personData = personService.hentPerson(fnr);
         personData.withEgenAnsatt(egenAnsattService.erEgenAnsatt(fnr));
@@ -35,10 +40,20 @@ public class PersonFletter {
 
         hentPersondata(fnr, personData);
         hentDigitalKontaktinformasjon(fnr, personData);
-
-        //TODO: Fyll personData med mer data fra TPS, Digital kontaktinfo. norg2, felles kodeverk og TPSWS-egensatt
+        hentTermerBasertPaKoder(personData);
 
         return personData;
+    }
+
+    private void hentTermerBasertPaKoder(PersonData personData) {
+        personData.withStatsborgerskap(kodeverkManager.getBeskrivelseForLandkode(personData.getStatsborgerskap())
+                .orElse(personData.getStatsborgerskap()));
+
+        String sivilstandKode = personData.getSivilstand().getSivilstand();
+        Sivilstand sivilstand = personData.getSivilstand()
+                .withSivilstand(kodeverkManager.getBeskrivelseForSivilstand(sivilstandKode)
+                        .orElse(sivilstandKode));
+        personData.withSivilstand(sivilstand);
     }
 
     private void hentDigitalKontaktinformasjon(String fnr, PersonData personData) {
