@@ -9,7 +9,6 @@ public class Gateadresse {
     private String husbokstav;
     private String kommunenummer;
     private String gatenavn;
-    private String bolignummer;
     private Integer withGatenummer;
 
 
@@ -40,11 +39,6 @@ public class Gateadresse {
     public String getGatenavn() {
         return gatenavn;
     }
-
-    public String getBolignummer() {
-        return bolignummer;
-    }
-
 
     public Gateadresse withPoststed(String poststed) {
         this.poststed = poststed;
@@ -78,11 +72,6 @@ public class Gateadresse {
 
     public Gateadresse withGatenavn(String gatenavn) {
         this.gatenavn = gatenavn;
-        return this;
-    }
-
-    public Gateadresse withBolignummer(String bolignummer) {
-        this.bolignummer = bolignummer;
         return this;
     }
 
