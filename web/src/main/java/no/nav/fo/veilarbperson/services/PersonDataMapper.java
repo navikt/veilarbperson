@@ -11,14 +11,14 @@ import static java.util.stream.Collectors.toList;
 import static no.nav.fo.veilarbperson.utils.Personnummer.personnummerTilFodselsdato;
 import static no.nav.fo.veilarbperson.utils.Personnummer.personnummerTilKjoenn;
 
-class PersonDataMapper{
+class PersonDataMapper {
 
     private static final String BARN = "BARN";
     private static final String KODE_6 = "6";
     private static final String KODE_7 = "7";
     private static final String EKTEFELLE = "EKTE";
 
-    public static PersonData tilPersonData(WSPerson person){
+    public static PersonData tilPersonData(WSPerson person) {
         return new PersonData()
                 .withFornavn(person.getPersonnavn().getFornavn())
                 .withMellomnavn(person.getPersonnavn().getMellomnavn())
@@ -41,19 +41,20 @@ class PersonDataMapper{
         Bostedsadresse bostedsadresse = null;
 
         WSBostedsadresse wsBostedsadresse = person.getBostedsadresse();
-        if (wsBostedsadresse != null){
+        if (wsBostedsadresse != null) {
             bostedsadresse = new Bostedsadresse();
 
             WSStrukturertAdresse strukturertadresse = wsBostedsadresse.getStrukturertAdresse();
 
-            if(strukturertadresse.getLandkode() != null) {
+            if (strukturertadresse.getLandkode() != null) {
                 bostedsadresse.withLandkode(strukturertadresse.getLandkode().getValue());
             }
-            if(strukturertadresse instanceof  WSGateadresse){
+
+            if (strukturertadresse instanceof WSGateadresse) {
                 bostedsadresse.withGateadresse(tilGateAdresse((WSGateadresse) strukturertadresse));
             }
 
-            if(strukturertadresse instanceof  WSPostboksadresseNorsk){
+            if (strukturertadresse instanceof WSPostboksadresseNorsk) {
                 bostedsadresse.withPostboksadresseNorsk(tilPostboksadresseNorsk((WSPostboksadresseNorsk) strukturertadresse));
             }
 
@@ -118,8 +119,8 @@ class PersonDataMapper{
     private static String kanskjeStatsborgerskap(WSPerson person) {
         String statsborgerskap = null;
         Optional<WSStatsborgerskap> wsStatsborgerskap = ofNullable(person.getStatsborgerskap());
-        if (wsStatsborgerskap.isPresent()){
-            statsborgerskap =  person.getStatsborgerskap().getLand().getValue();
+        if (wsStatsborgerskap.isPresent()) {
+            statsborgerskap = person.getStatsborgerskap().getLand().getValue();
         }
         return statsborgerskap;
     }
@@ -128,14 +129,14 @@ class PersonDataMapper{
         WSBankkonto bankkonto = person.getBankkonto();
         String kontonummer = null;
 
-        if(bankkonto instanceof WSBankkontoNorge){
+        if (bankkonto instanceof WSBankkontoNorge) {
             WSBankkontoNorge bankkontoNorge = (WSBankkontoNorge) bankkonto;
             kontonummer = bankkontoNorge.getBankkonto().getBankkontonummer();
         }
 
-            if(bankkonto instanceof WSBankkontoUtland){
+        if (bankkonto instanceof WSBankkontoUtland) {
             WSBankkontoUtland wsBankkontoUtland = (WSBankkontoUtland) bankkonto;
-            kontonummer =  wsBankkontoUtland.getBankkontoUtland().getBankkontonummer();
+            kontonummer = wsBankkontoUtland.getBankkontoUtland().getBankkontonummer();
         }
 
         return kontonummer;
@@ -149,7 +150,7 @@ class PersonDataMapper{
     }
 
     private static List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
-       return  familierelasjoner.stream()
+        return familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
                 .map(barnWS -> familierelasjonTilFamiliemedlem(barnWS))
                 .collect(toList());
