@@ -3,7 +3,7 @@ package no.nav.fo.veilarbperson.digitalkontaktinformasjon;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.meldinger.*;
 
-public class DigitalKontaktinformasjonMock implements DigitalKontaktinformasjonV1 {
+class DigitalKontaktinformasjonMock implements DigitalKontaktinformasjonV1 {
 
     @Override
     public WSHentSikkerDigitalPostadresseBolkResponse hentSikkerDigitalPostadresseBolk(

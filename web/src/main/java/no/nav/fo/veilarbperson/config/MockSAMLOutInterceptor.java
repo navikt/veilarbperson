@@ -3,7 +3,7 @@ package no.nav.fo.veilarbperson.config;
 import no.nav.modig.security.ws.attributes.SAMLAttributes;
 
 
-public class MockSAMLOutInterceptor implements SAMLAttributes {
+class MockSAMLOutInterceptor implements SAMLAttributes {
 
     @Override
     public String getUid() {
