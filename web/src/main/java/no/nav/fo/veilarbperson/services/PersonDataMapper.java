@@ -5,14 +5,18 @@ import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import no.nav.fo.veilarbperson.domain.Sivilstand;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-
+import static no.nav.fo.veilarbperson.utils.Personnummer.personnummerTilFodselsdato;
+import static no.nav.fo.veilarbperson.utils.Personnummer.personnummerTilKjoenn;
 
 class PersonDataMapper{
 
     private static final String BARN = "BARN";
+    private static final String KODE_6 = "6";
+    private static final String KODE_7 = "7";
     private static final String EKTEFELLE = "EKTE";
 
     public static PersonData tilPersonData(WSPerson person){
@@ -112,6 +116,7 @@ class PersonDataMapper{
 
     private static String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
+                .filter(diskresjonskode -> KODE_6.equals(diskresjonskode.getValue()) || KODE_7.equals(diskresjonskode.getValue()))
                 .map(WSDiskresjonskoder::getValue)
                 .orElse(null);
     }
@@ -135,14 +140,16 @@ class PersonDataMapper{
     private static Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
 
         WSPerson person = familierelasjon.getTilPerson();
+        final String personnummer = person.getIdent().getIdent();
 
         return new Familiemedlem()
                 .withFornavn(person.getPersonnavn().getFornavn())
                 .withEtternavn(person.getPersonnavn().getEtternavn())
                 .withSammensattnavn(person.getPersonnavn().getSammensattNavn())
                 .withHarSammeBosted(familierelasjon.isHarSammeBosted())
-                .withPersonnummer(person.getIdent().getIdent());
-
+                .withPersonnummer(personnummer)
+                .withFodselsdato(personnummerTilFodselsdato(personnummer))
+                .withKjoenn(personnummerTilKjoenn(personnummer));
     }
 
     private static Sivilstand hentSivilstand(WSPerson person) {

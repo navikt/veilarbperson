@@ -1,5 +1,6 @@
 package no.nav.fo.veilarbperson.services;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Familiemedlem {
 
@@ -7,6 +8,10 @@ public class Familiemedlem {
     private String etternavn;
     private String sammensattNavn;
     private String personnummer;
+    private String fodselsdato;
+
+    @JsonProperty("kjonn")
+    private String kjoenn;
     private Boolean harSammeBosted;
 
     public String getFornavn() {
@@ -23,6 +28,14 @@ public class Familiemedlem {
 
     public String getPersonnummer() {
         return personnummer;
+    }
+
+    public String getFodselsdato() {
+        return fodselsdato;
+    }
+
+    public String getKjoenn() {
+        return kjoenn;
     }
 
     public Boolean getHarSammeBosted() {
@@ -55,6 +68,13 @@ public class Familiemedlem {
         return this;
     }
 
+    public Familiemedlem withFodselsdato(String fodselsdato){
+        this.fodselsdato = fodselsdato;
+        return this;
+    }
+
+    public Familiemedlem withKjoenn(String kjoenn){
+        this.kjoenn = kjoenn;
+        return this;
+    }
 }
-
-
