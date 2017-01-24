@@ -33,12 +33,12 @@ public class PersonFletter {
 
         hentPersondata(fnr, personData);
         hentDigitalKontaktinformasjon(fnr, personData);
-        oppdaterKodeverksvariabler(personData);
+        hentTermerBasertPaKoder(personData);
 
         return personData;
     }
 
-    private void oppdaterKodeverksvariabler(PersonData personData) {
+    private void hentTermerBasertPaKoder(PersonData personData) {
         personData.withStatsborgerskap(kodeverkManager.getBeskrivelseForLandkode(personData.getStatsborgerskap())
                 .orElse(personData.getStatsborgerskap()));
 
