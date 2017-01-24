@@ -4,9 +4,7 @@ import no.nav.fo.veilarbperson.domain.Sivilstand;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -20,7 +18,7 @@ class PersonDataMapper{
     private static final String KODE_7 = "7";
     private static final String EKTEFELLE = "EKTE";
 
-    public static PersonData tilPersonData(WSPerson person){
+    static PersonData tilPersonData(WSPerson person){
         return new PersonData()
                 .withFornavn(person.getPersonnavn().getFornavn())
                 .withMellomnavn(person.getPersonnavn().getMellomnavn())
@@ -84,7 +82,7 @@ class PersonDataMapper{
     private static List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
        return  familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
-                .map(barnWS -> familierelasjonTilFamiliemedlem(barnWS))
+                .map(PersonDataMapper::familierelasjonTilFamiliemedlem)
                 .collect(toList());
     }
 
