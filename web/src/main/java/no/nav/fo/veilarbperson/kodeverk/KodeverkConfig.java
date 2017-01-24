@@ -10,6 +10,7 @@ import static java.lang.System.getProperty;
 import static no.nav.sbl.dialogarena.common.cxf.InstanceSwitcher.createMetricsProxyWithInstanceSwitcher;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.feilet;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.lyktes;
+import static org.apache.cxf.ws.security.SecurityConstants.MUST_UNDERSTAND;
 
 @Configuration
 public class KodeverkConfig {
@@ -36,6 +37,9 @@ public class KodeverkConfig {
     }
 
     private CXFClient<KodeverkPortType> factory() {
-        return new CXFClient<>(KodeverkPortType.class).address(getProperty("kodeverk.endpoint.url"));
+        return new CXFClient<>(KodeverkPortType.class)
+                .wsdl("classpath:kodeverk/no/nav/tjeneste/virksomhet/kodeverk/v2/Kodeverk.wsdl")
+                .address(getProperty("kodeverk.endpoint.url"))
+                .withProperty(MUST_UNDERSTAND, false);
     }
 }
