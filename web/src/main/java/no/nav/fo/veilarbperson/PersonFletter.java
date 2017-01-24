@@ -34,9 +34,9 @@ public class PersonFletter {
         PersonData personData = personService.hentPerson(fnr);
         personData.withEgenAnsatt(egenAnsattService.erEgenAnsatt(fnr));
 
-        if (personData.getAnsvarligEnhetsnummer() != null) {
+        /*if (personData.getAnsvarligEnhetsnummer() != null) {
             personData.withBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getAnsvarligEnhetsnummer()));
-        }
+        }*/
 
         hentPersondata(fnr, personData);
         hentDigitalKontaktinformasjon(fnr, personData);
