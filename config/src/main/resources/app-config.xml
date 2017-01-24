@@ -23,6 +23,7 @@
         <webservice alias="virksomhet:EgenAnsatt_v1" mapToProperty="egenansatt.endpoint" />
         <webservice alias="virksomhet:OrganisasjonEnhet_v1" mapToProperty="organisasjonenhet.endpoint" />
         <webservice alias="virksomhet:DigitalKontakinformasjon_v1" mapToProperty="digitalkontaktinformasjon.endpoint" />
+        <webservice alias="virksomhet:Kodeverk_v2" mapToProperty="kodeverk.endpoint" />
         <applicationCertificate alias="srvveilarbperson" />
     </resources>
 
