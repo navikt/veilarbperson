@@ -26,8 +26,7 @@ public class SelftestServlet extends SelfTestBaseServlet {
 
     @Override
     public Collection<? extends Pingable> getPingables() {
-        final List<Pingable> pingables = new ArrayList<>(applicationContext.getBeansOfType(Pingable.class).values());
-        return pingables;
+        return new ArrayList<>(applicationContext.getBeansOfType(Pingable.class).values());
     }
 
 }
