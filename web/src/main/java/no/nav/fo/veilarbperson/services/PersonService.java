@@ -25,8 +25,7 @@ public class PersonService{
 
         try {
             WSHentKjerneinformasjonResponse wsPerson = personV2.hentKjerneinformasjon(request);
-            PersonData personData = PersonDataMapper.tilPersonData(wsPerson.getPerson());
-            return personData;
+            return PersonDataMapper.tilPersonData(wsPerson.getPerson());
         } catch (HentKjerneinformasjonSikkerhetsbegrensning ikkeTilgang) {
             logger.error("Ikke tilgang til " + ident);
             ikkeTilgang.printStackTrace();
