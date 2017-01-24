@@ -52,29 +52,22 @@ class PersonDataMapper{
             if(strukturertadresse instanceof  WSGateadresse){
                 bostedsadresse.withGateadresse(tilGateAdresse((WSGateadresse) strukturertadresse));
             }
+
+            if(strukturertadresse instanceof  WSPostboksadresseNorsk){
+                bostedsadresse.withPostboksadresseNorsk(tilPostboksadresseNorsk((WSPostboksadresseNorsk) strukturertadresse));
             }
         }
 
         return bostedsadresse;
     }
 
-    private static Gateadresse wsGateadresseTilGateAdresse(WSGateadresse wsGateadresse) {
-        Gateadresse gateadresse = new Gateadresse();
+    private static PostboksadresseNorsk tilPostboksadresseNorsk(WSPostboksadresseNorsk wsPostboksadresseNorsk) {
+        return new PostboksadresseNorsk()
+                .withPostnummer(ofNullable(wsPostboksadresseNorsk.getPoststed().getValue()).orElse(null))
+                .withPostboksanlegg(ofNullable(wsPostboksadresseNorsk.getPostboksanlegg()).orElse(null))
+                .withPostboksnummer(ofNullable(wsPostboksadresseNorsk.getPostboksnummer()).orElse(null));
 
-        gateadresse.withGatenavn(wsGateadresse.getGatenavn());
-
-        if (wsGateadresse.getHusnummer() != null ){
-            gateadresse.withHusnummer(wsGateadresse.getHusnummer());
-        }
-        if(wsGateadresse.getHusbokstav() != null){
-            gateadresse.withHusbokstav(wsGateadresse.getHusbokstav());
-        }
-        if(wsGateadresse.getGatenummer() != null){
-            gateadresse.withGatenummer(wsGateadresse.getGatenummer());
-        }
-        gateadresse.withPostnummer(wsGateadresse.getPoststed().getValue());
-
-        return gateadresse;
+    }
 
     private static Gateadresse tilGateAdresse(WSGateadresse wsGateadresse) {
         return new Gateadresse()
