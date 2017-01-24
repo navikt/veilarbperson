@@ -13,10 +13,10 @@ import org.springframework.context.annotation.Bean;
 public class ServiceConfig {
 
     private final PersonV2 personV2;
-    private OrganisasjonEnhetV1 organisasjonenhet;
-    private DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1;
-    private EgenAnsattV1 egenAnsattV1;
-    private KodeverkPortType kodeverkPortType;
+    private final OrganisasjonEnhetV1 organisasjonenhet;
+    private final DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1;
+    private final EgenAnsattV1 egenAnsattV1;
+    private final KodeverkPortType kodeverkPortType;
 
     public ServiceConfig(PersonV2 personV2, OrganisasjonEnhetV1 organisasjonenhet, DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1, EgenAnsattV1 egenAnsattV1, KodeverkPortType kodeverkPortType) {
         this.personV2 = personV2;

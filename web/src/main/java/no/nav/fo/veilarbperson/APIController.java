@@ -13,10 +13,10 @@ public class APIController {
 
     private static final Logger logger = getLogger(APIController.class);
 
-    private EnhetService enhetService;
-    private DigitalKontaktinformasjonService digitalKontaktinformasjonService;
-    private PersonService personService;
-    private EgenAnsattService egenAnsattService;
+    private final EnhetService enhetService;
+    private final DigitalKontaktinformasjonService digitalKontaktinformasjonService;
+    private final PersonService personService;
+    private final EgenAnsattService egenAnsattService;
     private final KodeverkService kodeverkService;
 
     public APIController(EnhetService enhetService, DigitalKontaktinformasjonService digitalKontaktinformasjonService, PersonService personService, EgenAnsattService egenAnsattService, KodeverkService kodeverkService) {
