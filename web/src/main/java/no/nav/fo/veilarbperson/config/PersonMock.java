@@ -3,7 +3,7 @@ package no.nav.fo.veilarbperson.config;
 import no.nav.tjeneste.virksomhet.person.v2.*;
 import no.nav.tjeneste.virksomhet.person.v2.meldinger.*;
 
-public class PersonMock implements PersonV2 {
+class PersonMock implements PersonV2 {
     @Override
     public void ping() {
 

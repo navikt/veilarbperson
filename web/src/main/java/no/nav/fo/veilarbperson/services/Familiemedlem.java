@@ -2,7 +2,7 @@ package no.nav.fo.veilarbperson.services;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Familiemedlem {
+class Familiemedlem {
 
     private String fornavn;
     private String etternavn;
@@ -42,38 +42,38 @@ public class Familiemedlem {
         return harSammeBosted;
     }
 
-    public Familiemedlem withFornavn(String fornavn){
+    Familiemedlem withFornavn(String fornavn){
         this.fornavn = fornavn;
         return this;
     }
 
-    public Familiemedlem withEtternavn(String etternavn){
+    Familiemedlem withEtternavn(String etternavn){
         this.etternavn = etternavn;
         return this;
     }
 
-    public Familiemedlem withSammensattnavn(String sammensattNavn){
+    Familiemedlem withSammensattnavn(String sammensattNavn){
         this.sammensattNavn = sammensattNavn;
         return this;
     }
 
 
-    public Familiemedlem withHarSammeBosted(Boolean borHjemme){
+    Familiemedlem withHarSammeBosted(Boolean borHjemme){
         this.harSammeBosted = borHjemme;
         return this;
     }
 
-    public Familiemedlem withPersonnummer(String personnummer){
+    Familiemedlem withPersonnummer(String personnummer){
         this.personnummer = personnummer;
         return this;
     }
 
-    public Familiemedlem withFodselsdato(String fodselsdato){
+    Familiemedlem withFodselsdato(String fodselsdato){
         this.fodselsdato = fodselsdato;
         return this;
     }
 
-    public Familiemedlem withKjoenn(String kjoenn){
+    Familiemedlem withKjoenn(String kjoenn){
         this.kjoenn = kjoenn;
         return this;
     }
