@@ -27,8 +27,8 @@ public class DigitalKontaktinformasjonService {
     private DigitalKontaktinformasjon getDigitalKontaktinformason(WSHentDigitalKontaktinformasjonResponse response) {
         WSKontaktinformasjon wsKontaktinformasjon = response.getDigitalKontaktinformasjon();
         return new DigitalKontaktinformasjon()
-                .medEpost(wsKontaktinformasjon.getEpostadresse().getValue())
-                .medTelefon(wsKontaktinformasjon.getMobiltelefonnummer().getValue());
+                .withEpost(wsKontaktinformasjon.getEpostadresse().getValue())
+                .withTelefon(wsKontaktinformasjon.getMobiltelefonnummer().getValue());
     }
 
 }

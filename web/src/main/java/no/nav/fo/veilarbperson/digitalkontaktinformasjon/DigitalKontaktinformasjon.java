@@ -5,12 +5,12 @@ public class DigitalKontaktinformasjon {
     private String epost;
     private String telefon;
 
-    DigitalKontaktinformasjon medEpost(String epost) {
+    DigitalKontaktinformasjon withEpost(String epost) {
         this.epost = epost;
         return this;
     }
 
-    DigitalKontaktinformasjon medTelefon(String telefon) {
+    DigitalKontaktinformasjon withTelefon(String telefon) {
         this.telefon = telefon;
         return this;
     }
