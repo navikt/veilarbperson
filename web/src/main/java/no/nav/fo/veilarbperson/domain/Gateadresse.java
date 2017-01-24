@@ -3,7 +3,6 @@ package no.nav.fo.veilarbperson.domain;
 public class Gateadresse {
 
     private String poststed;
-    private String adressetype;
     private String postnummer;
     private Integer husnummer;
     private String husbokstav;
@@ -16,9 +15,6 @@ public class Gateadresse {
         return poststed;
     }
 
-    public String getAdressetype() {
-        return adressetype;
-    }
 
     public String getPostnummer() {
         return postnummer;
@@ -42,11 +38,6 @@ public class Gateadresse {
 
     public Gateadresse withPoststed(String poststed) {
         this.poststed = poststed;
-        return this;
-    }
-
-    public Gateadresse withType(String type) {
-        this.adressetype = type;
         return this;
     }
 
