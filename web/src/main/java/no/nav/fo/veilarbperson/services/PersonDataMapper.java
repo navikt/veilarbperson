@@ -56,9 +56,34 @@ class PersonDataMapper{
             if(strukturertadresse instanceof  WSPostboksadresseNorsk){
                 bostedsadresse.withPostboksadresseNorsk(tilPostboksadresseNorsk((WSPostboksadresseNorsk) strukturertadresse));
             }
+
+            if (strukturertadresse instanceof WSMatrikkeladresse) {
+                bostedsadresse.withMatrikkeladresse(tilMatrikkeladresse((WSMatrikkeladresse) strukturertadresse));
+            }
         }
 
         return bostedsadresse;
+    }
+
+    private static Matrikkeladresse tilMatrikkeladresse(WSMatrikkeladresse wsMatrikkeladresse) {
+        Optional<WSMatrikkelnummer> kanskjeMatrikkelnummer = ofNullable(wsMatrikkeladresse.getMatrikkelnummer());
+        return new Matrikkeladresse()
+                .withEiendomsnavn(ofNullable(wsMatrikkeladresse.getEiendomsnavn()).orElse(null))
+                .withGardsnummer(kanskjeMatrikkelnummer
+                        .map(WSMatrikkelnummer::getGaardsnummer)
+                        .orElse(null))
+                .withBruksnummer(kanskjeMatrikkelnummer
+                        .map(WSMatrikkelnummer::getBruksnummer)
+                        .orElse(null))
+                .withFestenummer(kanskjeMatrikkelnummer
+                        .map(WSMatrikkelnummer::getFestenummer)
+                        .orElse(null))
+                .withSeksjonsnummer(kanskjeMatrikkelnummer
+                        .map(WSMatrikkelnummer::getSeksjonsnummer)
+                        .orElse(null))
+                .withUndernummer(kanskjeMatrikkelnummer
+                        .map(WSMatrikkelnummer::getUndernummer)
+                        .orElse(null));
     }
 
     private static PostboksadresseNorsk tilPostboksadresseNorsk(WSPostboksadresseNorsk wsPostboksadresseNorsk) {

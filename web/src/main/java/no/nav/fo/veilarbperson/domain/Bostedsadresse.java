@@ -2,9 +2,11 @@ package no.nav.fo.veilarbperson.domain;
 
 public class Bostedsadresse {
 
-    Gateadresse gateadresse;
-    PostboksadresseNorsk postboksadresseNorsk;
-    String landkode;
+    private Gateadresse gateadresse;
+    private PostboksadresseNorsk postboksadresseNorsk;
+    private Matrikkeladresse matrikkeladresse;
+    private String landkode;
+
     public String getLandkode() {
         return landkode;
     }
@@ -15,6 +17,10 @@ public class Bostedsadresse {
 
     public PostboksadresseNorsk getPostboksadresseNorsk() {
         return postboksadresseNorsk;
+    }
+
+    public Matrikkeladresse getMatrikkeladresse() {
+        return matrikkeladresse;
     }
 
     public Bostedsadresse withLandkode(String landkode) {
@@ -30,5 +36,13 @@ public class Bostedsadresse {
     public void withPostboksadresseNorsk(PostboksadresseNorsk postboksadresseNorsk) {
         this.postboksadresseNorsk = postboksadresseNorsk;
     }
+
+
+    public Bostedsadresse withMatrikkeladresse(Matrikkeladresse matrikkeladresse) {
+        this.matrikkeladresse = matrikkeladresse;
+        return this;
+    }
+
+
 
 }
