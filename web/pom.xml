@@ -20,6 +20,10 @@
             <artifactId>person-v2-tjenestespesifikasjon</artifactId>
         </dependency>
         <dependency>
+            <groupId>no.nav.sbl.dialogarena</groupId>
+            <artifactId>organisasjonenhet-v1-tjenestespesifikasjon</artifactId>
+        </dependency>
+        <dependency>
             <groupId>no.nav.sbl</groupId>
             <artifactId>dkif-tjenestespesifikasjon</artifactId>
         </dependency>

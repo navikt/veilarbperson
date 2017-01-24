@@ -1,5 +1,6 @@
 package no.nav.fo.veilarbperson;
 
+import no.nav.fo.veilarbperson.services.EnhetService;
 import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjon;
 import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
@@ -15,10 +16,17 @@ public class PersonFletter {
     PersonService personService;
 
     @Autowired
+    EnhetService enhetService;
+
+    @Autowired
     DigitalKontaktinformasjonService digitalKontaktinformasjonService;
 
     public PersonData hentPerson(String fnr){
         PersonData personData = personService.hentPerson(fnr);
+
+        if (personData.getAnsvarligEnhetsnummer() != null) {
+            personData.withBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getAnsvarligEnhetsnummer()));
+        }
 
         hentPersondata(fnr, personData);
         hentDigitalKontaktinformasjon(fnr, personData);
@@ -49,4 +57,5 @@ public class PersonFletter {
             hentSikkerhetstiltakPersonIkkeFunnet.printStackTrace();
         }
     }
+
 }
