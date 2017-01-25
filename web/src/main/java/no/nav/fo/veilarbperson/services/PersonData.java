@@ -6,7 +6,7 @@ import no.nav.fo.veilarbperson.domain.Sivilstand;
 
 import java.util.List;
 
-public class PersonData{
+public class PersonData {
     private String fornavn;
     private String mellomnavn;
     private String etternavn;
@@ -34,6 +34,7 @@ public class PersonData{
     public String getStatsborgerskap() {
         return statsborgerskap;
     }
+
     public String getFornavn() {
         return fornavn;
     }
@@ -94,9 +95,10 @@ public class PersonData{
         return sikkerhetstiltak;
     }
 
-    public Sivilstand getSivilstand(){
+    public Sivilstand getSivilstand() {
         return sivilstand;
     }
+
     public Familiemedlem getPartner() {
         return this.partner;
     }
@@ -110,57 +112,57 @@ public class PersonData{
         return egenAnsatt;
     }
 
-    public PersonData withFornavn(String fornavn){
+    PersonData withFornavn(String fornavn) {
         this.fornavn = fornavn;
         return this;
     }
 
-    public PersonData withMellomnavn(String mellomnavn){
+    PersonData withMellomnavn(String mellomnavn) {
         this.mellomnavn = mellomnavn;
         return this;
     }
 
-    public PersonData withEtternavn(String etternavn){
+    PersonData withEtternavn(String etternavn) {
         this.etternavn = etternavn;
         return this;
     }
 
-    public PersonData withSammensattNavn(String sammensattNavn) {
+    PersonData withSammensattNavn(String sammensattNavn) {
         this.sammensattNavn = sammensattNavn;
         return this;
     }
 
-    public PersonData withPersonnummer(String personnummer){
+    PersonData withPersonnummer(String personnummer) {
         this.personnummer = personnummer;
         return this;
     }
 
-    public PersonData withFodselsdato(String fodselsdato){
+    PersonData withFodselsdato(String fodselsdato) {
         this.fodselsdato = fodselsdato;
         return this;
     }
 
-    public PersonData withKjoenn(String kjoenn){
+    PersonData withKjoenn(String kjoenn) {
         this.kjoenn = kjoenn;
         return this;
     }
 
-    public PersonData withBarn(List<Familiemedlem> barn){
+    PersonData withBarn(List<Familiemedlem> barn) {
         this.barn = barn;
         return this;
     }
 
-    public PersonData withDiskresjonskode(String diskresjonskode) {
+    PersonData withDiskresjonskode(String diskresjonskode) {
         this.diskresjonskode = diskresjonskode;
         return this;
     }
 
-    public PersonData withKontonummer(String kontonummer) {
+    PersonData withKontonummer(String kontonummer) {
         this.kontonummer = kontonummer;
         return this;
     }
 
-    public PersonData withAnsvarligEnhetsnummer(String enhetsnummer) {
+    PersonData withAnsvarligEnhetsnummer(String enhetsnummer) {
         this.ansvarligEnhetsnummer = enhetsnummer;
         return this;
     }
@@ -195,7 +197,7 @@ public class PersonData{
         return this;
     }
 
-    public PersonData withPartner(Familiemedlem partner) {
+    PersonData withPartner(Familiemedlem partner) {
         this.partner = partner;
         return this;
     }

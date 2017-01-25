@@ -1,9 +1,7 @@
 package no.nav.fo.veilarbperson.services;
 
 import no.nav.fo.veilarbperson.domain.*;
-import no.nav.fo.veilarbperson.kodeverk.KodeverkManager;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -15,15 +13,12 @@ import static no.nav.fo.veilarbperson.utils.Personnummer.personnummerTilKjoenn;
 
 public class PersonDataMapper {
 
-    @Autowired
-    private KodeverkManager kodeverkManager;
-
     private static final String BARN = "BARN";
     private static final String KODE_6 = "6";
     private static final String KODE_7 = "7";
     private static final String EKTEFELLE = "EKTE";
 
-    public PersonData tilPersonData(WSPerson person) {
+    PersonData tilPersonData(WSPerson person){
         return new PersonData()
                 .withFornavn(person.getPersonnavn().getFornavn())
                 .withMellomnavn(person.getPersonnavn().getMellomnavn())
@@ -107,15 +102,8 @@ public class PersonDataMapper {
                 .withHusbokstav(ofNullable(wsGateadresse.getHusbokstav()).orElse(null))
                 .withGatenummer(ofNullable(wsGateadresse.getGatenummer()).orElse(null))
                 .withPostnummer(ofNullable(wsGateadresse.getPoststed().getValue()).orElse(null))
-                .withPoststed(kanskjePoststed(wsGateadresse.getPoststed().getValue()))
                 .withKommunenummer(ofNullable(wsGateadresse.getKommunenummer()).orElse(null));
     }
-
-    private String kanskjePoststed(String postnummer) {
-        return kodeverkManager.getPoststed(postnummer).orElse(null);
-
-    }
-
 
     private static String ansvarligEnhetsnummer(WSPerson person) {
         if (person instanceof WSBruker) {
@@ -163,7 +151,7 @@ public class PersonDataMapper {
     private  List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
         return familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
-                .map(barnWS -> familierelasjonTilFamiliemedlem(barnWS))
+                .map(relasjon -> familierelasjonTilFamiliemedlem(relasjon))
                 .collect(toList());
     }
 

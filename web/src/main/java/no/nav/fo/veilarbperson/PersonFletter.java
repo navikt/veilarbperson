@@ -5,32 +5,33 @@ import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasj
 import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
 import no.nav.fo.veilarbperson.domain.Sivilstand;
 import no.nav.fo.veilarbperson.kodeverk.KodeverkManager;
+import no.nav.fo.veilarbperson.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.services.*;
-import no.nav.fo.veilarbperson.services.EgenAnsattService;
-import no.nav.fo.veilarbperson.services.PersonData;
-import no.nav.fo.veilarbperson.services.PersonService;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.person.v2.HentSikkerhetstiltakPersonIkkeFunnet;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class PersonFletter {
 
-    @Autowired
-    PersonService personService;
+    private final PersonService personService;
 
-    @Autowired
-    EgenAnsattService egenAnsattService;
+    private final EgenAnsattService egenAnsattService;
 
-    @Autowired
-    EnhetService enhetService;
+    private final EnhetService enhetService;
 
-    @Autowired
-    DigitalKontaktinformasjonService digitalKontaktinformasjonService;
+    private final DigitalKontaktinformasjonService digitalKontaktinformasjonService;
 
-    @Autowired
-    KodeverkManager kodeverkManager;
+    private final KodeverkManager kodeverkManager;
 
-    public PersonData hentPerson(String fnr){
+    public PersonFletter(EnhetService enhetService, DigitalKontaktinformasjonService digitalKontaktinformasjonService, PersonService personService, EgenAnsattService egenAnsattService, KodeverkService kodeverkService) {
+
+        this.enhetService = enhetService;
+        this.digitalKontaktinformasjonService = digitalKontaktinformasjonService;
+        this.kodeverkManager = new KodeverkManager(kodeverkService);
+        this.personService = personService;
+        this.egenAnsattService = egenAnsattService;
+    }
+
+    PersonData hentPerson(String fnr) {
         PersonData personData = personService.hentPerson(fnr);
         personData.withEgenAnsatt(egenAnsattService.erEgenAnsatt(fnr));
 
