@@ -19,7 +19,7 @@ class PersonDataMapper{
     private static final String KODE_7 = "7";
     private static final String EKTEFELLE = "EKTE";
 
-    public static PersonData tilPersonData(WSPerson person){
+    static PersonData tilPersonData(WSPerson person){
         return new PersonData()
                 .withFornavn(person.getPersonnavn().getFornavn())
                 .withMellomnavn(person.getPersonnavn().getMellomnavn())
@@ -130,7 +130,7 @@ class PersonDataMapper{
     private static List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
        return  familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
-                .map(barnWS -> familierelasjonTilFamiliemedlem(barnWS))
+                .map(PersonDataMapper::familierelasjonTilFamiliemedlem)
                 .collect(toList());
     }
 

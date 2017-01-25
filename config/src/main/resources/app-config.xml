@@ -33,4 +33,6 @@
 
     <loadBalancer isAlive="/veilarbperson/internal/isAlive" />
 
+    <logging serviceCalls="true" />
+
 </application>

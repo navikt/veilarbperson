@@ -5,7 +5,7 @@ import no.nav.sbl.dialogarena.common.jetty.Jetty;
 import static no.nav.sbl.dialogarena.common.jetty.Jetty.usingWar;
 import static no.nav.sbl.dialogarena.common.jetty.JettyStarterUtils.*;
 
-public class StartJetty {
+class StartJetty {
 
     private static final int PORT = 8488;
 

@@ -3,7 +3,7 @@ package no.nav.fo.veilarbperson.config;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.*;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.meldinger.*;
 
-public class OrganisasjonEnhetMock implements OrganisasjonEnhetV1 {
+class OrganisasjonEnhetMock implements OrganisasjonEnhetV1 {
     @Override
     public WSFinnArbeidsfordelingForEnhetBolkResponse finnArbeidsfordelingForEnhetBolk(WSFinnArbeidsfordelingForEnhetBolkRequest request) throws FinnArbeidsfordelingForEnhetBolkUgyldigInput {
         return null;
