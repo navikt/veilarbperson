@@ -2,7 +2,8 @@ package no.nav.fo.veilarbperson.kodeverk;
 
 import no.nav.tjeneste.virksomhet.kodeverk.v2.HentKodeverkHentKodeverkKodeverkIkkeFunnet;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.KodeverkPortType;
-import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.*;
+import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLEnkeltKodeverk;
+import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLKodeverk;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.meldinger.XMLHentKodeverkRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 
