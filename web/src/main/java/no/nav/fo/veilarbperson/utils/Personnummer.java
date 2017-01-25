@@ -2,12 +2,12 @@ package no.nav.fo.veilarbperson.utils;
 
 public class Personnummer {
 
-    private static final int INDIVIDSIFFER_1900_TIL_1999 = 500;
-    private static final int INDIVIDSIFFER_1854_TIL_1899  = 750;
-    private static final int INDIVIDSIFFER_1940_TIL_1999 = 900;
-    private static final int SISTE_MAANED = 12;
-    private static final int SISTE_DAG_I_MAANED = 31;
-    private static final int D_OG_H_NUMMER_OFFSET = 40;
+    public static final int INDIVIDSIFFER_1900_TIL_1999 = 500;
+    public static final int INDIVIDSIFFER_1854_TIL_1899 = 750;
+    public static final int INDIVIDSIFFER_1940_TIL_1999 = 900;
+    public static final int SISTE_MAANED = 12;
+    public static final int SISTE_DAG_I_MAANED = 31;
+    public static final int D_OG_H_NUMMER_OFFSET = 40;
 
     public static String personnummerTilKjoenn(String personnummer) {
         if (Integer.parseInt(personnummer.substring(8, 9)) % 2 == 0) {
