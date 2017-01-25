@@ -13,6 +13,7 @@ public class PersonData{
     private String sammensattNavn;
     private String personnummer;
     private String fodselsdato;
+    private String dodsdato;
 
     @JsonProperty("kjonn")
     private String kjoenn;
@@ -56,6 +57,10 @@ public class PersonData{
 
     public String getFodselsdato() {
         return fodselsdato;
+    }
+
+    public String getDodsdato() {
+        return dodsdato;
     }
 
     public String getKjoenn() {
@@ -137,6 +142,11 @@ public class PersonData{
 
     public PersonData withFodselsdato(String fodselsdato){
         this.fodselsdato = fodselsdato;
+        return this;
+    }
+
+    public PersonData withDodsdato(String dodsdato){
+        this.dodsdato = dodsdato;
         return this;
     }
 

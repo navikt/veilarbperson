@@ -11,6 +11,7 @@ import no.nav.fo.veilarbperson.services.PersonData;
 import no.nav.fo.veilarbperson.services.PersonService;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.person.v2.HentSikkerhetstiltakPersonIkkeFunnet;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PersonFletter {
