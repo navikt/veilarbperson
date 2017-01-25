@@ -6,25 +6,25 @@ import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSNorskIdent;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSPersonidenter;
 import no.nav.tjeneste.virksomhet.person.v2.meldinger.*;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-//TODO: Sende feilmeldinger tilbake til frontend
 public class PersonService{
 
     private static final Logger logger = getLogger(PersonService.class);
 
-    @Autowired
-    private PersonV2 personV2;
+    private final PersonV2 personV2;
+
+    public PersonService(PersonV2 personV2) {
+        this.personV2 = personV2;
+    }
 
     public PersonData hentPerson(String ident) {
         final WSHentKjerneinformasjonRequest request = new WSHentKjerneinformasjonRequest().withIdent(ident);
 
         try {
             WSHentKjerneinformasjonResponse wsPerson = personV2.hentKjerneinformasjon(request);
-            PersonData personData = PersonDataMapper.tilPersonData(wsPerson.getPerson());
-            return personData;
+            return PersonDataMapper.tilPersonData(wsPerson.getPerson());
         } catch (HentKjerneinformasjonSikkerhetsbegrensning ikkeTilgang) {
             logger.error("Ikke tilgang til " + ident);
             ikkeTilgang.printStackTrace();

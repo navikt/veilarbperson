@@ -1,6 +1,6 @@
 package no.nav.fo.veilarbperson.services;
 
-public class Enhet {
+class Enhet {
     private String enhetsnummer;
     private String navn;
 
@@ -12,12 +12,12 @@ public class Enhet {
         return navn;
     }
 
-    public Enhet withEnhetsnummer(String enhetsnummer) {
+    Enhet withEnhetsnummer(String enhetsnummer) {
         this.enhetsnummer = enhetsnummer;
         return this;
     }
 
-    public Enhet withNavn(String navn) {
+    Enhet withNavn(String navn) {
         this.navn = navn;
         return this;
     }

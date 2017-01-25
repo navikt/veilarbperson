@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class Kodeverk {
+class Kodeverk {
 
     private final List<XMLKode> koder;
 
-    public Kodeverk(XMLEnkeltKodeverk kodeverkResponse) {
+    Kodeverk(XMLEnkeltKodeverk kodeverkResponse) {
         this.koder = kodeverkResponse.getKode();
     }
 
-    public Optional<String> getNavn(String kode, String sprak) {
+    Optional<String> getNavn(String kode, String sprak) {
         Stream<XMLKode> relevanteKoder = koder.stream()
                 .filter(kodeverkselement -> kodeverkselement.getNavn().equals(kode));
 
