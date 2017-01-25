@@ -1,15 +1,16 @@
 package no.nav.fo.veilarbperson.services;
 
-import no.nav.fo.veilarbperson.domain.*;
+import no.nav.fo.veilarbperson.domain.Bostedsadresse;
+import no.nav.fo.veilarbperson.domain.Gateadresse;
+import no.nav.fo.veilarbperson.domain.Sivilstand;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-import no.nav.fo.veilarbperson.domain.Sivilstand;
-
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Optional;
 
-import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static no.nav.fo.veilarbperson.utils.Personnummer.personnummerTilFodselsdato;
