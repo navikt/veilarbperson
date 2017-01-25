@@ -5,22 +5,30 @@ import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.meldinger.*;
 
 public class OrganisasjonEnhetMock implements OrganisasjonEnhetV1 {
     @Override
-    public WSFinnArbeidsfordelingForEnhetBolkResponse finnArbeidsfordelingForEnhetBolk(WSFinnArbeidsfordelingForEnhetBolkRequest request) throws FinnArbeidsfordelingForEnhetBolkUgyldigInput {
+    public WSFinnArbeidsfordelingForEnhetBolkResponse finnArbeidsfordelingForEnhetBolk(
+            WSFinnArbeidsfordelingForEnhetBolkRequest request)
+            throws FinnArbeidsfordelingForEnhetBolkUgyldigInput {
         return null;
     }
 
     @Override
-    public WSFinnNAVKontorForGeografiskNedslagsfeltBolkResponse finnNAVKontorForGeografiskNedslagsfeltBolk(WSFinnNAVKontorForGeografiskNedslagsfeltBolkRequest request) throws FinnNAVKontorForGeografiskNedslagsfeltBolkUgyldigInput {
+    public WSFinnNAVKontorForGeografiskNedslagsfeltBolkResponse finnNAVKontorForGeografiskNedslagsfeltBolk(
+            WSFinnNAVKontorForGeografiskNedslagsfeltBolkRequest request)
+            throws FinnNAVKontorForGeografiskNedslagsfeltBolkUgyldigInput {
         return null;
     }
 
     @Override
-    public WSFinnArbeidsfordelingBolkResponse finnArbeidsfordelingBolk(WSFinnArbeidsfordelingBolkRequest request) throws FinnArbeidsfordelingBolkUgyldigInput {
+    public WSFinnArbeidsfordelingBolkResponse finnArbeidsfordelingBolk(
+            WSFinnArbeidsfordelingBolkRequest request)
+            throws FinnArbeidsfordelingBolkUgyldigInput {
         return null;
     }
 
     @Override
-    public WSFinnEnheterForArbeidsfordelingBolkResponse finnEnheterForArbeidsfordelingBolk(WSFinnEnheterForArbeidsfordelingBolkRequest request) throws FinnEnheterForArbeidsfordelingBolkUgyldigInput {
+    public WSFinnEnheterForArbeidsfordelingBolkResponse finnEnheterForArbeidsfordelingBolk(
+            WSFinnEnheterForArbeidsfordelingBolkRequest request)
+            throws FinnEnheterForArbeidsfordelingBolkUgyldigInput {
         return null;
     }
 
