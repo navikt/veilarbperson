@@ -15,8 +15,12 @@ public class PersonService{
 
     private final PersonV2 personV2;
 
+    private final PersonDataMapper personDataMapper;
+
+
     public PersonService(PersonV2 personV2) {
         this.personV2 = personV2;
+        this.personDataMapper = new PersonDataMapper();
     }
 
     public PersonData hentPerson(String ident) {
@@ -24,7 +28,8 @@ public class PersonService{
 
         try {
             WSHentKjerneinformasjonResponse wsPerson = personV2.hentKjerneinformasjon(request);
-            return PersonDataMapper.tilPersonData(wsPerson.getPerson());
+            PersonData personData = personDataMapper.tilPersonData(wsPerson.getPerson());
+            return personData;
         } catch (HentKjerneinformasjonSikkerhetsbegrensning ikkeTilgang) {
             logger.error("Ikke tilgang til " + ident);
             ikkeTilgang.printStackTrace();
