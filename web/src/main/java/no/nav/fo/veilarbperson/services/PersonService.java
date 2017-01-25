@@ -1,6 +1,5 @@
 package no.nav.fo.veilarbperson.services;
 
-import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;
 import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
 import no.nav.tjeneste.virksomhet.person.v2.*;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSNorskIdent;
@@ -19,12 +18,15 @@ public class PersonService{
     @Autowired
     private PersonV2 personV2;
 
+    @Autowired
+    private PersonDataMapper personDataMapper;
+
     public PersonData hentPerson(String ident) {
         final WSHentKjerneinformasjonRequest request = new WSHentKjerneinformasjonRequest().withIdent(ident);
 
         try {
             WSHentKjerneinformasjonResponse wsPerson = personV2.hentKjerneinformasjon(request);
-            PersonData personData = PersonDataMapper.tilPersonData(wsPerson.getPerson());
+            PersonData personData = personDataMapper.tilPersonData(wsPerson.getPerson());
             return personData;
         } catch (HentKjerneinformasjonSikkerhetsbegrensning ikkeTilgang) {
             logger.error("Ikke tilgang til " + ident);

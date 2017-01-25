@@ -21,6 +21,11 @@ public class KodeverkManager {
         return getBeskrivelseForKode("Sivilstander", kode, NORSK_SPRAK);
     }
 
+
+    public Optional<String> getPoststed(String postnummer) {
+        return getBeskrivelseForKode("Postnummer", postnummer, NORSK_SPRAK);
+    }
+
     private Optional<String> getBeskrivelseForKode(String kodeverkRef, String kode, String spraak) {
         XMLHentKodeverkRequest kodeverkRequest = new XMLHentKodeverkRequest()
                 .withNavn(kodeverkRef);
