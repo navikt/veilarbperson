@@ -1,11 +1,16 @@
 package no.nav.fo.veilarbperson.services;
 
-import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;
 import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
-import no.nav.tjeneste.virksomhet.person.v2.*;
+import no.nav.tjeneste.virksomhet.person.v2.HentKjerneinformasjonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v2.HentKjerneinformasjonSikkerhetsbegrensning;
+import no.nav.tjeneste.virksomhet.person.v2.HentSikkerhetstiltakPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v2.PersonV2;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSNorskIdent;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSPersonidenter;
-import no.nav.tjeneste.virksomhet.person.v2.meldinger.*;
+import no.nav.tjeneste.virksomhet.person.v2.meldinger.WSHentKjerneinformasjonRequest;
+import no.nav.tjeneste.virksomhet.person.v2.meldinger.WSHentKjerneinformasjonResponse;
+import no.nav.tjeneste.virksomhet.person.v2.meldinger.WSHentSikkerhetstiltakRequest;
+import no.nav.tjeneste.virksomhet.person.v2.meldinger.WSHentSikkerhetstiltakResponse;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
