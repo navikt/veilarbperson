@@ -3,9 +3,9 @@ package no.nav.fo.veilarbperson.services;
 import no.nav.fo.veilarbperson.domain.*;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import no.nav.fo.veilarbperson.domain.Sivilstand;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -35,7 +35,13 @@ class PersonDataMapper{
                 .withStatsborgerskap(kanskjeStatsborgerskap(person))
                 .withSivilstand(hentSivilstand(person))
                 .withPartner(partner(person.getHarFraRolleI()))
-                .withBostedsadresse(kanskjeBostedsadresse(person));
+                .withBostedsadresse(kanskjeBostedsadresse(person))
+                .withDodsdato(Optional.of(person)
+                        .map(WSPerson::getDoedsdato)
+                        .map(WSDoedsdato::getDoedsdato)
+                        .map(XMLGregorianCalendar::toGregorianCalendar)
+                        .map(dato -> datoTilString(dato))
+                        .orElse(null));
     }
 
     private static Bostedsadresse kanskjeBostedsadresse(WSPerson person) {
