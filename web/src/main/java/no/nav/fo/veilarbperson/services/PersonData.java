@@ -1,7 +1,7 @@
 package no.nav.fo.veilarbperson.services;
 
-import no.nav.fo.veilarbperson.domain.Bostedsadresse;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import no.nav.fo.veilarbperson.domain.Bostedsadresse;
 import no.nav.fo.veilarbperson.domain.Sivilstand;
 
 import java.util.List;
