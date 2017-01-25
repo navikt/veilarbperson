@@ -4,14 +4,16 @@ import no.nav.tjeneste.virksomhet.kodeverk.v2.HentKodeverkHentKodeverkKodeverkIk
 import no.nav.tjeneste.virksomhet.kodeverk.v2.KodeverkPortType;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.*;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.meldinger.XMLHentKodeverkRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class KodeverkService {
 
-    @Autowired
-    private KodeverkPortType kodverkPortType;
+    private final KodeverkPortType kodverkPortType;
 
-    public Kodeverk hentKodeverk(XMLHentKodeverkRequest kodeverkRequest) throws HentKodeverkHentKodeverkKodeverkIkkeFunnet {
+    public KodeverkService(KodeverkPortType kodverkPortType) {
+        this.kodverkPortType = kodverkPortType;
+    }
+
+    Kodeverk hentKodeverk(XMLHentKodeverkRequest kodeverkRequest) throws HentKodeverkHentKodeverkKodeverkIkkeFunnet {
         XMLKodeverk kodeverkResponse = kodverkPortType.hentKodeverk(kodeverkRequest).getKodeverk();
         if (kodeverkResponse instanceof XMLEnkeltKodeverk) {
             return new Kodeverk((XMLEnkeltKodeverk) kodeverkResponse);
