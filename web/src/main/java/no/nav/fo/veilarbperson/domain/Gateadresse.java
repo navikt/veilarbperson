@@ -10,8 +10,8 @@ public class Gateadresse {
     private String kommunenummer;
     private String gatenavn;
     private String bolignummer;
-    private Integer withGatenummer;
 
+    private Integer gatenummer;
 
     public String getPoststed() {
         return poststed;
@@ -45,6 +45,9 @@ public class Gateadresse {
         return bolignummer;
     }
 
+    public Integer getGatenummer() {
+        return gatenummer;
+    }
 
     public Gateadresse withPoststed(String poststed) {
         this.poststed = poststed;
@@ -87,7 +90,9 @@ public class Gateadresse {
     }
 
     public Gateadresse withGatenummer(Integer gatenummer) {
-        this.withGatenummer = gatenummer;
+        this.gatenummer = gatenummer;
         return this;
     }
+
+
 }
