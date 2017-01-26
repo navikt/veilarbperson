@@ -36,12 +36,7 @@ class PersonDataMapper{
                 .withSivilstand(hentSivilstand(person))
                 .withPartner(partner(person.getHarFraRolleI()))
                 .withBostedsadresse(kanskjeBostedsadresse(person))
-                .withDodsdato(Optional.of(person)
-                        .map(WSPerson::getDoedsdato)
-                        .map(WSDoedsdato::getDoedsdato)
-                        .map(XMLGregorianCalendar::toGregorianCalendar)
-                        .map(dato -> datoTilString(dato))
-                        .orElse(null));
+                .withDodsdato(dodsdatoTilString(person));
     }
 
     private static Bostedsadresse kanskjeBostedsadresse(WSPerson person) {
@@ -155,6 +150,7 @@ class PersonDataMapper{
                 .withHarSammeBosted(familierelasjon.isHarSammeBosted())
                 .withPersonnummer(personnummer)
                 .withFodselsdato(personnummerTilFodselsdato(personnummer))
+                .withDodsdato(dodsdatoTilString(person))
                 .withKjoenn(personnummerTilKjoenn(personnummer));
     }
 
@@ -163,6 +159,15 @@ class PersonDataMapper{
         return new Sivilstand()
                 .withSivilstand(wsSivilstand.getSivilstand().getValue())
                 .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
+    }
+
+    private static String dodsdatoTilString(WSPerson person) {
+        return Optional.of(person)
+                .map(WSPerson::getDoedsdato)
+                .map(WSDoedsdato::getDoedsdato)
+                .map(XMLGregorianCalendar::toGregorianCalendar)
+                .map(dato -> datoTilString(dato))
+                .orElse(null);
     }
 
     private static String datoTilString(GregorianCalendar dato) {
