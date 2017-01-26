@@ -39,7 +39,7 @@ public class PersonDataMapper {
                 .withDodsdato(dodsdatoTilString(person));
     }
 
-    private Bostedsadresse kanskjeBostedsadresse(WSPerson person) {
+    private static Bostedsadresse kanskjeBostedsadresse(WSPerson person) {
         Bostedsadresse bostedsadresse = null;
 
         WSBostedsadresse wsBostedsadresse = person.getBostedsadresse();
@@ -97,7 +97,7 @@ public class PersonDataMapper {
 
     }
 
-    private Gateadresse tilGateAdresse(WSGateadresse wsGateadresse) {
+    private static Gateadresse tilGateAdresse(WSGateadresse wsGateadresse) {
         return new Gateadresse()
                 .withGatenavn(ofNullable(wsGateadresse.getGatenavn()).orElse(null))
                 .withHusnummer(ofNullable(wsGateadresse.getHusnummer()).orElse(null))
@@ -117,7 +117,7 @@ public class PersonDataMapper {
         return null;
     }
 
-    private  String kanskjeStatsborgerskap(WSPerson person) {
+    private static String kanskjeStatsborgerskap(WSPerson person) {
         String statsborgerskap = null;
         Optional<WSStatsborgerskap> wsStatsborgerskap = ofNullable(person.getStatsborgerskap());
         if (wsStatsborgerskap.isPresent()) {
@@ -126,7 +126,7 @@ public class PersonDataMapper {
         return statsborgerskap;
     }
 
-    private  String kanskjeKontonummer(WSPerson person) {
+    private static String kanskjeKontonummer(WSPerson person) {
         WSBankkonto bankkonto = person.getBankkonto();
         String kontonummer = null;
 
@@ -143,21 +143,21 @@ public class PersonDataMapper {
         return kontonummer;
     }
 
-    private  String kanskjeDiskresjonskode(WSPerson person) {
+    private static String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
                 .filter(diskresjonskode -> KODE_6.equals(diskresjonskode.getValue()) || KODE_7.equals(diskresjonskode.getValue()))
                 .map(WSDiskresjonskoder::getValue)
                 .orElse(null);
     }
 
-    private  List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
+    private static List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
         return familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
                 .map(relasjon -> familierelasjonTilFamiliemedlem(relasjon))
                 .collect(toList());
     }
 
-    private  Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
+    private static Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
         for (WSFamilierelasjon relasjon : familierelasjoner) {
             if (EKTEFELLE.equals(relasjon.getTilRolle().getValue())) {
                 return familierelasjonTilFamiliemedlem(relasjon);
@@ -166,7 +166,7 @@ public class PersonDataMapper {
         return null;
     }
 
-    private  Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
+    private static Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
 
         WSPerson person = familierelasjon.getTilPerson();
         final String personnummer = person.getIdent().getIdent();
@@ -182,7 +182,7 @@ public class PersonDataMapper {
                 .withKjoenn(personnummerTilKjoenn(personnummer));
     }
 
-    private Sivilstand hentSivilstand(WSPerson person) {
+    private static Sivilstand hentSivilstand(WSPerson person) {
         WSSivilstand wsSivilstand = person.getSivilstand();
         return new Sivilstand()
                 .withSivilstand(wsSivilstand.getSivilstand().getValue())
