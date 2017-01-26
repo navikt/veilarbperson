@@ -36,12 +36,7 @@ public class PersonDataMapper {
                 .withSivilstand(hentSivilstand(person))
                 .withPartner(partner(person.getHarFraRolleI()))
                 .withBostedsadresse(kanskjeBostedsadresse(person))
-                .withDodsdato(Optional.of(person)
-                        .map(WSPerson::getDoedsdato)
-                        .map(WSDoedsdato::getDoedsdato)
-                        .map(XMLGregorianCalendar::toGregorianCalendar)
-                        .map(dato -> datoTilString(dato))
-                        .orElse(null));
+                .withDodsdato(dodsdatoTilString(person));
     }
 
     private Bostedsadresse kanskjeBostedsadresse(WSPerson person) {
@@ -183,6 +178,7 @@ public class PersonDataMapper {
                 .withHarSammeBosted(familierelasjon.isHarSammeBosted())
                 .withPersonnummer(personnummer)
                 .withFodselsdato(personnummerTilFodselsdato(personnummer))
+                .withDodsdato(dodsdatoTilString(person))
                 .withKjoenn(personnummerTilKjoenn(personnummer));
     }
 
@@ -193,7 +189,16 @@ public class PersonDataMapper {
                 .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
     }
 
-    private String datoTilString(GregorianCalendar dato) {
+    private static String dodsdatoTilString(WSPerson person) {
+        return Optional.of(person)
+                .map(WSPerson::getDoedsdato)
+                .map(WSDoedsdato::getDoedsdato)
+                .map(XMLGregorianCalendar::toGregorianCalendar)
+                .map(dato -> datoTilString(dato))
+                .orElse(null);
+    }
+
+    private static String datoTilString(GregorianCalendar dato) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         formatter.setTimeZone(dato.getTimeZone());
         return formatter.format(dato.getTime());
