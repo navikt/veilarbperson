@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.config;
+package no.nav.fo.veilarbperson.organisasjonenhet;
 
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.*;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.meldinger.*;

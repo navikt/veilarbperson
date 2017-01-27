@@ -2,6 +2,7 @@ package no.nav.fo.veilarbperson.config;
 
 import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.kodeverk.KodeverkService;
+import no.nav.fo.veilarbperson.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.services.*;
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.DigitalKontaktinformasjonV1;
