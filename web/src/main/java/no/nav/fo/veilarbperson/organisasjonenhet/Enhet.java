@@ -1,6 +1,6 @@
-package no.nav.fo.veilarbperson.services;
+package no.nav.fo.veilarbperson.organisasjonenhet;
 
-class Enhet {
+public class Enhet {
     private String enhetsnummer;
     private String navn;
 

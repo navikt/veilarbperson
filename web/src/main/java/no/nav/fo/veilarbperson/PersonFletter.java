@@ -6,6 +6,7 @@ import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
 import no.nav.fo.veilarbperson.domain.Sivilstand;
 import no.nav.fo.veilarbperson.kodeverk.KodeverkManager;
 import no.nav.fo.veilarbperson.kodeverk.KodeverkService;
+import no.nav.fo.veilarbperson.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.services.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.person.v2.HentSikkerhetstiltakPersonIkkeFunnet;

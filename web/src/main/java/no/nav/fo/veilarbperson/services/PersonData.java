@@ -3,6 +3,7 @@ package no.nav.fo.veilarbperson.services;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import no.nav.fo.veilarbperson.domain.Bostedsadresse;
 import no.nav.fo.veilarbperson.domain.Sivilstand;
+import no.nav.fo.veilarbperson.organisasjonenhet.Enhet;
 
 import java.util.List;
 
