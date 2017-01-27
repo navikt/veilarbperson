@@ -1,10 +1,10 @@
 package no.nav.fo.veilarbperson.config;
 
-import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
-import no.nav.fo.veilarbperson.kodeverk.KodeverkService;
-import no.nav.fo.veilarbperson.organisasjonenhet.EnhetService;
-import no.nav.fo.veilarbperson.person.EgenAnsattService;
-import no.nav.fo.veilarbperson.person.PersonService;
+import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
+import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
+import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
+import no.nav.fo.veilarbperson.consumer.person.EgenAnsattService;
+import no.nav.fo.veilarbperson.consumer.person.PersonService;
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.DigitalKontaktinformasjonV1;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.KodeverkPortType;

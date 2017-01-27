@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.kodeverk;
+package no.nav.fo.veilarbperson.consumer.kodeverk;
 
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;

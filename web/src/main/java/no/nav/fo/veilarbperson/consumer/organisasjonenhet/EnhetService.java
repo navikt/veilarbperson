@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.organisasjonenhet;
+package no.nav.fo.veilarbperson.consumer.organisasjonenhet;
 
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.FinnNAVKontorForGeografiskNedslagsfeltBolkUgyldigInput;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;

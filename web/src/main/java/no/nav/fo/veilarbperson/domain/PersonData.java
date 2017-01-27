@@ -1,7 +1,7 @@
 package no.nav.fo.veilarbperson.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import no.nav.fo.veilarbperson.organisasjonenhet.Enhet;
+import no.nav.fo.veilarbperson.consumer.organisasjonenhet.Enhet;
 
 import java.util.List;
 

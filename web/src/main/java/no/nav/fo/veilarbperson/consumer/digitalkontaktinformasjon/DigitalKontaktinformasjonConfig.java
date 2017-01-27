@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.digitalkontaktinformasjon;
+package no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon;
 
 import no.nav.fo.veilarbperson.config.TestOutInterceptor;
 import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
