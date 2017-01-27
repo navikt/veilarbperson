@@ -62,7 +62,7 @@ public class PersonDataMapper {
             }
 
             if (wsStrukturertadresse instanceof WSMatrikkeladresse) {
-                bostedsadresse.withMatrikkeladresse(tilMatrikkeladresse((WSMatrikkeladresse) wsStrukturertadresse));
+                bostedsadresse.withStrukturertAdresse(tilMatrikkeladresse((WSMatrikkeladresse) wsStrukturertadresse));
             }
 
             if (wsStrukturertadresse.getLandkode() != null) {
@@ -74,10 +74,11 @@ public class PersonDataMapper {
         return bostedsadresse;
     }
 
-    private static Matrikkeladresse tilMatrikkeladresse(WSMatrikkeladresse wsMatrikkeladresse) {
-        Optional<WSMatrikkelnummer> kanskjeMatrikkelnummer = ofNullable(wsMatrikkeladresse.getMatrikkelnummer());
+    private static StrukturertAdresse tilMatrikkeladresse(WSMatrikkeladresse wsMatrikkeladresse) {
+       Optional<WSMatrikkelnummer> kanskjeMatrikkelnummer = ofNullable(wsMatrikkeladresse.getMatrikkelnummer());
         return new Matrikkeladresse()
-                .withEiendomsnavn(ofNullable(wsMatrikkeladresse.getEiendomsnavn()).orElse(null))
+                .withEiendomsnavn(ofNullable(wsMatrikkeladresse.getEiendomsnavn())
+                        .orElse(null))
                 .withGardsnummer(kanskjeMatrikkelnummer
                         .map(WSMatrikkelnummer::getGaardsnummer)
                         .orElse(null))
@@ -92,7 +93,11 @@ public class PersonDataMapper {
                         .orElse(null))
                 .withUndernummer(kanskjeMatrikkelnummer
                         .map(WSMatrikkelnummer::getUndernummer)
+                        .orElse(null))
+                .withPostnummer(ofNullable(wsMatrikkeladresse.getPoststed().getValue())
                         .orElse(null));
+
+
     }
 
     private static PostboksadresseNorsk tilPostboksadresseNorsk(WSPostboksadresseNorsk wsPostboksadresseNorsk) {
@@ -106,12 +111,18 @@ public class PersonDataMapper {
     private StrukturertAdresse tilGateAdresse(WSGateadresse wsGateadresse) {
 
         return new Gateadresse()
-                .withGatenavn(ofNullable(wsGateadresse.getGatenavn()).orElse(null))
-                .withHusnummer(ofNullable(wsGateadresse.getHusnummer()).orElse(null))
-                .withHusbokstav(ofNullable(wsGateadresse.getHusbokstav()).orElse(null))
-                .withGatenummer(ofNullable(wsGateadresse.getGatenummer()).orElse(null))
-                .withKommunenummer(ofNullable(wsGateadresse.getKommunenummer()).orElse(null))
-                .withPostnummer(ofNullable(wsGateadresse.getPoststed().getValue()).orElse(null));
+                .withGatenavn(ofNullable(wsGateadresse.getGatenavn())
+                        .orElse(null))
+                .withHusnummer(ofNullable(wsGateadresse.getHusnummer())
+                        .orElse(null))
+                .withHusbokstav(ofNullable(wsGateadresse.getHusbokstav())
+                        .orElse(null))
+                .withGatenummer(ofNullable(wsGateadresse.getGatenummer())
+                        .orElse(null))
+                .withKommunenummer(ofNullable(wsGateadresse.getKommunenummer())
+                        .orElse(null))
+                .withPostnummer(ofNullable(wsGateadresse.getPoststed().getValue())
+                        .orElse(null));
     }
 
     private static String ansvarligEnhetsnummer(WSPerson person) {

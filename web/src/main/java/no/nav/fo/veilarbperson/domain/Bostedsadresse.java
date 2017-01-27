@@ -2,7 +2,6 @@ package no.nav.fo.veilarbperson.domain;
 
 public class Bostedsadresse {
 
-
     public StrukturertAdresse getStrukturertAdresse() {
         return strukturertAdresse;
     }
@@ -14,15 +13,10 @@ public class Bostedsadresse {
 
     private StrukturertAdresse strukturertAdresse;
     private PostboksadresseNorsk postboksadresseNorsk;
-    private Matrikkeladresse matrikkeladresse;
 
 
     public PostboksadresseNorsk getPostboksadresseNorsk() {
         return postboksadresseNorsk;
-    }
-
-    public Matrikkeladresse getMatrikkeladresse() {
-        return matrikkeladresse;
     }
 
 
@@ -31,10 +25,6 @@ public class Bostedsadresse {
     }
 
 
-    public Bostedsadresse withMatrikkeladresse(Matrikkeladresse matrikkeladresse) {
-        this.matrikkeladresse = matrikkeladresse;
-        return this;
-    }
 
 
 }
