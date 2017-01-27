@@ -1,5 +1,6 @@
-package no.nav.fo.veilarbperson.config;
+package no.nav.fo.veilarbperson.person;
 
+import no.nav.fo.veilarbperson.config.*;
 import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;

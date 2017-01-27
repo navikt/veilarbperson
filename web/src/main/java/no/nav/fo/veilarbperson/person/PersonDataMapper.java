@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.services;
+package no.nav.fo.veilarbperson.person;
 
 import no.nav.fo.veilarbperson.domain.*;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
@@ -19,7 +19,7 @@ public class PersonDataMapper {
     private static final String KODE_7 = "7";
     private static final String EKTEFELLE = "EKTE";
 
-    PersonData tilPersonData(WSPerson person){
+    public PersonData tilPersonData(WSPerson person){
         return new PersonData()
                 .withFornavn(person.getPersonnavn().getFornavn())
                 .withMellomnavn(person.getPersonnavn().getMellomnavn())
@@ -171,7 +171,7 @@ public class PersonDataMapper {
         return null;
     }
 
-    private  Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
+    private Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
 
         WSPerson person = familierelasjon.getTilPerson();
         final String personnummer = person.getIdent().getIdent();

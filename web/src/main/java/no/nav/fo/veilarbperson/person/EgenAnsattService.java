@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.services;
+package no.nav.fo.veilarbperson.person;
 
 
 import no.nav.tjeneste.pip.egen.ansatt.v1.*;
