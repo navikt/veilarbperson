@@ -1,8 +1,6 @@
-package no.nav.fo.veilarbperson.services;
+package no.nav.fo.veilarbperson.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import no.nav.fo.veilarbperson.domain.Bostedsadresse;
-import no.nav.fo.veilarbperson.domain.Sivilstand;
 import no.nav.fo.veilarbperson.organisasjonenhet.Enhet;
 
 import java.util.List;
@@ -118,32 +116,32 @@ public class PersonData {
         return egenAnsatt;
     }
 
-    PersonData withFornavn(String fornavn) {
+    public PersonData withFornavn(String fornavn) {
         this.fornavn = fornavn;
         return this;
     }
 
-    PersonData withMellomnavn(String mellomnavn) {
+    public PersonData withMellomnavn(String mellomnavn) {
         this.mellomnavn = mellomnavn;
         return this;
     }
 
-    PersonData withEtternavn(String etternavn) {
+    public PersonData withEtternavn(String etternavn) {
         this.etternavn = etternavn;
         return this;
     }
 
-    PersonData withSammensattNavn(String sammensattNavn) {
+    public PersonData withSammensattNavn(String sammensattNavn) {
         this.sammensattNavn = sammensattNavn;
         return this;
     }
 
-    PersonData withPersonnummer(String personnummer) {
+    public PersonData withPersonnummer(String personnummer) {
         this.personnummer = personnummer;
         return this;
     }
 
-    PersonData withFodselsdato(String fodselsdato) {
+    public PersonData withFodselsdato(String fodselsdato) {
         this.fodselsdato = fodselsdato;
         return this;
     }
@@ -153,27 +151,27 @@ public class PersonData {
         return this;
     }
 
-    PersonData withKjoenn(String kjoenn) {
+    public PersonData withKjoenn(String kjoenn) {
         this.kjoenn = kjoenn;
         return this;
     }
 
-    PersonData withBarn(List<Familiemedlem> barn) {
+    public PersonData withBarn(List<Familiemedlem> barn) {
         this.barn = barn;
         return this;
     }
 
-    PersonData withDiskresjonskode(String diskresjonskode) {
+    public PersonData withDiskresjonskode(String diskresjonskode) {
         this.diskresjonskode = diskresjonskode;
         return this;
     }
 
-    PersonData withKontonummer(String kontonummer) {
+    public PersonData withKontonummer(String kontonummer) {
         this.kontonummer = kontonummer;
         return this;
     }
 
-    PersonData withAnsvarligEnhetsnummer(String enhetsnummer) {
+    public PersonData withAnsvarligEnhetsnummer(String enhetsnummer) {
         this.ansvarligEnhetsnummer = enhetsnummer;
         return this;
     }
@@ -208,7 +206,7 @@ public class PersonData {
         return this;
     }
 
-    PersonData withPartner(Familiemedlem partner) {
+    public PersonData withPartner(Familiemedlem partner) {
         this.partner = partner;
         return this;
     }
