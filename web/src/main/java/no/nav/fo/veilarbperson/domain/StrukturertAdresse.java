@@ -1,6 +1,15 @@
 package no.nav.fo.veilarbperson.domain;
 
-public abstract class StrukturertAdresse  {
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include= JsonTypeInfo.As.WRAPPER_OBJECT, property="type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(name="Gateadresse", value=Gateadresse.class)
+})
+public class StrukturertAdresse  {
+
 
     private String landkode;
     private String postnummer;
