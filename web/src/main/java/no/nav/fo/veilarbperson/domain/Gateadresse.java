@@ -1,24 +1,12 @@
 package no.nav.fo.veilarbperson.domain;
 
-public class Gateadresse {
+public class Gateadresse extends StrukturertAdresse{
 
-    private String poststed;
-    private String postnummer;
     private Integer husnummer;
     private String husbokstav;
     private String kommunenummer;
     private String gatenavn;
     private Integer withGatenummer;
-
-
-    public String getPoststed() {
-        return poststed;
-    }
-
-
-    public String getPostnummer() {
-        return postnummer;
-    }
 
     public Integer getHusnummer() {
         return husnummer;
@@ -36,15 +24,6 @@ public class Gateadresse {
         return gatenavn;
     }
 
-    public Gateadresse withPoststed(String poststed) {
-        this.poststed = poststed;
-        return this;
-    }
-
-    public Gateadresse withPostnummer(String postnummer) {
-        this.postnummer = postnummer;
-        return this;
-    }
 
     public Gateadresse withHusnummer(Integer husnummer) {
         this.husnummer = husnummer;

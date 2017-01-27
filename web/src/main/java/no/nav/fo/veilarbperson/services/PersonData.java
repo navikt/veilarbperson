@@ -1,10 +1,13 @@
 package no.nav.fo.veilarbperson.services;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import no.nav.fo.veilarbperson.domain.Bostedsadresse;
-import no.nav.fo.veilarbperson.domain.Sivilstand;
+import no.nav.fo.veilarbperson.domain.*;
 
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 public class PersonData {
     private String fornavn;
@@ -220,5 +223,19 @@ public class PersonData {
     public PersonData withEgenAnsatt(boolean egenAnsatt) {
         this.egenAnsatt = egenAnsatt;
         return this;
+    }
+
+    @JsonIgnore
+    public Optional<String> getPostnummer() {
+        return ofNullable(bostedsadresse)
+                .map(Bostedsadresse::getStrukturertAdresse)
+                .map(StrukturertAdresse::getPostnummer);
+
+    }
+
+    public void setPoststed(String poststed) {
+        ofNullable(bostedsadresse)
+                .map(Bostedsadresse::getStrukturertAdresse)
+                .ifPresent(strukturertAdresse -> strukturertAdresse.withPoststed(poststed));
     }
 }
