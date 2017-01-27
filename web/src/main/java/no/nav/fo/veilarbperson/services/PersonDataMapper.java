@@ -58,7 +58,7 @@ public class PersonDataMapper {
             }
 
             if (wsStrukturertadresse instanceof WSPostboksadresseNorsk) {
-                bostedsadresse.withPostboksadresseNorsk(tilPostboksadresseNorsk((WSPostboksadresseNorsk) wsStrukturertadresse));
+                bostedsadresse.withStrukturertAdresse(tilPostboksadresseNorsk((WSPostboksadresseNorsk) wsStrukturertadresse));
             }
 
             if (wsStrukturertadresse instanceof WSMatrikkeladresse) {
