@@ -1,13 +1,14 @@
 package no.nav.fo.veilarbperson;
 
-import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjon;
-import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
+
+import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjon;
+import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
+import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkManager;
+import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
+import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
+import no.nav.fo.veilarbperson.consumer.person.EgenAnsattService;
+import no.nav.fo.veilarbperson.consumer.person.PersonService;
 import no.nav.fo.veilarbperson.domain.*;
-import no.nav.fo.veilarbperson.kodeverk.KodeverkManager;
-import no.nav.fo.veilarbperson.kodeverk.KodeverkService;
-import no.nav.fo.veilarbperson.organisasjonenhet.EnhetService;
-import no.nav.fo.veilarbperson.person.EgenAnsattService;
-import no.nav.fo.veilarbperson.person.PersonService;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.person.v2.HentSikkerhetstiltakPersonIkkeFunnet;
 

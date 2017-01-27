@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.person;
+package no.nav.fo.veilarbperson.consumer.person;
 
 import no.nav.tjeneste.virksomhet.person.v2.*;
 import no.nav.tjeneste.virksomhet.person.v2.meldinger.*;

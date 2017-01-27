@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.organisasjonenhet;
+package no.nav.fo.veilarbperson.consumer.organisasjonenhet;
 
 import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;

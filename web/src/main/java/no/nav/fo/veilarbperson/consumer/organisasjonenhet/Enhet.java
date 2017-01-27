@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.organisasjonenhet;
+package no.nav.fo.veilarbperson.consumer.organisasjonenhet;
 
 public class Enhet {
     private String enhetsnummer;

@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.person;
+package no.nav.fo.veilarbperson.consumer.person;
 
 import no.nav.fo.veilarbperson.domain.*;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;

@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.digitalkontaktinformasjon;
+package no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon;
 
 public class DigitalKontaktinformasjon {
 
