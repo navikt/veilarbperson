@@ -8,33 +8,32 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
-import static no.nav.fo.veilarbperson.utils.Personnummer.personnummerTilFodselsdato;
-import static no.nav.fo.veilarbperson.utils.Personnummer.personnummerTilKjoenn;
 
 public class PersonDataMapper {
 
-    private static final String BARN = "BARN";
+
     private static final String KODE_6 = "6";
     private static final String KODE_7 = "7";
-    private static final String EKTEFELLE = "EKTE";
+
+    private final BarnMapper barnMapper = new BarnMapper();
+    private final FamiliemedlemMapper familiemedlemMapper = new FamiliemedlemMapper();
 
     public PersonData tilPersonData(WSPerson person){
         return new PersonData()
-                .withFornavn(person.getPersonnavn().getFornavn())
+                .withFornavn(kanskjeFornavn(person))
                 .withMellomnavn(person.getPersonnavn().getMellomnavn())
                 .withEtternavn(person.getPersonnavn().getEtternavn())
                 .withSammensattNavn(person.getPersonnavn().getSammensattNavn())
                 .withPersonnummer(person.getIdent().getIdent())
                 .withFodselsdato(datoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
                 .withKjoenn(person.getKjoenn().getKjoenn().getValue())
-                .withBarn(familierelasjonerTilBarn(person.getHarFraRolleI()))
+                .withBarn(barnMapper.familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .withDiskresjonskode(kanskjeDiskresjonskode(person))
                 .withKontonummer(kanskjeKontonummer(person))
                 .withAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person))
                 .withStatsborgerskap(kanskjeStatsborgerskap(person))
                 .withSivilstand(hentSivilstand(person))
-                .withPartner(partner(person.getHarFraRolleI()))
+                .withPartner(familiemedlemMapper.partner(person.getHarFraRolleI()))
                 .withBostedsadresse(kanskjeBostedsadresse(person))
                 .withDodsdato(Optional.of(person)
                         .map(WSPerson::getDoedsdato)
@@ -42,6 +41,12 @@ public class PersonDataMapper {
                         .map(XMLGregorianCalendar::toGregorianCalendar)
                         .map(dato -> datoTilString(dato))
                         .orElse(null));
+    }
+
+    private String kanskjeFornavn(WSPerson person) {
+        return ofNullable(person.getPersonnavn())
+                .map(WSPersonnavn::getFornavn)
+                .orElse(null);
     }
 
     private Bostedsadresse kanskjeBostedsadresse(WSPerson person) {
@@ -155,36 +160,7 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private  List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
-        return familierelasjoner.stream()
-                .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
-                .map(relasjon -> familierelasjonTilFamiliemedlem(relasjon))
-                .collect(toList());
-    }
 
-    private  Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
-        for (WSFamilierelasjon relasjon : familierelasjoner) {
-            if (EKTEFELLE.equals(relasjon.getTilRolle().getValue())) {
-                return familierelasjonTilFamiliemedlem(relasjon);
-            }
-        }
-        return null;
-    }
-
-    private Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
-
-        WSPerson person = familierelasjon.getTilPerson();
-        final String personnummer = person.getIdent().getIdent();
-
-        return new Familiemedlem()
-                .withFornavn(person.getPersonnavn().getFornavn())
-                .withEtternavn(person.getPersonnavn().getEtternavn())
-                .withSammensattnavn(person.getPersonnavn().getSammensattNavn())
-                .withHarSammeBosted(familierelasjon.isHarSammeBosted())
-                .withPersonnummer(personnummer)
-                .withFodselsdato(personnummerTilFodselsdato(personnummer))
-                .withKjoenn(personnummerTilKjoenn(personnummer));
-    }
 
     private Sivilstand hentSivilstand(WSPerson person) {
         WSSivilstand wsSivilstand = person.getSivilstand();
