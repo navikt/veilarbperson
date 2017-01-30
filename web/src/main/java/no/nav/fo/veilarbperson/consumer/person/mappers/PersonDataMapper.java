@@ -32,7 +32,7 @@ public class PersonDataMapper {
                 .withKontonummer(kanskjeKontonummer(person))
                 .withAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person))
                 .withStatsborgerskap(kanskjeStatsborgerskap(person))
-                .withSivilstand(hentSivilstand(person))
+                .withSivilstand(kanskjeSivilstand(person))
                 .withPartner(familiemedlemMapper.partner(person.getHarFraRolleI()))
                 .withBostedsadresse(kanskjeBostedsadresse(person))
                 .withDodsdato(Optional.of(person)
@@ -199,12 +199,14 @@ public class PersonDataMapper {
     }
 
 
-
-    private Sivilstand hentSivilstand(WSPerson person) {
-        WSSivilstand wsSivilstand = person.getSivilstand();
-        return new Sivilstand()
-                .withSivilstand(wsSivilstand.getSivilstand().getValue())
-                .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
+    private Sivilstand kanskjeSivilstand(WSPerson person) {
+        return ofNullable(person.getSivilstand())
+                .map(wsSivilstand -> {
+                            return new Sivilstand()
+                                    .withSivilstand(wsSivilstand.getSivilstand().getValue())
+                                    .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
+                        })
+                .orElse(null);
     }
 
     private String datoTilString(GregorianCalendar dato) {
