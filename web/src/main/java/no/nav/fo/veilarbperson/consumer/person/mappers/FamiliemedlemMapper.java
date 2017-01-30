@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.consumer.person;
+package no.nav.fo.veilarbperson.consumer.person.mappers;
 
 import no.nav.fo.veilarbperson.domain.Familiemedlem;
 import no.nav.fo.veilarbperson.utils.Personnummer;

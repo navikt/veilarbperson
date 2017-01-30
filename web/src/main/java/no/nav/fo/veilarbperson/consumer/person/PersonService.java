@@ -1,7 +1,8 @@
 package no.nav.fo.veilarbperson.consumer.person;
 
-import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
+import no.nav.fo.veilarbperson.consumer.person.mappers.PersonDataMapper;
 import no.nav.fo.veilarbperson.domain.PersonData;
+import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
 import no.nav.tjeneste.virksomhet.person.v2.*;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSNorskIdent;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSPersonidenter;

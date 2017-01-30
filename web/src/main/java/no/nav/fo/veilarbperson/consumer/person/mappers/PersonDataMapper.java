@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.consumer.person;
+package no.nav.fo.veilarbperson.consumer.person.mappers;
 
 import no.nav.fo.veilarbperson.domain.*;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
@@ -21,11 +21,11 @@ public class PersonDataMapper {
     public PersonData tilPersonData(WSPerson person){
         return new PersonData()
                 .withFornavn(kanskjeFornavn(person))
-                .withMellomnavn(person.getPersonnavn().getMellomnavn())
-                .withEtternavn(person.getPersonnavn().getEtternavn())
-                .withSammensattNavn(person.getPersonnavn().getSammensattNavn())
-                .withPersonnummer(person.getIdent().getIdent())
-                .withFodselsdato(datoTilString(person.getFoedselsdato().getFoedselsdato().toGregorianCalendar()))
+                .withMellomnavn(kanskjeMellomnavn(person))
+                .withEtternavn(kanskjeEtternavn(person))
+                .withSammensattNavn(kanskjeSammensattnavn(person))
+                .withPersonnummer(kanskjePersonnummer(person))
+                .withFodselsdato(kanskjeFodselsdato(person))
                 .withKjoenn(person.getKjoenn().getKjoenn().getValue())
                 .withBarn(barnMapper.familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .withDiskresjonskode(kanskjeDiskresjonskode(person))
@@ -43,9 +43,40 @@ public class PersonDataMapper {
                         .orElse(null));
     }
 
+    private String kanskjeFodselsdato(WSPerson person) {
+        return ofNullable(person.getFoedselsdato())
+                .map(WSFoedselsdato::getFoedselsdato)
+                .map(dato -> datoTilString(dato.toGregorianCalendar()))
+                .orElse(null);
+    }
+
+    private String kanskjePersonnummer(WSPerson person) {
+        return ofNullable(person.getIdent())
+                .map(WSNorskIdent::getIdent)
+                .orElse(null);
+    }
+
+    private String kanskjeSammensattnavn(WSPerson person) {
+        return ofNullable(person.getPersonnavn())
+                .map(WSPersonnavn::getSammensattNavn)
+                .orElse(null);
+    }
+
+    private String kanskjeEtternavn(WSPerson person) {
+        return ofNullable(person.getPersonnavn())
+                .map(WSPersonnavn::getEtternavn)
+                .orElse(null);
+    }
+
     private String kanskjeFornavn(WSPerson person) {
         return ofNullable(person.getPersonnavn())
                 .map(WSPersonnavn::getFornavn)
+                .orElse(null);
+    }
+
+    private String kanskjeMellomnavn (WSPerson person) {
+        return ofNullable(person.getPersonnavn())
+                .map(WSPersonnavn::getMellomnavn)
                 .orElse(null);
     }
 
