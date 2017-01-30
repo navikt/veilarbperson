@@ -26,7 +26,7 @@ public class PersonDataMapper {
                 .withSammensattNavn(kanskjeSammensattnavn(person))
                 .withPersonnummer(kanskjePersonnummer(person))
                 .withFodselsdato(kanskjeFodselsdato(person))
-                .withKjoenn(person.getKjoenn().getKjoenn().getValue())
+                .withKjoenn(kanskjeKjonn(person))
                 .withBarn(barnMapper.familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .withDiskresjonskode(kanskjeDiskresjonskode(person))
                 .withKontonummer(kanskjeKontonummer(person))
@@ -41,6 +41,13 @@ public class PersonDataMapper {
                         .map(XMLGregorianCalendar::toGregorianCalendar)
                         .map(dato -> datoTilString(dato))
                         .orElse(null));
+    }
+
+    private String kanskjeKjonn(WSPerson person) {
+        return ofNullable(person.getKjoenn())
+                .map(WSKjoenn::getKjoenn)
+                .map(kjonn -> kjonn.getValue())
+                .orElse(null);
     }
 
     private String kanskjeFodselsdato(WSPerson person) {
