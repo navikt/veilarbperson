@@ -18,7 +18,7 @@ public class PersonDataMapper {
     private final BarnMapper barnMapper = new BarnMapper();
     private final FamiliemedlemMapper familiemedlemMapper = new FamiliemedlemMapper();
 
-    public PersonData tilPersonData(WSPerson person){
+    public PersonData tilPersonData(WSPerson person) {
         return new PersonData()
                 .withFornavn(kanskjeFornavn(person))
                 .withMellomnavn(kanskjeMellomnavn(person))
@@ -81,7 +81,7 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private String kanskjeMellomnavn (WSPerson person) {
+    private String kanskjeMellomnavn(WSPerson person) {
         return ofNullable(person.getPersonnavn())
                 .map(WSPersonnavn::getMellomnavn)
                 .orElse(null);
@@ -165,7 +165,7 @@ public class PersonDataMapper {
         return null;
     }
 
-    private  String kanskjeStatsborgerskap(WSPerson person) {
+    private String kanskjeStatsborgerskap(WSPerson person) {
         String statsborgerskap = null;
         Optional<WSStatsborgerskap> wsStatsborgerskap = ofNullable(person.getStatsborgerskap());
         if (wsStatsborgerskap.isPresent()) {
@@ -174,7 +174,7 @@ public class PersonDataMapper {
         return statsborgerskap;
     }
 
-    private  String kanskjeKontonummer(WSPerson person) {
+    private String kanskjeKontonummer(WSPerson person) {
         WSBankkonto bankkonto = person.getBankkonto();
         String kontonummer = null;
 
@@ -191,7 +191,7 @@ public class PersonDataMapper {
         return kontonummer;
     }
 
-    private  String kanskjeDiskresjonskode(WSPerson person) {
+    private String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
                 .filter(diskresjonskode -> KODE_6.equals(diskresjonskode.getValue()) || KODE_7.equals(diskresjonskode.getValue()))
                 .map(WSDiskresjonskoder::getValue)
@@ -208,6 +208,7 @@ public class PersonDataMapper {
                         })
                 .orElse(null);
     }
+
 
     private String datoTilString(GregorianCalendar dato) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
