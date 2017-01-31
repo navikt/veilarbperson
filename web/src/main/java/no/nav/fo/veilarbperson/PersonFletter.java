@@ -55,6 +55,14 @@ public class PersonFletter {
                 .withSivilstand(kodeverkManager.getBeskrivelseForSivilstand(sivilstandKode)
                         .orElse(sivilstandKode));
         personData.withSivilstand(sivilstand);
+        kanskjePoststed(personData);
+    }
+
+    private void kanskjePoststed(PersonData personData) {
+        personData.getPostnummer()
+                .flatMap(kodeverkManager::getPoststed)
+                .ifPresent(poststed -> personData.setPoststed(poststed));
+
     }
 
     private void hentDigitalKontaktinformasjon(String fnr, PersonData personData) {
