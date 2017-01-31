@@ -36,15 +36,10 @@ public class PersonDataMapper {
                 .withSivilstand(hentSivilstand(person))
                 .withPartner(partner(person.getHarFraRolleI()))
                 .withBostedsadresse(kanskjeBostedsadresse(person))
-                .withDodsdato(Optional.of(person)
-                        .map(WSPerson::getDoedsdato)
-                        .map(WSDoedsdato::getDoedsdato)
-                        .map(XMLGregorianCalendar::toGregorianCalendar)
-                        .map(dato -> datoTilString(dato))
-                        .orElse(null));
+                .withDodsdato(dodsdatoTilString(person));
     }
 
-    private Bostedsadresse kanskjeBostedsadresse(WSPerson person) {
+    private static Bostedsadresse kanskjeBostedsadresse(WSPerson person) {
         Bostedsadresse bostedsadresse = null;
 
         WSBostedsadresse wsBostedsadresse = person.getBostedsadresse();
@@ -108,7 +103,7 @@ public class PersonDataMapper {
 
     }
 
-    private StrukturertAdresse tilGateAdresse(WSGateadresse wsGateadresse) {
+    private static StrukturertAdresse tilGateAdresse(WSGateadresse wsGateadresse) {
 
         return new Gateadresse()
                 .withGatenavn(ofNullable(wsGateadresse.getGatenavn())
@@ -135,7 +130,7 @@ public class PersonDataMapper {
         return null;
     }
 
-    private  String kanskjeStatsborgerskap(WSPerson person) {
+    private static String kanskjeStatsborgerskap(WSPerson person) {
         String statsborgerskap = null;
         Optional<WSStatsborgerskap> wsStatsborgerskap = ofNullable(person.getStatsborgerskap());
         if (wsStatsborgerskap.isPresent()) {
@@ -144,7 +139,7 @@ public class PersonDataMapper {
         return statsborgerskap;
     }
 
-    private  String kanskjeKontonummer(WSPerson person) {
+    private static String kanskjeKontonummer(WSPerson person) {
         WSBankkonto bankkonto = person.getBankkonto();
         String kontonummer = null;
 
@@ -161,21 +156,21 @@ public class PersonDataMapper {
         return kontonummer;
     }
 
-    private  String kanskjeDiskresjonskode(WSPerson person) {
+    private static String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
                 .filter(diskresjonskode -> KODE_6.equals(diskresjonskode.getValue()) || KODE_7.equals(diskresjonskode.getValue()))
                 .map(WSDiskresjonskoder::getValue)
                 .orElse(null);
     }
 
-    private  List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
+    private static List<Familiemedlem> familierelasjonerTilBarn(List<WSFamilierelasjon> familierelasjoner) {
         return familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
                 .map(relasjon -> familierelasjonTilFamiliemedlem(relasjon))
                 .collect(toList());
     }
 
-    private  Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
+    private static Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
         for (WSFamilierelasjon relasjon : familierelasjoner) {
             if (EKTEFELLE.equals(relasjon.getTilRolle().getValue())) {
                 return familierelasjonTilFamiliemedlem(relasjon);
@@ -184,7 +179,7 @@ public class PersonDataMapper {
         return null;
     }
 
-    private  Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
+    private static Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
 
         WSPerson person = familierelasjon.getTilPerson();
         final String personnummer = person.getIdent().getIdent();
@@ -196,17 +191,27 @@ public class PersonDataMapper {
                 .withHarSammeBosted(familierelasjon.isHarSammeBosted())
                 .withPersonnummer(personnummer)
                 .withFodselsdato(personnummerTilFodselsdato(personnummer))
+                .withDodsdato(dodsdatoTilString(person))
                 .withKjoenn(personnummerTilKjoenn(personnummer));
     }
 
-    private Sivilstand hentSivilstand(WSPerson person) {
+    private static Sivilstand hentSivilstand(WSPerson person) {
         WSSivilstand wsSivilstand = person.getSivilstand();
         return new Sivilstand()
                 .withSivilstand(wsSivilstand.getSivilstand().getValue())
                 .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
     }
 
-    private String datoTilString(GregorianCalendar dato) {
+    private static String dodsdatoTilString(WSPerson person) {
+        return Optional.of(person)
+                .map(WSPerson::getDoedsdato)
+                .map(WSDoedsdato::getDoedsdato)
+                .map(XMLGregorianCalendar::toGregorianCalendar)
+                .map(dato -> datoTilString(dato))
+                .orElse(null);
+    }
+
+    private static String datoTilString(GregorianCalendar dato) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         formatter.setTimeZone(dato.getTimeZone());
         return formatter.format(dato.getTime());

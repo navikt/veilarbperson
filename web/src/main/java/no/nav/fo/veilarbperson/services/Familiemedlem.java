@@ -13,6 +13,7 @@ class Familiemedlem {
     @JsonProperty("kjonn")
     private String kjoenn;
     private Boolean harSammeBosted;
+    private String dodsdato;
 
     public String getFornavn() {
         return fornavn;
@@ -32,6 +33,10 @@ class Familiemedlem {
 
     public String getFodselsdato() {
         return fodselsdato;
+    }
+
+    public String getDodsdato() {
+        return dodsdato;
     }
 
     public String getKjoenn() {
@@ -75,6 +80,11 @@ class Familiemedlem {
 
     Familiemedlem withKjoenn(String kjoenn){
         this.kjoenn = kjoenn;
+        return this;
+    }
+
+    Familiemedlem withDodsdato(String dodsdato) {
+        this.dodsdato = dodsdato;
         return this;
     }
 }
