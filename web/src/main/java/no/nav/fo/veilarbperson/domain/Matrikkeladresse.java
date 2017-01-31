@@ -1,8 +1,7 @@
 package no.nav.fo.veilarbperson.domain;
 
-public class Matrikkeladresse {
+public class Matrikkeladresse extends StrukturertAdresse{
 
-    private String postnummer;
     private String kommunenummer;
     private String gardsnummer;
     private String bruksnummer;
@@ -10,15 +9,6 @@ public class Matrikkeladresse {
     private String seksjonsnummer;
     private String undernummer;
     private String eiendomsnavn;
-
-    public String getPostnummer() {
-        return postnummer;
-    }
-
-    public Matrikkeladresse withPostnummer(String postnummer) {
-        this.postnummer = postnummer;
-        return this;
-    }
 
     public String getKommunenummer() {
         return kommunenummer;
