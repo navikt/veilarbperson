@@ -35,12 +35,7 @@ public class PersonDataMapper {
                 .withSivilstand(kanskjeSivilstand(person))
                 .withPartner(familiemedlemMapper.partner(person.getHarFraRolleI()))
                 .withBostedsadresse(kanskjeBostedsadresse(person))
-                .withDodsdato(Optional.of(person)
-                        .map(WSPerson::getDoedsdato)
-                        .map(WSDoedsdato::getDoedsdato)
-                        .map(XMLGregorianCalendar::toGregorianCalendar)
-                        .map(dato -> datoTilString(dato))
-                        .orElse(null));
+                .withDodsdato(dodsdatoTilString(person));
     }
 
     private String kanskjeKjonn(WSPerson person) {
@@ -87,39 +82,41 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private Bostedsadresse kanskjeBostedsadresse(WSPerson person) {
+    private static Bostedsadresse kanskjeBostedsadresse(WSPerson person) {
         Bostedsadresse bostedsadresse = null;
 
         WSBostedsadresse wsBostedsadresse = person.getBostedsadresse();
         if (wsBostedsadresse != null) {
             bostedsadresse = new Bostedsadresse();
 
-            WSStrukturertAdresse strukturertadresse = wsBostedsadresse.getStrukturertAdresse();
+            WSStrukturertAdresse wsStrukturertadresse = wsBostedsadresse.getStrukturertAdresse();
 
-            if (strukturertadresse.getLandkode() != null) {
-                bostedsadresse.withLandkode(strukturertadresse.getLandkode().getValue());
+            if (wsStrukturertadresse instanceof WSGateadresse) {
+                bostedsadresse.withStrukturertAdresse(tilGateAdresse((WSGateadresse) wsStrukturertadresse));
             }
 
-            if (strukturertadresse instanceof WSGateadresse) {
-                bostedsadresse.withGateadresse(tilGateAdresse((WSGateadresse) strukturertadresse));
+            if (wsStrukturertadresse instanceof WSPostboksadresseNorsk) {
+                bostedsadresse.withStrukturertAdresse(tilPostboksadresseNorsk((WSPostboksadresseNorsk) wsStrukturertadresse));
             }
 
-            if (strukturertadresse instanceof WSPostboksadresseNorsk) {
-                bostedsadresse.withPostboksadresseNorsk(tilPostboksadresseNorsk((WSPostboksadresseNorsk) strukturertadresse));
+            if (wsStrukturertadresse instanceof WSMatrikkeladresse) {
+                bostedsadresse.withStrukturertAdresse(tilMatrikkeladresse((WSMatrikkeladresse) wsStrukturertadresse));
             }
 
-            if (strukturertadresse instanceof WSMatrikkeladresse) {
-                bostedsadresse.withMatrikkeladresse(tilMatrikkeladresse((WSMatrikkeladresse) strukturertadresse));
+            if (wsStrukturertadresse.getLandkode() != null) {
+                bostedsadresse.getStrukturertAdresse().withLandkode(wsStrukturertadresse.getLandkode().getValue());
             }
+
         }
 
         return bostedsadresse;
     }
 
-    private static Matrikkeladresse tilMatrikkeladresse(WSMatrikkeladresse wsMatrikkeladresse) {
-        Optional<WSMatrikkelnummer> kanskjeMatrikkelnummer = ofNullable(wsMatrikkeladresse.getMatrikkelnummer());
+    private static StrukturertAdresse tilMatrikkeladresse(WSMatrikkeladresse wsMatrikkeladresse) {
+       Optional<WSMatrikkelnummer> kanskjeMatrikkelnummer = ofNullable(wsMatrikkeladresse.getMatrikkelnummer());
         return new Matrikkeladresse()
-                .withEiendomsnavn(ofNullable(wsMatrikkeladresse.getEiendomsnavn()).orElse(null))
+                .withEiendomsnavn(ofNullable(wsMatrikkeladresse.getEiendomsnavn())
+                        .orElse(null))
                 .withGardsnummer(kanskjeMatrikkelnummer
                         .map(WSMatrikkelnummer::getGaardsnummer)
                         .orElse(null))
@@ -134,7 +131,11 @@ public class PersonDataMapper {
                         .orElse(null))
                 .withUndernummer(kanskjeMatrikkelnummer
                         .map(WSMatrikkelnummer::getUndernummer)
+                        .orElse(null))
+                .withPostnummer(ofNullable(wsMatrikkeladresse.getPoststed().getValue())
                         .orElse(null));
+
+
     }
 
     private static PostboksadresseNorsk tilPostboksadresseNorsk(WSPostboksadresseNorsk wsPostboksadresseNorsk) {
@@ -145,14 +146,21 @@ public class PersonDataMapper {
 
     }
 
-    private Gateadresse tilGateAdresse(WSGateadresse wsGateadresse) {
+    private static StrukturertAdresse tilGateAdresse(WSGateadresse wsGateadresse) {
+
         return new Gateadresse()
-                .withGatenavn(ofNullable(wsGateadresse.getGatenavn()).orElse(null))
-                .withHusnummer(ofNullable(wsGateadresse.getHusnummer()).orElse(null))
-                .withHusbokstav(ofNullable(wsGateadresse.getHusbokstav()).orElse(null))
-                .withGatenummer(ofNullable(wsGateadresse.getGatenummer()).orElse(null))
-                .withPostnummer(ofNullable(wsGateadresse.getPoststed().getValue()).orElse(null))
-                .withKommunenummer(ofNullable(wsGateadresse.getKommunenummer()).orElse(null));
+                .withGatenavn(ofNullable(wsGateadresse.getGatenavn())
+                        .orElse(null))
+                .withHusnummer(ofNullable(wsGateadresse.getHusnummer())
+                        .orElse(null))
+                .withHusbokstav(ofNullable(wsGateadresse.getHusbokstav())
+                        .orElse(null))
+                .withGatenummer(ofNullable(wsGateadresse.getGatenummer())
+                        .orElse(null))
+                .withKommunenummer(ofNullable(wsGateadresse.getKommunenummer())
+                        .orElse(null))
+                .withPostnummer(ofNullable(wsGateadresse.getPoststed().getValue())
+                        .orElse(null));
     }
 
     private static String ansvarligEnhetsnummer(WSPerson person) {
@@ -165,7 +173,7 @@ public class PersonDataMapper {
         return null;
     }
 
-    private String kanskjeStatsborgerskap(WSPerson person) {
+    private static String kanskjeStatsborgerskap(WSPerson person) {
         String statsborgerskap = null;
         Optional<WSStatsborgerskap> wsStatsborgerskap = ofNullable(person.getStatsborgerskap());
         if (wsStatsborgerskap.isPresent()) {
@@ -174,7 +182,7 @@ public class PersonDataMapper {
         return statsborgerskap;
     }
 
-    private String kanskjeKontonummer(WSPerson person) {
+    private static String kanskjeKontonummer(WSPerson person) {
         WSBankkonto bankkonto = person.getBankkonto();
         String kontonummer = null;
 
@@ -191,7 +199,7 @@ public class PersonDataMapper {
         return kontonummer;
     }
 
-    private String kanskjeDiskresjonskode(WSPerson person) {
+    private static String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
                 .filter(diskresjonskode -> KODE_6.equals(diskresjonskode.getValue()) || KODE_7.equals(diskresjonskode.getValue()))
                 .map(WSDiskresjonskoder::getValue)
@@ -199,7 +207,7 @@ public class PersonDataMapper {
     }
 
 
-    private Sivilstand kanskjeSivilstand(WSPerson person) {
+    private static Sivilstand kanskjeSivilstand(WSPerson person) {
         return ofNullable(person.getSivilstand())
                 .map(wsSivilstand -> {
                             return new Sivilstand()
@@ -210,7 +218,16 @@ public class PersonDataMapper {
     }
 
 
-    private String datoTilString(GregorianCalendar dato) {
+    private static String dodsdatoTilString(WSPerson person) {
+        return Optional.of(person)
+                .map(WSPerson::getDoedsdato)
+                .map(WSDoedsdato::getDoedsdato)
+                .map(XMLGregorianCalendar::toGregorianCalendar)
+                .map(dato -> datoTilString(dato))
+                .orElse(null);
+    }
+
+    private static String datoTilString(GregorianCalendar dato) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         formatter.setTimeZone(dato.getTimeZone());
         return formatter.format(dato.getTime());

@@ -1,6 +1,9 @@
 package no.nav.fo.veilarbperson.domain;
 
-public class Gateadresse {
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+@JsonTypeName("Gateadresse")
+public class Gateadresse extends StrukturertAdresse{
 
     private String poststed;
     private String postnummer;

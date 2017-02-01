@@ -1,6 +1,6 @@
 package no.nav.fo.veilarbperson.domain;
 
-public class PostboksadresseNorsk {
+public class PostboksadresseNorsk extends StrukturertAdresse {
 
     private String postnummer;
     private String postboksanlegg;
