@@ -1,6 +1,6 @@
-package no.nav.fo.veilarbperson.consumer.person;
+package no.nav.fo.veilarbperson.consumer.tps;
 
-import no.nav.fo.veilarbperson.consumer.person.mappers.PersonDataMapper;
+import no.nav.fo.veilarbperson.consumer.tps.mappers.PersonDataMapper;
 import no.nav.fo.veilarbperson.domain.PersonData;
 import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
 import no.nav.tjeneste.virksomhet.person.v2.*;

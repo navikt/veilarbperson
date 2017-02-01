@@ -6,8 +6,8 @@ import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontakt
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkManager;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
-import no.nav.fo.veilarbperson.consumer.person.EgenAnsattService;
-import no.nav.fo.veilarbperson.consumer.person.PersonService;
+import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
+import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.person.v2.HentSikkerhetstiltakPersonIkkeFunnet;
