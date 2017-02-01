@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.consumer.person;
+package no.nav.fo.veilarbperson.consumer.tps;
 
 import no.nav.fo.veilarbperson.config.*;
 import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
