@@ -52,11 +52,13 @@ public class PersonFletter {
         personData.withStatsborgerskap(kodeverkManager.getBeskrivelseForLandkode(personData.getStatsborgerskap())
                 .orElse(personData.getStatsborgerskap()));
 
-        String sivilstandKode = personData.getSivilstand().getSivilstand();
-        Sivilstand sivilstand = personData.getSivilstand()
-                .withSivilstand(kodeverkManager.getBeskrivelseForSivilstand(sivilstandKode)
-                        .orElse(sivilstandKode));
-        personData.withSivilstand(sivilstand);
+        if(personData.getSivilstand() != null) {
+            String sivilstandKode = personData.getSivilstand().getSivilstand();
+            Sivilstand sivilstand = personData.getSivilstand()
+                    .withSivilstand(kodeverkManager.getBeskrivelseForSivilstand(sivilstandKode)
+                            .orElse(sivilstandKode));
+            personData.withSivilstand(sivilstand);
+        }
         kanskjePoststed(personData);
     }
 
