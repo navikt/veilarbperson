@@ -16,16 +16,15 @@ public class FamiliemedlemMapper {
         WSPerson person = familierelasjon.getTilPerson();
         final String personnummer = person.getIdent().getIdent();
 
-        Familiemedlem familiemedlem = new Familiemedlem();
-        familiemedlem.setFornavn(person.getPersonnavn().getFornavn());
-        familiemedlem.setEtternavn(person.getPersonnavn().getEtternavn());
-        familiemedlem.setSammensattNavn(person.getPersonnavn().getSammensattNavn());
-        familiemedlem.setHarSammeBosted(familierelasjon.isHarSammeBosted());
-        familiemedlem.setPersonnummer(personnummer);
-        familiemedlem.setFodselsdato(Personnummer.personnummerTilFodselsdato(personnummer));
-        familiemedlem.setKjoenn(Personnummer.personnummerTilKjoenn(personnummer));
-
-        return familiemedlem;
+        return Familiemedlem.builder()
+                .fornavn(person.getPersonnavn().getFornavn())
+                .etternavn(person.getPersonnavn().getEtternavn())
+                .sammensattnavn(person.getPersonnavn().getSammensattNavn())
+                .harSammeBosted(familierelasjon.isHarSammeBosted())
+                .personnummer(personnummer)
+                .fodselsdato(Personnummer.personnummerTilFodselsdato(personnummer))
+                .kjonn(Personnummer.personnummerTilKjoenn(personnummer))
+                .build();
     }
 
     Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
