@@ -1,7 +1,8 @@
 package no.nav.fo.veilarbperson.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+import lombok.experimental.Builder;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.Enhet;
 
 import java.util.List;
@@ -9,17 +10,11 @@ import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
-public class PersonData {
-    private String fornavn;
-    private String mellomnavn;
-    private String etternavn;
-    private String sammensattNavn;
-    private String personnummer;
-    private String fodselsdato;
-    private String dodsdato;
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+public class PersonData extends Person {
 
-    @JsonProperty("kjonn")
-    private String kjoenn;
     private List<Familiemedlem> barn;
     private String diskresjonskode;
     private String kontonummer;
@@ -32,198 +27,52 @@ public class PersonData {
     private Sivilstand sivilstand;
     private Familiemedlem partner;
     private Bostedsadresse bostedsadresse;
-
     private boolean egenAnsatt;
-
-    public String getStatsborgerskap() {
-        return statsborgerskap;
-    }
-
-    public String getFornavn() {
-        return fornavn;
-    }
-
-    public String getMellomnavn() {
-        return mellomnavn;
-    }
-
-    public String getEtternavn() {
-        return etternavn;
-    }
-
-    public String getSammensattNavn() {
-        return sammensattNavn;
-    }
-
-    public String getPersonnummer() {
-        return personnummer;
-    }
-
-    public String getFodselsdato() {
-        return fodselsdato;
-    }
-
-    public String getDodsdato() {
-        return dodsdato;
-    }
-
-    public String getKjoenn() {
-        return kjoenn;
-    }
-
-    public List<Familiemedlem> getBarn() {
-        return barn;
-    }
-
-    public String getDiskresjonskode() {
-        return diskresjonskode;
-    }
-
-    public String getKontonummer() {
-        return kontonummer;
-    }
-
-    public Enhet getBehandlendeEnhet() {
-        return this.behandlendeEnhet;
-    }
-
-    public String getAnsvarligEnhetsnummer() {
-        return this.ansvarligEnhetsnummer;
-    }
-
-    public String getTelefon() {
-        return telefon;
-    }
-
-    public String getEpost() {
-        return epost;
-    }
-
-    public String getSikkerhetstiltak() {
-        return sikkerhetstiltak;
-    }
-
-    public Sivilstand getSivilstand() {
-        return sivilstand;
-    }
-
-    public Familiemedlem getPartner() {
-        return this.partner;
-    }
-
-    public Bostedsadresse getBostedsadresse() {
-        return bostedsadresse;
-    }
-
 
     public boolean isEgenAnsatt() {
         return egenAnsatt;
     }
 
-    public PersonData withFornavn(String fornavn) {
-        this.fornavn = fornavn;
-        return this;
-    }
+    @Builder
+    private PersonData(String fornavn,
+                       String mellomnavn,
+                       String etternavn,
+                       String sammensattnavn,
+                       String personnummer,
+                       String fodselsdato,
+                       String kjonn,
+                       String dodsdato,
+                       List<Familiemedlem> barn,
+                       String diskresjonskode,
+                       String kontonummer,
+                       String ansvarligEnhetsnummer,
+                       Enhet behandlendeEnhet,
+                       String telefon,
+                       String epost,
+                       String statsborgerskap,
+                       String sikkerhetstiltak,
+                       Sivilstand sivilstand,
+                       Familiemedlem partner,
+                       Bostedsadresse bostedsadresse,
+                       boolean egenAnsatt
+    ) {
+        super(fornavn, mellomnavn, etternavn, sammensattnavn, personnummer, fodselsdato, kjonn, dodsdato);
 
-    public PersonData withMellomnavn(String mellomnavn) {
-        this.mellomnavn = mellomnavn;
-        return this;
-    }
-
-    public PersonData withEtternavn(String etternavn) {
-        this.etternavn = etternavn;
-        return this;
-    }
-
-    public PersonData withSammensattNavn(String sammensattNavn) {
-        this.sammensattNavn = sammensattNavn;
-        return this;
-    }
-
-    public PersonData withPersonnummer(String personnummer) {
-        this.personnummer = personnummer;
-        return this;
-    }
-
-    public PersonData withFodselsdato(String fodselsdato) {
-        this.fodselsdato = fodselsdato;
-        return this;
-    }
-
-    public PersonData withDodsdato(String dodsdato){
-        this.dodsdato = dodsdato;
-        return this;
-    }
-
-    public PersonData withKjoenn(String kjoenn) {
-        this.kjoenn = kjoenn;
-        return this;
-    }
-
-    public PersonData withBarn(List<Familiemedlem> barn) {
         this.barn = barn;
-        return this;
-    }
-
-    public PersonData withDiskresjonskode(String diskresjonskode) {
         this.diskresjonskode = diskresjonskode;
-        return this;
-    }
-
-    public PersonData withKontonummer(String kontonummer) {
         this.kontonummer = kontonummer;
-        return this;
-    }
-
-    public PersonData withAnsvarligEnhetsnummer(String enhetsnummer) {
-        this.ansvarligEnhetsnummer = enhetsnummer;
-        return this;
-    }
-
-    public PersonData withBehandlendeEnhet(Enhet enhet) {
-        this.behandlendeEnhet = enhet;
-        return this;
-    }
-
-    public PersonData withSikkerhetstiltak(String sikkerhetstiltak) {
-        this.sikkerhetstiltak = sikkerhetstiltak;
-        return this;
-    }
-
-    public PersonData withTelefon(String telefon) {
+        this.ansvarligEnhetsnummer = ansvarligEnhetsnummer;
+        this.behandlendeEnhet = behandlendeEnhet;
         this.telefon = telefon;
-        return this;
-    }
-
-    public PersonData withEpost(String epost) {
         this.epost = epost;
-        return this;
-    }
-
-    public PersonData withStatsborgerskap(String statsborgerskap) {
         this.statsborgerskap = statsborgerskap;
-        return this;
-    }
-
-    public PersonData withSivilstand(Sivilstand sivilstand) {
+        this.sikkerhetstiltak = sikkerhetstiltak;
         this.sivilstand = sivilstand;
-        return this;
-    }
-
-    public PersonData withPartner(Familiemedlem partner) {
         this.partner = partner;
-        return this;
-    }
-
-    public PersonData withBostedsadresse(Bostedsadresse bostedsadresse) {
         this.bostedsadresse = bostedsadresse;
-        return this;
+        this.egenAnsatt = egenAnsatt;
     }
 
-    public PersonData withEgenAnsatt(boolean egenAnsatt) {
-        this.egenAnsatt = egenAnsatt;
-        return this;
-    }
 
     @JsonIgnore
     public Optional<String> getPostnummer() {

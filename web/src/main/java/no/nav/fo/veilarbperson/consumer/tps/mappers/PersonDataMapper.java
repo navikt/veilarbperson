@@ -18,24 +18,26 @@ public class PersonDataMapper {
     private final BarnMapper barnMapper = new BarnMapper();
     private final FamiliemedlemMapper familiemedlemMapper = new FamiliemedlemMapper();
 
+
     public PersonData tilPersonData(WSPerson person) {
-        return new PersonData()
-                .withFornavn(kanskjeFornavn(person))
-                .withMellomnavn(kanskjeMellomnavn(person))
-                .withEtternavn(kanskjeEtternavn(person))
-                .withSammensattNavn(kanskjeSammensattnavn(person))
-                .withPersonnummer(kanskjePersonnummer(person))
-                .withFodselsdato(kanskjeFodselsdato(person))
-                .withKjoenn(kanskjeKjonn(person))
-                .withBarn(barnMapper.familierelasjonerTilBarn(person.getHarFraRolleI()))
-                .withDiskresjonskode(kanskjeDiskresjonskode(person))
-                .withKontonummer(kanskjeKontonummer(person))
-                .withAnsvarligEnhetsnummer(ansvarligEnhetsnummer(person))
-                .withStatsborgerskap(kanskjeStatsborgerskap(person))
-                .withSivilstand(kanskjeSivilstand(person))
-                .withPartner(familiemedlemMapper.partner(person.getHarFraRolleI()))
-                .withBostedsadresse(kanskjeBostedsadresse(person))
-                .withDodsdato(dodsdatoTilString(person));
+        return PersonData.builder()
+                .fornavn(kanskjeFornavn(person))
+                .mellomnavn(kanskjeMellomnavn(person))
+                .etternavn(kanskjeEtternavn(person))
+                .sammensattnavn(kanskjeSammensattnavn(person))
+                .personnummer(kanskjePersonnummer(person))
+                .fodselsdato(kanskjeFodselsdato(person))
+                .kjonn(kanskjeKjonn(person))
+                .barn(barnMapper.familierelasjonerTilBarn(person.getHarFraRolleI()))
+                .diskresjonskode(kanskjeDiskresjonskode(person))
+                .kontonummer(kanskjeKontonummer(person))
+                .ansvarligEnhetsnummer(ansvarligEnhetsnummer(person))
+                .statsborgerskap(kanskjeStatsborgerskap(person))
+                .sivilstand(kanskjeSivilstand(person))
+                .partner(familiemedlemMapper.partner(person.getHarFraRolleI()))
+                .bostedsadresse(kanskjeBostedsadresse(person))
+                .dodsdato(dodsdatoTilString(person))
+                .build();
     }
 
     private String kanskjeKjonn(WSPerson person) {

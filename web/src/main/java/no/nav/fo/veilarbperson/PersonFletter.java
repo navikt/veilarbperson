@@ -35,10 +35,11 @@ public class PersonFletter {
 
     PersonData hentPerson(String fnr) {
         PersonData personData = personService.hentPerson(fnr);
-        personData.withEgenAnsatt(egenAnsattService.erEgenAnsatt(fnr));
+        personData.setEgenAnsatt(egenAnsattService.erEgenAnsatt(fnr));
+
 
         if (personData.getAnsvarligEnhetsnummer() != null) {
-            personData.withBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getAnsvarligEnhetsnummer()));
+            personData.setBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getAnsvarligEnhetsnummer()));
         }
 
         hentPersondata(fnr, personData);
@@ -49,7 +50,7 @@ public class PersonFletter {
     }
 
     private void hentTermerBasertPaKoder(PersonData personData) {
-        personData.withStatsborgerskap(kodeverkManager.getBeskrivelseForLandkode(personData.getStatsborgerskap())
+        personData.setStatsborgerskap(kodeverkManager.getBeskrivelseForLandkode(personData.getStatsborgerskap())
                 .orElse(personData.getStatsborgerskap()));
 
         if(personData.getSivilstand() != null) {
@@ -57,7 +58,7 @@ public class PersonFletter {
             Sivilstand sivilstand = personData.getSivilstand()
                     .withSivilstand(kodeverkManager.getBeskrivelseForSivilstand(sivilstandKode)
                             .orElse(sivilstandKode));
-            personData.withSivilstand(sivilstand);
+            personData.setSivilstand(sivilstand);
         }
         kanskjePoststed(personData);
     }
@@ -72,9 +73,8 @@ public class PersonFletter {
     private void hentDigitalKontaktinformasjon(String fnr, PersonData personData) {
         try {
             DigitalKontaktinformasjon kontaktinformasjon = digitalKontaktinformasjonService.hentDigitalKontaktinformasjon(fnr);
-            personData
-                    .withTelefon(kontaktinformasjon.getTelefon())
-                    .withEpost(kontaktinformasjon.getEpost());
+            personData.setTelefon(kontaktinformasjon.getTelefon());
+            personData.setEpost(kontaktinformasjon.getEpost());
         } catch (HentDigitalKontaktinformasjonSikkerhetsbegrensing |
                 HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet |
                 HentDigitalKontaktinformasjonPersonIkkeFunnet hentDigitalKontaktinformasjonSikkerhetsbegrensing) {
@@ -85,7 +85,7 @@ public class PersonFletter {
     private void hentPersondata(String fnr, PersonData personData) {
         try {
             Sikkerhetstiltak sikkerhetstiltak = personService.hentSikkerhetstiltak(fnr);
-            personData.withSikkerhetstiltak(sikkerhetstiltak.getSikkerhetstiltaksbeskrivelse());
+            personData.setSikkerhetstiltak(sikkerhetstiltak.getSikkerhetstiltaksbeskrivelse());
         } catch (HentSikkerhetstiltakPersonIkkeFunnet hentSikkerhetstiltakPersonIkkeFunnet) {
             hentSikkerhetstiltakPersonIkkeFunnet.printStackTrace();
         }
