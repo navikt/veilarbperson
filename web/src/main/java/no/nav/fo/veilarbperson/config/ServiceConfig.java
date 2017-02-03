@@ -20,7 +20,11 @@ public class ServiceConfig {
     private final EgenAnsattV1 egenAnsattV1;
     private final KodeverkPortType kodeverkPortType;
 
-    public ServiceConfig(PersonV2 personV2, OrganisasjonEnhetV1 organisasjonenhet, DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1, EgenAnsattV1 egenAnsattV1, KodeverkPortType kodeverkPortType) {
+    public ServiceConfig(PersonV2 personV2,
+                         OrganisasjonEnhetV1 organisasjonenhet,
+                         DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1,
+                         EgenAnsattV1 egenAnsattV1,
+                         KodeverkPortType kodeverkPortType) {
         this.personV2 = personV2;
         this.organisasjonenhet = organisasjonenhet;
         this.digitalKontaktinformasjonV1 = digitalKontaktinformasjonV1;
