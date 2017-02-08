@@ -53,7 +53,7 @@ public class PersonFletter {
         personData.setStatsborgerskap(kodeverkManager.getBeskrivelseForLandkode(personData.getStatsborgerskap())
                 .orElse(personData.getStatsborgerskap()));
 
-        if(personData.getSivilstand() != null) {
+        if (personData.getSivilstand() != null) {
             String sivilstandKode = personData.getSivilstand().getSivilstand();
             Sivilstand sivilstand = personData.getSivilstand()
                     .withSivilstand(kodeverkManager.getBeskrivelseForSivilstand(sivilstandKode)

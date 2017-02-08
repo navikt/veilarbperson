@@ -5,7 +5,8 @@ import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.GregorianCalendar;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
@@ -115,7 +116,7 @@ public class PersonDataMapper {
     }
 
     private static StrukturertAdresse tilMatrikkeladresse(WSMatrikkeladresse wsMatrikkeladresse) {
-       Optional<WSMatrikkelnummer> kanskjeMatrikkelnummer = ofNullable(wsMatrikkeladresse.getMatrikkelnummer());
+        Optional<WSMatrikkelnummer> kanskjeMatrikkelnummer = ofNullable(wsMatrikkeladresse.getMatrikkelnummer());
         return new Matrikkeladresse()
                 .withEiendomsnavn(ofNullable(wsMatrikkeladresse.getEiendomsnavn())
                         .orElse(null))
@@ -212,10 +213,10 @@ public class PersonDataMapper {
     private static Sivilstand kanskjeSivilstand(WSPerson person) {
         return ofNullable(person.getSivilstand())
                 .map(wsSivilstand -> {
-                            return new Sivilstand()
-                                    .withSivilstand(wsSivilstand.getSivilstand().getValue())
-                                    .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
-                        })
+                    return new Sivilstand()
+                            .withSivilstand(wsSivilstand.getSivilstand().getValue())
+                            .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
+                })
                 .orElse(null);
     }
 
