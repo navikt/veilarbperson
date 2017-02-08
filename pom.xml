@@ -42,6 +42,7 @@
         <kodeverk.version>2.0.2</kodeverk.version>
         <egenansatt-v1.version>1.0.5</egenansatt-v1.version>
         <organisasjonenhet-v1.version>1.0.7</organisasjonenhet-v1.version>
+        <common-cxf.version>3.1.9</common-cxf.version>
     </properties>
 
     <dependencyManagement>
@@ -129,7 +130,7 @@
             <dependency>
                 <groupId>no.nav.sbl.dialogarena</groupId>
                 <artifactId>common-cxf</artifactId>
-                <version>3.2.18</version>
+                <version>${common-cxf.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.nav.modig</groupId>
@@ -145,6 +146,12 @@
                         <artifactId>jaxb-impl</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.modig</groupId>
+                <artifactId>modig-security-sts</artifactId>
+                <version>${modig-security.version}</version>
+                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
