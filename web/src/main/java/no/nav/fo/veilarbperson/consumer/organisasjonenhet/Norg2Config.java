@@ -1,6 +1,5 @@
 package no.nav.fo.veilarbperson.consumer.organisasjonenhet;
 
-import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;
@@ -21,20 +20,20 @@ public class Norg2Config {
 
     @Bean
     public OrganisasjonEnhetV1 organisasjonEnhetPortType() {
-        OrganisasjonEnhetV1 prod = factory().withOutInterceptor(new SystemSAMLOutInterceptor()).build();
+        OrganisasjonEnhetV1 prod = factory().build();
         OrganisasjonEnhetV1 mock = new OrganisasjonEnhetMock();
         return createMetricsProxyWithInstanceSwitcher("NORG2", prod, mock, ENHET_NORG2_MOCK_KEY, OrganisasjonEnhetV1.class);
     }
 
     private CXFClient<OrganisasjonEnhetV1> factory() {
-        return new CXFClient<>(OrganisasjonEnhetV1.class).address(getProperty(ENHET_NORG2_ENDPOINT_KEY));
+        return new CXFClient<>(OrganisasjonEnhetV1.class)
+                .address(getProperty(ENHET_NORG2_ENDPOINT_KEY))
+                .configureStsForSystemUser();
     }
 
     @Bean
     public Pingable organisasjonEnhetPing() {
-        final OrganisasjonEnhetV1 organisasjonEnhetV1 = factory()
-                .withOutInterceptor(new SystemSAMLOutInterceptor())
-                .build();
+        final OrganisasjonEnhetV1 organisasjonEnhetV1 = factory().build();
         return () -> {
             try {
                 organisasjonEnhetV1.ping();
