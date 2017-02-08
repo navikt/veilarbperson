@@ -1,11 +1,11 @@
 package no.nav.fo.veilarbperson;
 
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
-import no.nav.fo.veilarbperson.domain.PersonData;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
+import no.nav.fo.veilarbperson.domain.PersonData;
 import org.slf4j.Logger;
 import org.springframework.web.bind.annotation.*;
 
