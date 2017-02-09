@@ -23,11 +23,6 @@ public class Familiemedlem extends Person{
         super(fornavn, mellomnavn, etternavn, sammensattnavn, personnummer, fodselsdato, kjonn, dodsdato);
 
         this.harSammeBosted = harSammeBosted;
-
-
-
-
     }
-
 
 }
