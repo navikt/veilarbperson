@@ -24,7 +24,11 @@ public class PersonFletter {
 
     private final KodeverkManager kodeverkManager;
 
-    public PersonFletter(EnhetService enhetService, DigitalKontaktinformasjonService digitalKontaktinformasjonService, PersonService personService, EgenAnsattService egenAnsattService, KodeverkService kodeverkService) {
+    public PersonFletter(EnhetService enhetService,
+                         DigitalKontaktinformasjonService digitalKontaktinformasjonService,
+                         PersonService personService,
+                         EgenAnsattService egenAnsattService,
+                         KodeverkService kodeverkService) {
 
         this.enhetService = enhetService;
         this.digitalKontaktinformasjonService = digitalKontaktinformasjonService;
