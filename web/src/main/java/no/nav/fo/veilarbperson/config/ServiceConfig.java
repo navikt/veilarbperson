@@ -1,8 +1,10 @@
 package no.nav.fo.veilarbperson.config;
 
-import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
-import no.nav.fo.veilarbperson.kodeverk.KodeverkService;
-import no.nav.fo.veilarbperson.services.*;
+import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
+import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
+import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
+import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
+import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.DigitalKontaktinformasjonV1;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.KodeverkPortType;
@@ -18,7 +20,11 @@ public class ServiceConfig {
     private final EgenAnsattV1 egenAnsattV1;
     private final KodeverkPortType kodeverkPortType;
 
-    public ServiceConfig(PersonV2 personV2, OrganisasjonEnhetV1 organisasjonenhet, DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1, EgenAnsattV1 egenAnsattV1, KodeverkPortType kodeverkPortType) {
+    public ServiceConfig(PersonV2 personV2,
+                         OrganisasjonEnhetV1 organisasjonenhet,
+                         DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1,
+                         EgenAnsattV1 egenAnsattV1,
+                         KodeverkPortType kodeverkPortType) {
         this.personV2 = personV2;
         this.organisasjonenhet = organisasjonenhet;
         this.digitalKontaktinformasjonV1 = digitalKontaktinformasjonV1;

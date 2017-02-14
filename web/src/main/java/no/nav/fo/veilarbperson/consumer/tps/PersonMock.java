@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.config;
+package no.nav.fo.veilarbperson.consumer.tps;
 
 import no.nav.tjeneste.virksomhet.person.v2.*;
 import no.nav.tjeneste.virksomhet.person.v2.meldinger.*;

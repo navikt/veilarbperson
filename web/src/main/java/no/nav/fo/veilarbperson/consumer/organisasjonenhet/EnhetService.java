@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.services;
+package no.nav.fo.veilarbperson.consumer.organisasjonenhet;
 
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.FinnNAVKontorForGeografiskNedslagsfeltBolkUgyldigInput;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;
@@ -51,8 +51,12 @@ public class EnhetService {
     }
 
     private boolean listeErIkkeTom(List<?> liste) {
-        return liste != null
-                && liste.size() > 0
-                && liste.get(0) != null;
+        return !listeErTom(liste);
+    }
+
+    private boolean listeErTom(List<?> liste) {
+        return liste == null ||
+                liste.isEmpty() ||
+                liste.get(0) == null;
     }
 }

@@ -22,7 +22,7 @@ public class FakeLoginFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
-        SubjectHandlerUtils.setInternBruker("Z990322");
+        SubjectHandlerUtils.setInternBruker("Z990153");
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
