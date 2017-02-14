@@ -5,11 +5,24 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("Gateadresse")
 public class Gateadresse extends StrukturertAdresse{
 
+    private String poststed;
+    private String postnummer;
     private Integer husnummer;
     private String husbokstav;
     private String kommunenummer;
     private String gatenavn;
-    private Integer withGatenummer;
+    private String bolignummer;
+
+    private Integer gatenummer;
+
+    public String getPoststed() {
+        return poststed;
+    }
+
+
+    public String getPostnummer() {
+        return postnummer;
+    }
 
     public Integer getHusnummer() {
         return husnummer;
@@ -27,6 +40,23 @@ public class Gateadresse extends StrukturertAdresse{
         return gatenavn;
     }
 
+    public String getBolignummer() {
+        return bolignummer;
+    }
+
+    public Integer getGatenummer() {
+        return gatenummer;
+    }
+
+    public Gateadresse withPoststed(String poststed) {
+        this.poststed = poststed;
+        return this;
+    }
+
+    public Gateadresse withPostnummer(String postnummer) {
+        this.postnummer = postnummer;
+        return this;
+    }
 
     public Gateadresse withHusnummer(Integer husnummer) {
         this.husnummer = husnummer;
@@ -49,7 +79,9 @@ public class Gateadresse extends StrukturertAdresse{
     }
 
     public Gateadresse withGatenummer(Integer gatenummer) {
-        this.withGatenummer = gatenummer;
+        this.gatenummer = gatenummer;
         return this;
     }
+
+
 }

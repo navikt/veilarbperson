@@ -1,8 +1,11 @@
 package no.nav.fo.veilarbperson;
 
-import no.nav.fo.veilarbperson.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
-import no.nav.fo.veilarbperson.kodeverk.KodeverkService;
-import no.nav.fo.veilarbperson.services.*;
+import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
+import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
+import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
+import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
+import no.nav.fo.veilarbperson.consumer.tps.PersonService;
+import no.nav.fo.veilarbperson.domain.PersonData;
 import org.slf4j.Logger;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +22,11 @@ public class APIController {
     private final EgenAnsattService egenAnsattService;
     private final KodeverkService kodeverkService;
 
-    public APIController(EnhetService enhetService, DigitalKontaktinformasjonService digitalKontaktinformasjonService, PersonService personService, EgenAnsattService egenAnsattService, KodeverkService kodeverkService) {
+    public APIController(EnhetService enhetService,
+                         DigitalKontaktinformasjonService digitalKontaktinformasjonService,
+                         PersonService personService,
+                         EgenAnsattService egenAnsattService,
+                         KodeverkService kodeverkService) {
         this.enhetService = enhetService;
         this.digitalKontaktinformasjonService = digitalKontaktinformasjonService;
         this.personService = personService;
@@ -29,7 +36,12 @@ public class APIController {
 
     @RequestMapping(value = "/person/{personnummer}", produces = "application/json")
     public PersonData person(@PathVariable String personnummer) {
-        final PersonFletter personFletter = new PersonFletter(enhetService, digitalKontaktinformasjonService, personService, egenAnsattService, kodeverkService);
+        final PersonFletter personFletter = new PersonFletter(
+                enhetService,
+                digitalKontaktinformasjonService,
+                personService,
+                egenAnsattService,
+                kodeverkService);
         logger.info("Henter persondata med personnummer: " + personnummer);
         return personFletter.hentPerson(personnummer);
     }
