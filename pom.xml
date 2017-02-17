@@ -43,6 +43,7 @@
         <egenansatt-v1.version>1.0.5</egenansatt-v1.version>
         <organisasjonenhet-v1.version>1.0.7</organisasjonenhet-v1.version>
         <common-cxf.version>3.1.9</common-cxf.version>
+        <ehcache.version>3.2.0</ehcache.version>
         <sonar.exclusions>**/config/*, **/*Mock*, **/*Servlet*</sonar.exclusions>
     </properties>
 
@@ -231,6 +232,14 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
             </dependency>
+
+            <!-- Cache -->
+            <dependency>
+                <groupId>org.ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>${ehcache.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
