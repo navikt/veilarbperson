@@ -4,7 +4,7 @@ import no.nav.tjeneste.virksomhet.kodeverk.v2.HentKodeverkHentKodeverkKodeverkIk
 import no.nav.tjeneste.virksomhet.kodeverk.v2.KodeverkPortType;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLEnkeltKodeverk;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLKodeverk;
-import no.nav.tjeneste.virksomhet.kodeverk.v2.meldinger.XMLHentKodeverkRequest;
+import org.springframework.cache.annotation.Cacheable;
 
 public class KodeverkService {
 
@@ -14,7 +14,9 @@ public class KodeverkService {
         this.kodverkPortType = kodverkPortType;
     }
 
-    Kodeverk hentKodeverk(XMLHentKodeverkRequest kodeverkRequest) throws HentKodeverkHentKodeverkKodeverkIkkeFunnet {
+    @Cacheable(value = "kodeverk", key = "#kodeverkRequest.toString()" )
+    public Kodeverk hentKodeverk(KodeverkRequestDO kodeverkRequest) throws HentKodeverkHentKodeverkKodeverkIkkeFunnet {
+
         XMLKodeverk kodeverkResponse = kodverkPortType.hentKodeverk(kodeverkRequest).getKodeverk();
         if (kodeverkResponse instanceof XMLEnkeltKodeverk) {
             return new Kodeverk((XMLEnkeltKodeverk) kodeverkResponse);
