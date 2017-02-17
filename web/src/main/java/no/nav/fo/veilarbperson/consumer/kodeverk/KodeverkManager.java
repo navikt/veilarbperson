@@ -1,7 +1,6 @@
 package no.nav.fo.veilarbperson.consumer.kodeverk;
 
 import no.nav.tjeneste.virksomhet.kodeverk.v2.HentKodeverkHentKodeverkKodeverkIkkeFunnet;
-import no.nav.tjeneste.virksomhet.kodeverk.v2.meldinger.XMLHentKodeverkRequest;
 
 import java.util.Optional;
 
@@ -29,8 +28,9 @@ public class KodeverkManager {
     }
 
     private Optional<String> getBeskrivelseForKode(String kodeverkRef, String kode, String spraak) {
-        XMLHentKodeverkRequest kodeverkRequest = new XMLHentKodeverkRequest()
-                .withNavn(kodeverkRef);
+        KodeverkRequestDO kodeverkRequest = new KodeverkRequestDO();
+        kodeverkRequest.setNavn(kodeverkRef);
+
         try {
             Kodeverk kodeverk = kodeverkService.hentKodeverk(kodeverkRequest);
             return kodeverk.getNavn(kode, spraak);

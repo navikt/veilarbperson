@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-class Kodeverk {
+public class Kodeverk {
 
     private final List<XMLKode> koder;
 
