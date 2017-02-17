@@ -43,6 +43,7 @@
         <egenansatt-v1.version>1.0.5</egenansatt-v1.version>
         <organisasjonenhet-v1.version>1.0.7</organisasjonenhet-v1.version>
         <common-cxf.version>3.1.9</common-cxf.version>
+        <sonar.exclusions>**/config/*, **/*Mock*, **/*Servlet*</sonar.exclusions>
     </properties>
 
     <dependencyManagement>
