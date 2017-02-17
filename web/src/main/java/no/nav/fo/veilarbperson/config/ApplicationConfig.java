@@ -9,7 +9,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @ComponentScan(basePackages = "no.nav.fo.veilarbperson")
 @Import({
         ServiceConfig.class,
-        PersonFletter.class
+        PersonFletter.class,
+        CacheConfig.class
 })
 public class ApplicationConfig {
 
