@@ -23,6 +23,11 @@
     </modules>
 
     <properties>
+        <!-- Jersey -->
+        <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
+        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+        <jersey.version>2.22.2</jersey.version>
+
         <slf4j.version>1.7.5</slf4j.version>
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
         <common-jetty.version>2.0.11</common-jetty.version>
@@ -222,14 +227,39 @@
                 <version>${spring.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
+            </dependency>
+
+            <!--Jersey-->
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${javax.ws.rs-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-server</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.containers</groupId>
+                <artifactId>jersey-container-servlet-core</artifactId>
+                <scope>runtime</scope>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.ext</groupId>
+                <artifactId>jersey-spring3</artifactId>
+                <version>${jersey.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <scope>runtime</scope>
+                <version>${jersey.version}</version>
             </dependency>
 
             <!-- Cache -->
