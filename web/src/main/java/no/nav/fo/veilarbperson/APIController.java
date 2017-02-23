@@ -8,7 +8,6 @@ import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.PersonData;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
 import javax.ws.rs.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -38,7 +37,7 @@ public class APIController {
         this.kodeverkService = kodeverkService;
     }
 
-    @Path("/")
+    @GET
     @Produces(APPLICATION_JSON)
     public PersonData person(@PathParam("personnummer") String personnummer) {
         final PersonFletter personFletter = new PersonFletter(
