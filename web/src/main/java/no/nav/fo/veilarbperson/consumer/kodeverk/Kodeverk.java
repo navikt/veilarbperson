@@ -11,7 +11,7 @@ public class Kodeverk {
 
     private final List<XMLKode> koder;
 
-    Kodeverk(XMLEnkeltKodeverk kodeverkResponse) {
+    public Kodeverk(XMLEnkeltKodeverk kodeverkResponse) {
         this.koder = kodeverkResponse.getKode();
     }
 
