@@ -1,15 +1,14 @@
 package no.nav.fo.veilarbperson.consumer.tps.mappers;
 
-import no.nav.fo.veilarbperson.domain.PersonData;
+import no.nav.fo.veilarbperson.domain.*;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
-import org.hamcrest.*;
+import org.hamcrest.CustomMatcher;
+import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import javax.xml.datatype.*;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -496,6 +495,231 @@ public class PersonDataMapperTest {
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
         assertThat(personData.getDodsdato(), nullValue());
+    }
+
+    @Test
+    public void verdierIWSGateadresseMappesDersomDeEksisterer() throws Exception {
+        final String forventetGatenavn = "gatenavn";
+        final String forventetPostnummer = "0000";
+        final int forventetHusnummer = 12;
+        final String forventetHusbokstav = "A";
+        final int forventetGatenummer = 1;
+        final String forventetKommunenummer = "1234";
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
+                new WSBostedsadresse().withStrukturertAdresse(
+                        new WSGateadresse()
+                                .withGatenavn(forventetGatenavn)
+                                .withHusnummer(forventetHusnummer)
+                                .withHusbokstav(forventetHusbokstav)
+                                .withGatenummer(forventetGatenummer)
+                                .withKommunenummer(forventetKommunenummer)
+                                .withPoststed(new WSPostnummer().withValue(forventetPostnummer))
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(Gateadresse.class));
+        final Gateadresse gateadresse = (Gateadresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(gateadresse.getGatenavn(), is(forventetGatenavn));
+        assertThat(gateadresse.getHusnummer(), is(forventetHusnummer));
+        assertThat(gateadresse.getHusbokstav(), is(forventetHusbokstav));
+        assertThat(gateadresse.getGatenummer(), is(forventetGatenummer));
+        assertThat(gateadresse.getKommunenummer(), is(forventetKommunenummer));
+        assertThat(gateadresse.getPostnummer(), is(forventetPostnummer));
+    }
+
+    @Test
+    public void verdierIWSGateadresseMappesTilNullDersomDeErNull() throws Exception {
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
+                new WSBostedsadresse().withStrukturertAdresse(
+                        new WSGateadresse()
+                                .withGatenavn(null)
+                                .withHusnummer(null)
+                                .withHusbokstav(null)
+                                .withGatenummer(null)
+                                .withKommunenummer(null)
+                                .withPoststed(new WSPostnummer().withValue(null))
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(Gateadresse.class));
+        final Gateadresse gateadresse = (Gateadresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(gateadresse.getGatenavn(), nullValue());
+        assertThat(gateadresse.getHusnummer(), nullValue());
+        assertThat(gateadresse.getHusbokstav(), nullValue());
+        assertThat(gateadresse.getGatenummer(), nullValue());
+        assertThat(gateadresse.getKommunenummer(), nullValue());
+        assertThat(gateadresse.getPostnummer(), nullValue());
+    }
+
+    @Test
+    public void verdierIWSMatrikkeladresseMappesDersomDeEksisterer() throws Exception {
+        final String forventetPostnummer = "0000";
+        final String forventetGardsnummer = "gaardsnummer";
+        final String forventetBruksnummer = "bruksnummer";
+        final String forventetFestenummer = "festenummer";
+        final String forventetSeksjonsnummer = "seksjonsnummer";
+        final String forventetUndernummer = "undernummer";
+        final String forventetEiendomsnavn = "eiendomsnavn";
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
+                new WSBostedsadresse().withStrukturertAdresse(
+                        new WSMatrikkeladresse()
+                                .withEiendomsnavn(forventetEiendomsnavn)
+                                .withMatrikkelnummer(
+                                        new WSMatrikkelnummer()
+                                                .withGaardsnummer(forventetGardsnummer)
+                                                .withBruksnummer(forventetBruksnummer)
+                                                .withFestenummer(forventetFestenummer)
+                                                .withSeksjonsnummer(forventetSeksjonsnummer)
+                                                .withUndernummer(forventetUndernummer)
+                                )
+                                .withPoststed(new WSPostnummer().withValue(forventetPostnummer))
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(Matrikkeladresse.class));
+        final Matrikkeladresse matrikkeladresse = (Matrikkeladresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(matrikkeladresse.getEiendomsnavn(), is(forventetEiendomsnavn));
+        assertThat(matrikkeladresse.getGardsnummer(), is(forventetGardsnummer));
+        assertThat(matrikkeladresse.getBruksnummer(), is(forventetBruksnummer));
+        assertThat(matrikkeladresse.getFestenummer(), is(forventetFestenummer));
+        assertThat(matrikkeladresse.getSeksjonsnummer(), is(forventetSeksjonsnummer));
+        assertThat(matrikkeladresse.getUndernummer(), is(forventetUndernummer));
+        assertThat(matrikkeladresse.getPostnummer(), is(forventetPostnummer));
+    }
+
+    @Test
+    public void verdierIWSMatrikkeladresseMappesTilNullDersomDeErNull() throws Exception {
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
+                new WSBostedsadresse().withStrukturertAdresse(
+                        new WSMatrikkeladresse()
+                                .withEiendomsnavn(null)
+                                .withMatrikkelnummer(
+                                        new WSMatrikkelnummer()
+                                                .withGaardsnummer(null)
+                                                .withBruksnummer(null)
+                                                .withFestenummer(null)
+                                                .withSeksjonsnummer(null)
+                                                .withUndernummer(null)
+                                )
+                                .withPoststed(new WSPostnummer().withValue(null))
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(Matrikkeladresse.class));
+        final Matrikkeladresse matrikkeladresse = (Matrikkeladresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(matrikkeladresse.getGardsnummer(), nullValue());
+        assertThat(matrikkeladresse.getBruksnummer(), nullValue());
+        assertThat(matrikkeladresse.getFestenummer(), nullValue());
+        assertThat(matrikkeladresse.getSeksjonsnummer(), nullValue());
+        assertThat(matrikkeladresse.getUndernummer(), nullValue());
+        assertThat(matrikkeladresse.getPostnummer(), nullValue());
+    }
+
+    @Test
+    public void verdierIWSPostadresseNorskMappesDersomDeEksisterer() throws Exception {
+        final String forventetPostboksanlegg = "postboksanlegg";
+        final String forventetPostboksnummer = "postboksnummer";
+        final String forventetPostnummer = "0000";
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
+                new WSPostboksadresseNorsk()
+                        .withPostboksanlegg(forventetPostboksanlegg)
+                        .withPostboksnummer(forventetPostboksnummer)
+                        .withPoststed(new WSPostnummer().withValue(forventetPostnummer))
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(PostboksadresseNorsk.class));
+        final PostboksadresseNorsk postboksadresseNorsk = (PostboksadresseNorsk) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(postboksadresseNorsk.getPostboksanlegg(), is(forventetPostboksanlegg));
+        assertThat(postboksadresseNorsk.getPostboksnummer(), is(forventetPostboksnummer));
+        assertThat(postboksadresseNorsk.getPostnummer(), is(forventetPostnummer));
+    }
+
+    @Test
+    public void verdierIWSPostadresseNorskTilNullDersomDeErNull() throws Exception {
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
+                new WSPostboksadresseNorsk()
+                        .withPostboksanlegg(null)
+                        .withPostboksnummer(null)
+                        .withPoststed(new WSPostnummer().withValue(null))
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(PostboksadresseNorsk.class));
+        final PostboksadresseNorsk postboksadresseNorsk = (PostboksadresseNorsk) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(postboksadresseNorsk.getPostboksanlegg(), nullValue());
+        assertThat(postboksadresseNorsk.getPostboksnummer(), nullValue());
+        assertThat(postboksadresseNorsk.getPostnummer(), nullValue());
+    }
+
+    @Test
+    public void wsStrukturertAdresseLandkodeMappesDersomDenEksisterer() throws Exception {
+        final String forventetLandkode = "NO";
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
+                new WSPostboksadresseNorsk()
+                        .withPoststed(new WSPostnummer())
+                        .withLandkode(new WSLandkoder().withValue(forventetLandkode)))
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getLandkode(), is(forventetLandkode));
+    }
+
+    @Test
+    public void wsStrukturertAdresseLandkodeMappesTilNullDersomDenErNull() throws Exception {
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
+                new WSPostboksadresseNorsk()
+                        .withPoststed(new WSPostnummer())
+                        .withLandkode(null))
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getLandkode(), nullValue());
+    }
+
+    @Test
+    public void wsStrukturertAdresseLandkodeMappesTilNullDersomValueDenErNull() throws Exception {
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
+                new WSPostboksadresseNorsk()
+                        .withPoststed(new WSPostnummer())
+                        .withLandkode(new WSLandkoder().withValue(null)))
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getLandkode(), nullValue());
     }
 
     private Matcher<String> erDato(final int forventetAr, final int forventetManed, final int forventetDag) {
