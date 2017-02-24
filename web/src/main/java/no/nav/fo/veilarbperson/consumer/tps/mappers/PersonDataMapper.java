@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Optional;
 
+import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 
 public class PersonDataMapper {
@@ -44,7 +45,7 @@ public class PersonDataMapper {
     private String kanskjeKjonn(WSPerson person) {
         return ofNullable(person.getKjoenn())
                 .map(WSKjoenn::getKjoenn)
-                .map(kjonn -> kjonn.getValue())
+                .map(WSKodeverdi::getValue)
                 .orElse(null);
     }
 
@@ -168,7 +169,7 @@ public class PersonDataMapper {
 
     private static String ansvarligEnhetsnummer(WSPerson person) {
         if (person instanceof WSBruker) {
-            return Optional.of(person)
+            return of(person)
                     .map(wsPerson -> ((WSBruker) wsPerson).getHarAnsvarligEnhet())
                     .map(WSAnsvarligEnhet::getEnhet)
                     .map(WSOrganisasjonsenhet::getOrganisasjonselementID).orElse(null);
@@ -177,12 +178,10 @@ public class PersonDataMapper {
     }
 
     private static String kanskjeStatsborgerskap(WSPerson person) {
-        String statsborgerskap = null;
-        Optional<WSStatsborgerskap> wsStatsborgerskap = ofNullable(person.getStatsborgerskap());
-        if (wsStatsborgerskap.isPresent()) {
-            statsborgerskap = person.getStatsborgerskap().getLand().getValue();
-        }
-        return statsborgerskap;
+        return ofNullable(person.getStatsborgerskap())
+                .map(WSStatsborgerskap::getLand)
+                .map(WSLandkoder::getValue)
+                .orElse(null);
     }
 
     private static String kanskjeKontonummer(WSPerson person) {
@@ -191,12 +190,12 @@ public class PersonDataMapper {
 
         if (bankkonto instanceof WSBankkontoNorge) {
             WSBankkontoNorge bankkontoNorge = (WSBankkontoNorge) bankkonto;
-            kontonummer = bankkontoNorge.getBankkonto().getBankkontonummer();
+            kontonummer = ofNullable(bankkontoNorge.getBankkonto()).map(WSBankkontonummer::getBankkontonummer).orElse(null);
         }
 
         if (bankkonto instanceof WSBankkontoUtland) {
             WSBankkontoUtland wsBankkontoUtland = (WSBankkontoUtland) bankkonto;
-            kontonummer = wsBankkontoUtland.getBankkontoUtland().getBankkontonummer();
+            kontonummer = ofNullable(wsBankkontoUtland.getBankkontoUtland()).map(WSBankkontonummerUtland::getBankkontonummer).orElse(null);
         }
 
         return kontonummer;
@@ -212,21 +211,19 @@ public class PersonDataMapper {
 
     private static Sivilstand kanskjeSivilstand(WSPerson person) {
         return ofNullable(person.getSivilstand())
-                .map(wsSivilstand -> {
-                    return new Sivilstand()
-                            .withSivilstand(wsSivilstand.getSivilstand().getValue())
-                            .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()));
-                })
+                .map(wsSivilstand -> new Sivilstand()
+                        .withSivilstand(wsSivilstand.getSivilstand().getValue())
+                        .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar())))
                 .orElse(null);
     }
 
 
     private static String dodsdatoTilString(WSPerson person) {
-        return Optional.of(person)
+        return of(person)
                 .map(WSPerson::getDoedsdato)
                 .map(WSDoedsdato::getDoedsdato)
                 .map(XMLGregorianCalendar::toGregorianCalendar)
-                .map(dato -> datoTilString(dato))
+                .map(PersonDataMapper::datoTilString)
                 .orElse(null);
     }
 
