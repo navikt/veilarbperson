@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+@SuppressWarnings("WeakerAccess")
 public class Kodeverk {
 
     private final List<XMLKode> koder;
 
-    Kodeverk(XMLEnkeltKodeverk kodeverkResponse) {
+    public Kodeverk(XMLEnkeltKodeverk kodeverkResponse) {
         this.koder = kodeverkResponse.getKode();
     }
 
