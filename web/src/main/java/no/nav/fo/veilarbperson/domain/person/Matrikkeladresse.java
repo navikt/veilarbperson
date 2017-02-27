@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.domain;
+package no.nav.fo.veilarbperson.domain.person;
 
 public class Matrikkeladresse extends StrukturertAdresse{
 

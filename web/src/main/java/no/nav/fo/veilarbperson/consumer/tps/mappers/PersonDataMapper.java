@@ -1,6 +1,6 @@
 package no.nav.fo.veilarbperson.consumer.tps.mappers;
 
-import no.nav.fo.veilarbperson.domain.*;
+import no.nav.fo.veilarbperson.domain.person.*;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;

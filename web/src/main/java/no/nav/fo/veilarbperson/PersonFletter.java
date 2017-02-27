@@ -8,9 +8,9 @@ import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
-import no.nav.fo.veilarbperson.domain.*;
+import no.nav.fo.veilarbperson.domain.person.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
-import no.nav.tjeneste.virksomhet.person.v2.HentSikkerhetstiltakPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v2.*;
 
 public class PersonFletter {
 
@@ -37,7 +37,7 @@ public class PersonFletter {
         this.egenAnsattService = egenAnsattService;
     }
 
-    PersonData hentPerson(String fnr) {
+    PersonData hentPerson(String fnr) throws HentKjerneinformasjonPersonIkkeFunnet, HentKjerneinformasjonSikkerhetsbegrensning {
         PersonData personData = personService.hentPerson(fnr);
         personData.setEgenAnsatt(egenAnsattService.erEgenAnsatt(fnr));
 
