@@ -1,5 +1,6 @@
-package no.nav.fo.veilarbperson;
+package no.nav.fo.veilarbperson.rest;
 
+import no.nav.fo.veilarbperson.PersonFletter;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
@@ -21,37 +22,30 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 @Path("/person/{personnummer}")
-public class APIController {
+public class PersonRessurs {
 
-    private static final Logger logger = getLogger(APIController.class);
+    private static final Logger logger = getLogger(PersonRessurs.class);
 
-    private final EnhetService enhetService;
-    private final DigitalKontaktinformasjonService digitalKontaktinformasjonService;
-    private final PersonService personService;
-    private final EgenAnsattService egenAnsattService;
-    private final KodeverkService kodeverkService;
+    final PersonFletter personFletter;
 
-    public APIController(EnhetService enhetService,
+    public PersonRessurs(EnhetService enhetService,
                          DigitalKontaktinformasjonService digitalKontaktinformasjonService,
                          PersonService personService,
                          EgenAnsattService egenAnsattService,
                          KodeverkService kodeverkService) {
-        this.enhetService = enhetService;
-        this.digitalKontaktinformasjonService = digitalKontaktinformasjonService;
-        this.personService = personService;
-        this.egenAnsattService = egenAnsattService;
-        this.kodeverkService = kodeverkService;
-    }
 
-    @GET
-    @Produces(APPLICATION_JSON)
-    public Response person(@PathParam("personnummer") String personnummer) {
-        final PersonFletter personFletter = new PersonFletter(
+        personFletter = new PersonFletter(
                 enhetService,
                 digitalKontaktinformasjonService,
                 personService,
                 egenAnsattService,
                 kodeverkService);
+    }
+
+    @GET
+    @Produces(APPLICATION_JSON)
+    public Response person(@PathParam("personnummer") String personnummer) {
+
         logger.info("Henter persondata med personnummer: " + personnummer);
 
         try {

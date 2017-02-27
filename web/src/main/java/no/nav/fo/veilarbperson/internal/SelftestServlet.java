@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson;
+package no.nav.fo.veilarbperson.internal;
 
 import no.nav.sbl.dialogarena.common.web.selftest.SelfTestBaseServlet;
 import no.nav.sbl.dialogarena.types.Pingable;
