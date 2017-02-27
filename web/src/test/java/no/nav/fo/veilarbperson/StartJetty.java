@@ -3,7 +3,6 @@ package no.nav.fo.veilarbperson;
 import no.nav.sbl.dialogarena.common.jetty.Jetty;
 
 import static no.nav.sbl.dialogarena.common.jetty.Jetty.usingWar;
-import static no.nav.sbl.dialogarena.common.jetty.JettyStarterUtils.*;
 
 class StartJetty {
 
@@ -17,6 +16,6 @@ class StartJetty {
                 .loadProperties("/environment-test.properties")
                 .overrideWebXml()
                 .buildJetty();
-        jetty.startAnd(first(waitFor(gotKeypress())).then(jetty.stop));
+        jetty.start();
     }
 }
