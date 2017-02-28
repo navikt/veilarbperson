@@ -14,6 +14,7 @@ public class KodeverkService {
         this.kodverkPortType = kodverkPortType;
     }
 
+    @SuppressWarnings("WeakerAccess")
     @Cacheable(value = "kodeverk", key = "#kodeverkRequest.toString()" )
     public Kodeverk hentKodeverk(KodeverkRequestDO kodeverkRequest) throws HentKodeverkHentKodeverkKodeverkIkkeFunnet {
 
