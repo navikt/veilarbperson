@@ -1,8 +1,8 @@
 package no.nav.fo.veilarbperson.consumer.tps;
 
 import no.nav.fo.veilarbperson.consumer.tps.mappers.PersonDataMapper;
-import no.nav.fo.veilarbperson.domain.PersonData;
-import no.nav.fo.veilarbperson.domain.Sikkerhetstiltak;
+import no.nav.fo.veilarbperson.domain.person.PersonData;
+import no.nav.fo.veilarbperson.domain.person.Sikkerhetstiltak;
 import no.nav.tjeneste.virksomhet.person.v2.*;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSNorskIdent;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSPersonidenter;
@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class PersonService{
+public class PersonService {
 
     private static final Logger logger = getLogger(PersonService.class);
 
@@ -25,7 +25,7 @@ public class PersonService{
         this.personDataMapper = new PersonDataMapper();
     }
 
-    public PersonData hentPerson(String ident) {
+    public PersonData hentPerson(String ident) throws HentKjerneinformasjonPersonIkkeFunnet, HentKjerneinformasjonSikkerhetsbegrensning {
         final WSHentKjerneinformasjonRequest request = new WSHentKjerneinformasjonRequest().withIdent(ident);
 
         try {
@@ -33,13 +33,11 @@ public class PersonService{
             PersonData personData = personDataMapper.tilPersonData(wsPerson.getPerson());
             return personData;
         } catch (HentKjerneinformasjonSikkerhetsbegrensning ikkeTilgang) {
-            logger.error("Ikke tilgang til " + ident);
-            ikkeTilgang.printStackTrace();
-            return new PersonData();
+            logger.info("Saksbehandler har ikke tilgang til: " + ident);
+            throw ikkeTilgang;
         } catch (HentKjerneinformasjonPersonIkkeFunnet ikkeFunnet) {
-            logger.error("Finner ikke " + ident);
-            ikkeFunnet.printStackTrace();
-            return new PersonData();
+            logger.info("Person ikke funnet: " + ident);
+            throw ikkeFunnet;
         }
     }
 
