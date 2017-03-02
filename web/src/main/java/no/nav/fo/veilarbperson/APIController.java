@@ -5,13 +5,19 @@ import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
-import no.nav.fo.veilarbperson.domain.PersonData;
+import no.nav.fo.veilarbperson.domain.Feilmelding;
+import no.nav.fo.veilarbperson.domain.person.PersonData;
+import no.nav.tjeneste.virksomhet.person.v2.HentKjerneinformasjonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v2.HentKjerneinformasjonSikkerhetsbegrensning;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
-import javax.ws.rs.*;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 @Path("/person/{personnummer}")
@@ -39,7 +45,7 @@ public class APIController {
 
     @GET
     @Produces(APPLICATION_JSON)
-    public PersonData person(@PathParam("personnummer") String personnummer) {
+    public Response person(@PathParam("personnummer") String personnummer) {
         final PersonFletter personFletter = new PersonFletter(
                 enhetService,
                 digitalKontaktinformasjonService,
@@ -47,7 +53,25 @@ public class APIController {
                 egenAnsattService,
                 kodeverkService);
         logger.info("Henter persondata med personnummer: " + personnummer);
-        return personFletter.hentPerson(personnummer);
+
+        try {
+            PersonData person = personFletter.hentPerson(personnummer);
+            return Response.ok().entity(person).build();
+        } catch (HentKjerneinformasjonPersonIkkeFunnet hentKjerneinformasjonPersonIkkeFunnet) {
+            Feilmelding feilmelding = new Feilmelding("Fant ikke person med personnummer: " + personnummer,
+                    hentKjerneinformasjonPersonIkkeFunnet.toString());
+            return Response
+                    .status(Status.NOT_FOUND)
+                    .entity(feilmelding)
+                    .build();
+        } catch (HentKjerneinformasjonSikkerhetsbegrensning hentKjerneinformasjonSikkerhetsbegrensning) {
+            Feilmelding feilmelding = new Feilmelding("Saksbehandler har ikke tilgang til personnummer: " + personnummer,
+                    hentKjerneinformasjonSikkerhetsbegrensning.toString());
+            return Response
+                    .status(Status.UNAUTHORIZED)
+                    .entity(feilmelding)
+                    .build();
+        }
     }
 
 }
