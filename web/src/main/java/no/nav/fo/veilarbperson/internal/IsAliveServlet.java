@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson;
+package no.nav.fo.veilarbperson.internal;
 
 import javax.servlet.http.*;
 import java.io.IOException;
