@@ -37,13 +37,13 @@ public class PersonFletter {
         this.egenAnsattService = egenAnsattService;
     }
 
-    public PersonData hentPerson(String personnummer) throws HentKjerneinformasjonPersonIkkeFunnet, HentKjerneinformasjonSikkerhetsbegrensning {
-        PersonData personData = personService.hentPerson(personnummer);
+    public PersonData hentPerson(String fodselsnummer) throws HentKjerneinformasjonPersonIkkeFunnet, HentKjerneinformasjonSikkerhetsbegrensning {
+        PersonData personData = personService.hentPerson(fodselsnummer);
 
-        flettEgenAnsatt(personnummer, personData);
+        flettEgenAnsatt(fodselsnummer, personData);
         flettOrganisasjonsenhet(personData);
-        flettSikkerhetstiltak(personnummer, personData);
-        flettDigitalKontaktinformasjon(personnummer, personData);
+        flettSikkerhetstiltak(fodselsnummer, personData);
+        flettDigitalKontaktinformasjon(fodselsnummer, personData);
         flettKodeverk(personData);
 
         return personData;
