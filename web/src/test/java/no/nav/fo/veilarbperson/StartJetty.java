@@ -19,5 +19,4 @@ class StartJetty {
                 .buildJetty();
         jetty.startAnd(first(waitFor(gotKeypress())).then(jetty.stop));
     }
-
 }

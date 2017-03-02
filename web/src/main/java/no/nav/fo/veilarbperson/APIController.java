@@ -7,11 +7,14 @@ import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.PersonData;
 import org.slf4j.Logger;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Component;
+import javax.ws.rs.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-@RestController
+@Component
+@Path("/person/{personnummer}")
 public class APIController {
 
     private static final Logger logger = getLogger(APIController.class);
@@ -34,8 +37,9 @@ public class APIController {
         this.kodeverkService = kodeverkService;
     }
 
-    @RequestMapping(value = "/person/{personnummer}", produces = "application/json")
-    public PersonData person(@PathVariable String personnummer) {
+    @GET
+    @Produces(APPLICATION_JSON)
+    public PersonData person(@PathParam("personnummer") String personnummer) {
         final PersonFletter personFletter = new PersonFletter(
                 enhetService,
                 digitalKontaktinformasjonService,
