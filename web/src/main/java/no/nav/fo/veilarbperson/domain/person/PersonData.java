@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbperson.domain;
+package no.nav.fo.veilarbperson.domain.person;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
