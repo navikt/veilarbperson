@@ -37,23 +37,29 @@ public class PersonFletter {
         this.egenAnsattService = egenAnsattService;
     }
 
-    PersonData hentPerson(String fnr) throws HentKjerneinformasjonPersonIkkeFunnet, HentKjerneinformasjonSikkerhetsbegrensning {
-        PersonData personData = personService.hentPerson(fnr);
-        personData.setEgenAnsatt(egenAnsattService.erEgenAnsatt(fnr));
+    public PersonData hentPerson(String fodselsnummer) throws HentKjerneinformasjonPersonIkkeFunnet, HentKjerneinformasjonSikkerhetsbegrensning {
+        PersonData personData = personService.hentPerson(fodselsnummer);
 
-
-        if (personData.getAnsvarligEnhetsnummer() != null) {
-            personData.setBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getAnsvarligEnhetsnummer()));
-        }
-
-        hentPersondata(fnr, personData);
-        hentDigitalKontaktinformasjon(fnr, personData);
-        hentTermerBasertPaKoder(personData);
+        flettEgenAnsatt(fodselsnummer, personData);
+        flettOrganisasjonsenhet(personData);
+        flettSikkerhetstiltak(fodselsnummer, personData);
+        flettDigitalKontaktinformasjon(fodselsnummer, personData);
+        flettKodeverk(personData);
 
         return personData;
     }
 
-    private void hentTermerBasertPaKoder(PersonData personData) {
+    private void flettEgenAnsatt(String personnummer, PersonData personData) {
+        personData.setEgenAnsatt(egenAnsattService.erEgenAnsatt(personnummer));
+    }
+
+    private void flettOrganisasjonsenhet(PersonData personData) {
+        if (personData.getAnsvarligEnhetsnummer() != null) {
+            personData.setBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getAnsvarligEnhetsnummer()));
+        }
+    }
+
+    private void flettKodeverk(PersonData personData) {
         personData.setStatsborgerskap(kodeverkManager.getBeskrivelseForLandkode(personData.getStatsborgerskap())
                 .orElse(personData.getStatsborgerskap()));
 
@@ -74,7 +80,7 @@ public class PersonFletter {
 
     }
 
-    private void hentDigitalKontaktinformasjon(String fnr, PersonData personData) {
+    private void flettDigitalKontaktinformasjon(String fnr, PersonData personData) {
         try {
             DigitalKontaktinformasjon kontaktinformasjon = digitalKontaktinformasjonService.hentDigitalKontaktinformasjon(fnr);
             personData.setTelefon(kontaktinformasjon.getTelefon());
@@ -86,7 +92,7 @@ public class PersonFletter {
         }
     }
 
-    private void hentPersondata(String fnr, PersonData personData) {
+    private void flettSikkerhetstiltak(String fnr, PersonData personData) {
         try {
             Sikkerhetstiltak sikkerhetstiltak = personService.hentSikkerhetstiltak(fnr);
             personData.setSikkerhetstiltak(sikkerhetstiltak.getSikkerhetstiltaksbeskrivelse());

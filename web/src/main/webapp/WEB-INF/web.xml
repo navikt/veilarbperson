@@ -22,7 +22,7 @@
 
     <servlet>
         <servlet-name>selftest</servlet-name>
-        <servlet-class>no.nav.fo.veilarbperson.SelftestServlet</servlet-class>
+        <servlet-class>no.nav.fo.veilarbperson.internal.SelftestServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>selftest</servlet-name>
@@ -31,7 +31,7 @@
 
     <servlet>
         <servlet-name>isAlive</servlet-name>
-        <servlet-class>no.nav.fo.veilarbperson.IsAliveServlet</servlet-class>
+        <servlet-class>no.nav.fo.veilarbperson.internal.IsAliveServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>isAlive</servlet-name>
