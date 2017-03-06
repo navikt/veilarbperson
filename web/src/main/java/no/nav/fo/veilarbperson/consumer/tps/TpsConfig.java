@@ -1,6 +1,5 @@
 package no.nav.fo.veilarbperson.consumer.tps;
 
-import no.nav.fo.veilarbperson.config.*;
 import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;
@@ -22,7 +21,7 @@ public class TpsConfig {
 
     @Bean
     public PersonV2 personPortType() {
-        PersonV2 prod = factory().withOutInterceptor(new TestOutInterceptor()).build();
+        PersonV2 prod = factory().configureStsForOnBehalfOfWithJWT().build();
         PersonV2 mock = new PersonMock();
 
         return createMetricsProxyWithInstanceSwitcher("TPS", prod, mock, PERSON_TPS_MOCK_KEY, PersonV2.class);
@@ -45,7 +44,7 @@ public class TpsConfig {
 
     @Bean
     public EgenAnsattV1 egenAnsattPortType() {
-        EgenAnsattV1 prod = egenAnsattFactory().withOutInterceptor(new TestOutInterceptor()).build();
+        EgenAnsattV1 prod = egenAnsattFactory().configureStsForOnBehalfOfWithJWT().build();
         EgenAnsattV1 mock = new EgenAnsattMock();
 
         return createMetricsProxyWithInstanceSwitcher("TPS", prod, mock, EGENANSATT_TPS_MOCK_KEY, EgenAnsattV1.class);
