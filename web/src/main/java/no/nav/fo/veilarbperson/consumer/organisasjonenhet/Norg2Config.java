@@ -20,7 +20,7 @@ public class Norg2Config {
 
     @Bean
     public OrganisasjonEnhetV1 organisasjonEnhetPortType() {
-        OrganisasjonEnhetV1 prod = factory().build();
+        OrganisasjonEnhetV1 prod = factory().configureStsForOnBehalfOfWithJWT().build();
         OrganisasjonEnhetV1 mock = new OrganisasjonEnhetMock();
         return createMetricsProxyWithInstanceSwitcher("NORG2", prod, mock, ENHET_NORG2_MOCK_KEY, OrganisasjonEnhetV1.class);
     }

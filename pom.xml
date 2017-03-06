@@ -30,16 +30,17 @@
 
         <slf4j.version>1.7.5</slf4j.version>
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
-        <common-jetty.version>2.0.11</common-jetty.version>
+        <common-jetty.version>2.0.12</common-jetty.version>
+        <common-test.version>1.2</common-test.version>
         <spring.version>4.3.4.RELEASE</spring.version>
         <common-web.version>4.0.5</common-web.version>
         <common-types.version>1.2</common-types.version>
         <jackson.version>2.7.2</jackson.version>
         <xml-apis.version>1.4.01</xml-apis.version>
-        <modig-security.version>1.0.30</modig-security.version>
+        <modig-security.version>3.0.1</modig-security.version>
         <person-v2.version>3.0.3</person-v2.version>
         <dkif.version>1.3</dkif.version>
-        <cxf-api.version>2.7.18</cxf-api.version>
+        <cxf.version>3.1.6</cxf.version>
         <mockito.version>1.10.19</mockito.version>
         <hamcrest.version>1.3</hamcrest.version>
         <junit.version>4.12</junit.version>
@@ -47,8 +48,10 @@
         <kodeverk.version>2.0.2</kodeverk.version>
         <egenansatt-v1.version>1.0.5</egenansatt-v1.version>
         <organisasjonenhet-v1.version>1.0.7</organisasjonenhet-v1.version>
-        <common-cxf.version>3.1.9</common-cxf.version>
+        <common-cxf.version>3.1.33</common-cxf.version>
         <ehcache.version>3.2.0</ehcache.version>
+        <oidc-security.version>2.0.11</oidc-security.version>
+
         <sonar.exclusions>**/config/*, **/*Mock*, **/*Servlet*, **/*Config*</sonar.exclusions>
     </properties>
 
@@ -84,8 +87,8 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-api</artifactId>
-                <version>${cxf-api.version}</version>
+                <artifactId>cxf-core</artifactId>
+                <version>${cxf.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -160,6 +163,13 @@
                 <version>${modig-security.version}</version>
                 <scope>runtime</scope>
             </dependency>
+            <dependency>
+                <groupId>no.nav.sbl.dialogarena</groupId>
+                <artifactId>common-test</artifactId>
+                <version>${common-test.version}</version>
+                <scope>test</scope>
+            </dependency>
+
             <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-core</artifactId>
@@ -263,6 +273,27 @@
                 <groupId>org.ehcache</groupId>
                 <artifactId>ehcache</artifactId>
                 <version>${ehcache.version}</version>
+            </dependency>
+
+            <!--oidc-security-->
+            <dependency>
+                <groupId>no.nav.dialogarena</groupId>
+                <artifactId>oidc-security</artifactId>
+                <version>${oidc-security.version}</version>
+                <type>test-jar</type>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.dialogarena</groupId>
+                <artifactId>oidc-security</artifactId>
+                <version>${oidc-security.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.components</groupId>
+                <artifactId>geronimo-jaspi</artifactId>
+                <version>2.0.0</version>
+                <scope>test</scope>
             </dependency>
 
         </dependencies>

@@ -1,6 +1,5 @@
 package no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon;
 
-import no.nav.fo.veilarbperson.config.TestOutInterceptor;
 import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;
@@ -19,7 +18,7 @@ public class DigitalKontaktinformasjonConfig {
 
     @Bean
     public DigitalKontaktinformasjonV1 digitalKontaktinformasjonPortType() {
-        DigitalKontaktinformasjonV1 prod = factory().withOutInterceptor(new TestOutInterceptor()).build();
+        DigitalKontaktinformasjonV1 prod = factory().configureStsForOnBehalfOfWithJWT().build();
         DigitalKontaktinformasjonV1 mock = new DigitalKontaktinformasjonMock();
 
         return createMetricsProxyWithInstanceSwitcher("digitalkontaktinformasjon", prod, mock, DIGITAL_KONTAKTINFORMASJON_MOCK_KEY, DigitalKontaktinformasjonV1.class);
