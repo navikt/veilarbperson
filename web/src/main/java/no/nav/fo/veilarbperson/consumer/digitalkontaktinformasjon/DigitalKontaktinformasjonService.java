@@ -12,13 +12,13 @@ public class DigitalKontaktinformasjonService {
         this.digitalKontaktinformasjonV1 = digitalKontaktinformasjonV1;
     }
 
-    public DigitalKontaktinformasjon hentDigitalKontaktinformasjon(String personnummer) throws
+    public DigitalKontaktinformasjon hentDigitalKontaktinformasjon(String fodselsnummer) throws
             HentDigitalKontaktinformasjonSikkerhetsbegrensing,
             HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet,
             HentDigitalKontaktinformasjonPersonIkkeFunnet {
 
         WSHentDigitalKontaktinformasjonRequest request = new WSHentDigitalKontaktinformasjonRequest()
-                .withPersonident(personnummer);
+                .withPersonident(fodselsnummer);
 
         WSHentDigitalKontaktinformasjonResponse wsResponse = digitalKontaktinformasjonV1.hentDigitalKontaktinformasjon(request);
         return getDigitalKontaktinformason(wsResponse);
