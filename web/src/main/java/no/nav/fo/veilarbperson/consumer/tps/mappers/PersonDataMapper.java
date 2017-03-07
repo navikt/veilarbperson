@@ -40,9 +40,11 @@ public class PersonDataMapper {
                 .bostedsadresse(kanskjeBostedsadresse(person))
                 .midlertidigAdresseNorge(kanskjeMidlertidigAdresseNorge(person))
                 .midlertidigAdresseUtland(kanskjeMidlertidigAdresseUtland(person))
+                .postAdresse(kanskjePostAdresse(person))
                 .dodsdato(dodsdatoTilString(person))
                 .build();
     }
+
 
     private String kanskjeKjonn(WSPerson person) {
         return ofNullable(person.getKjoenn())
@@ -126,6 +128,17 @@ public class PersonDataMapper {
             }
         }
         return midlertidigAdresseUtland;
+    }
+
+    private static PostAdresse kanskjePostAdresse(WSPerson person) {
+        PostAdresse postAdresse = null;
+
+        WSPostadresse wsPostadresse = person.getPostadresse();
+        if (wsPostadresse != null) {
+            postAdresse = new PostAdresse();
+            postAdresse.withUstrukturertAdresse(tilUstrukturertAdresse(wsPostadresse.getUstrukturertAdresse()));
+        }
+        return postAdresse;
     }
 
     private static StrukturertAdresse mapStrukturertAdresse(WSStrukturertAdresse wsStrukturertadresse) {
