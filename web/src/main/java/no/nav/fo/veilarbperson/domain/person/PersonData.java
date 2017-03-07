@@ -27,6 +27,8 @@ public class PersonData extends Person {
     private Sivilstand sivilstand;
     private Familiemedlem partner;
     private Bostedsadresse bostedsadresse;
+    private MidlertidigAdresseNorge midlertidigAdresseNorge;
+    private MidlertidigAdresseUtland midlertidigAdresseUtland;
     private boolean egenAnsatt;
 
     public boolean isEgenAnsatt() {
@@ -54,6 +56,8 @@ public class PersonData extends Person {
                        Sivilstand sivilstand,
                        Familiemedlem partner,
                        Bostedsadresse bostedsadresse,
+                       MidlertidigAdresseNorge midlertidigAdresseNorge,
+                       MidlertidigAdresseUtland midlertidigAdresseUtland,
                        boolean egenAnsatt
     ) {
         super(fornavn, mellomnavn, etternavn, sammensattnavn, personnummer, fodselsdato, kjonn, dodsdato);
@@ -70,6 +74,8 @@ public class PersonData extends Person {
         this.sivilstand = sivilstand;
         this.partner = partner;
         this.bostedsadresse = bostedsadresse;
+        this.midlertidigAdresseNorge = midlertidigAdresseNorge;
+        this.midlertidigAdresseUtland = midlertidigAdresseUtland;
         this.egenAnsatt = egenAnsatt;
     }
 
