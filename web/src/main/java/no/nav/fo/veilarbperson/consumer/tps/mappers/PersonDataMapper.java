@@ -38,6 +38,8 @@ public class PersonDataMapper {
                 .sivilstand(kanskjeSivilstand(person))
                 .partner(familiemedlemMapper.partner(person.getHarFraRolleI()))
                 .bostedsadresse(kanskjeBostedsadresse(person))
+                .midlertidigAdresseNorge(kanskjeMidlertidigAdresseNorge(person))
+                .midlertidigAdresseUtland(kanskjeMidlertidigAdresseUtland(person))
                 .dodsdato(dodsdatoTilString(person))
                 .build();
     }
@@ -92,28 +94,61 @@ public class PersonDataMapper {
         WSBostedsadresse wsBostedsadresse = person.getBostedsadresse();
         if (wsBostedsadresse != null) {
             bostedsadresse = new Bostedsadresse();
+            bostedsadresse.withStrukturertAdresse(mapStrukturertAdresse(wsBostedsadresse.getStrukturertAdresse()));
+        }
+        return bostedsadresse;
+    }
 
-            WSStrukturertAdresse wsStrukturertadresse = wsBostedsadresse.getStrukturertAdresse();
+    private static MidlertidigAdresseNorge kanskjeMidlertidigAdresseNorge(WSPerson person) {
+        MidlertidigAdresseNorge midlertidigAdresseNorge = null;
 
-            if (wsStrukturertadresse instanceof WSGateadresse) {
-                bostedsadresse.withStrukturertAdresse(tilGateAdresse((WSGateadresse) wsStrukturertadresse));
+        if (person instanceof WSBruker) {
+            WSMidlertidigPostadresse wsMidlertidigPostadresse = ((WSBruker) person).getMidlertidigPostadresse();
+            if (wsMidlertidigPostadresse != null && wsMidlertidigPostadresse instanceof WSMidlertidigPostadresseNorge) {
+                midlertidigAdresseNorge = new MidlertidigAdresseNorge();
+                midlertidigAdresseNorge.withStrukturertAdresse(mapStrukturertAdresse(
+                        ((WSMidlertidigPostadresseNorge) wsMidlertidigPostadresse).getStrukturertAdresse()));
             }
+        }
+        return midlertidigAdresseNorge;
+    }
 
-            if (wsStrukturertadresse instanceof WSPostboksadresseNorsk) {
-                bostedsadresse.withStrukturertAdresse(tilPostboksadresseNorsk((WSPostboksadresseNorsk) wsStrukturertadresse));
+    private static MidlertidigAdresseUtland kanskjeMidlertidigAdresseUtland(WSPerson person) {
+        MidlertidigAdresseUtland midlertidigAdresseUtland = null;
+
+        if (person instanceof WSBruker) {
+            WSMidlertidigPostadresse wsMidlertidigPostadresse = ((WSBruker) person).getMidlertidigPostadresse();
+            if (wsMidlertidigPostadresse != null && wsMidlertidigPostadresse instanceof WSMidlertidigPostadresseUtland) {
+                midlertidigAdresseUtland = new MidlertidigAdresseUtland();
+                midlertidigAdresseUtland.withUstrukturertAdresse(tilUstrukturertAdresse(
+                        ((WSMidlertidigPostadresseUtland) wsMidlertidigPostadresse).getUstrukturertAdresse()
+                ));
             }
+        }
+        return midlertidigAdresseUtland;
+    }
 
-            if (wsStrukturertadresse instanceof WSMatrikkeladresse) {
-                bostedsadresse.withStrukturertAdresse(tilMatrikkeladresse((WSMatrikkeladresse) wsStrukturertadresse));
-            }
-
-            if (wsStrukturertadresse.getLandkode() != null) {
-                bostedsadresse.getStrukturertAdresse().withLandkode(wsStrukturertadresse.getLandkode().getValue());
-            }
-
+    private static StrukturertAdresse mapStrukturertAdresse(WSStrukturertAdresse wsStrukturertadresse) {
+        StrukturertAdresse strukturertAdresse = null;
+        if (wsStrukturertadresse instanceof WSGateadresse) {
+            strukturertAdresse = tilGateAdresse((WSGateadresse) wsStrukturertadresse);
         }
 
-        return bostedsadresse;
+        if (wsStrukturertadresse instanceof WSPostboksadresseNorsk) {
+            strukturertAdresse = tilPostboksadresseNorsk((WSPostboksadresseNorsk) wsStrukturertadresse);
+        }
+
+        if (wsStrukturertadresse instanceof WSMatrikkeladresse) {
+            strukturertAdresse = tilMatrikkeladresse((WSMatrikkeladresse) wsStrukturertadresse);
+        }
+
+        if (wsStrukturertadresse.getLandkode() != null) {
+            if (strukturertAdresse == null) {
+                strukturertAdresse = new StrukturertAdresse();
+            }
+            strukturertAdresse.withLandkode(wsStrukturertadresse.getLandkode().getValue());
+        }
+        return strukturertAdresse;
     }
 
     private static StrukturertAdresse tilMatrikkeladresse(WSMatrikkeladresse wsMatrikkeladresse) {
@@ -165,6 +200,14 @@ public class PersonDataMapper {
                         .orElse(null))
                 .withPostnummer(ofNullable(wsGateadresse.getPoststed().getValue())
                         .orElse(null));
+    }
+
+    private static UstrukturertAdresse tilUstrukturertAdresse(WSUstrukturertAdresse wsUstrukturertAdresse) {
+        return new UstrukturertAdresse()
+                .withAdresselinje1(wsUstrukturertAdresse.getAdresselinje1())
+                .withAdresselinje2(wsUstrukturertAdresse.getAdresselinje2())
+                .withAdresselinje3(wsUstrukturertAdresse.getAdresselinje3())
+                .withAdresselinje4(wsUstrukturertAdresse.getAdresselinje4());
     }
 
     private static String ansvarligEnhetsnummer(WSPerson person) {
