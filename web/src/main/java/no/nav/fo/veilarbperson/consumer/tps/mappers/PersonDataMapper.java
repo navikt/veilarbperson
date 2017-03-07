@@ -217,10 +217,14 @@ public class PersonDataMapper {
 
     private static UstrukturertAdresse tilUstrukturertAdresse(WSUstrukturertAdresse wsUstrukturertAdresse) {
         return new UstrukturertAdresse()
-                .withAdresselinje1(wsUstrukturertAdresse.getAdresselinje1())
-                .withAdresselinje2(wsUstrukturertAdresse.getAdresselinje2())
-                .withAdresselinje3(wsUstrukturertAdresse.getAdresselinje3())
-                .withAdresselinje4(wsUstrukturertAdresse.getAdresselinje4());
+                .withAdresselinje1(ofNullable(wsUstrukturertAdresse.getAdresselinje1())
+                        .orElse(null))
+                .withAdresselinje2(ofNullable(wsUstrukturertAdresse.getAdresselinje2())
+                        .orElse(null))
+                .withAdresselinje3(ofNullable(wsUstrukturertAdresse.getAdresselinje3())
+                        .orElse(null))
+                .withAdresselinje4(ofNullable(wsUstrukturertAdresse.getAdresselinje4())
+                        .orElse(null));
     }
 
     private static String ansvarligEnhetsnummer(WSPerson person) {
