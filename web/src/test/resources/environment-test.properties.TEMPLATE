@@ -23,5 +23,5 @@ isso-issuer.url=https://modapp-t11.adeo.no:443/openam/oauth2
 isso-host.url=https://modapp-t11.adeo.no
 isso-rp-user.username=OIDC
 isso-rp-user.password=BYTT_MEG
-login.redirect.url=/veilarbpersonflatefs/api/login
+login.redirect.url=/veilarbpersonflatefs/tjenester/login
 jetty.print.localhost=trueServiceProvider/

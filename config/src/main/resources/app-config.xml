@@ -34,7 +34,7 @@
     </resources>
 
     <exposed-services>
-        <exposedRest path="/veilarbperson" name="veilArbPersonAPI"/>
+        <exposedRest path="/veilarbperson/tjenester" name="veilArbPersonAPI"/>
     </exposed-services>
 
     <loadBalancer isAlive="/veilarbperson/internal/isAlive" />

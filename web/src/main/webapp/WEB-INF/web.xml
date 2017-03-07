@@ -49,7 +49,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>restservlet</servlet-name>
-        <url-pattern>/api/*</url-pattern>
+        <url-pattern>/tjenester/*</url-pattern>
     </servlet-mapping>
 
     <security-constraint>
