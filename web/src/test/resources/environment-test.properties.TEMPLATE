@@ -1,5 +1,3 @@
-no.nav.modig.core.context.subjectHandlerImplementationClass=no.nav.modig.core.context.StaticSubjectHandler
-
 no.nav.modig.security.systemuser.password=BYTT_MEG
 no.nav.modig.security.systemuser.username=BYTT_MEG
 
@@ -18,4 +16,12 @@ kodeverk.endpoint.url=https://modapp-t4.adeo.no/kodeverk/ws/Kodeverk/v2
 
 disable.metrics.report=true
 
-no.nav.modig.security.sts.url=https://sts-t4.test.local/SecurityTokenServiceProvider/
+#Autentisering
+no.nav.modig.security.sts.url=https://sts-t11.test.local/SecurityTokenServiceProvider/
+isso-jwks.url=https://modapp-t11.adeo.no/openam/oauth2/connect/jwk_uri
+isso-issuer.url=https://modapp-t11.adeo.no:443/openam/oauth2
+isso-host.url=https://modapp-t11.adeo.no
+isso-rp-user.username=OIDC
+isso-rp-user.password=BYTT_MEG
+login.redirect.url=/veilarbpersonflatefs/api/login
+jetty.print.localhost=trueServiceProvider/
