@@ -722,6 +722,203 @@ public class PersonDataMapperTest {
         assertThat(personData.getBostedsadresse().getStrukturertAdresse().getLandkode(), nullValue());
     }
 
+    @Test
+    public void wsMidlertidigPostadresseNorgeMappesDersomDenEksisterer() throws Exception {
+        final String forventetGatenavn = "gatenavn";
+        final String forventetPostnummer = "0000";
+        final int forventetHusnummer = 12;
+        final String forventetHusbokstav = "A";
+        final int forventetGatenummer = 1;
+        final String forventetKommunenummer = "1234";
+        final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
+                new WSMidlertidigPostadresseNorge().withStrukturertAdresse(
+                        new WSGateadresse()
+                                .withGatenavn(forventetGatenavn)
+                                .withHusnummer(forventetHusnummer)
+                                .withHusbokstav(forventetHusbokstav)
+                                .withGatenummer(forventetGatenummer)
+                                .withKommunenummer(forventetKommunenummer)
+                                .withPoststed(new WSPostnummer().withValue(forventetPostnummer))
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getMidlertidigAdresseNorge(), notNullValue());
+        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), instanceOf(Gateadresse.class));
+        final Gateadresse gateadresse = (Gateadresse) personData.getMidlertidigAdresseNorge().getStrukturertAdresse();
+        assertThat(gateadresse.getGatenavn(), is(forventetGatenavn));
+        assertThat(gateadresse.getHusnummer(), is(forventetHusnummer));
+        assertThat(gateadresse.getHusbokstav(), is(forventetHusbokstav));
+        assertThat(gateadresse.getGatenummer(), is(forventetGatenummer));
+        assertThat(gateadresse.getKommunenummer(), is(forventetKommunenummer));
+        assertThat(gateadresse.getPostnummer(), is(forventetPostnummer));
+    }
+
+    @Test
+    public void wsMidlertidigPostadresseNorgeMappesTilNullDersomDenErNull() throws Exception {
+        final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
+                new WSMidlertidigPostadresseNorge().withStrukturertAdresse(
+                        new WSGateadresse()
+                                .withGatenavn(null)
+                                .withHusnummer(null)
+                                .withHusbokstav(null)
+                                .withGatenummer(null)
+                                .withKommunenummer(null)
+                                .withPoststed(new WSPostnummer().withValue(null))
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getMidlertidigAdresseNorge(), notNullValue());
+        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), instanceOf(Gateadresse.class));
+        final Gateadresse gateadresse = (Gateadresse) personData.getMidlertidigAdresseNorge().getStrukturertAdresse();
+        assertThat(gateadresse.getGatenavn(), nullValue());
+        assertThat(gateadresse.getHusnummer(), nullValue());
+        assertThat(gateadresse.getHusbokstav(), nullValue());
+        assertThat(gateadresse.getGatenummer(), nullValue());
+        assertThat(gateadresse.getKommunenummer(), nullValue());
+        assertThat(gateadresse.getPostnummer(), nullValue());
+    }
+
+    @Test
+    public void wsMidlertidigPostadresseNorgeMappesTilNullDersomPersonIkkeErBruker() throws Exception {
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
+                new WSBostedsadresse().withStrukturertAdresse(
+                        new WSGateadresse()
+                                .withGatenavn("gatenavn")
+                                .withHusnummer(0)
+                                .withHusbokstav("Husbokstav")
+                                .withGatenummer(0)
+                                .withKommunenummer("Kommunenummer")
+                                .withPoststed(new WSPostnummer().withValue("Poststed"))
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        assertThat(personData.getMidlertidigAdresseNorge(), nullValue());
+    }
+
+    @Test
+    public void wsMidlertidigPostadresseUtlandMappesDersomDenEksisterer() throws Exception {
+        String forventetAdresselinje1 = "Adresselinje1";
+        String forventetAdresselinje2 = "Adresselinje2";
+        String forventetAdresselinje3 = "Adresselinje3";
+        String forventetAdresselinje4 = "Adresselinje4";
+        final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
+                new WSMidlertidigPostadresseUtland().withUstrukturertAdresse(
+                        new WSUstrukturertAdresse()
+                            .withAdresselinje1(forventetAdresselinje1)
+                            .withAdresselinje2(forventetAdresselinje2)
+                            .withAdresselinje3(forventetAdresselinje3)
+                            .withAdresselinje4(forventetAdresselinje4)
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
+        UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
+        assertThat(ustrukturertAdresse, notNullValue());
+        assertThat(ustrukturertAdresse, instanceOf(UstrukturertAdresse.class));
+        assertThat(ustrukturertAdresse.getAdresselinje1(), is(forventetAdresselinje1));
+        assertThat(ustrukturertAdresse.getAdresselinje2(), is(forventetAdresselinje2));
+        assertThat(ustrukturertAdresse.getAdresselinje3(), is(forventetAdresselinje3));
+        assertThat(ustrukturertAdresse.getAdresselinje4(), is(forventetAdresselinje4));
+    }
+
+    @Test
+    public void wsMidlertidigPostadresseUtlandMappesTilNullDersomDenErNull()throws Exception {
+        final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
+                new WSMidlertidigPostadresseUtland().withUstrukturertAdresse(
+                        new WSUstrukturertAdresse()
+                                .withAdresselinje1(null)
+                                .withAdresselinje2(null)
+                                .withAdresselinje3(null)
+                                .withAdresselinje4(null)
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
+        UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
+        assertThat(ustrukturertAdresse, notNullValue());
+        assertThat(ustrukturertAdresse, instanceOf(UstrukturertAdresse.class));
+        assertThat(ustrukturertAdresse.getAdresselinje1(), nullValue());
+        assertThat(ustrukturertAdresse.getAdresselinje2(), nullValue());
+        assertThat(ustrukturertAdresse.getAdresselinje3(), nullValue());
+        assertThat(ustrukturertAdresse.getAdresselinje4(), nullValue());
+    }
+    @Test
+    public void wsMidlertidigPostadresseUtlandetMappesTilNullDersomPersonIkkeErBruker() throws Exception {
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
+                new WSBostedsadresse().withStrukturertAdresse(
+                        new WSGateadresse()
+                                .withGatenavn("gatenavn")
+                                .withHusnummer(0)
+                                .withHusbokstav("Husbokstav")
+                                .withGatenummer(0)
+                                .withKommunenummer("Kommunenummer")
+                                .withPoststed(new WSPostnummer().withValue("Poststed"))
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        assertThat(personData.getMidlertidigAdresseUtland(), nullValue());
+    }
+
+    @Test
+    public void wsPostadressSkalMappesDersomDenEksisterer() throws Exception {
+        String forventetAdresselinje1 = "Adresselinje1";
+        String forventetAdresselinje2 = "Adresselinje2";
+        String forventetAdresselinje3 = "Adresselinje3";
+        String forventetAdresselinje4 = "Adresselinje4";
+        final WSPerson wsPerson = new WSPerson().withPostadresse(
+                new WSPostadresse().withUstrukturertAdresse(
+                        new WSUstrukturertAdresse()
+                                .withAdresselinje1(forventetAdresselinje1)
+                                .withAdresselinje2(forventetAdresselinje2)
+                                .withAdresselinje3(forventetAdresselinje3)
+                                .withAdresselinje4(forventetAdresselinje4)
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        assertThat(personData.getPostAdresse(), notNullValue());
+        UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
+        assertThat(ustrukturertAdresse, notNullValue());
+        assertThat(ustrukturertAdresse, instanceOf(UstrukturertAdresse.class));
+        assertThat(ustrukturertAdresse.getAdresselinje1(), is(forventetAdresselinje1));
+        assertThat(ustrukturertAdresse.getAdresselinje2(), is(forventetAdresselinje2));
+        assertThat(ustrukturertAdresse.getAdresselinje3(), is(forventetAdresselinje3));
+        assertThat(ustrukturertAdresse.getAdresselinje4(), is(forventetAdresselinje4));
+    }
+
+    @Test
+    public void wsPostadresseSkalMappesTilNullDersomDenErNull() throws Exception {
+        final WSPerson wsPerson = new WSPerson().withPostadresse(
+                new WSPostadresse().withUstrukturertAdresse(
+                        new WSUstrukturertAdresse()
+                                .withAdresselinje1(null)
+                                .withAdresselinje2(null)
+                                .withAdresselinje3(null)
+                                .withAdresselinje4(null)
+                )
+        );
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        assertThat(personData.getPostAdresse(), notNullValue());
+        UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
+        assertThat(ustrukturertAdresse, notNullValue());
+        assertThat(ustrukturertAdresse, instanceOf(UstrukturertAdresse.class));
+        assertThat(ustrukturertAdresse.getAdresselinje1(), nullValue());
+        assertThat(ustrukturertAdresse.getAdresselinje2(), nullValue());
+        assertThat(ustrukturertAdresse.getAdresselinje3(), nullValue());
+        assertThat(ustrukturertAdresse.getAdresselinje4(), nullValue());
+    }
+
     private Matcher<String> erDato(final int forventetAr, final int forventetManed, final int forventetDag) {
         return new CustomMatcher<String>("dato på formatet YYYY-MM-DD") {
             @Override
