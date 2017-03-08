@@ -145,13 +145,9 @@ public class PersonDataMapper {
         StrukturertAdresse strukturertAdresse = null;
         if (wsStrukturertadresse instanceof WSGateadresse) {
             strukturertAdresse = tilGateAdresse((WSGateadresse) wsStrukturertadresse);
-        }
-
-        if (wsStrukturertadresse instanceof WSPostboksadresseNorsk) {
+        } else if (wsStrukturertadresse instanceof WSPostboksadresseNorsk) {
             strukturertAdresse = tilPostboksadresseNorsk((WSPostboksadresseNorsk) wsStrukturertadresse);
-        }
-
-        if (wsStrukturertadresse instanceof WSMatrikkeladresse) {
+        } else if (wsStrukturertadresse instanceof WSMatrikkeladresse) {
             strukturertAdresse = tilMatrikkeladresse((WSMatrikkeladresse) wsStrukturertadresse);
         }
 
