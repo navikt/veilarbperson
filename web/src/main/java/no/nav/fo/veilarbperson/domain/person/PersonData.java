@@ -84,16 +84,30 @@ public class PersonData extends Person {
 
 
     @JsonIgnore
-    public Optional<String> getPostnummer() {
+    public Optional<String> getPostnummerForBostedsadresse() {
         return ofNullable(bostedsadresse)
                 .map(Bostedsadresse::getStrukturertAdresse)
                 .map(StrukturertAdresse::getPostnummer);
 
     }
 
-    public void setPoststed(String poststed) {
+    public void setPoststedForBostedsadresse(String poststed) {
         ofNullable(bostedsadresse)
                 .map(Bostedsadresse::getStrukturertAdresse)
+                .ifPresent(strukturertAdresse -> strukturertAdresse.withPoststed(poststed));
+    }
+
+    @JsonIgnore
+    public Optional<String> getPostnummerForMidlertidigAdresseNorge() {
+        return ofNullable(midlertidigAdresseNorge)
+                .map(MidlertidigAdresseNorge::getStrukturertAdresse)
+                .map(StrukturertAdresse::getPostnummer);
+
+    }
+
+    public void setPoststedForMidlertidigAdresseNorge(String poststed) {
+        ofNullable(midlertidigAdresseNorge)
+                .map(MidlertidigAdresseNorge::getStrukturertAdresse)
                 .ifPresent(strukturertAdresse -> strukturertAdresse.withPoststed(poststed));
     }
 }
