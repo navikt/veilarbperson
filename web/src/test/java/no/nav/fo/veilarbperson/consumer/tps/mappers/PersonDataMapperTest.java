@@ -507,14 +507,7 @@ public class PersonDataMapperTest {
         final String forventetKommunenummer = "1234";
         final WSPerson wsPerson = new WSPerson().withBostedsadresse(
                 new WSBostedsadresse().withStrukturertAdresse(
-                        lagGateadresseMedForventaVerdier(
-                                forventetGatenavn,
-                                forventetGatenummer,
-                                forventetHusnummer,
-                                forventetHusbokstav,
-                                forventetKommunenummer,
-                                new WSPostnummer().withValue(forventetPostnummer)
-                        )
+                        lagGateadresse(forventetGatenavn, forventetGatenummer, forventetHusnummer, forventetHusbokstav, forventetKommunenummer, new WSPostnummer().withValue(forventetPostnummer))
                 )
         );
 
@@ -524,6 +517,7 @@ public class PersonDataMapperTest {
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(Gateadresse.class));
         final Gateadresse gateadresse = (Gateadresse) personData.getBostedsadresse().getStrukturertAdresse();
+
         sjekkAtGateadresseHarForventaVerdier(
                 gateadresse,
                 forventetGatenavn,
@@ -539,7 +533,7 @@ public class PersonDataMapperTest {
     public void verdierIWSGateadresseMappesTilNullDersomDeErNull() throws Exception {
         final WSPerson wsPerson = new WSPerson().withBostedsadresse(
                 new WSBostedsadresse().withStrukturertAdresse(
-                       lagGateadresseMedForventaVerdier(null, 0, 0, null, null, new WSPostnummer())
+                       lagGateadresse(null, 0, 0, null, null, new WSPostnummer())
                 )
         );
 
@@ -549,7 +543,9 @@ public class PersonDataMapperTest {
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(Gateadresse.class));
         final Gateadresse gateadresse = (Gateadresse) personData.getBostedsadresse().getStrukturertAdresse();
-        sjekkAtGateadresseHarForventaVerdier(gateadresse,
+
+        sjekkAtGateadresseHarForventaVerdier(
+                gateadresse,
                 null,
                 0,
                 0,
@@ -569,17 +565,14 @@ public class PersonDataMapperTest {
         final String forventetEiendomsnavn = "eiendomsnavn";
         final WSPerson wsPerson = new WSPerson().withBostedsadresse(
                 new WSBostedsadresse().withStrukturertAdresse(
-                        new WSMatrikkeladresse()
-                                .withEiendomsnavn(forventetEiendomsnavn)
-                                .withMatrikkelnummer(
-                                        new WSMatrikkelnummer()
-                                                .withGaardsnummer(forventetGardsnummer)
-                                                .withBruksnummer(forventetBruksnummer)
-                                                .withFestenummer(forventetFestenummer)
-                                                .withSeksjonsnummer(forventetSeksjonsnummer)
-                                                .withUndernummer(forventetUndernummer)
-                                )
-                                .withPoststed(new WSPostnummer().withValue(forventetPostnummer))
+                        lagMatrikkeladresse(
+                                forventetEiendomsnavn,
+                                forventetGardsnummer,
+                                forventetBruksnummer,
+                                forventetFestenummer,
+                                forventetSeksjonsnummer,
+                                forventetUndernummer,
+                                forventetPostnummer)
                 )
         );
 
@@ -589,30 +582,24 @@ public class PersonDataMapperTest {
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(Matrikkeladresse.class));
         final Matrikkeladresse matrikkeladresse = (Matrikkeladresse) personData.getBostedsadresse().getStrukturertAdresse();
-        assertThat(matrikkeladresse.getEiendomsnavn(), is(forventetEiendomsnavn));
-        assertThat(matrikkeladresse.getGardsnummer(), is(forventetGardsnummer));
-        assertThat(matrikkeladresse.getBruksnummer(), is(forventetBruksnummer));
-        assertThat(matrikkeladresse.getFestenummer(), is(forventetFestenummer));
-        assertThat(matrikkeladresse.getSeksjonsnummer(), is(forventetSeksjonsnummer));
-        assertThat(matrikkeladresse.getUndernummer(), is(forventetUndernummer));
-        assertThat(matrikkeladresse.getPostnummer(), is(forventetPostnummer));
+
+        sjekkAtMatrikkeladresseHarForventaVerdier(
+                matrikkeladresse,
+                forventetEiendomsnavn,
+                forventetGardsnummer,
+                forventetBruksnummer,
+                forventetFestenummer,
+                forventetSeksjonsnummer,
+                forventetUndernummer,
+                forventetPostnummer
+        );
     }
 
     @Test
     public void verdierIWSMatrikkeladresseMappesTilNullDersomDeErNull() throws Exception {
         final WSPerson wsPerson = new WSPerson().withBostedsadresse(
                 new WSBostedsadresse().withStrukturertAdresse(
-                        new WSMatrikkeladresse()
-                                .withEiendomsnavn(null)
-                                .withMatrikkelnummer(
-                                        new WSMatrikkelnummer()
-                                                .withGaardsnummer(null)
-                                                .withBruksnummer(null)
-                                                .withFestenummer(null)
-                                                .withSeksjonsnummer(null)
-                                                .withUndernummer(null)
-                                )
-                                .withPoststed(new WSPostnummer().withValue(null))
+                        lagMatrikkeladresse(null, null, null, null, null, null, null)
                 )
         );
 
@@ -622,12 +609,7 @@ public class PersonDataMapperTest {
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(Matrikkeladresse.class));
         final Matrikkeladresse matrikkeladresse = (Matrikkeladresse) personData.getBostedsadresse().getStrukturertAdresse();
-        assertThat(matrikkeladresse.getGardsnummer(), nullValue());
-        assertThat(matrikkeladresse.getBruksnummer(), nullValue());
-        assertThat(matrikkeladresse.getFestenummer(), nullValue());
-        assertThat(matrikkeladresse.getSeksjonsnummer(), nullValue());
-        assertThat(matrikkeladresse.getUndernummer(), nullValue());
-        assertThat(matrikkeladresse.getPostnummer(), nullValue());
+        sjekkAtMatrikkeladresseHarForventaVerdier(matrikkeladresse, null, null, null, null, null, null, null);
     }
 
     @Test
@@ -731,14 +713,7 @@ public class PersonDataMapperTest {
         final String forventetKommunenummer = "1234";
         final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
                 new WSMidlertidigPostadresseNorge().withStrukturertAdresse(
-                        lagGateadresseMedForventaVerdier(
-                                forventetGatenavn,
-                                forventetGatenummer,
-                                forventetHusnummer,
-                                forventetHusbokstav,
-                                forventetKommunenummer,
-                                new WSPostnummer().withValue(forventetPostnummer)
-                        )
+                        lagGateadresse(forventetGatenavn, forventetGatenummer, forventetHusnummer, forventetHusbokstav, forventetKommunenummer, new WSPostnummer().withValue(forventetPostnummer))
                 )
         );
 
@@ -763,7 +738,7 @@ public class PersonDataMapperTest {
     public void wsMidlertidigPostadresseNorgeMappesTilNullDersomDenErNull() throws Exception {
         final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
                 new WSMidlertidigPostadresseNorge().withStrukturertAdresse(
-                        lagGateadresseMedForventaVerdier(null, 0, 0, null, null, new WSPostnummer())
+                        lagGateadresse(null, 0, 0, null, null, new WSPostnummer())
                 )
         );
 
@@ -780,13 +755,7 @@ public class PersonDataMapperTest {
     public void wsMidlertidigPostadresseNorgeMappesTilNullDersomPersonIkkeErBruker() throws Exception {
         final WSPerson wsPerson = new WSPerson().withBostedsadresse(
                 new WSBostedsadresse().withStrukturertAdresse(
-                        lagGateadresseMedForventaVerdier(
-                                "gatenavn",
-                                0,
-                                0,
-                                "Husbokstav",
-                                "Kommunenummer",
-                                new WSPostnummer().withValue("Poststed"))
+                        lagGateadresse("gatenavn", 0, 0, "Husbokstav", "Kommunenummer", new WSPostnummer().withValue("Poststed"))
                 )
         );
 
@@ -827,7 +796,7 @@ public class PersonDataMapperTest {
     public void wsMidlertidigPostadresseUtlandetMappesTilNullDersomPersonIkkeErBruker() throws Exception {
         final WSPerson wsPerson = new WSPerson().withBostedsadresse(
                 new WSBostedsadresse().withStrukturertAdresse(
-                       lagGateadresseMedForventaVerdier(null, 0, 0, null, null, new WSPostnummer())
+                       lagGateadresse(null, 0, 0, null, null, new WSPostnummer().withValue(null))
         ));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -864,6 +833,7 @@ public class PersonDataMapperTest {
     }
 
     private WSUstrukturertAdresse lagUstrukturertAdresse(String adresselinje1, String adresselinje2, String adresselinje3, String adresselinje4) {
+
         return new WSUstrukturertAdresse()
                 .withAdresselinje1(adresselinje1)
                 .withAdresselinje2(adresselinje2)
@@ -886,7 +856,8 @@ public class PersonDataMapperTest {
         assertThat(ustrukturertAdresse.getAdresselinje4(), is(forventaAdresselinje4));
     }
 
-    private WSGateadresse lagGateadresseMedForventaVerdier(String gatenavn, int gatenummer, int husnummer, String husbokstav, String kommunenummer, WSPostnummer poststed) {
+    private WSGateadresse lagGateadresse(String gatenavn, int gatenummer, int husnummer, String husbokstav, String kommunenummer, WSPostnummer poststed) {
+
         return new WSGateadresse()
                 .withGatenavn(gatenavn)
                 .withGatenummer(gatenummer)
@@ -904,12 +875,53 @@ public class PersonDataMapperTest {
             String forventetHusbokstav,
             String forventetKommunenummer,
             String forventetPostnummer) {
+
         assertThat(gateadresse.getGatenavn(), is(forventetGatenavn));
         assertThat(gateadresse.getHusnummer(), is(forventetHusnummer));
         assertThat(gateadresse.getHusbokstav(), is(forventetHusbokstav));
         assertThat(gateadresse.getGatenummer(), is(forventetGatenummer));
         assertThat(gateadresse.getKommunenummer(), is(forventetKommunenummer));
         assertThat(gateadresse.getPostnummer(), is(forventetPostnummer));
+    }
+
+    private WSMatrikkeladresse lagMatrikkeladresse(
+            String eiendomsnavn,
+            String gardsnummer,
+            String bruksnummer,
+            String festenummer,
+            String seksjonsnummer,
+            String undernummer,
+            String postnummer) {
+
+        return new WSMatrikkeladresse()
+                .withEiendomsnavn(eiendomsnavn)
+                .withPoststed(new WSPostnummer().withValue(postnummer))
+                .withMatrikkelnummer(
+                    new WSMatrikkelnummer()
+                        .withGaardsnummer(gardsnummer)
+                        .withBruksnummer(bruksnummer)
+                        .withFestenummer(festenummer)
+                        .withSeksjonsnummer(seksjonsnummer)
+                        .withUndernummer(undernummer));
+    }
+
+    private void sjekkAtMatrikkeladresseHarForventaVerdier(
+            Matrikkeladresse matrikkeladresse,
+            String forventetEiendomsnavn,
+            String forventetGardsnummer,
+            String forventetBruksnummer,
+            String forventetFestenummer,
+            String forventetSeksjonsnummer,
+            String forventetUndernummer,
+            String forventetPostnummer) {
+
+        assertThat(matrikkeladresse.getEiendomsnavn(), is(forventetEiendomsnavn));
+        assertThat(matrikkeladresse.getGardsnummer(), is(forventetGardsnummer));
+        assertThat(matrikkeladresse.getBruksnummer(), is(forventetBruksnummer));
+        assertThat(matrikkeladresse.getFestenummer(), is(forventetFestenummer));
+        assertThat(matrikkeladresse.getSeksjonsnummer(), is(forventetSeksjonsnummer));
+        assertThat(matrikkeladresse.getUndernummer(), is(forventetUndernummer));
+        assertThat(matrikkeladresse.getPostnummer(), is(forventetPostnummer));
     }
 
     private Matcher<String> erDato(final int forventetAr, final int forventetManed, final int forventetDag) {
