@@ -45,7 +45,6 @@ public class PersonFletter {
         flettSikkerhetstiltak(fodselsnummer, personData);
         flettDigitalKontaktinformasjon(fodselsnummer, personData);
         flettKodeverk(personData);
-
         return personData;
     }
 
@@ -70,14 +69,20 @@ public class PersonFletter {
                             .orElse(sivilstandKode));
             personData.setSivilstand(sivilstand);
         }
-        kanskjePoststed(personData);
+        kanskjePoststedBostedsadresse(personData);
+        kanskjePoststedMidlertidigAdresseNorge(personData);
     }
 
-    private void kanskjePoststed(PersonData personData) {
-        personData.getPostnummer()
+    private void kanskjePoststedBostedsadresse(PersonData personData) {
+        personData.getPostnummerForBostedsadresse()
                 .flatMap(kodeverkManager::getPoststed)
-                .ifPresent(poststed -> personData.setPoststed(poststed));
+                .ifPresent(personData::setPoststedForBostedsadresse);
+    }
 
+    private void kanskjePoststedMidlertidigAdresseNorge(PersonData personData) {
+        personData.getPostnummerForMidlertidigAdresseNorge()
+                .flatMap(kodeverkManager::getPoststed)
+                .ifPresent(personData::setPoststedForMidlertidigAdresseNorge);
     }
 
     private void flettDigitalKontaktinformasjon(String fnr, PersonData personData) {
