@@ -52,6 +52,7 @@
         <ehcache.version>3.2.0</ehcache.version>
         <oidc-security.version>2.0.15</oidc-security.version>
         <geronimo-jaspi.version>2.0.0</geronimo-jaspi.version>
+        <common-abac.version>1.0.17</common-abac.version>
         <sonar.exclusions>**/config/*, **/*Mock*, **/*Servlet*, **/*Config*</sonar.exclusions>
     </properties>
 
@@ -136,6 +137,11 @@
                 <groupId>no.nav.sbl.dialogarena</groupId>
                 <artifactId>common-types</artifactId>
                 <version>${common-types.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.sbl.dialogarena</groupId>
+                <artifactId>common-abac</artifactId>
+                <version>${common-abac.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.nav.sbl.dialogarena</groupId>
@@ -275,6 +281,7 @@
                 <version>${ehcache.version}</version>
             </dependency>
 
+
             <!--oidc-security-->
             <dependency>
                 <groupId>no.nav.dialogarena</groupId>
@@ -286,7 +293,6 @@
                 <groupId>no.nav.dialogarena</groupId>
                 <artifactId>oidc-security</artifactId>
                 <version>${oidc-security.version}</version>
-                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.components</groupId>
