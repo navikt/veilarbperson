@@ -1,6 +1,5 @@
 package no.nav.fo.veilarbperson.rest;
 
-import no.nav.brukerdialog.security.context.SubjectHandler;
 import no.nav.fo.veilarbperson.PersonFletter;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
@@ -9,9 +8,7 @@ import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.Feilmelding;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
-import no.nav.sbl.dialogarena.common.abac.pep.Pep;
-import no.nav.sbl.dialogarena.common.abac.pep.domain.response.BiasedDecisionResponse;
-import no.nav.sbl.dialogarena.common.abac.pep.domain.response.Decision;
+import no.nav.fo.veilarbperson.services.PepClient;
 import no.nav.tjeneste.virksomhet.person.v2.HentKjerneinformasjonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v2.HentKjerneinformasjonSikkerhetsbegrensning;
 import org.slf4j.Logger;
@@ -30,16 +27,16 @@ public class PersonRessurs {
     private static final Logger logger = getLogger(PersonRessurs.class);
 
     final PersonFletter personFletter;
-    final private Pep pep;
+    private final PepClient pepClient;
 
     public PersonRessurs(EnhetService enhetService,
                          DigitalKontaktinformasjonService digitalKontaktinformasjonService,
                          PersonService personService,
                          EgenAnsattService egenAnsattService,
                          KodeverkService kodeverkService,
-                         Pep pep) {
+                         PepClient pepClient) {
 
-        this.pep = pep;
+        this.pepClient = pepClient;
 
         personFletter = new PersonFletter(
                 enhetService,
@@ -55,11 +52,8 @@ public class PersonRessurs {
 
         logger.info("Henter persondata med fnr: " + fnr);
 
-        final String ident = SubjectHandler.getSubjectHandler().getUid();
-        BiasedDecisionResponse callAllowed = pep.isServiceCallAllowedWithIdent(ident, "veilarb", fnr);
-        if (callAllowed.getBiasedDecision().equals(Decision.Deny)) {
-            throw new NotAuthorizedException(ident + " doesn't have access to " + fnr);
-        }
+        pepClient.isServiceCallAllowed(fnr);
+
         try {
             PersonData person = personFletter.hentPerson(fnr);
             return Response.ok().entity(person).build();

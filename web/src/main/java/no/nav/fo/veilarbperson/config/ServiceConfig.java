@@ -5,6 +5,8 @@ import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
+import no.nav.fo.veilarbperson.services.PepClient;
+import no.nav.sbl.dialogarena.common.abac.pep.Pep;
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.DigitalKontaktinformasjonV1;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.KodeverkPortType;
@@ -19,17 +21,20 @@ public class ServiceConfig {
     private final DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1;
     private final EgenAnsattV1 egenAnsattV1;
     private final KodeverkPortType kodeverkPortType;
+    private final Pep pep;
 
     public ServiceConfig(PersonV2 personV2,
                          OrganisasjonEnhetV1 organisasjonenhet,
                          DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1,
                          EgenAnsattV1 egenAnsattV1,
-                         KodeverkPortType kodeverkPortType) {
+                         KodeverkPortType kodeverkPortType,
+                         Pep pep) {
         this.personV2 = personV2;
         this.organisasjonenhet = organisasjonenhet;
         this.digitalKontaktinformasjonV1 = digitalKontaktinformasjonV1;
         this.egenAnsattV1 = egenAnsattV1;
         this.kodeverkPortType = kodeverkPortType;
+        this.pep = pep;
     }
 
     @Bean
@@ -58,4 +63,8 @@ public class ServiceConfig {
         return new KodeverkService(kodeverkPortType);
     }
 
+    @Bean
+    PepClient pepClient() {
+        return new PepClient(pep);
+    }
 }
