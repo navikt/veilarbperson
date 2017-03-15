@@ -220,6 +220,8 @@ public class PersonDataMapper {
                 .withAdresselinje3(ofNullable(wsUstrukturertAdresse.getAdresselinje3())
                         .orElse(null))
                 .withAdresselinje4(ofNullable(wsUstrukturertAdresse.getAdresselinje4())
+                        .orElse(null))
+                .withLandkode(ofNullable(wsUstrukturertAdresse.getLandkode().getValue())
                         .orElse(null));
     }
 
