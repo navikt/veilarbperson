@@ -157,6 +157,12 @@ public class PersonDataMapper {
             }
             strukturertAdresse.withLandkode(wsStrukturertadresse.getLandkode().getValue());
         }
+        if (wsStrukturertadresse.getTilleggsadresse() != null) {
+            if (strukturertAdresse == null) {
+                strukturertAdresse = new StrukturertAdresse();
+            }
+            strukturertAdresse.withTilleggsadresse(wsStrukturertadresse.getTilleggsadresse());
+        }
         return strukturertAdresse;
     }
 

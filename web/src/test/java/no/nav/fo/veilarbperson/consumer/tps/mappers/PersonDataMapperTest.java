@@ -689,6 +689,33 @@ public class PersonDataMapperTest {
     }
 
     @Test
+    public void wsStrukturertAdresseTilleggsadresseMappesDersomDenEksisterer() throws Exception {
+        final String forventetTilleggsadresse = "C/O tilleggsadresse";
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
+                new WSPostboksadresseNorsk()
+                        .withPoststed(new WSPostnummer())
+                        .withTilleggsadresse(forventetTilleggsadresse)));
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getTilleggsadresse(), is(forventetTilleggsadresse));
+    }
+
+    @Test
+    public void wsStrukturertAdresseTilleggsadresseMappesTilNullDersomDenErNull() {
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
+                new WSPostboksadresseNorsk()
+                        .withPoststed(new WSPostnummer())
+                        .withTilleggsadresse(null)));
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getTilleggsadresse(), nullValue());
+    }
+
+    @Test
     public void wsStrukturertAdresseLandkodeMappesTilNullDersomValueDenErNull() throws Exception {
         final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
                 new WSPostboksadresseNorsk()
