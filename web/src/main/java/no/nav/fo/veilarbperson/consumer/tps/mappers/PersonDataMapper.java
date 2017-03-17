@@ -157,6 +157,12 @@ public class PersonDataMapper {
             }
             strukturertAdresse.withLandkode(wsStrukturertadresse.getLandkode().getValue());
         }
+        if (wsStrukturertadresse.getTilleggsadresse() != null) {
+            if (strukturertAdresse == null) {
+                strukturertAdresse = new StrukturertAdresse();
+            }
+            strukturertAdresse.withTilleggsadresse(wsStrukturertadresse.getTilleggsadresse());
+        }
         return strukturertAdresse;
     }
 
@@ -220,6 +226,8 @@ public class PersonDataMapper {
                 .withAdresselinje3(ofNullable(wsUstrukturertAdresse.getAdresselinje3())
                         .orElse(null))
                 .withAdresselinje4(ofNullable(wsUstrukturertAdresse.getAdresselinje4())
+                        .orElse(null))
+                .withLandkode(ofNullable(wsUstrukturertAdresse.getLandkode().getValue())
                         .orElse(null));
     }
 

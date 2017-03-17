@@ -689,6 +689,33 @@ public class PersonDataMapperTest {
     }
 
     @Test
+    public void wsStrukturertAdresseTilleggsadresseMappesDersomDenEksisterer() throws Exception {
+        final String forventetTilleggsadresse = "C/O tilleggsadresse";
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
+                new WSPostboksadresseNorsk()
+                        .withPoststed(new WSPostnummer())
+                        .withTilleggsadresse(forventetTilleggsadresse)));
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getTilleggsadresse(), is(forventetTilleggsadresse));
+    }
+
+    @Test
+    public void wsStrukturertAdresseTilleggsadresseMappesTilNullDersomDenErNull() {
+        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
+                new WSPostboksadresseNorsk()
+                        .withPoststed(new WSPostnummer())
+                        .withTilleggsadresse(null)));
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        assertThat(personData.getBostedsadresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getTilleggsadresse(), nullValue());
+    }
+
+    @Test
     public void wsStrukturertAdresseLandkodeMappesTilNullDersomValueDenErNull() throws Exception {
         final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
                 new WSPostboksadresseNorsk()
@@ -769,28 +796,29 @@ public class PersonDataMapperTest {
         String forventetAdresselinje2 = "Adresselinje2";
         String forventetAdresselinje3 = "Adresselinje3";
         String forventetAdresselinje4 = "Adresselinje4";
+        String forventetLandkode = "LAND";
         final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
                 new WSMidlertidigPostadresseUtland().withUstrukturertAdresse(
-                        lagUstrukturertAdresse(forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4)
+                        lagUstrukturertAdresse(forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode)
         ));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
         assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
         UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
-        sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4);
+        sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode);
     }
 
     @Test
     public void wsMidlertidigPostadresseUtlandMappesTilNullDersomDenErNull()throws Exception {
         final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
                 new WSMidlertidigPostadresseUtland().withUstrukturertAdresse(
-                        lagUstrukturertAdresse(null, null, null, null)
+                        lagUstrukturertAdresse(null, null, null, null, null)
         ));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
         assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
         UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
-        sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null);
+        sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null, null);
     }
     @Test
     public void wsMidlertidigPostadresseUtlandetMappesTilNullDersomPersonIkkeErBruker() throws Exception {
@@ -809,36 +837,38 @@ public class PersonDataMapperTest {
         String forventetAdresselinje2 = "Adresselinje2";
         String forventetAdresselinje3 = "Adresselinje3";
         String forventetAdresselinje4 = "Adresselinje4";
+        String forventetLandkode = "LAND";
         final WSPerson wsPerson = new WSPerson().withPostadresse(
                 new WSPostadresse().withUstrukturertAdresse(
-                       lagUstrukturertAdresse(forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4)
+                       lagUstrukturertAdresse(forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode)
         ));
 
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
         assertThat(personData.getPostAdresse(), notNullValue());
         UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
-        sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4);
+        sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode);
     }
 
     @Test
     public void wsPostadresseSkalMappesTilNullDersomDenErNull() throws Exception {
         final WSPerson wsPerson = new WSPerson().withPostadresse(
-                new WSPostadresse().withUstrukturertAdresse(lagUstrukturertAdresse(null, null, null, null)));
+                new WSPostadresse().withUstrukturertAdresse(lagUstrukturertAdresse(null, null, null, null, null)));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
         assertThat(personData.getPostAdresse(), notNullValue());
         UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
-        sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null);
+        sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null, null);
     }
 
-    private WSUstrukturertAdresse lagUstrukturertAdresse(String adresselinje1, String adresselinje2, String adresselinje3, String adresselinje4) {
+    private WSUstrukturertAdresse lagUstrukturertAdresse(String adresselinje1, String adresselinje2, String adresselinje3, String adresselinje4, String landkode) {
 
         return new WSUstrukturertAdresse()
                 .withAdresselinje1(adresselinje1)
                 .withAdresselinje2(adresselinje2)
                 .withAdresselinje3(adresselinje3)
-                .withAdresselinje4(adresselinje4);
+                .withAdresselinje4(adresselinje4)
+                .withLandkode(new WSLandkoder().withValue(landkode));
     }
 
     private void sjekkAtUstrukturertAdresseHarForventaVerdier(
@@ -846,7 +876,8 @@ public class PersonDataMapperTest {
             String forventaAdresselinje1,
             String forventaAdresselinje2,
             String forventaAdresselinje3,
-            String forventaAdresselinje4) {
+            String forventaAdresselinje4,
+            String forventaLandkode) {
 
         assertThat(ustrukturertAdresse, notNullValue());
         assertThat(ustrukturertAdresse, instanceOf(UstrukturertAdresse.class));
@@ -854,6 +885,7 @@ public class PersonDataMapperTest {
         assertThat(ustrukturertAdresse.getAdresselinje2(), is(forventaAdresselinje2));
         assertThat(ustrukturertAdresse.getAdresselinje3(), is(forventaAdresselinje3));
         assertThat(ustrukturertAdresse.getAdresselinje4(), is(forventaAdresselinje4));
+        assertThat(ustrukturertAdresse.getLandkode(), is(forventaLandkode));
     }
 
     private WSGateadresse lagGateadresse(String gatenavn, int gatenummer, int husnummer, String husbokstav, String kommunenummer, WSPostnummer poststed) {
