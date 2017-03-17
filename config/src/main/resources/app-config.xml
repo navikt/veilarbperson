@@ -13,7 +13,7 @@
         <logins />
     </security>
 
-    <abacSecurity serviceUserResourceAlias="srvveilarbsituasjon"/>
+    <abacSecurity serviceUserResourceAlias="srvveilarbperson"/>
 
     <selftest>
         <path>veilarbperson/internal/selftest</path>
