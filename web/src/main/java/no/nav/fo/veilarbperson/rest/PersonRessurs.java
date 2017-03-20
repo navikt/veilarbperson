@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response.Status;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.slf4j.LoggerFactory.getLogger;
 @Component
-@Path("/person/{fnr}")
+@Path("/person/{personnummer}")
 public class PersonRessurs {
 
     private static final Logger logger = getLogger(PersonRessurs.class);
