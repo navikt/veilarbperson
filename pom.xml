@@ -13,7 +13,7 @@
     <name>veilarbperson</name>
     <description>Veiledende Arbeidssøker Person</description>
     <artifactId>veilarbperson</artifactId>
-    <version>1.0-ABAC-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
