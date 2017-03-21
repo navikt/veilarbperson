@@ -41,7 +41,7 @@ public class PersonData extends Person {
                        String mellomnavn,
                        String etternavn,
                        String sammensattnavn,
-                       String personnummer,
+                       String fodselsnummer,
                        String fodselsdato,
                        String kjonn,
                        String dodsdato,
@@ -62,7 +62,7 @@ public class PersonData extends Person {
                        PostAdresse postAdresse,
                        boolean egenAnsatt
     ) {
-        super(fornavn, mellomnavn, etternavn, sammensattnavn, personnummer, fodselsdato, kjonn, dodsdato);
+        super(fornavn, mellomnavn, etternavn, sammensattnavn, fodselsnummer, fodselsdato, kjonn, dodsdato);
 
         this.barn = barn;
         this.diskresjonskode = diskresjonskode;
