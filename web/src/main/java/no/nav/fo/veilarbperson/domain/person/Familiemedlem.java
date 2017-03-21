@@ -15,12 +15,12 @@ public class Familiemedlem extends Person{
                           String mellomnavn,
                           String etternavn,
                           String sammensattnavn,
-                          String personnummer,
+                          String fodselsnummer,
                           String fodselsdato,
                           String kjonn,
                           String dodsdato,
                           Boolean harSammeBosted){
-        super(fornavn, mellomnavn, etternavn, sammensattnavn, personnummer, fodselsdato, kjonn, dodsdato);
+        super(fornavn, mellomnavn, etternavn, sammensattnavn, fodselsnummer, fodselsdato, kjonn, dodsdato);
 
         this.harSammeBosted = harSammeBosted;
     }

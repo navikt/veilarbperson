@@ -135,31 +135,31 @@ public class PersonDataMapperTest {
     }
 
     @Test
-    public void personnummerMappesDersomDetEksisterer() throws Exception {
-        final String forventetVerdi = "personnummer";
+    public void fodselsnummerMappesDersomDetEksisterer() throws Exception {
+        final String forventetVerdi = "fodseslnummer";
         final WSPerson wsPerson = new WSPerson().withIdent(new WSNorskIdent().withIdent(forventetVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
-        assertThat(personData.getPersonnummer(), is(forventetVerdi));
+        assertThat(personData.getFodselsnummer(), is(forventetVerdi));
     }
 
     @Test
-    public void personnummerMappesTilNullDersomWSNorskIdentErNull() throws Exception {
+    public void fodselsnummerMappesTilNullDersomWSNorskIdentErNull() throws Exception {
         final WSPerson wsPerson = new WSPerson().withIdent(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
-        assertThat(personData.getPersonnummer(), nullValue());
+        assertThat(personData.getFodselsnummer(), nullValue());
     }
 
     @Test
-    public void personnummerMappesTilNullDersomIdentErNull() throws Exception {
+    public void fodselsnummerMappesTilNullDersomIdentErNull() throws Exception {
         final WSPerson wsPerson = new WSPerson().withIdent(new WSNorskIdent().withIdent(null));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
-        assertThat(personData.getPersonnummer(), nullValue());
+        assertThat(personData.getFodselsnummer(), nullValue());
     }
 
     @Test

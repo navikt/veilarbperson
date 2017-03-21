@@ -13,7 +13,7 @@ public class Person {
     private String mellomnavn;
     private String etternavn;
     private String sammensattNavn;
-    private String personnummer;
+    private String fodselsnummer;
     private String fodselsdato;
 
     @JsonProperty("kjonn")
