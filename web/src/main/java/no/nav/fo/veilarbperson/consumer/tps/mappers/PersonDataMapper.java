@@ -27,7 +27,7 @@ public class PersonDataMapper {
                 .mellomnavn(kanskjeMellomnavn(person))
                 .etternavn(kanskjeEtternavn(person))
                 .sammensattnavn(kanskjeSammensattnavn(person))
-                .personnummer(kanskjePersonnummer(person))
+                .fodselsnummer(kanskjeFodselsnummer(person))
                 .fodselsdato(kanskjeFodselsdato(person))
                 .kjonn(kanskjeKjonn(person))
                 .barn(barnMapper.familierelasjonerTilBarn(person.getHarFraRolleI()))
@@ -60,7 +60,7 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private String kanskjePersonnummer(WSPerson person) {
+    private String kanskjeFodselsnummer(WSPerson person) {
         return ofNullable(person.getIdent())
                 .map(WSNorskIdent::getIdent)
                 .orElse(null);
