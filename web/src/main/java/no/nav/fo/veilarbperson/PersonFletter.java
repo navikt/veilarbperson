@@ -49,8 +49,8 @@ public class PersonFletter {
         return personData;
     }
 
-    private void flettEgenAnsatt(String personnummer, PersonData personData) {
-        personData.setEgenAnsatt(egenAnsattService.erEgenAnsatt(personnummer));
+    private void flettEgenAnsatt(String fodselsnummer, PersonData personData) {
+        personData.setEgenAnsatt(egenAnsattService.erEgenAnsatt(fodselsnummer));
     }
 
     private void flettOrganisasjonsenhet(PersonData personData) {
