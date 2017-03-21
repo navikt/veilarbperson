@@ -1,5 +1,5 @@
-no.nav.modig.security.systemuser.password=BYTT_MEG
-no.nav.modig.security.systemuser.username=BYTT_MEG
+no.nav.fo.systemuser.password=BYTT_MEG
+no.nav.fo.systemuser.username=BYTT_MEG
 
 person.endpoint.url=https://wasapp-t4.adeo.no/tpsws/Person_v2
 personv2.withmock=false
@@ -26,3 +26,16 @@ isso-rp-user.username=OIDC
 isso-rp-user.password=BYTT_MEG
 oidc-redirect.url=/veilarbpersonflatefs/tjenester/login
 jetty.print.localhost=true
+
+ldap.url=ldaps\://ldapgw.test.local
+ldap.password=CHANGEME
+ldap.domain=TEST.LOCAL
+java.security.krb5.kdc=ldapgw.test.local
+ldap.username=srvSSOLinux
+ldap.basedn=dc\=test,dc\=local
+
+role=0000-GA-Modia-Oppfolging
+
+abac.endpoint.url=https://wasapp-t4.adeo.no/asm-pdp/authorize
+
+disable.metrics.report=true
