@@ -27,6 +27,9 @@ public class PersonData extends Person {
     private Sivilstand sivilstand;
     private Familiemedlem partner;
     private Bostedsadresse bostedsadresse;
+    private MidlertidigAdresseNorge midlertidigAdresseNorge;
+    private MidlertidigAdresseUtland midlertidigAdresseUtland;
+    private PostAdresse postAdresse;
     private boolean egenAnsatt;
 
     public boolean isEgenAnsatt() {
@@ -54,6 +57,9 @@ public class PersonData extends Person {
                        Sivilstand sivilstand,
                        Familiemedlem partner,
                        Bostedsadresse bostedsadresse,
+                       MidlertidigAdresseNorge midlertidigAdresseNorge,
+                       MidlertidigAdresseUtland midlertidigAdresseUtland,
+                       PostAdresse postAdresse,
                        boolean egenAnsatt
     ) {
         super(fornavn, mellomnavn, etternavn, sammensattnavn, fodselsnummer, fodselsdato, kjonn, dodsdato);
@@ -70,21 +76,38 @@ public class PersonData extends Person {
         this.sivilstand = sivilstand;
         this.partner = partner;
         this.bostedsadresse = bostedsadresse;
+        this.midlertidigAdresseNorge = midlertidigAdresseNorge;
+        this.midlertidigAdresseUtland = midlertidigAdresseUtland;
+        this.postAdresse = postAdresse;
         this.egenAnsatt = egenAnsatt;
     }
 
 
     @JsonIgnore
-    public Optional<String> getPostnummer() {
+    public Optional<String> getPostnummerForBostedsadresse() {
         return ofNullable(bostedsadresse)
                 .map(Bostedsadresse::getStrukturertAdresse)
                 .map(StrukturertAdresse::getPostnummer);
 
     }
 
-    public void setPoststed(String poststed) {
+    public void setPoststedForBostedsadresse(String poststed) {
         ofNullable(bostedsadresse)
                 .map(Bostedsadresse::getStrukturertAdresse)
+                .ifPresent(strukturertAdresse -> strukturertAdresse.withPoststed(poststed));
+    }
+
+    @JsonIgnore
+    public Optional<String> getPostnummerForMidlertidigAdresseNorge() {
+        return ofNullable(midlertidigAdresseNorge)
+                .map(MidlertidigAdresseNorge::getStrukturertAdresse)
+                .map(StrukturertAdresse::getPostnummer);
+
+    }
+
+    public void setPoststedForMidlertidigAdresseNorge(String poststed) {
+        ofNullable(midlertidigAdresseNorge)
+                .map(MidlertidigAdresseNorge::getStrukturertAdresse)
                 .ifPresent(strukturertAdresse -> strukturertAdresse.withPoststed(poststed));
     }
 }
