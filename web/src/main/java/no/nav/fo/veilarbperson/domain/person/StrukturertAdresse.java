@@ -12,12 +12,15 @@ public class StrukturertAdresse  {
 
 
     private String landkode;
+    private String tilleggsadresse;
     private String postnummer;
     private String poststed;
 
     public String getLandkode() {
         return landkode;
     }
+
+    public String getTilleggsadresse() { return tilleggsadresse; }
 
     public String getPostnummer() {
         return postnummer;
@@ -32,6 +35,10 @@ public class StrukturertAdresse  {
         return this;
     }
 
+    public StrukturertAdresse withTilleggsadresse(String tilleggsadresse) {
+        this.tilleggsadresse = tilleggsadresse;
+        return this;
+    }
 
     public StrukturertAdresse withPoststed(String poststed) {
         this.poststed = poststed;
