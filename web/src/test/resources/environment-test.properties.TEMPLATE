@@ -1,5 +1,8 @@
 no.nav.modig.security.systemuser.password=BYTT_MEG
 no.nav.modig.security.systemuser.username=BYTT_MEG
+no.nav.abac.systemuser.username=BYTT_MEG
+no.nav.abac.systemuser.password=BYTT_MEG
+
 
 person.endpoint.url=https://wasapp-t4.adeo.no/tpsws/Person_v2
 personv2.withmock=false
