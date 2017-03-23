@@ -71,6 +71,8 @@ public class PersonFletter {
         }
         kanskjePoststedBostedsadresse(personData);
         kanskjePoststedMidlertidigAdresseNorge(personData);
+
+        hentLandForAdresser(personData);
     }
 
     private void kanskjePoststedBostedsadresse(PersonData personData) {
@@ -83,6 +85,40 @@ public class PersonFletter {
         personData.getPostnummerForMidlertidigAdresseNorge()
                 .flatMap(kodeverkManager::getPoststed)
                 .ifPresent(personData::setPoststedForMidlertidigAdresseNorge);
+    }
+
+    private UstrukturertAdresse withLandForUstrukturertAdresse(UstrukturertAdresse ustrukturertAdresse) {
+        String landkode = ustrukturertAdresse.getLandkode();
+        return ustrukturertAdresse.withLandkode(kodeverkManager.getBeskrivelseForLandkode(landkode)
+            .orElse(landkode));
+    }
+
+    private StrukturertAdresse withLandForStrukturertAdresse(StrukturertAdresse strukturertAdresse) {
+        String landkode = strukturertAdresse.getLandkode();
+        return strukturertAdresse.withLandkode(kodeverkManager.getBeskrivelseForLandkode(landkode)
+                .orElse(landkode));
+    }
+
+    private void hentLandForAdresser(PersonData personData) {
+        if (personData.getMidlertidigAdresseUtland() != null) {
+            personData.getMidlertidigAdresseUtland()
+                    .withUstrukturertAdresse(withLandForUstrukturertAdresse(personData.getMidlertidigAdresseUtland().getUstrukturertAdresse()));
+        }
+
+        if (personData.getPostAdresse() != null) {
+            personData.getPostAdresse()
+                    .withUstrukturertAdresse(withLandForUstrukturertAdresse(personData.getPostAdresse().getUstrukturertAdresse()));
+        }
+
+        if(personData.getBostedsadresse() != null) {
+            personData.getBostedsadresse()
+                    .withStrukturertAdresse(withLandForStrukturertAdresse(personData.getBostedsadresse().getStrukturertAdresse()));
+        }
+
+        if(personData.getMidlertidigAdresseNorge() != null) {
+            personData.getMidlertidigAdresseNorge()
+                    .withStrukturertAdresse(withLandForStrukturertAdresse(personData.getMidlertidigAdresseNorge().getStrukturertAdresse()));
+        }
     }
 
     private void flettDigitalKontaktinformasjon(String fnr, PersonData personData) {
