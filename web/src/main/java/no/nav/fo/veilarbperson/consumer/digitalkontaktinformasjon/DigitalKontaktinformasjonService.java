@@ -1,8 +1,10 @@
 package no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
-import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.informasjon.WSKontaktinformasjon;
+import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.informasjon.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.meldinger.WSHentDigitalKontaktinformasjonRequest;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.meldinger.WSHentDigitalKontaktinformasjonResponse;
+
+import java.util.Optional;
 
 public class DigitalKontaktinformasjonService {
 
@@ -21,14 +23,21 @@ public class DigitalKontaktinformasjonService {
                 .withPersonident(fodselsnummer);
 
         WSHentDigitalKontaktinformasjonResponse wsResponse = digitalKontaktinformasjonV1.hentDigitalKontaktinformasjon(request);
-        return getDigitalKontaktinformason(wsResponse);
+        return getDigitalKontaktinformasjon(wsResponse);
     }
 
-    private DigitalKontaktinformasjon getDigitalKontaktinformason(WSHentDigitalKontaktinformasjonResponse response) {
+    private DigitalKontaktinformasjon getDigitalKontaktinformasjon(WSHentDigitalKontaktinformasjonResponse response) {
         WSKontaktinformasjon wsKontaktinformasjon = response.getDigitalKontaktinformasjon();
+        final Optional<WSEpostadresse> epostadresse = Optional.ofNullable(wsKontaktinformasjon.getEpostadresse());
+        final Optional<WSMobiltelefonnummer> telefon = Optional.ofNullable(wsKontaktinformasjon.getMobiltelefonnummer());
         return new DigitalKontaktinformasjon()
-                .withEpost(wsKontaktinformasjon.getEpostadresse().getValue())
-                .withTelefon(wsKontaktinformasjon.getMobiltelefonnummer().getValue());
-    }
+                .withEpost(epostadresse
+                        .map(WSEpostadresse::getValue)
+                        .orElse(null))
+                .withTelefon(telefon
+                        .map(WSMobiltelefonnummer::getValue)
+                        .orElse(null));
 
+
+    }
 }
