@@ -52,7 +52,7 @@
         <ehcache.version>3.2.0</ehcache.version>
         <oidc-security.version>2.0.15</oidc-security.version>
         <geronimo-jaspi.version>2.0.0</geronimo-jaspi.version>
-        <common-abac.version>1.0.39</common-abac.version>
+        <common-abac.version>1.0.42</common-abac.version>
         <sonar.exclusions>**/config/*, **/*Mock*, **/*Servlet*, **/*Config*</sonar.exclusions>
     </properties>
 
