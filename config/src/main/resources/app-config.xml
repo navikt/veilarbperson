@@ -21,6 +21,7 @@
     </selftest>
 
     <resources>
+        <applicationProperties alias="veilarbperson.properties"/>
         <webservice alias="virksomhet:Person_v2" mapToProperty="person.endpoint" />
         <webservice alias="virksomhet:EgenAnsatt_v1" mapToProperty="egenansatt.endpoint" />
         <webservice alias="virksomhet:OrganisasjonEnhet_v1" mapToProperty="organisasjonenhet.endpoint" />
