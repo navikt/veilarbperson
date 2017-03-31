@@ -30,10 +30,10 @@
 
         <slf4j.version>1.7.5</slf4j.version>
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
-        <common-jetty.version>2.0.12</common-jetty.version>
+        <common-jetty.version>2.0.13</common-jetty.version>
         <common-test.version>1.2</common-test.version>
         <spring.version>4.3.4.RELEASE</spring.version>
-        <common-web.version>4.0.5</common-web.version>
+        <common-web.version>4.0.6</common-web.version>
         <common-types.version>1.2</common-types.version>
         <jackson.version>2.7.2</jackson.version>
         <xml-apis.version>1.4.01</xml-apis.version>
@@ -53,6 +53,9 @@
         <oidc-security.version>2.0.17</oidc-security.version>
         <geronimo-jaspi.version>2.0.0</geronimo-jaspi.version>
         <common-abac.version>1.0.43</common-abac.version>
+        <swagger.version>1.5.13</swagger.version>
+        <swagger-ui.version>2.2.10</swagger-ui.version>
+
         <sonar.exclusions>**/config/*, **/*Mock*, **/*Servlet*, **/*Config*</sonar.exclusions>
     </properties>
 
@@ -299,6 +302,25 @@
                 <artifactId>geronimo-jaspi</artifactId>
                 <version>${geronimo-jaspi.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!--Swagger-->
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-jersey2-jaxrs</artifactId>
+                <version>${swagger.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.webjars</groupId>
+                <artifactId>swagger-ui</artifactId>
+                <version>${swagger-ui.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
         </dependencies>

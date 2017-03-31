@@ -1,5 +1,7 @@
 package no.nav.fo.veilarbperson.rest;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import no.nav.fo.veilarbperson.PersonFletter;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
@@ -20,13 +22,15 @@ import javax.ws.rs.core.Response.Status;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.slf4j.LoggerFactory.getLogger;
+
 @Component
+@Api(value = "person")
 @Path("/person/{fodselsnummer}")
 public class PersonRessurs {
 
     private static final Logger logger = getLogger(PersonRessurs.class);
 
-    final PersonFletter personFletter;
+    private final PersonFletter personFletter;
     private final PepClient pepClient;
 
     public PersonRessurs(EnhetService enhetService,
@@ -48,6 +52,9 @@ public class PersonRessurs {
 
     @GET
     @Produces(APPLICATION_JSON)
+    @ApiOperation(value = "Henter informasjon om en person",
+            notes = "Denne tjenesten gjør kall mot flere baktjenester: " +
+                    "Kodeverk, organisasjonenhet_v1, Digitalkontaktinformasjon_v1, Person_v2, Egenansatt_v1")
     public Response person(@PathParam("fodselsnummer") String fodselsnummer) {
 
         logger.info("Henter persondata med fodselsnummer: " + fodselsnummer);
