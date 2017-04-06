@@ -1,6 +1,7 @@
 package no.nav.fo.veilarbperson.services;
 
 import no.nav.brukerdialog.security.context.SubjectHandler;
+import no.nav.brukerdialog.security.domain.OidcCredential;
 import no.nav.sbl.dialogarena.common.abac.pep.Pep;
 import no.nav.sbl.dialogarena.common.abac.pep.domain.response.BiasedDecisionResponse;
 import no.nav.sbl.dialogarena.common.abac.pep.domain.response.Decision;
@@ -22,18 +23,29 @@ public class PepClient {
     }
 
     public boolean isServiceCallAllowed(String fnr) {
-        final String ident = SubjectHandler.getSubjectHandler().getUid();
         BiasedDecisionResponse callAllowed;
         try {
-            callAllowed = pep.isServiceCallAllowedWithIdent(ident, "veilarb", fnr);
+            callAllowed = pep.isServiceCallAllowedWithOidcToken(getToken(), "veilarb", fnr);
+
         } catch (PepException e) {
             LOG.error("Something went wrong in PEP", e);
             throw new InternalServerErrorException("something went wrong in PEP", e);
         }
         if (callAllowed.getBiasedDecision().equals(Decision.Deny)) {
+            final String ident = SubjectHandler.getSubjectHandler().getUid();
             throw new NotAuthorizedException(ident + " doesn't have access to " + fnr);
         }
         return callAllowed.getBiasedDecision().equals(Decision.Permit);
+    }
+
+    private String getToken() {
+
+        final OidcCredential credential = (OidcCredential) SubjectHandler.getSubjectHandler().getSubject()
+                .getPublicCredentials()
+                .stream()
+                .filter(cred -> cred instanceof OidcCredential).findFirst()
+                .get();
+        return credential.getToken();
     }
 
 }
