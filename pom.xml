@@ -52,7 +52,7 @@
         <ehcache.version>3.2.0</ehcache.version>
         <oidc-security.version>2.1.20</oidc-security.version>
         <geronimo-jaspi.version>2.0.0</geronimo-jaspi.version>
-        <common-abac.version>1.0.49</common-abac.version>
+        <common-abac.version>1.0.55</common-abac.version>
         <swagger.version>1.5.13</swagger.version>
         <swagger-ui.version>2.2.10</swagger-ui.version>
 
