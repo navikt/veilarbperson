@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import javax.xml.datatype.*;
 
+import static no.nav.fo.veilarbperson.consumer.tps.mappers.MapperTestUtils.lagDato;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -963,9 +964,5 @@ public class PersonDataMapperTest {
                 return (forventetAr + "-" + forventetManed + "-" + forventetDag).equals(o);
             }
         };
-    }
-
-    private XMLGregorianCalendar lagDato(final int ar, final int maned, final int dag) throws DatatypeConfigurationException {
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(ar, maned, dag, 1, 1, 1, 1, 1);
     }
 }
