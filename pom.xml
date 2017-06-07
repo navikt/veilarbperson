@@ -44,7 +44,7 @@
         <mockito.version>1.10.19</mockito.version>
         <hamcrest.version>1.3</hamcrest.version>
         <junit.version>4.12</junit.version>
-        <logback.version>1.1.6</logback.version>
+        <logback.version>1.1.7</logback.version>
         <kodeverk.version>2.0.2</kodeverk.version>
         <egenansatt-v1.version>1.0.5</egenansatt-v1.version>
         <organisasjonenhet-v1.version>1.0.7</organisasjonenhet-v1.version>
@@ -61,6 +61,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>no.nav.sbl.dialogarena</groupId>
+                <artifactId>api-app</artifactId>
+                <version>2.58.51</version>
+                <scope>runtime</scope>
+            </dependency>
 
 
             <!-- Consumer  -->
