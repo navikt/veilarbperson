@@ -17,7 +17,6 @@
 
     <selftest>
         <path>veilarbperson/internal/selftest</path>
-        <humanReadablePath>veilarbperson/internal/selftest</humanReadablePath>
     </selftest>
 
     <resources>

@@ -3,6 +3,7 @@ package no.nav.fo.veilarbperson.consumer.tps;
 import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;
+import no.nav.sbl.dialogarena.types.Pingable.Ping.PingMetadata;
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1;
 import no.nav.tjeneste.virksomhet.person.v2.PersonV2;
 import org.springframework.context.annotation.Bean;
@@ -32,12 +33,19 @@ public class TpsConfig {
         final PersonV2 personV2 = factory()
                 .withOutInterceptor(new SystemSAMLOutInterceptor())
                 .build();
+
+        PingMetadata metadata = new PingMetadata(
+                "virksomhet:Person_V2 via " + getEndpoint(PERSON_TPS_MOCK_KEY, "person.endpoint.url"),
+                "Henter informasjon om en bestemt person (TPS).",
+                true
+        );
+
         return () -> {
             try {
                 personV2.ping();
-                return lyktes("PERSON_V2");
+                return lyktes(metadata);
             } catch (Exception e) {
-                return feilet("PERSON_V2", e);
+                return feilet(metadata, e);
             }
         };
     }
@@ -55,12 +63,19 @@ public class TpsConfig {
         final EgenAnsattV1 egenAnsattV1 = egenAnsattFactory()
                 .withOutInterceptor(new SystemSAMLOutInterceptor())
                 .build();
+
+        PingMetadata metadata = new PingMetadata(
+                "virksomhet:EgenAnsatt_v1 via " + getEndpoint(EGENANSATT_TPS_MOCK_KEY, "egenansatt.endpoint.url"),
+                "Tjeneste for å hente informasjon om EgenAnsatt",
+                true
+        );
+
         return () -> {
             try {
                 egenAnsattV1.ping();
-                return lyktes("EGENANSATT_V1");
+                return lyktes(metadata);
             } catch (Exception e) {
-                return feilet("EGENANSATT_V1", e);
+                return feilet(metadata, e);
             }
         };
     }
@@ -71,6 +86,13 @@ public class TpsConfig {
 
     private CXFClient<EgenAnsattV1> egenAnsattFactory() {
         return new CXFClient<>(EgenAnsattV1.class).address(getProperty("egenansatt.endpoint.url"));
+    }
+
+    private static String getEndpoint(String mockKey, String endpointKey) {
+        if ("true".equalsIgnoreCase(System.getProperty(mockKey))) {
+            return "MOCK";
+        }
+        return System.getProperty(endpointKey);
     }
 
 }
