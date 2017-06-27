@@ -34,13 +34,27 @@ public class Norg2Config {
     @Bean
     public Pingable organisasjonEnhetPing() {
         final OrganisasjonEnhetV1 organisasjonEnhetV1 = factory().build();
+
+        Pingable.Ping.PingMetadata metadata = new Pingable.Ping.PingMetadata(
+                "virksomhet:OrganisasjonEnhet_v1 via " + getEndpoint(),
+                "Ping av organisasjonsenhet (NORG2).",
+                true
+        );
+
         return () -> {
             try {
                 organisasjonEnhetV1.ping();
-                return lyktes("ORGANISASJONENHET_V1");
+                return lyktes(metadata);
             } catch (Exception e) {
-                return feilet("ORGANISASJONENHET_V1", e);
+                return feilet(metadata, e);
             }
         };
+    }
+
+    private static String getEndpoint() {
+        if ("true".equalsIgnoreCase(System.getProperty(ENHET_NORG2_MOCK_KEY))) {
+            return "MOCK";
+        }
+        return System.getProperty(ENHET_NORG2_ENDPOINT_KEY);
     }
 }

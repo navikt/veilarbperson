@@ -33,8 +33,8 @@
         <common-jetty.version>2.0.13</common-jetty.version>
         <common-test.version>1.2</common-test.version>
         <spring.version>4.3.4.RELEASE</spring.version>
-        <common-web.version>4.0.6</common-web.version>
-        <common-types.version>1.2</common-types.version>
+        <common-web.version>5.0.14</common-web.version>
+        <common-types.version>2.0.9</common-types.version>
         <jackson.version>2.7.2</jackson.version>
         <xml-apis.version>1.4.01</xml-apis.version>
         <modig-security.version>3.0.1</modig-security.version>
