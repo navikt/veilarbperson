@@ -23,38 +23,14 @@
     </modules>
 
     <properties>
-        <!-- Jersey -->
-        <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
-        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
-        <jersey.version>2.22.2</jersey.version>
-
-        <slf4j.version>1.7.5</slf4j.version>
-        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
-        <common-jetty.version>2.0.13</common-jetty.version>
-        <common-test.version>1.2</common-test.version>
-        <spring.version>4.3.4.RELEASE</spring.version>
-        <common-web.version>5.0.14</common-web.version>
-        <common-types.version>2.0.9</common-types.version>
-        <jackson.version>2.7.2</jackson.version>
-        <xml-apis.version>1.4.01</xml-apis.version>
-        <modig-security.version>3.0.1</modig-security.version>
+        <organisasjonenhet-v1.version>1.0.7</organisasjonenhet-v1.version>
         <person-v2.version>3.0.3</person-v2.version>
         <dkif.version>1.3</dkif.version>
-        <cxf.version>3.1.11</cxf.version>
-        <mockito.version>1.10.19</mockito.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <junit.version>4.12</junit.version>
-        <logback.version>1.1.7</logback.version>
         <kodeverk.version>2.0.2</kodeverk.version>
         <egenansatt-v1.version>1.0.5</egenansatt-v1.version>
-        <organisasjonenhet-v1.version>1.0.7</organisasjonenhet-v1.version>
-        <common-cxf.version>3.1.41</common-cxf.version>
+
         <ehcache.version>3.2.0</ehcache.version>
-        <oidc-security.version>2.1.20</oidc-security.version>
-        <geronimo-jaspi.version>2.0.0</geronimo-jaspi.version>
-        <common-abac.version>1.1.69</common-abac.version>
-        <swagger.version>1.5.13</swagger.version>
-        <swagger-ui.version>2.2.10</swagger-ui.version>
+        <cache-api.version>1.0.0</cache-api.version>
 
         <sonar.exclusions>**/config/*, **/*Mock*, **/*Servlet*, **/*Config*</sonar.exclusions>
     </properties>
@@ -63,11 +39,11 @@
         <dependencies>
             <dependency>
                 <groupId>no.nav.sbl.dialogarena</groupId>
-                <artifactId>api-app</artifactId>
-                <version>2.58.51</version>
-                <scope>runtime</scope>
+                <artifactId>api-app-bom</artifactId>
+                <version>3.112.116</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
-
 
             <!-- Consumer  -->
             <dependency>
@@ -95,193 +71,6 @@
                 <artifactId>organisasjonenhet-v1-tjenestespesifikasjon</artifactId>
                 <version>${organisasjonenhet-v1.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-core</artifactId>
-                <version>${cxf.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>xml-apis</groupId>
-                <artifactId>xml-apis</artifactId>
-                <version>${xml-apis.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.12.6</version>
-                <scope>provided</scope>
-            </dependency>
-
-
-
-            <!-- Nav felles -->
-            <dependency>
-                <groupId>no.nav.sbl.dialogarena</groupId>
-                <artifactId>common-jetty</artifactId>
-                <version>${common-jetty.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.sbl.dialogarena</groupId>
-                <artifactId>common-web</artifactId>
-                <version>${common-web.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.sbl.dialogarena</groupId>
-                <artifactId>common-types</artifactId>
-                <version>${common-types.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.sbl.dialogarena</groupId>
-                <artifactId>common-abac</artifactId>
-                <version>${common-abac.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.sbl.dialogarena</groupId>
-                <artifactId>common-cxf</artifactId>
-                <version>${common-cxf.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.modig</groupId>
-                <artifactId>modig-security-ws</artifactId>
-                <version>${modig-security.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-impl</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.modig</groupId>
-                <artifactId>modig-security-sts</artifactId>
-                <version>${modig-security.version}</version>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.sbl.dialogarena</groupId>
-                <artifactId>common-test</artifactId>
-                <version>${common-test.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-core</artifactId>
-                <version>${hamcrest.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-library</artifactId>
-                <version>${hamcrest.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!-- Logging -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jcl-over-slf4j</artifactId>
-                <version>${slf4j.version}</version>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.modig</groupId>
-                <artifactId>modig-security-core</artifactId>
-                <version>${modig-security.version}</version>
-                <scope>test</scope>
-                <type>test-jar</type>
-            </dependency>
-
-            <!-- Server setup -->
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>${javax.servlet-api.version}</version>
-            </dependency>
-
-            <!-- Spring -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
-            </dependency>
-
-            <!--Jersey-->
-            <dependency>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>javax.ws.rs-api</artifactId>
-                <version>${javax.ws.rs-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.containers</groupId>
-                <artifactId>jersey-container-servlet-core</artifactId>
-                <scope>runtime</scope>
-                <version>${jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.ext</groupId>
-                <artifactId>jersey-spring3</artifactId>
-                <version>${jersey.version}</version>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-json-jackson</artifactId>
-                <scope>runtime</scope>
-                <version>${jersey.version}</version>
-            </dependency>
 
             <!-- Cache -->
             <dependency>
@@ -289,44 +78,10 @@
                 <artifactId>ehcache</artifactId>
                 <version>${ehcache.version}</version>
             </dependency>
-
-
-            <!--oidc-security-->
             <dependency>
-                <groupId>no.nav.dialogarena</groupId>
-                <artifactId>oidc-security</artifactId>
-                <version>${oidc-security.version}</version>
-                <type>test-jar</type>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.dialogarena</groupId>
-                <artifactId>oidc-security</artifactId>
-                <version>${oidc-security.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.geronimo.components</groupId>
-                <artifactId>geronimo-jaspi</artifactId>
-                <version>${geronimo-jaspi.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!--Swagger-->
-            <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-jersey2-jaxrs</artifactId>
-                <version>${swagger.version}</version>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-annotations</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.webjars</groupId>
-                <artifactId>swagger-ui</artifactId>
-                <version>${swagger-ui.version}</version>
-                <scope>runtime</scope>
+                <groupId>javax.cache</groupId>
+                <artifactId>cache-api</artifactId>
+                <version>${cache-api.version}</version>
             </dependency>
 
         </dependencies>
