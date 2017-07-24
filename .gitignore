@@ -3,6 +3,6 @@ target/
 .settings
 *.iml
 *.orig
-.idea/
+.idea/*
+!.idea/runConfigurations
 *.bak
-*.properties
