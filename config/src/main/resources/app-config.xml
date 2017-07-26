@@ -41,6 +41,10 @@
         <exposedRest path="/veilarbperson/tjenester" name="veilArbPersonAPI"/>
     </exposed-services>
 
+    <serverOptions>
+        <memoryParameters resourceAlias="brukerdialog-memparams"/>
+    </serverOptions>
+
     <loadBalancer isAlive="/veilarbperson/internal/isAlive" />
 
     <logging serviceCalls="true" />
