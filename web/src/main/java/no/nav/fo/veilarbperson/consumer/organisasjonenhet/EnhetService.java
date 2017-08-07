@@ -5,10 +5,15 @@ import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.informasjon.WSDetaljertEnhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.meldinger.WSHentEnhetBolkRequest;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.meldinger.WSHentEnhetBolkResponse;
+import org.slf4j.Logger;
 
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class EnhetService {
+
+    private static final Logger logger = getLogger(EnhetService.class);
 
     private final OrganisasjonEnhetV1 organisasjonenhet;
 
@@ -21,8 +26,8 @@ public class EnhetService {
 
         try {
             return mapTilEnhet(hentEnhet(organisasjonenhet.hentEnhetBolk(request)));
-        } catch (HentEnhetBolkUgyldigInput hentEnhetBolkUgyldigInput) {
-            hentEnhetBolkUgyldigInput.printStackTrace();
+        } catch (HentEnhetBolkUgyldigInput e) {
+            logger.error("Feil ved henting av enhet fra Norg2 " + e);
             return null;
         }
     }
