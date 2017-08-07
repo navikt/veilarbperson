@@ -19,14 +19,12 @@ public class EnhetService {
     public Enhet hentBehandlendeEnhet(String geografiskNedslagsfelt) {
         WSHentEnhetBolkRequest request = new WSHentEnhetBolkRequest().withEnhetIdListe(geografiskNedslagsfelt);
 
-        WSHentEnhetBolkResponse response = null;
         try {
-            response = organisasjonenhet.hentEnhetBolk(request);
+            return mapTilEnhet(hentEnhet(organisasjonenhet.hentEnhetBolk(request)));
         } catch (HentEnhetBolkUgyldigInput hentEnhetBolkUgyldigInput) {
             hentEnhetBolkUgyldigInput.printStackTrace();
+            return null;
         }
-        WSDetaljertEnhet wsEnhet = hentEnhet(response);
-        return mapTilEnhet(wsEnhet);
     }
 
     private Enhet mapTilEnhet(WSDetaljertEnhet wsEnhet) {
