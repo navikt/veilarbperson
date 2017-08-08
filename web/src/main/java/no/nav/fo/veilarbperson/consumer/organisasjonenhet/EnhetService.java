@@ -1,14 +1,19 @@
 package no.nav.fo.veilarbperson.consumer.organisasjonenhet;
 
-import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.FinnNAVKontorForGeografiskNedslagsfeltBolkUgyldigInput;
+import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.HentEnhetBolkUgyldigInput;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.informasjon.WSDetaljertEnhet;
-import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.meldinger.WSFinnNAVKontorForGeografiskNedslagsfeltBolkRequest;
-import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.meldinger.WSFinnNAVKontorForGeografiskNedslagsfeltBolkResponse;
+import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.meldinger.WSHentEnhetBolkRequest;
+import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.meldinger.WSHentEnhetBolkResponse;
+import org.slf4j.Logger;
 
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class EnhetService {
+
+    private static final Logger logger = getLogger(EnhetService.class);
 
     private final OrganisasjonEnhetV1 organisasjonenhet;
 
@@ -17,15 +22,14 @@ public class EnhetService {
     }
 
     public Enhet hentBehandlendeEnhet(String geografiskNedslagsfelt) {
-        WSFinnNAVKontorForGeografiskNedslagsfeltBolkRequest request = new WSFinnNAVKontorForGeografiskNedslagsfeltBolkRequest().withGeografiskNedslagsfeltListe(geografiskNedslagsfelt);
-        WSFinnNAVKontorForGeografiskNedslagsfeltBolkResponse response = null;
+        WSHentEnhetBolkRequest request = new WSHentEnhetBolkRequest().withEnhetIdListe(geografiskNedslagsfelt);
+
         try {
-            response = organisasjonenhet.finnNAVKontorForGeografiskNedslagsfeltBolk(request);
-        } catch (FinnNAVKontorForGeografiskNedslagsfeltBolkUgyldigInput finnNAVKontorForGeografiskNedslagsfeltBolkUgyldigInput) {
-            finnNAVKontorForGeografiskNedslagsfeltBolkUgyldigInput.printStackTrace();
+            return mapTilEnhet(hentEnhet(organisasjonenhet.hentEnhetBolk(request)));
+        } catch (HentEnhetBolkUgyldigInput e) {
+            logger.error("Feil ved henting av enhet fra Norg2 " + e);
+            return null;
         }
-        WSDetaljertEnhet wsEnhet = hentEnhet(response);
-        return  mapTilEnhet(wsEnhet);
     }
 
     private Enhet mapTilEnhet(WSDetaljertEnhet wsEnhet) {
@@ -37,26 +41,9 @@ public class EnhetService {
         return null;
     }
 
-    private WSDetaljertEnhet hentEnhet(WSFinnNAVKontorForGeografiskNedslagsfeltBolkResponse response) {
-        if (responseHarEnhet(response)) {
-            return response.getEnheterForGeografiskNedslagsfeltListe().get(0).getEnhetListe().get(0);
-        }
-        return null;
+    private WSDetaljertEnhet hentEnhet(WSHentEnhetBolkResponse response) {
+        List<WSDetaljertEnhet> liste = response.getEnhetListe();
+        return liste.isEmpty() ? null : liste.get(0);
     }
 
-    private boolean responseHarEnhet(WSFinnNAVKontorForGeografiskNedslagsfeltBolkResponse response) {
-        return response != null
-                && listeErIkkeTom(response.getEnheterForGeografiskNedslagsfeltListe())
-                && listeErIkkeTom(response.getEnheterForGeografiskNedslagsfeltListe().get(0).getEnhetListe());
-    }
-
-    private boolean listeErIkkeTom(List<?> liste) {
-        return !listeErTom(liste);
-    }
-
-    private boolean listeErTom(List<?> liste) {
-        return liste == null ||
-                liste.isEmpty() ||
-                liste.get(0) == null;
-    }
 }
