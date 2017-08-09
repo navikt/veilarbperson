@@ -42,7 +42,7 @@
     </exposed-services>
 
     <serverOptions>
-        <memoryParameters resourceAlias="brukerdialog-memparams"/>
+        <memoryParameters resourceAlias="veilarb-memparams"/>
     </serverOptions>
 
     <loadBalancer isAlive="/veilarbperson/internal/isAlive" />
