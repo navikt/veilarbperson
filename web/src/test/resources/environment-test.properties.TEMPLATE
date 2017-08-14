@@ -40,5 +40,3 @@ ldap.basedn=dc\=test,dc\=local
 role=0000-GA-Modia-Oppfolging
 
 abac.endpoint.url=https://wasapp-t4.adeo.no/asm-pdp/authorize
-
-disable.metrics.report=true
