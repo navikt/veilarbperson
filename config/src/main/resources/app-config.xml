@@ -17,7 +17,6 @@
 
     <selftest>
         <path>veilarbperson/internal/selftest</path>
-        <humanReadablePath>veilarbperson/internal/selftest</humanReadablePath>
     </selftest>
 
     <resources>
@@ -38,7 +37,7 @@
     </resources>
 
     <exposed-services>
-        <exposedRest path="/veilarbperson/tjenester" name="veilArbPersonAPI"/>
+        <exposedRest path="/veilarbperson/api" name="veilArbPersonAPI"/>
     </exposed-services>
 
     <serverOptions>

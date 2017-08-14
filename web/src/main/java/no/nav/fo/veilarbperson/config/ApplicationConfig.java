@@ -1,5 +1,6 @@
 package no.nav.fo.veilarbperson.config;
 
+import no.nav.apiapp.ApiApplication;
 import no.nav.fo.veilarbperson.PersonFletter;
 import org.springframework.context.annotation.*;
 import no.nav.sbl.dialogarena.common.abac.pep.context.AbacContext;
@@ -12,6 +13,17 @@ import no.nav.sbl.dialogarena.common.abac.pep.context.AbacContext;
         CacheConfig.class,
         AbacContext.class
 })
-public class ApplicationConfig {
+public class ApplicationConfig implements ApiApplication {
+
+    @Override
+    public Sone getSone() {
+        return Sone.FSS;
+    }
+
+
+    @Override
+    public String getApiBasePath() {
+        return "/tjenester/";
+    }
 
 }

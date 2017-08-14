@@ -3,6 +3,7 @@ package no.nav.fo.veilarbperson.consumer.organisasjonenhet;
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,19 +29,36 @@ public class Norg2Config {
     private CXFClient<OrganisasjonEnhetV1> factory() {
         return new CXFClient<>(OrganisasjonEnhetV1.class)
                 .address(getProperty(ENHET_NORG2_ENDPOINT_KEY))
-                .configureStsForSystemUser();
+                .withOutInterceptor(new LoggingOutInterceptor())
+                ;
     }
 
     @Bean
     public Pingable organisasjonEnhetPing() {
-        final OrganisasjonEnhetV1 organisasjonEnhetV1 = factory().build();
+        final OrganisasjonEnhetV1 organisasjonEnhetV1 = factory()
+                .configureStsForSystemUserInFSS()
+                .build();
+
+        Pingable.Ping.PingMetadata metadata = new Pingable.Ping.PingMetadata(
+                "virksomhet:OrganisasjonEnhet_v1 via " + getEndpoint(),
+                "Ping av organisasjonsenhet (NORG2).",
+                true
+        );
+
         return () -> {
             try {
                 organisasjonEnhetV1.ping();
-                return lyktes("ORGANISASJONENHET_V1");
+                return lyktes(metadata);
             } catch (Exception e) {
-                return feilet("ORGANISASJONENHET_V1", e);
+                return feilet(metadata, e);
             }
         };
+    }
+
+    private static String getEndpoint() {
+        if ("true".equalsIgnoreCase(System.getProperty(ENHET_NORG2_MOCK_KEY))) {
+            return "MOCK";
+        }
+        return System.getProperty(ENHET_NORG2_ENDPOINT_KEY);
     }
 }
