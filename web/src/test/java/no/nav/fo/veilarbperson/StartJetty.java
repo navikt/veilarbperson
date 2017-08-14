@@ -1,7 +1,6 @@
 package no.nav.fo.veilarbperson;
 
 import no.nav.dialogarena.config.DevelopmentSecurity;
-import no.nav.sbl.dialogarena.common.jetty.Jetty;
 
 import static no.nav.sbl.dialogarena.common.jetty.Jetty.usingWar;
 
