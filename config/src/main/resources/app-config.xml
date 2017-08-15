@@ -37,7 +37,7 @@
     </resources>
 
     <exposed-services>
-        <exposedRest path="/veilarbperson/api" name="veilArbPersonAPI"/>
+        <exposedRest path="/veilarbperson/tjenester" name="veilArbPersonAPI"/>
     </exposed-services>
 
     <serverOptions>
