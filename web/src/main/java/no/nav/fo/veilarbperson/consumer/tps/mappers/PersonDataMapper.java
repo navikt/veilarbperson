@@ -272,11 +272,10 @@ public class PersonDataMapper {
 
     private static String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
-                .filter(diskresjonskode -> KODE_6.equals(diskresjonskode.getValue()) || KODE_7.equals(diskresjonskode.getValue()))
-                .map(WSDiskresjonskoder::getValue)
+                .map(WSKodeverdi::getValue)
+                .map(DiskresjonskodeMapper::mapTilTallkode)
                 .orElse(null);
     }
-
 
     private static Sivilstand kanskjeSivilstand(WSPerson person) {
         return ofNullable(person.getSivilstand())

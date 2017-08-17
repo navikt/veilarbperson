@@ -243,7 +243,8 @@ public class PersonDataMapperTest {
     @Test
     public void kode6MappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "6";
-        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(new WSDiskresjonskoder().withValue(WSDiskresjonskoder));
+        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(new WSDiskresjonskoder()
+                .withValue(Diskresjonskoder.STRENGT_FORTROLIG_ADRESSE.kodeverkVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -253,7 +254,8 @@ public class PersonDataMapperTest {
     @Test
     public void kode7MappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "7";
-        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(new WSDiskresjonskoder().withValue(forventetVerdi));
+        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(new WSDiskresjonskoder()
+                .withValue(Diskresjonskoder.FORTROLIG_ADRESSE.kodeverkVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
