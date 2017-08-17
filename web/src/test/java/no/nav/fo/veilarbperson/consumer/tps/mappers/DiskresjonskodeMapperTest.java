@@ -1,13 +1,13 @@
 package no.nav.fo.veilarbperson.consumer.tps.mappers;
 
 import no.nav.fo.veilarbperson.domain.person.Diskresjonskoder;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-class DiskresjonskodeMapperTest {
+public class DiskresjonskodeMapperTest {
 
     @Test
     public void strengtFortroligKodverkVerdiMappesTilTallVerdi() {
