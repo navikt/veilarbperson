@@ -10,18 +10,14 @@ import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.person.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
-import no.nav.tjeneste.virksomhet.person.v2.*;
+import no.nav.tjeneste.virksomhet.person.v3.*;
 
 public class PersonFletter {
 
     private final PersonService personService;
-
     private final EgenAnsattService egenAnsattService;
-
     private final EnhetService enhetService;
-
     private final DigitalKontaktinformasjonService digitalKontaktinformasjonService;
-
     private final KodeverkManager kodeverkManager;
 
     public PersonFletter(EnhetService enhetService,
@@ -37,7 +33,7 @@ public class PersonFletter {
         this.egenAnsattService = egenAnsattService;
     }
 
-    public PersonData hentPerson(String fodselsnummer) throws HentKjerneinformasjonPersonIkkeFunnet, HentKjerneinformasjonSikkerhetsbegrensning {
+    public PersonData hentPerson(String fodselsnummer) throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
         PersonData personData = personService.hentPerson(fodselsnummer);
 
         flettEgenAnsatt(fodselsnummer, personData);
@@ -53,8 +49,8 @@ public class PersonFletter {
     }
 
     private void flettOrganisasjonsenhet(PersonData personData) {
-        if (personData.getAnsvarligEnhetsnummer() != null) {
-            personData.setBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getAnsvarligEnhetsnummer()));
+        if (personData.getGeografiskTilknytning() != null) {
+            personData.setBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getGeografiskTilknytning()));
         }
     }
 
@@ -136,7 +132,7 @@ public class PersonFletter {
     private void flettSikkerhetstiltak(String fnr, PersonData personData) {
         try {
             Sikkerhetstiltak sikkerhetstiltak = personService.hentSikkerhetstiltak(fnr);
-            personData.setSikkerhetstiltak(sikkerhetstiltak.getSikkerhetstiltaksbeskrivelse());
+            personData.setSikkerhetstiltak(sikkerhetstiltak.sikkerhetstiltaksbeskrivelse);
         } catch (HentSikkerhetstiltakPersonIkkeFunnet hentSikkerhetstiltakPersonIkkeFunnet) {
             hentSikkerhetstiltakPersonIkkeFunnet.printStackTrace();
         }
