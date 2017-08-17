@@ -17,7 +17,7 @@
         <!-- Consumer -->
         <dependency>
             <groupId>no.nav.sbl.dialogarena</groupId>
-            <artifactId>person-v2-tjenestespesifikasjon</artifactId>
+            <artifactId>person-v3-tjenestespesifikasjon</artifactId>
         </dependency>
         <dependency>
             <groupId>no.nav.sbl.dialogarena</groupId>

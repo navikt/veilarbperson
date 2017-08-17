@@ -4,7 +4,7 @@ import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;
 import no.nav.sbl.dialogarena.types.Pingable.Ping.PingMetadata;
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1;
-import no.nav.tjeneste.virksomhet.person.v2.PersonV2;
+import no.nav.tjeneste.virksomhet.person.v3.PersonV3;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,28 +21,28 @@ public class TpsConfig {
     private static final String EGENANSATT_TPS_MOCK_KEY = "egenansatt.withmock";
 
     @Bean
-    public PersonV2 personPortType() {
-        PersonV2 prod = factory().configureStsForOnBehalfOfWithJWT().build();
-        PersonV2 mock = new PersonMock();
+    public PersonV3 personPortType() {
+        PersonV3 prod = factory().configureStsForOnBehalfOfWithJWT().build();
+        PersonV3 mock = new PersonMock();
 
-        return createMetricsProxyWithInstanceSwitcher("TPS", prod, mock, PERSON_TPS_MOCK_KEY, PersonV2.class);
+        return createMetricsProxyWithInstanceSwitcher("TPS", prod, mock, PERSON_TPS_MOCK_KEY, PersonV3.class);
     }
 
     @Bean
     public Pingable personPing() {
-        final PersonV2 personV2 = factory()
+        final PersonV3 personV3 = factory()
                 .configureStsForSystemUserInFSS()
                 .build();
 
         PingMetadata metadata = new PingMetadata(
-                "virksomhet:Person_V2 via " + getEndpoint(PERSON_TPS_MOCK_KEY, "person.endpoint.url"),
+                "virksomhet:Person_V3 via " + getEndpoint(PERSON_TPS_MOCK_KEY, "person.endpoint.url"),
                 "Henter informasjon om en bestemt person (TPS).",
                 true
         );
 
         return () -> {
             try {
-                personV2.ping();
+                personV3.ping();
                 return lyktes(metadata);
             } catch (Exception e) {
                 return feilet(metadata, e);
@@ -80,8 +80,8 @@ public class TpsConfig {
         };
     }
 
-    private CXFClient<PersonV2> factory() {
-        return new CXFClient<>(PersonV2.class)
+    private CXFClient<PersonV3> factory() {
+        return new CXFClient<>(PersonV3.class)
                 .address(getProperty("person.endpoint.url"))
                 .withOutInterceptor(new LoggingOutInterceptor());
     }
