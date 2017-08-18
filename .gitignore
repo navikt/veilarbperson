@@ -6,3 +6,4 @@ target/
 .idea/*
 !.idea/runConfigurations
 *.bak
+web/APP_LOG_HOME_IS_UNDEFINED/
