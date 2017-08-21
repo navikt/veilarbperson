@@ -2,7 +2,7 @@ package no.nav.fo.veilarbperson.consumer.organisasjonenhet;
 
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;
-import no.nav.tjeneste.virksomhet.organisasjonenhet.v1.OrganisasjonEnhetV1;
+import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.OrganisasjonEnhetV2;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,14 +20,14 @@ public class Norg2Config {
     private static final String ENHET_NORG2_MOCK_KEY = "organisasjonenhet.endpoint.url";
 
     @Bean
-    public OrganisasjonEnhetV1 organisasjonEnhetPortType() {
-        OrganisasjonEnhetV1 prod = factory().configureStsForOnBehalfOfWithJWT().build();
-        OrganisasjonEnhetV1 mock = new OrganisasjonEnhetMock();
-        return createMetricsProxyWithInstanceSwitcher("NORG2", prod, mock, ENHET_NORG2_MOCK_KEY, OrganisasjonEnhetV1.class);
+    public OrganisasjonEnhetV2 organisasjonEnhetPortType() {
+        OrganisasjonEnhetV2 prod = factory().configureStsForOnBehalfOfWithJWT().build();
+        OrganisasjonEnhetV2 mock = new OrganisasjonEnhetMock();
+        return createMetricsProxyWithInstanceSwitcher("NORG2", prod, mock, ENHET_NORG2_MOCK_KEY, OrganisasjonEnhetV2.class);
     }
 
-    private CXFClient<OrganisasjonEnhetV1> factory() {
-        return new CXFClient<>(OrganisasjonEnhetV1.class)
+    private CXFClient<OrganisasjonEnhetV2> factory() {
+        return new CXFClient<>(OrganisasjonEnhetV2.class)
                 .address(getProperty(ENHET_NORG2_ENDPOINT_KEY))
                 .withOutInterceptor(new LoggingOutInterceptor())
                 ;
@@ -35,19 +35,19 @@ public class Norg2Config {
 
     @Bean
     public Pingable organisasjonEnhetPing() {
-        final OrganisasjonEnhetV1 organisasjonEnhetV1 = factory()
+        final OrganisasjonEnhetV2 organisasjonEnhetV2 = factory()
                 .configureStsForSystemUserInFSS()
                 .build();
 
         Pingable.Ping.PingMetadata metadata = new Pingable.Ping.PingMetadata(
-                "virksomhet:OrganisasjonEnhet_v1 via " + getEndpoint(),
+                "virksomhet:OrganisasjonEnhet_v2 via " + getEndpoint(),
                 "Ping av organisasjonsenhet (NORG2).",
                 true
         );
 
         return () -> {
             try {
-                organisasjonEnhetV1.ping();
+                organisasjonEnhetV2.ping();
                 return lyktes(metadata);
             } catch (Exception e) {
                 return feilet(metadata, e);
