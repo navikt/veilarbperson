@@ -53,7 +53,7 @@ public class PersonRessurs {
     @Produces(APPLICATION_JSON)
     @ApiOperation(value = "Henter informasjon om en person",
             notes = "Denne tjenesten gjør kall mot flere baktjenester: " +
-                    "Kodeverk, organisasjonenhet_v1, Digitalkontaktinformasjon_v1, Person_v2, Egenansatt_v1")
+                    "Kodeverk, organisasjonenhet_v2, Digitalkontaktinformasjon_v1, Person_v3, Egenansatt_v1")
     public Response person(@PathParam("fodselsnummer") String fodselsnummer) {
 
         logger.info("Henter persondata med fodselsnummer: " + fodselsnummer);
