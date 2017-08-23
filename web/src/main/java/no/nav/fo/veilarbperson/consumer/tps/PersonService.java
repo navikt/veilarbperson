@@ -6,8 +6,11 @@ import no.nav.fo.veilarbperson.domain.person.Sikkerhetstiltak;
 import no.nav.tjeneste.virksomhet.person.v2.*;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSNorskIdent;
 import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSPersonidenter;
+import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSSikkerhetstiltak;
 import no.nav.tjeneste.virksomhet.person.v2.meldinger.*;
 import org.slf4j.Logger;
+
+import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -46,9 +49,11 @@ public class PersonService {
 
         WSHentSikkerhetstiltakResponse wsSikkerhetstiltak = personV2.hentSikkerhetstiltak(request);
 
-        String sikkerhetstiltaksbeskrivelse = wsSikkerhetstiltak
-                .getSikkerhetstiltak()
-                .getSikkerhetstiltaksbeskrivelse();
+        String sikkerhetstiltaksbeskrivelse = Optional.of(wsSikkerhetstiltak)
+                .map(WSHentSikkerhetstiltakResponse::getSikkerhetstiltak)
+                .map(WSSikkerhetstiltak::getSikkerhetstiltaksbeskrivelse)
+                .orElse(null);
+
         return new Sikkerhetstiltak().medSikkerhetstiltaksbeskrivelse(sikkerhetstiltaksbeskrivelse);
     }
 
