@@ -3,11 +3,9 @@ package no.nav.fo.veilarbperson.consumer.tps;
 import no.nav.fo.veilarbperson.consumer.tps.mappers.PersonDataMapper;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.domain.person.Sikkerhetstiltak;
-import no.nav.tjeneste.virksomhet.person.v2.*;
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSNorskIdent;
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSPersonidenter;
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSSikkerhetstiltak;
-import no.nav.tjeneste.virksomhet.person.v2.meldinger.*;
+import no.nav.tjeneste.virksomhet.person.v3.*;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.*;
 import org.slf4j.Logger;
 
 import java.util.Optional;
@@ -18,51 +16,48 @@ public class PersonService {
 
     private static final Logger logger = getLogger(PersonService.class);
 
-    private final PersonV2 personV2;
-
+    private final PersonV3 personV3;
     private final PersonDataMapper personDataMapper;
 
-
-    public PersonService(PersonV2 personV2) {
-        this.personV2 = personV2;
+    public PersonService(PersonV3 personV3) {
+        this.personV3 = personV3;
         this.personDataMapper = new PersonDataMapper();
     }
 
-    public PersonData hentPerson(String ident) throws HentKjerneinformasjonPersonIkkeFunnet, HentKjerneinformasjonSikkerhetsbegrensning {
-        final WSHentKjerneinformasjonRequest request = new WSHentKjerneinformasjonRequest().withIdent(ident);
-
+    public PersonData hentPerson(String ident) throws HentPersonSikkerhetsbegrensning, HentPersonPersonIkkeFunnet {
         try {
-            WSHentKjerneinformasjonResponse wsPerson = personV2.hentKjerneinformasjon(request);
-            PersonData personData = personDataMapper.tilPersonData(wsPerson.getPerson());
-            return personData;
-        } catch (HentKjerneinformasjonSikkerhetsbegrensning ikkeTilgang) {
-            logger.info("Saksbehandler har ikke tilgang til: " + ident);
-            throw ikkeTilgang;
-        } catch (HentKjerneinformasjonPersonIkkeFunnet ikkeFunnet) {
+            WSHentPersonResponse wsPerson = personV3.hentPerson(lagHentPersonRequest(ident));
+            return personDataMapper.tilPersonData(wsPerson.getPerson());
+        } catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
             logger.info("Person ikke funnet: " + ident);
-            throw ikkeFunnet;
+            throw hentPersonPersonIkkeFunnet;
+        } catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
+            logger.info("Saksbehandler har ikke tilgang til: " + ident);
+            throw hentPersonSikkerhetsbegrensning;
         }
     }
 
+    private WSHentPersonRequest lagHentPersonRequest(String ident) {
+        return new WSHentPersonRequest().withAktoer(new WSPersonIdent().withIdent(new WSNorskIdent().withIdent(ident)))
+                .withInformasjonsbehov(WSInformasjonsbehov.ADRESSE, WSInformasjonsbehov.BANKKONTO,
+                        WSInformasjonsbehov.FAMILIERELASJONER, WSInformasjonsbehov.KOMMUNIKASJON);
+    }
+
     public Sikkerhetstiltak hentSikkerhetstiltak(String ident) throws HentSikkerhetstiltakPersonIkkeFunnet {
-        final WSHentSikkerhetstiltakRequest request = lagRequest(ident);
-
-        WSHentSikkerhetstiltakResponse wsSikkerhetstiltak = personV2.hentSikkerhetstiltak(request);
-
-        String sikkerhetstiltaksbeskrivelse = Optional.of(wsSikkerhetstiltak)
-                .map(WSHentSikkerhetstiltakResponse::getSikkerhetstiltak)
+        WSHentSikkerhetstiltakResponse wsSikkerhetstiltak = personV3.hentSikkerhetstiltak(lagHentSikkerhetstiltakRequest(ident));
+        String beskrivelse = Optional.ofNullable(wsSikkerhetstiltak.getSikkerhetstiltak())
                 .map(WSSikkerhetstiltak::getSikkerhetstiltaksbeskrivelse)
                 .orElse(null);
-
-        return new Sikkerhetstiltak().medSikkerhetstiltaksbeskrivelse(sikkerhetstiltaksbeskrivelse);
+        return new Sikkerhetstiltak(beskrivelse);
     }
 
-    private WSHentSikkerhetstiltakRequest lagRequest(String ident) {
-        WSNorskIdent norskIdent = new WSNorskIdent()
-                .withIdent(ident)
-                .withType(new WSPersonidenter()
-                        .withValue("fnr"));
-        return new WSHentSikkerhetstiltakRequest().withIdent(norskIdent);
+    private WSHentSikkerhetstiltakRequest lagHentSikkerhetstiltakRequest(String ident) {
+        WSPersonIdent personIdent = new WSPersonIdent();
+        personIdent.setIdent(
+                new WSNorskIdent()
+                        .withIdent(ident)
+                        .withType(new WSPersonidenter()
+                                .withValue("fnr")));
+        return new WSHentSikkerhetstiltakRequest().withAktoer(personIdent);
     }
-
 }

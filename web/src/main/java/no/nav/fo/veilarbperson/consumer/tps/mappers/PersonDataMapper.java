@@ -1,7 +1,7 @@
 package no.nav.fo.veilarbperson.consumer.tps.mappers;
 
 import no.nav.fo.veilarbperson.domain.person.*;
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
@@ -13,13 +13,11 @@ import static java.util.Optional.ofNullable;
 
 public class PersonDataMapper {
 
-
     private static final String KODE_6 = "6";
     private static final String KODE_7 = "7";
 
     private final BarnMapper barnMapper = new BarnMapper();
     private final FamiliemedlemMapper familiemedlemMapper = new FamiliemedlemMapper();
-
 
     public PersonData tilPersonData(WSPerson person) {
         return PersonData.builder()
@@ -33,7 +31,7 @@ public class PersonDataMapper {
                 .barn(barnMapper.familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .diskresjonskode(kanskjeDiskresjonskode(person))
                 .kontonummer(kanskjeKontonummer(person))
-                .ansvarligEnhetsnummer(ansvarligEnhetsnummer(person))
+                .geografiskTilknytning(geografiskTilknytning(person))
                 .statsborgerskap(kanskjeStatsborgerskap(person))
                 .sivilstand(kanskjeSivilstand(person))
                 .partner(familiemedlemMapper.partner(person.getHarFraRolleI()))
@@ -44,7 +42,6 @@ public class PersonDataMapper {
                 .dodsdato(dodsdatoTilString(person))
                 .build();
     }
-
 
     private String kanskjeKjonn(WSPerson person) {
         return ofNullable(person.getKjoenn())
@@ -60,8 +57,16 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private String kanskjeFodselsnummer(WSPerson person) {
-        return ofNullable(person.getIdent())
+    private static String kanskjeFodselsnummer(WSPerson person) {
+        WSAktoer aktoer = person.getAktoer();
+        if (aktoer instanceof WSPersonIdent) {
+            return kanskjeNorskIdent((WSPersonIdent) aktoer);
+        }
+        return null;
+    }
+
+    private static String kanskjeNorskIdent(WSPersonIdent aktoer) {
+        return ofNullable(aktoer.getIdent())
                 .map(WSNorskIdent::getIdent)
                 .orElse(null);
     }
@@ -188,8 +193,6 @@ public class PersonDataMapper {
                         .orElse(null))
                 .withPostnummer(ofNullable(wsMatrikkeladresse.getPoststed().getValue())
                         .orElse(null));
-
-
     }
 
     private static PostboksadresseNorsk tilPostboksadresseNorsk(WSPostboksadresseNorsk wsPostboksadresseNorsk) {
@@ -197,11 +200,9 @@ public class PersonDataMapper {
                 .withPostnummer(ofNullable(wsPostboksadresseNorsk.getPoststed().getValue()).orElse(null))
                 .withPostboksanlegg(ofNullable(wsPostboksadresseNorsk.getPostboksanlegg()).orElse(null))
                 .withPostboksnummer(ofNullable(wsPostboksadresseNorsk.getPostboksnummer()).orElse(null));
-
     }
 
     private static StrukturertAdresse tilGateAdresse(WSGateadresse wsGateadresse) {
-
         return new Gateadresse()
                 .withGatenavn(ofNullable(wsGateadresse.getGatenavn())
                         .orElse(null))
@@ -231,12 +232,12 @@ public class PersonDataMapper {
                         .orElse(null));
     }
 
-    private static String ansvarligEnhetsnummer(WSPerson person) {
+    private static String geografiskTilknytning(WSPerson person) {
         if (person instanceof WSBruker) {
             return of(person)
-                    .map(wsPerson -> ((WSBruker) wsPerson).getHarAnsvarligEnhet())
-                    .map(WSAnsvarligEnhet::getEnhet)
-                    .map(WSOrganisasjonsenhet::getOrganisasjonselementID).orElse(null);
+                    .map(wsPerson -> ((WSBruker) wsPerson).getGeografiskTilknytning())
+                    .map(WSGeografiskTilknytning::getGeografiskTilknytning)
+                    .orElse(null);
         }
         return null;
     }
@@ -249,29 +250,32 @@ public class PersonDataMapper {
     }
 
     private static String kanskjeKontonummer(WSPerson person) {
-        WSBankkonto bankkonto = person.getBankkonto();
-        String kontonummer = null;
+        if (person instanceof WSBruker) {
+            WSBankkonto bankkonto = ((WSBruker) person).getBankkonto();
+            return kanskjeKontonummer(bankkonto);
+        }
+        return null;
+    }
 
+    private static String kanskjeKontonummer(WSBankkonto bankkonto) {
         if (bankkonto instanceof WSBankkontoNorge) {
             WSBankkontoNorge bankkontoNorge = (WSBankkontoNorge) bankkonto;
-            kontonummer = ofNullable(bankkontoNorge.getBankkonto()).map(WSBankkontonummer::getBankkontonummer).orElse(null);
-        }
-
-        if (bankkonto instanceof WSBankkontoUtland) {
+            return ofNullable(bankkontoNorge.getBankkonto()).map(WSBankkontonummer::getBankkontonummer)
+                    .orElse(null);
+        } else if (bankkonto instanceof WSBankkontoUtland) {
             WSBankkontoUtland wsBankkontoUtland = (WSBankkontoUtland) bankkonto;
-            kontonummer = ofNullable(wsBankkontoUtland.getBankkontoUtland()).map(WSBankkontonummerUtland::getBankkontonummer).orElse(null);
+            return ofNullable(wsBankkontoUtland.getBankkontoUtland()).map(WSBankkontonummerUtland::getBankkontonummer)
+                    .orElse(null);
         }
-
-        return kontonummer;
+        return null;
     }
 
     private static String kanskjeDiskresjonskode(WSPerson person) {
         return ofNullable(person.getDiskresjonskode())
-                .filter(diskresjonskode -> KODE_6.equals(diskresjonskode.getValue()) || KODE_7.equals(diskresjonskode.getValue()))
-                .map(WSDiskresjonskoder::getValue)
+                .map(WSKodeverdi::getValue)
+                .map(DiskresjonskodeMapper::mapTilTallkode)
                 .orElse(null);
     }
-
 
     private static Sivilstand kanskjeSivilstand(WSPerson person) {
         return ofNullable(person.getSivilstand())
