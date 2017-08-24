@@ -20,4 +20,10 @@ public class ApplicationConfig implements ApiApplication {
         return Sone.FSS;
     }
 
+
+    @Override
+    public String getApiBasePath() {
+        return "/tjenester/";
+    }
+
 }
