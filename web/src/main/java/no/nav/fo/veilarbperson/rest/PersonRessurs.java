@@ -11,8 +11,7 @@ import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.Feilmelding;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.services.PepClient;
-import no.nav.tjeneste.virksomhet.person.v2.HentKjerneinformasjonPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v2.HentKjerneinformasjonSikkerhetsbegrensning;
+import no.nav.tjeneste.virksomhet.person.v3.*;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -54,7 +53,7 @@ public class PersonRessurs {
     @Produces(APPLICATION_JSON)
     @ApiOperation(value = "Henter informasjon om en person",
             notes = "Denne tjenesten gjør kall mot flere baktjenester: " +
-                    "Kodeverk, organisasjonenhet_v1, Digitalkontaktinformasjon_v1, Person_v2, Egenansatt_v1")
+                    "Kodeverk, organisasjonenhet_v2, Digitalkontaktinformasjon_v1, Person_v3, Egenansatt_v1")
     public Response person(@PathParam("fodselsnummer") String fodselsnummer) {
 
         logger.info("Henter persondata med fodselsnummer: " + fodselsnummer);
@@ -64,16 +63,16 @@ public class PersonRessurs {
         try {
             PersonData person = personFletter.hentPerson(fodselsnummer);
             return Response.ok().entity(person).build();
-        } catch (HentKjerneinformasjonPersonIkkeFunnet hentKjerneinformasjonPersonIkkeFunnet) {
+        } catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
             Feilmelding feilmelding = new Feilmelding("Fant ikke person med fnr: " + fodselsnummer,
-                    hentKjerneinformasjonPersonIkkeFunnet.toString());
+                    hentPersonPersonIkkeFunnet.toString());
             return Response
                     .status(Status.NOT_FOUND)
                     .entity(feilmelding)
                     .build();
-        } catch (HentKjerneinformasjonSikkerhetsbegrensning hentKjerneinformasjonSikkerhetsbegrensning) {
+        } catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
             Feilmelding feilmelding = new Feilmelding("Saksbehandler har ikke tilgang til fnr: " + fodselsnummer,
-                    hentKjerneinformasjonSikkerhetsbegrensning.toString());
+                    hentPersonSikkerhetsbegrensning.toString());
             return Response
                     .status(Status.UNAUTHORIZED)
                     .entity(feilmelding)
@@ -82,4 +81,3 @@ public class PersonRessurs {
     }
 
 }
-
