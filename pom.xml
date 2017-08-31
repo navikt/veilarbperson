@@ -48,7 +48,8 @@
         <kodeverk.version>2.0.2</kodeverk.version>
         <egenansatt-v1.version>1.0.5</egenansatt-v1.version>
         <organisasjonenhet-v1.version>1.0.7</organisasjonenhet-v1.version>
-        <common-cxf.version>3.1.41</common-cxf.version>
+        <common-cxf.version>3.1.39</common-cxf.version>
+        <common-metrics.version>3.2.1</common-metrics.version>
         <ehcache.version>3.2.0</ehcache.version>
         <oidc-security.version>2.1.20</oidc-security.version>
         <geronimo-jaspi.version>2.0.0</geronimo-jaspi.version>
@@ -61,7 +62,11 @@
 
     <dependencyManagement>
         <dependencies>
-
+            <dependency>
+                <groupId>no.nav</groupId>
+                <artifactId>metrics</artifactId>
+                <version>${common-metrics.version}</version>
+            </dependency>
 
             <!-- Consumer  -->
             <dependency>
