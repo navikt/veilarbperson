@@ -1,6 +1,9 @@
 package no.nav.fo.veilarbperson;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjon;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkManager;
@@ -13,6 +16,8 @@ import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.person.v2.*;
 
 public class PersonFletter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PersonFletter.class);
 
     private final PersonService personService;
 
@@ -128,8 +133,8 @@ public class PersonFletter {
             personData.setEpost(kontaktinformasjon.getEpost());
         } catch (HentDigitalKontaktinformasjonSikkerhetsbegrensing |
                 HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet |
-                HentDigitalKontaktinformasjonPersonIkkeFunnet hentDigitalKontaktinformasjonSikkerhetsbegrensing) {
-            hentDigitalKontaktinformasjonSikkerhetsbegrensing.printStackTrace();
+                HentDigitalKontaktinformasjonPersonIkkeFunnet feil) {
+            LOGGER.warn("Kunne ikke flette info fra KRR. Fikk feil [{}]", feil.getMessage());
         }
     }
 
@@ -137,8 +142,8 @@ public class PersonFletter {
         try {
             Sikkerhetstiltak sikkerhetstiltak = personService.hentSikkerhetstiltak(fnr);
             personData.setSikkerhetstiltak(sikkerhetstiltak.getSikkerhetstiltaksbeskrivelse());
-        } catch (HentSikkerhetstiltakPersonIkkeFunnet hentSikkerhetstiltakPersonIkkeFunnet) {
-            hentSikkerhetstiltakPersonIkkeFunnet.printStackTrace();
+        } catch (HentSikkerhetstiltakPersonIkkeFunnet feil) {
+            LOGGER.warn("Kunne ikke flette Sikkerhetstiltak. Fikk feil [{}]", feil.getMessage());
         }
     }
 
