@@ -13,7 +13,7 @@ class StartJetty {
                         .at("/veilarbperson")
                         .port(PORT)
                         .loadProperties("/environment-test.properties")
-                , new DevelopmentSecurity.ISSOSecurityConfig("veilarbperson", "t6")
+                , new DevelopmentSecurity.ISSOSecurityConfig("veilarbperson")
         ).buildJetty().start();
     }
 
