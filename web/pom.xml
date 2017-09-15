@@ -40,6 +40,10 @@
             <artifactId>cxf-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-security</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
         </dependency>
@@ -92,7 +96,7 @@
 
         <!-- Nav felles -->
         <dependency>
-            <groupId>no.nav.sbl.dialogarena</groupId>
+            <groupId>no.nav.sbl</groupId>
             <artifactId>api-app</artifactId>
         </dependency>
         <dependency>
