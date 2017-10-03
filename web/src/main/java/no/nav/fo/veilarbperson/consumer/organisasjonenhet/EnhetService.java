@@ -27,6 +27,8 @@ public class EnhetService {
             logger.error("Feil ved henting av enhet fra Norg2 " + e);
             return null;
         }
+        WSDetaljertEnhet wsEnhet = hentEnhet(response);
+        return  mapTilEnhet(wsEnhet);
     }
 
     private WSFinnNAVKontorRequest lagRequest(String geografiskTilknytning) {

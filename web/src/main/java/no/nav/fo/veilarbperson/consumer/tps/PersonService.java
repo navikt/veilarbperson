@@ -60,4 +60,5 @@ public class PersonService {
                                 .withValue("fnr")));
         return new WSHentSikkerhetstiltakRequest().withAktoer(personIdent);
     }
+
 }
