@@ -29,9 +29,6 @@
         <kodeverk.version>2.0.2</kodeverk.version>
         <egenansatt-v1.version>1.0.5</egenansatt-v1.version>
 
-        <ehcache.version>3.2.0</ehcache.version>
-        <cache-api.version>1.0.0</cache-api.version>
-
         <sonar.exclusions>**/config/*, **/*Mock*, **/*Servlet*, **/*Config*</sonar.exclusions>
     </properties>
 
@@ -70,18 +67,6 @@
                 <groupId>no.nav.sbl.dialogarena</groupId>
                 <artifactId>organisasjonenhet-v1-tjenestespesifikasjon</artifactId>
                 <version>${organisasjonenhet-v1.version}</version>
-            </dependency>
-
-            <!-- Cache -->
-            <dependency>
-                <groupId>org.ehcache</groupId>
-                <artifactId>ehcache</artifactId>
-                <version>${ehcache.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.cache</groupId>
-                <artifactId>cache-api</artifactId>
-                <version>${cache-api.version}</version>
             </dependency>
 
         </dependencies>
