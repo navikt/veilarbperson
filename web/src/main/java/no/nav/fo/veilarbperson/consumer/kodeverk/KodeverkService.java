@@ -6,6 +6,8 @@ import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLEnkeltKodeverk;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLKodeverk;
 import org.springframework.cache.annotation.Cacheable;
 
+import static no.nav.fo.veilarbperson.config.CacheConfig.KODEVERK;
+
 public class KodeverkService {
 
     private final KodeverkPortType kodverkPortType;
@@ -15,7 +17,7 @@ public class KodeverkService {
     }
 
     @SuppressWarnings("WeakerAccess")
-    @Cacheable(value = "kodeverk", key = "#kodeverkRequest.toString()" )
+    @Cacheable(value = KODEVERK, key = "#kodeverkRequest.toString()")
     public Kodeverk hentKodeverk(KodeverkRequestDO kodeverkRequest) throws HentKodeverkHentKodeverkKodeverkIkkeFunnet {
 
         XMLKodeverk kodeverkResponse = kodverkPortType.hentKodeverk(kodeverkRequest).getKodeverk();
