@@ -3,7 +3,6 @@ target/
 .settings
 *.iml
 *.orig
-.idea/*
-!.idea/runConfigurations
+.idea/
 *.bak
-web/APP_LOG_HOME_IS_UNDEFINED/
+*.properties
