@@ -2,7 +2,6 @@ package no.nav.fo.veilarbperson.consumer.tps;
 
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;
-import no.nav.sbl.dialogarena.types.Pingable.Ping.PingMetadata;
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1;
 import no.nav.tjeneste.virksomhet.person.v3.PersonV3;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
@@ -33,19 +32,12 @@ public class TpsConfig {
         final PersonV3 personV3 = factory()
                 .configureStsForSystemUserInFSS()
                 .build();
-
-        PingMetadata metadata = new PingMetadata(
-                "virksomhet:Person_V3 via " + getEndpoint(PERSON_TPS_MOCK_KEY, "person.endpoint.url"),
-                "Henter informasjon om en bestemt person (TPS).",
-                true
-        );
-
         return () -> {
             try {
                 personV3.ping();
-                return lyktes(metadata);
+                return lyktes("PERSON_V3");
             } catch (Exception e) {
-                return feilet(metadata, e);
+                return feilet("PERSON_V3", e);
             }
         };
     }
@@ -63,19 +55,12 @@ public class TpsConfig {
         final EgenAnsattV1 egenAnsattV1 = egenAnsattFactory()
                 .configureStsForSystemUserInFSS()
                 .build();
-
-        PingMetadata metadata = new PingMetadata(
-                "virksomhet:EgenAnsatt_v1 via " + getEndpoint(EGENANSATT_TPS_MOCK_KEY, "egenansatt.endpoint.url"),
-                "Tjeneste for å hente informasjon om EgenAnsatt",
-                true
-        );
-
         return () -> {
             try {
                 egenAnsattV1.ping();
-                return lyktes(metadata);
+                return lyktes("EGENANSATT_V1");
             } catch (Exception e) {
-                return feilet(metadata, e);
+                return feilet("EGENANSATT_V1", e);
             }
         };
     }
@@ -90,13 +75,6 @@ public class TpsConfig {
         return new CXFClient<>(EgenAnsattV1.class)
                 .address(getProperty("egenansatt.endpoint.url"))
                 .withOutInterceptor(new LoggingOutInterceptor());
-    }
-
-    private static String getEndpoint(String mockKey, String endpointKey) {
-        if ("true".equalsIgnoreCase(System.getProperty(mockKey))) {
-            return "MOCK";
-        }
-        return System.getProperty(endpointKey);
     }
 
 }
