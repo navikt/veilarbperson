@@ -1,9 +1,10 @@
 package no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon;
 
-import no.nav.modig.security.ws.SystemSAMLOutInterceptor;
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
 import no.nav.sbl.dialogarena.types.Pingable;
+import no.nav.sbl.dialogarena.types.Pingable.Ping.PingMetadata;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.DigitalKontaktinformasjonV1;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,19 +28,35 @@ public class DigitalKontaktinformasjonConfig {
     @Bean
     public Pingable digitalKontaktinformasjonPing() {
         final DigitalKontaktinformasjonV1 digitalKontaktinformasjonV1 = factory()
-                .withOutInterceptor(new SystemSAMLOutInterceptor())
+                .configureStsForSystemUserInFSS()
                 .build();
+
+        PingMetadata metadata = new PingMetadata(
+                "virksomhet:DigitalKontakinformasjon_v1 via " + getEndpoint(),
+                "Ping av digitalkontaktinformasjon.",
+                true
+        );
+
         return () -> {
             try {
                 digitalKontaktinformasjonV1.ping();
-                return lyktes("DIGITALKONTAKTINFORMASJON_V1");
+                return lyktes(metadata);
             } catch (Exception e) {
-                return feilet("DIGITALKONTAKTINFORMASJON_V1", e);
+                return feilet(metadata, e);
             }
         };
     }
-
     private CXFClient<DigitalKontaktinformasjonV1> factory() {
-        return new CXFClient<>(DigitalKontaktinformasjonV1.class).address(getProperty("digitalkontaktinformasjon.endpoint.url"));
+        return new CXFClient<>(DigitalKontaktinformasjonV1.class)
+                .address(getProperty("digitalkontaktinformasjon.endpoint.url"))
+                .withOutInterceptor(new LoggingOutInterceptor())
+                ;
+    }
+
+    private static String getEndpoint() {
+        if ("true".equalsIgnoreCase(System.getProperty(DIGITAL_KONTAKTINFORMASJON_MOCK_KEY))) {
+            return "MOCK";
+        }
+        return System.getProperty("digitalkontaktinformasjon.endpoint.url");
     }
 }

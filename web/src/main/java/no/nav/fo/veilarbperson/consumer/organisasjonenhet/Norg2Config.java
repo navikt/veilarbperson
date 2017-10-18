@@ -38,14 +38,27 @@ public class Norg2Config {
         final OrganisasjonEnhetV2 organisasjonEnhetV2 = factory()
                 .configureStsForSystemUserInFSS()
                 .build();
+
+        Pingable.Ping.PingMetadata metadata = new Pingable.Ping.PingMetadata(
+                "virksomhet:OrganisasjonEnhet_v2 via " + getEndpoint(),
+                "Ping av organisasjonsenhet (NORG2).",
+                true
+        );
+
         return () -> {
             try {
                 organisasjonEnhetV2.ping();
-                return lyktes("ORGANISASJONENHET_V2");
+                return lyktes(metadata);
             } catch (Exception e) {
-                return feilet("ORGANISASJONENHET_V2", e);
+                return feilet(metadata, e);
             }
         };
     }
 
+    private static String getEndpoint() {
+        if ("true".equalsIgnoreCase(System.getProperty(ENHET_NORG2_MOCK_KEY))) {
+            return "MOCK";
+        }
+        return System.getProperty(ENHET_NORG2_ENDPOINT_KEY);
+    }
 }
