@@ -23,6 +23,8 @@
     <resources>
         <applicationProperties alias="veilarbperson.properties"/>
         <rest alias="veilarblogin.redirect-url" mapToProperty="oidc-redirect" />
+        <webservice alias="virksomhet:Person_v2" mapToProperty="person.endpoint" />
+        <rest alias="veilarblogin.redirect-url" mapToProperty="oidc-redirect" />
         <webservice alias="virksomhet:Person_v3" mapToProperty="person.endpoint" />
         <webservice alias="virksomhet:EgenAnsatt_v1" mapToProperty="egenansatt.endpoint" />
         <webservice alias="virksomhet:OrganisasjonEnhet_v2" mapToProperty="organisasjonenhet.endpoint" />
