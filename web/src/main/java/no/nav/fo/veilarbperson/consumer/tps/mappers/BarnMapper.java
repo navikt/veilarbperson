@@ -1,7 +1,7 @@
 package no.nav.fo.veilarbperson.consumer.tps.mappers;
 
 import no.nav.fo.veilarbperson.domain.person.Familiemedlem;
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.WSFamilierelasjon;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.WSFamilierelasjon;
 
 import java.util.List;
 import java.util.stream.Collectors;
