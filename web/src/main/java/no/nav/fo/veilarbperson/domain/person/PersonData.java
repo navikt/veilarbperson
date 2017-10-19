@@ -18,7 +18,7 @@ public class PersonData extends Person {
     private List<Familiemedlem> barn;
     private String diskresjonskode;
     private String kontonummer;
-    private String ansvarligEnhetsnummer;
+    private String geografiskTilknytning;
     private Enhet behandlendeEnhet;
     private String telefon;
     private String epost;
@@ -48,7 +48,7 @@ public class PersonData extends Person {
                        List<Familiemedlem> barn,
                        String diskresjonskode,
                        String kontonummer,
-                       String ansvarligEnhetsnummer,
+                       String geografiskTilknytning,
                        Enhet behandlendeEnhet,
                        String telefon,
                        String epost,
@@ -67,7 +67,7 @@ public class PersonData extends Person {
         this.barn = barn;
         this.diskresjonskode = diskresjonskode;
         this.kontonummer = kontonummer;
-        this.ansvarligEnhetsnummer = ansvarligEnhetsnummer;
+        this.geografiskTilknytning = geografiskTilknytning;
         this.behandlendeEnhet = behandlendeEnhet;
         this.telefon = telefon;
         this.epost = epost;
@@ -88,7 +88,6 @@ public class PersonData extends Person {
         return ofNullable(bostedsadresse)
                 .map(Bostedsadresse::getStrukturertAdresse)
                 .map(StrukturertAdresse::getPostnummer);
-
     }
 
     public void setPoststedForBostedsadresse(String poststed) {

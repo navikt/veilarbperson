@@ -39,7 +39,7 @@ public class PingConfig {
 
     @Bean
     public Pingable issoPing() throws IOException {
-        PingMetadata metadata = new PingMetadata(
+        PingMetadata metadata = new Pingable.Ping.PingMetadata(
                 "ISSO via " + System.getProperty("isso.isalive.url"),
                 "Pålogging og autorisering (single-signon).",
                 true

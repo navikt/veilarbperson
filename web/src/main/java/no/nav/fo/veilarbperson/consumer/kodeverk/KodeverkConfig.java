@@ -1,8 +1,8 @@
 package no.nav.fo.veilarbperson.consumer.kodeverk;
 
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
-import no.nav.sbl.dialogarena.types.Pingable;
 import no.nav.sbl.dialogarena.types.Pingable.Ping.PingMetadata;
+import no.nav.sbl.dialogarena.types.Pingable;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.KodeverkPortType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

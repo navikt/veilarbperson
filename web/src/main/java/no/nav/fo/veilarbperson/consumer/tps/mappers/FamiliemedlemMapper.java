@@ -2,7 +2,7 @@ package no.nav.fo.veilarbperson.consumer.tps.mappers;
 
 import no.nav.fo.veilarbperson.domain.person.Familiemedlem;
 import no.nav.fo.veilarbperson.utils.FodselsnummerHjelper;
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.List;
@@ -58,7 +58,15 @@ public class FamiliemedlemMapper {
     }
 
     private static String kanskjeFodselsnummer(WSPerson person) {
-        return ofNullable(person.getIdent())
+        WSAktoer aktoer = person.getAktoer();
+        if (aktoer instanceof WSPersonIdent) {
+            return kanskjeNorskIdent((WSPersonIdent) aktoer);
+        }
+        return null;
+    }
+
+    private static String kanskjeNorskIdent(WSPersonIdent aktoer) {
+        return ofNullable(aktoer.getIdent())
                 .map(WSNorskIdent::getIdent)
                 .orElse(null);
     }
@@ -81,7 +89,5 @@ public class FamiliemedlemMapper {
                 .map(XMLGregorianCalendar::toString)
                 .orElse(null);
     }
-
-
 
 }

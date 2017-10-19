@@ -46,7 +46,6 @@ public class DigitalKontaktinformasjonConfig {
             }
         };
     }
-
     private CXFClient<DigitalKontaktinformasjonV1> factory() {
         return new CXFClient<>(DigitalKontaktinformasjonV1.class)
                 .address(getProperty("digitalkontaktinformasjon.endpoint.url"))

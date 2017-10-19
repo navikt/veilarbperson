@@ -1,12 +1,12 @@
 package no.nav.fo.veilarbperson.consumer.tps.mappers;
 
 import no.nav.fo.veilarbperson.domain.person.*;
-import no.nav.tjeneste.virksomhet.person.v2.informasjon.*;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import org.hamcrest.CustomMatcher;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import javax.xml.datatype.*;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import static no.nav.fo.veilarbperson.consumer.tps.mappers.MapperTestUtils.lagDato;
 import static org.hamcrest.Matchers.*;
@@ -138,7 +138,7 @@ public class PersonDataMapperTest {
     @Test
     public void fodselsnummerMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "fodseslnummer";
-        final WSPerson wsPerson = new WSPerson().withIdent(new WSNorskIdent().withIdent(forventetVerdi));
+        final WSPerson wsPerson = new WSPerson().withAktoer(new WSPersonIdent().withIdent(new WSNorskIdent().withIdent(forventetVerdi)));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -146,8 +146,17 @@ public class PersonDataMapperTest {
     }
 
     @Test
+    public void fodselsnummerMappesTilNullDersomWSAktoerErNull() throws Exception {
+        final WSPerson wsPerson = new WSPerson();
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getFodselsnummer(), nullValue());
+    }
+
+    @Test
     public void fodselsnummerMappesTilNullDersomWSNorskIdentErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withIdent(null);
+        final WSPerson wsPerson = new WSPerson().withAktoer(new WSPersonIdent());
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -156,7 +165,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void fodselsnummerMappesTilNullDersomIdentErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withIdent(new WSNorskIdent().withIdent(null));
+        final WSPerson wsPerson = new WSPerson().withAktoer(new WSPersonIdent().withIdent(new WSNorskIdent().withIdent(null)));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -234,7 +243,8 @@ public class PersonDataMapperTest {
     @Test
     public void kode6MappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "6";
-        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(new WSDiskresjonskoder().withValue(forventetVerdi));
+        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(new WSDiskresjonskoder()
+                .withValue(Diskresjonskoder.STRENGT_FORTROLIG_ADRESSE.kodeverkVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -244,7 +254,8 @@ public class PersonDataMapperTest {
     @Test
     public void kode7MappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "7";
-        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(new WSDiskresjonskoder().withValue(forventetVerdi));
+        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(new WSDiskresjonskoder()
+                .withValue(Diskresjonskoder.FORTROLIG_ADRESSE.kodeverkVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -272,7 +283,8 @@ public class PersonDataMapperTest {
     @Test
     public void kontonummerMappesDersomBankkontoErNorge() throws Exception {
         final String forventetVerdi = "123456789";
-        final WSPerson wsPerson = new WSPerson().withBankkonto(
+
+        final WSPerson wsPerson = new WSBruker().withBankkonto(
                 new WSBankkontoNorge().withBankkonto(new WSBankkontonummer().withBankkontonummer(forventetVerdi))
         );
 
@@ -284,7 +296,7 @@ public class PersonDataMapperTest {
     @Test
     public void kontonummerMappesDersomBankkontoErUtland() throws Exception {
         final String forventetVerdi = "987654321";
-        final WSPerson wsPerson = new WSPerson().withBankkonto(
+        final WSPerson wsPerson = new WSBruker().withBankkonto(
                 new WSBankkontoUtland().withBankkontoUtland(new WSBankkontonummerUtland().withBankkontonummer(forventetVerdi))
         );
 
@@ -295,7 +307,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void kontonummerMappesTilNullDersomWSBankkontoErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBankkonto(null);
+        final WSPerson wsPerson = new WSBruker().withBankkonto(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -304,7 +316,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void kontonummerMappesTilNullDersomWSBankkontonummerErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBankkonto(
+        final WSPerson wsPerson = new WSBruker().withBankkonto(
                 new WSBankkontoNorge().withBankkonto(null)
         );
 
@@ -315,7 +327,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void kontonummerMappesTilNullDersomWSBankkontonummerVerdiErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBankkonto(
+        final WSPerson wsPerson = new WSBruker().withBankkonto(
                 new WSBankkontoNorge().withBankkonto(new WSBankkontonummer().withBankkontonummer(null))
         );
 
@@ -326,7 +338,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void kontonummerMappesTilNullDersomWSBankkontonummerUtlandErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBankkonto(
+        final WSPerson wsPerson = new WSBruker().withBankkonto(
                 new WSBankkontoUtland().withBankkontoUtland(null)
         );
 
@@ -337,7 +349,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void kontonummerMappesTilNullDersomWSBankkontonummerUtlandVerdiErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBankkonto(
+        final WSPerson wsPerson = new WSBruker().withBankkonto(
                 new WSBankkontoUtland().withBankkontoUtland(new WSBankkontonummerUtland().withBankkontonummer(null))
         );
 
@@ -347,53 +359,63 @@ public class PersonDataMapperTest {
     }
 
     @Test
-    public void ansvarligEnhetsnummerMappesDersomDetEksisterer() throws Exception {
+    public void geografiskTilknytningKommuneMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "2890";
-        final WSPerson wsPerson = new WSBruker().withHarAnsvarligEnhet(
-                new WSAnsvarligEnhet().withEnhet(new WSOrganisasjonsenhet().withOrganisasjonselementID(forventetVerdi))
-        );
+        final WSPerson wsPerson = new WSBruker().withGeografiskTilknytning(
+                new WSKommune().withGeografiskTilknytning(forventetVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
-        assertThat(personData.getAnsvarligEnhetsnummer(), is(forventetVerdi));
+        assertThat(personData.getGeografiskTilknytning(), is(forventetVerdi));
     }
 
     @Test
-    public void ansvarligEnhetsnummerMappesTilNullDersomInputIkkeErWSBruker() throws Exception {
+    public void geografiskTilknytningLandMappesDersomDetEksisterer() throws Exception {
+        final String forventetVerdi = "SWE";
+        final WSPerson wsPerson = new WSBruker().withGeografiskTilknytning(
+                new WSLand().withGeografiskTilknytning(forventetVerdi));
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getGeografiskTilknytning(), is(forventetVerdi));
+    }
+
+    @Test
+    public void geografiskTilknytningBydelMappesDersomDetEksisterer() throws Exception {
+        final String forventetVerdi = "289033";
+        final WSPerson wsPerson = new WSBruker().withGeografiskTilknytning(
+                new WSBydel().withGeografiskTilknytning(forventetVerdi));
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getGeografiskTilknytning(), is(forventetVerdi));
+    }
+
+    @Test
+    public void geografiskTilknytningMappesTilNullDersomInputIkkeErWSBruker() throws Exception {
         final WSPerson wsPerson = new WSPerson();
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
-        assertThat(personData.getAnsvarligEnhetsnummer(), nullValue());
+        assertThat(personData.getGeografiskTilknytning(), nullValue());
     }
 
     @Test
-    public void ansvarligEnhetsnummerMappesTilNullDersomWSAnsvarligEnhetErNull() throws Exception {
-        final WSPerson wsPerson = new WSBruker().withHarAnsvarligEnhet(null);
+    public void geografiskTilknytningMappesTilNullDersomWSAnsvarligEnhetErNull() throws Exception {
+        final WSPerson wsPerson = new WSBruker().withGeografiskTilknytning(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
-        assertThat(personData.getAnsvarligEnhetsnummer(), nullValue());
+        assertThat(personData.getGeografiskTilknytning(), nullValue());
     }
 
     @Test
-    public void ansvarligEnhetsnummerMappesTilNullDersomWSOrganisasjonsenhetErNull() throws Exception {
-        final WSPerson wsPerson = new WSBruker().withHarAnsvarligEnhet(new WSAnsvarligEnhet().withEnhet(null));
+    public void geografiskTilknytningMappesTilNullDersomGeografiskTilknytning() throws Exception {
+        final WSPerson wsPerson = new WSBruker().withGeografiskTilknytning(new WSBydel().withGeografiskTilknytning(null));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
-        assertThat(personData.getAnsvarligEnhetsnummer(), nullValue());
-    }
-
-    @Test
-    public void ansvarligEnhetsnummerMappesTilNullDersomOrganisasjonselementIDErNull() throws Exception {
-        final WSPerson wsPerson = new WSBruker().withHarAnsvarligEnhet(
-                new WSAnsvarligEnhet().withEnhet(new WSOrganisasjonsenhet().withOrganisasjonselementID(null))
-        );
-
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
-
-        assertThat(personData.getAnsvarligEnhetsnummer(), nullValue());
+        assertThat(personData.getGeografiskTilknytning(), nullValue());
     }
 
     @Test
@@ -534,7 +556,7 @@ public class PersonDataMapperTest {
     public void verdierIWSGateadresseMappesTilNullDersomDeErNull() throws Exception {
         final WSPerson wsPerson = new WSPerson().withBostedsadresse(
                 new WSBostedsadresse().withStrukturertAdresse(
-                       lagGateadresse(null, 0, 0, null, null, new WSPostnummer())
+                        lagGateadresse(null, 0, 0, null, null, new WSPostnummer())
                 )
         );
 
@@ -801,7 +823,7 @@ public class PersonDataMapperTest {
         final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
                 new WSMidlertidigPostadresseUtland().withUstrukturertAdresse(
                         lagUstrukturertAdresse(forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode)
-        ));
+                ));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
         assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
@@ -814,7 +836,7 @@ public class PersonDataMapperTest {
         final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
                 new WSMidlertidigPostadresseUtland().withUstrukturertAdresse(
                         lagUstrukturertAdresse(null, null, null, null, null)
-        ));
+                ));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
         assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
@@ -825,8 +847,8 @@ public class PersonDataMapperTest {
     public void wsMidlertidigPostadresseUtlandetMappesTilNullDersomPersonIkkeErBruker() throws Exception {
         final WSPerson wsPerson = new WSPerson().withBostedsadresse(
                 new WSBostedsadresse().withStrukturertAdresse(
-                       lagGateadresse(null, 0, 0, null, null, new WSPostnummer().withValue(null))
-        ));
+                        lagGateadresse(null, 0, 0, null, null, new WSPostnummer().withValue(null))
+                ));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
         assertThat(personData.getMidlertidigAdresseUtland(), nullValue());
@@ -841,8 +863,8 @@ public class PersonDataMapperTest {
         String forventetLandkode = "LAND";
         final WSPerson wsPerson = new WSPerson().withPostadresse(
                 new WSPostadresse().withUstrukturertAdresse(
-                       lagUstrukturertAdresse(forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode)
-        ));
+                        lagUstrukturertAdresse(forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode)
+                ));
 
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -930,12 +952,12 @@ public class PersonDataMapperTest {
                 .withEiendomsnavn(eiendomsnavn)
                 .withPoststed(new WSPostnummer().withValue(postnummer))
                 .withMatrikkelnummer(
-                    new WSMatrikkelnummer()
-                        .withGaardsnummer(gardsnummer)
-                        .withBruksnummer(bruksnummer)
-                        .withFestenummer(festenummer)
-                        .withSeksjonsnummer(seksjonsnummer)
-                        .withUndernummer(undernummer));
+                        new WSMatrikkelnummer()
+                                .withGaardsnummer(gardsnummer)
+                                .withBruksnummer(bruksnummer)
+                                .withFestenummer(festenummer)
+                                .withSeksjonsnummer(seksjonsnummer)
+                                .withUndernummer(undernummer));
     }
 
     private void sjekkAtMatrikkeladresseHarForventaVerdier(
