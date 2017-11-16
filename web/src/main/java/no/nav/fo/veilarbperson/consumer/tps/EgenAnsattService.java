@@ -3,7 +3,9 @@ package no.nav.fo.veilarbperson.consumer.tps;
 
 import no.nav.tjeneste.pip.egen.ansatt.v1.*;
 import org.slf4j.Logger;
+import org.springframework.cache.annotation.Cacheable;
 
+import static no.nav.fo.veilarbperson.config.CacheConfig.EGEN_ANSATT;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class EgenAnsattService {
@@ -16,6 +18,7 @@ public class EgenAnsattService {
         this.egenAnsattV1 = egenAnsattV1;
     }
 
+    @Cacheable(EGEN_ANSATT)
     public boolean erEgenAnsatt(String ident) {
         final WSHentErEgenAnsattEllerIFamilieMedEgenAnsattRequest request = new WSHentErEgenAnsattEllerIFamilieMedEgenAnsattRequest().withIdent(ident);
 

@@ -4,9 +4,12 @@ import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.FinnNAVKontorUgyldigInput
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.OrganisasjonEnhetV2;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.informasjon.WSGeografi;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.informasjon.WSOrganisasjonsenhet;
-import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.meldinger.*;
+import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.meldinger.WSFinnNAVKontorRequest;
+import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.meldinger.WSFinnNAVKontorResponse;
 import org.slf4j.Logger;
+import org.springframework.cache.annotation.Cacheable;
 
+import static no.nav.fo.veilarbperson.config.CacheConfig.ENHET;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class EnhetService {
@@ -19,6 +22,7 @@ public class EnhetService {
         this.organisasjonenhet = organisasjonenhet;
     }
 
+    @Cacheable(ENHET)
     public Enhet hentBehandlendeEnhet(String geografiskTilknytning) {
         try {
             WSFinnNAVKontorResponse response = organisasjonenhet.finnNAVKontor(lagRequest(geografiskTilknytning));
