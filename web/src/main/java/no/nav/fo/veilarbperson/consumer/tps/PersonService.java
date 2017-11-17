@@ -2,12 +2,18 @@ package no.nav.fo.veilarbperson.consumer.tps;
 
 import no.nav.fo.veilarbperson.consumer.tps.mappers.PersonDataMapper;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
-import no.nav.tjeneste.virksomhet.person.v3.*;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.*;
+import no.nav.tjeneste.virksomhet.person.v3.HentPersonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.HentPersonSikkerhetsbegrensning;
+import no.nav.tjeneste.virksomhet.person.v3.PersonV3;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.WSInformasjonsbehov;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.WSNorskIdent;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.WSPersonIdent;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.WSHentPersonRequest;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.WSHentPersonResponse;
 import org.slf4j.Logger;
+import org.springframework.cache.annotation.Cacheable;
 
-
+import static no.nav.fo.veilarbperson.config.CacheConfig.PERSON;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class PersonService {
@@ -22,6 +28,7 @@ public class PersonService {
         this.personDataMapper = new PersonDataMapper();
     }
 
+    @Cacheable(PERSON)
     public PersonData hentPerson(String ident) throws HentPersonSikkerhetsbegrensning, HentPersonPersonIkkeFunnet {
         try {
             WSHentPersonResponse wsPerson = personV3.hentPerson(lagHentPersonRequest(ident));
@@ -40,4 +47,5 @@ public class PersonService {
                 .withInformasjonsbehov(WSInformasjonsbehov.ADRESSE, WSInformasjonsbehov.BANKKONTO,
                         WSInformasjonsbehov.FAMILIERELASJONER, WSInformasjonsbehov.KOMMUNIKASJON);
     }
+
 }

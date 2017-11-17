@@ -1,10 +1,19 @@
 package no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon;
-import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
-import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.informasjon.*;
+
+import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.DigitalKontaktinformasjonV1;
+import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonSikkerhetsbegrensing;
+import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.informasjon.WSEpostadresse;
+import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.informasjon.WSKontaktinformasjon;
+import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.informasjon.WSMobiltelefonnummer;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.meldinger.WSHentDigitalKontaktinformasjonRequest;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.meldinger.WSHentDigitalKontaktinformasjonResponse;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Optional;
+
+import static no.nav.fo.veilarbperson.config.CacheConfig.DIGITAL_KONTAKTINFO;
 
 public class DigitalKontaktinformasjonService {
 
@@ -14,6 +23,8 @@ public class DigitalKontaktinformasjonService {
         this.digitalKontaktinformasjonV1 = digitalKontaktinformasjonV1;
     }
 
+
+    @Cacheable(DIGITAL_KONTAKTINFO)
     public DigitalKontaktinformasjon hentDigitalKontaktinformasjon(String fodselsnummer) throws
             HentDigitalKontaktinformasjonSikkerhetsbegrensing,
             HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet,

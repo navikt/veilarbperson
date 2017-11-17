@@ -12,7 +12,6 @@ class StartJetty {
         DevelopmentSecurity.setupISSO(usingWar()
                         .at("/veilarbperson")
                         .port(PORT)
-                        .loadProperties("/environment-test.properties")
                 , new DevelopmentSecurity.ISSOSecurityConfig("veilarbperson")
         ).buildJetty().start();
     }
