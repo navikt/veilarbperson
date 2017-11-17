@@ -23,18 +23,13 @@ public class PersonData extends Person {
     private String telefon;
     private String epost;
     private String statsborgerskap;
-    private String sikkerhetstiltak;
     private Sivilstand sivilstand;
     private Familiemedlem partner;
     private Bostedsadresse bostedsadresse;
     private MidlertidigAdresseNorge midlertidigAdresseNorge;
     private MidlertidigAdresseUtland midlertidigAdresseUtland;
     private PostAdresse postAdresse;
-    private boolean egenAnsatt;
 
-    public boolean isEgenAnsatt() {
-        return egenAnsatt;
-    }
 
     @Builder
     private PersonData(String fornavn,
@@ -53,14 +48,12 @@ public class PersonData extends Person {
                        String telefon,
                        String epost,
                        String statsborgerskap,
-                       String sikkerhetstiltak,
                        Sivilstand sivilstand,
                        Familiemedlem partner,
                        Bostedsadresse bostedsadresse,
                        MidlertidigAdresseNorge midlertidigAdresseNorge,
                        MidlertidigAdresseUtland midlertidigAdresseUtland,
-                       PostAdresse postAdresse,
-                       boolean egenAnsatt
+                       PostAdresse postAdresse
     ) {
         super(fornavn, mellomnavn, etternavn, sammensattnavn, fodselsnummer, fodselsdato, kjonn, dodsdato);
 
@@ -72,14 +65,12 @@ public class PersonData extends Person {
         this.telefon = telefon;
         this.epost = epost;
         this.statsborgerskap = statsborgerskap;
-        this.sikkerhetstiltak = sikkerhetstiltak;
         this.sivilstand = sivilstand;
         this.partner = partner;
         this.bostedsadresse = bostedsadresse;
         this.midlertidigAdresseNorge = midlertidigAdresseNorge;
         this.midlertidigAdresseUtland = midlertidigAdresseUtland;
         this.postAdresse = postAdresse;
-        this.egenAnsatt = egenAnsatt;
     }
 
 
