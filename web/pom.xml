@@ -120,6 +120,10 @@
             <groupId>no.nav.sbl.dialogarena</groupId>
             <artifactId>common-test</artifactId>
         </dependency>
+        <dependency>
+            <groupId>no.nav.sbl.dialogarena</groupId>
+            <artifactId>rest</artifactId>
+        </dependency>
 
 
         <!--oidc-security-->

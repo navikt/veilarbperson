@@ -1,9 +1,6 @@
 package no.nav.fo.veilarbperson;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjon;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkManager;
@@ -11,13 +8,28 @@ import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
+import no.nav.fo.veilarbperson.domain.Personinfo;
 import no.nav.fo.veilarbperson.domain.person.*;
-import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
-import no.nav.tjeneste.virksomhet.person.v3.*;
+import no.nav.sbl.rest.RestUtils;
+import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonSikkerhetsbegrensing;
+import no.nav.tjeneste.virksomhet.person.v3.HentPersonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.HentPersonSikkerhetsbegrensning;
+import no.nav.tjeneste.virksomhet.person.v3.HentSikkerhetstiltakPersonIkkeFunnet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.core.HttpHeaders;
+
+import static javax.ws.rs.core.HttpHeaders.ACCEPT;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class PersonFletter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PersonFletter.class);
+    private static final Client restClient = RestUtils.createClient();
 
     private final PersonService personService;
     private final EgenAnsattService egenAnsattService;
@@ -38,15 +50,33 @@ public class PersonFletter {
         this.egenAnsattService = egenAnsattService;
     }
 
-    public PersonData hentPerson(String fodselsnummer) throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
+    public PersonData hentPerson(String fodselsnummer, String cookie) throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
         PersonData personData = personService.hentPerson(fodselsnummer);
 
-        flettEgenAnsatt(fodselsnummer, personData);
+        try {
+            flettPersoninfoFraPortefolje(personData, fodselsnummer, cookie);
+        } catch (Exception e) {
+            LOGGER.warn("Bruker fallbackløsning for sikkerhetstiltak og egenAnsatt-sjekk", e);
+            flettEgenAnsatt(fodselsnummer, personData);
+            flettSikkerhetstiltak(fodselsnummer, personData);
+        }
+
         flettOrganisasjonsenhet(personData);
-        flettSikkerhetstiltak(fodselsnummer, personData);
         flettDigitalKontaktinformasjon(fodselsnummer, personData);
         flettKodeverk(personData);
         return personData;
+    }
+
+    private void flettPersoninfoFraPortefolje(PersonData personData, String fodselsnummer, String cookie) {
+        Personinfo personinfo = restClient
+                .target(String.format("https://app%s.adeo.no/veilarbportefolje/api/personinfo/%s", getEnvironment(), fodselsnummer))
+                .request()
+                .header(ACCEPT, APPLICATION_JSON)
+                .header(HttpHeaders.COOKIE, cookie)
+                .get(Personinfo.class);
+
+        personData.setSikkerhetstiltak(personinfo.sikkerhetstiltak);
+        personData.setEgenAnsatt(personinfo.egenAnsatt);
     }
 
     private void flettEgenAnsatt(String fodselsnummer, PersonData personData) {
@@ -143,4 +173,12 @@ public class PersonFletter {
         }
     }
 
+    public String getEnvironment() {
+        String environment = System.getProperty("environment.name");
+        if ("p".equals(environment)) {
+            return "";
+        } else {
+            return "-" + environment;
+        }
+    }
 }
