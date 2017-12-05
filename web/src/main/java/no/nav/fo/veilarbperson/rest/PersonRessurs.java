@@ -6,6 +6,7 @@ import no.nav.fo.veilarbperson.PersonFletter;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
+import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.Feilmelding;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
@@ -34,6 +35,7 @@ public class PersonRessurs {
     public PersonRessurs(EnhetService enhetService,
                          DigitalKontaktinformasjonService digitalKontaktinformasjonService,
                          PersonService personService,
+                         EgenAnsattService egenAnsattService,
                          KodeverkService kodeverkService,
                          PepClient pepClient) {
 
@@ -43,6 +45,7 @@ public class PersonRessurs {
                 enhetService,
                 digitalKontaktinformasjonService,
                 personService,
+                egenAnsattService,
                 kodeverkService);
     }
 
