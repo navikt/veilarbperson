@@ -11,11 +11,18 @@ import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.Feilmelding;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.services.PepClient;
-import no.nav.tjeneste.virksomhet.person.v3.*;
+import no.nav.tjeneste.virksomhet.person.v3.HentPersonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.HentPersonSikkerhetsbegrensning;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -54,14 +61,16 @@ public class PersonRessurs {
     @ApiOperation(value = "Henter informasjon om en person",
             notes = "Denne tjenesten gjør kall mot flere baktjenester: " +
                     "Kodeverk, organisasjonenhet_v2, Digitalkontaktinformasjon_v1, Person_v3, Egenansatt_v1")
-    public Response person(@PathParam("fodselsnummer") String fodselsnummer) {
+    public Response person(@PathParam("fodselsnummer") String fodselsnummer, @Context HttpServletRequest request) {
 
         logger.info("Henter persondata med fodselsnummer: " + fodselsnummer);
 
         pepClient.isServiceCallAllowed(fodselsnummer);
 
         try {
-            PersonData person = personFletter.hentPerson(fodselsnummer);
+            String cookie = request.getHeader(HttpHeaders.COOKIE);
+            PersonData person = personFletter.hentPerson(fodselsnummer, cookie);
+
             return Response.ok().entity(person).build();
         } catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
             Feilmelding feilmelding = new Feilmelding("Fant ikke person med fnr: " + fodselsnummer,
