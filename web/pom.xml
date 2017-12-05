@@ -121,7 +121,7 @@
             <artifactId>common-test</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.nav.sbl.dialogarena</groupId>
+            <groupId>no.nav.sbl</groupId>
             <artifactId>rest</artifactId>
         </dependency>
 
