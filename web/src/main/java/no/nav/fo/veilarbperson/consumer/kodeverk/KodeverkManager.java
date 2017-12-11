@@ -39,7 +39,7 @@ public class KodeverkManager {
             return kodeverk.getNavn(kode, spraak);
         } catch (HentKodeverkHentKodeverkKodeverkIkkeFunnet hentKodeverkHentKodeverkKodeverkIkkeFunnet) {
             return Optional.empty();
-        } catch (SOAPFaultException ukjentFeilHosKodeverk) {
+        } catch (Exception ukjentFeilHosKodeverk) {
             log.error("Ukjent feil fra kodeverk: ", ukjentFeilHosKodeverk);
             return Optional.of(kode);
         }
