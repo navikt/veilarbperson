@@ -2,8 +2,8 @@ package no.nav.fo.veilarbperson.consumer.kodeverk;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.HentKodeverkHentKodeverkKodeverkIkkeFunnet;
-import org.springframework.remoting.soap.SoapFaultException;
 
+import javax.xml.ws.soap.SOAPFaultException;
 import java.util.Optional;
 
 @Slf4j
@@ -39,7 +39,7 @@ public class KodeverkManager {
             return kodeverk.getNavn(kode, spraak);
         } catch (HentKodeverkHentKodeverkKodeverkIkkeFunnet hentKodeverkHentKodeverkKodeverkIkkeFunnet) {
             return Optional.empty();
-        } catch (SoapFaultException ukjentFeilHosKodeverk) {
+        } catch (SOAPFaultException ukjentFeilHosKodeverk) {
             log.error("Ukjent feil fra kodeverk: ", ukjentFeilHosKodeverk);
             return Optional.of(kode);
         }
