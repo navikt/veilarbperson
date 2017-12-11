@@ -1,9 +1,12 @@
 package no.nav.fo.veilarbperson.consumer.kodeverk;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.HentKodeverkHentKodeverkKodeverkIkkeFunnet;
+import org.springframework.remoting.soap.SoapFaultException;
 
 import java.util.Optional;
 
+@Slf4j
 public class KodeverkManager {
 
     private static final String NORSK_SPRAK = "nb";
@@ -36,6 +39,9 @@ public class KodeverkManager {
             return kodeverk.getNavn(kode, spraak);
         } catch (HentKodeverkHentKodeverkKodeverkIkkeFunnet hentKodeverkHentKodeverkKodeverkIkkeFunnet) {
             return Optional.empty();
+        } catch (SoapFaultException ukjentFeilHosKodeverk) {
+            log.error("Ukjent feil fra kodeverk: ", ukjentFeilHosKodeverk);
+            return Optional.of(kode);
         }
     }
 
