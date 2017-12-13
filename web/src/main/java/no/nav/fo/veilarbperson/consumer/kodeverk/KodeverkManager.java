@@ -7,10 +7,10 @@ public class KodeverkManager {
 
     private static final String NORSK_SPRAK = "nb";
 
-    private final KodeverkFetcher kodeverkFetcher;
+    private final KodeverkService kodeverkService;
 
-    public KodeverkManager(KodeverkFetcher kodeverkFetcher) {
-        this.kodeverkFetcher = kodeverkFetcher;
+    public KodeverkManager(KodeverkService kodeverkService) {
+        this.kodeverkService = kodeverkService;
     }
 
     public String getBeskrivelseForLandkode(String kode) {
@@ -27,6 +27,6 @@ public class KodeverkManager {
     }
 
     private String getBeskrivelseForKode(String kodeverkRef, String kode, String spraak) {
-        return kodeverkFetcher.getVerdi(kodeverkRef, kode, spraak);
+        return kodeverkService.getVerdi(kodeverkRef, kode, spraak);
     }
 }

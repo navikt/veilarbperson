@@ -3,8 +3,8 @@ package no.nav.fo.veilarbperson;
 
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjon;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
-import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkFetcher;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkManager;
+import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
@@ -41,11 +41,11 @@ public class PersonFletter {
                          DigitalKontaktinformasjonService digitalKontaktinformasjonService,
                          PersonService personService,
                          EgenAnsattService egenAnsattService,
-                         KodeverkFetcher kodeverkFetcher) {
+                         KodeverkService kodeverkService) {
 
         this.enhetService = enhetService;
         this.digitalKontaktinformasjonService = digitalKontaktinformasjonService;
-        this.kodeverkManager = new KodeverkManager(kodeverkFetcher);
+        this.kodeverkManager = new KodeverkManager(kodeverkService);
         this.personService = personService;
         this.egenAnsattService = egenAnsattService;
     }
