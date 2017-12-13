@@ -1,18 +1,21 @@
 package no.nav.fo.veilarbperson.consumer.kodeverk;
 
-import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.*;
+import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLEnkeltKodeverk;
+import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLKode;
+import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLTerm;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class KodeverkTest {
 
     @Test
-    public void getNavnHenterRiktigNavn() throws Exception {
+    public void getNavnHenterRiktigNavn() {
         List<XMLKode> xmlKoder = new ArrayList<>();
         xmlKoder.add(new XMLKode().withNavn("GIF").withTerm(new XMLTerm()
                 .withNavn("Gift")
@@ -21,15 +24,17 @@ public class KodeverkTest {
                 .withNavn("Skilt")
                 .withSpraak("nb")));
         XMLEnkeltKodeverk enkeltKodeverk = new XMLEnkeltKodeverk().withKode(xmlKoder);
-        Kodeverk kodeverk = new Kodeverk(enkeltKodeverk);
+        Kodeverk kodeverk = new KodeverkImpl(enkeltKodeverk);
 
-        Optional<String> navn = kodeverk.getNavn("GIF", "nb");
+        String navn = kodeverk.getNavn("GIF", "nb");
 
-        assertThat(navn.get(), is(equalTo("Gift")));
+        assertThat(navn, is(equalTo("Gift")));
     }
 
     @Test
-    public void getNavnReturnererEmptyNarIngenFunn() throws Exception {
+    public void getNavnReturnererKodeNarIngenFunn() {
+        final String RAR_DEKODE = "RAR_DEKODE";
+
         List<XMLKode> xmlKoder = new ArrayList<>();
         xmlKoder.add(new XMLKode().withNavn("GIF").withTerm(new XMLTerm()
                 .withNavn("Gift")
@@ -38,11 +43,11 @@ public class KodeverkTest {
                 .withNavn("Skilt")
                 .withSpraak("nb")));
         XMLEnkeltKodeverk enkeltKodeverk = new XMLEnkeltKodeverk().withKode(xmlKoder);
-        Kodeverk kodeverk = new Kodeverk(enkeltKodeverk);
+        Kodeverk kodeverk = new KodeverkImpl(enkeltKodeverk);
 
-        Optional<String> navn = kodeverk.getNavn("RAR_DEKODE", "nb");
+        String navn = kodeverk.getNavn(RAR_DEKODE, "nb");
 
-        assertThat(navn.isPresent(), is(false));
+        assertThat(navn, is(equalTo(RAR_DEKODE)));
     }
 
 }

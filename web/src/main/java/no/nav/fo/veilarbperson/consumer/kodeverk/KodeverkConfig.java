@@ -24,13 +24,13 @@ public class KodeverkConfig {
     }
 
     @Bean
-    KodeverkFetcher kodeverkFetcher(KodeverkPortType kodeverkPortType) {
-        return new KodeverkFetcher(kodeverkPortType);
+    KodeverkService kodeverkService(KodeverkPortType kodeverkPortType) {
+        return new KodeverkService(kodeverkPortType);
     }
 
     @Bean
-    KodeverkSchedule kodeverkSchedule(KodeverkFetcher kodeverkFetcher) {
-        return new KodeverkSchedule(kodeverkFetcher);
+    KodeverkSchedule kodeverkSchedule(KodeverkService kodeverkService) {
+        return new KodeverkSchedule(kodeverkService);
     }
 
     @Bean

@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import no.nav.fo.veilarbperson.PersonFletter;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
-import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkFetcher;
+import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
@@ -43,7 +43,7 @@ public class PersonRessurs {
                          DigitalKontaktinformasjonService digitalKontaktinformasjonService,
                          PersonService personService,
                          EgenAnsattService egenAnsattService,
-                         KodeverkFetcher kodeverkFetcher,
+                         KodeverkService kodeverkService,
                          PepClient pepClient) {
 
         this.pepClient = pepClient;
@@ -53,7 +53,7 @@ public class PersonRessurs {
                 digitalKontaktinformasjonService,
                 personService,
                 egenAnsattService,
-                kodeverkFetcher);
+                kodeverkService);
     }
 
     @GET

@@ -8,33 +8,33 @@ import javax.annotation.PostConstruct;
 @Component
 public class KodeverkSchedule {
 
-    private final KodeverkFetcher kodeverkFetcher;
+    private final KodeverkService kodeverkService;
 
-    public KodeverkSchedule(KodeverkFetcher kodeverkFetcher) {
-        this.kodeverkFetcher = kodeverkFetcher;
+    public KodeverkSchedule(KodeverkService kodeverkService) {
+        this.kodeverkService = kodeverkService;
     }
 
     @Scheduled(cron = "0 0 6 * * *")
     public void refreshKodeverk() {
-        kodeverkFetcher.refreshKodeverk("Landkoder");
-        kodeverkFetcher.refreshKodeverk("Sivilstander");
-        kodeverkFetcher.refreshKodeverk("Postnummer");
+        kodeverkService.refreshKodeverk("Landkoder");
+        kodeverkService.refreshKodeverk("Sivilstander");
+        kodeverkService.refreshKodeverk("Postnummer");
     }
 
     @Scheduled(cron = "0 */10 * * * *")
     public void hentDataVedFeil() {
-        kodeverkFetcher.aktiveJobber.entrySet()
+        kodeverkService.aktiveJobber.entrySet()
                 .stream()
                 .filter((entry) -> entry.getValue().isCompletedExceptionally())
-                .forEach((entry) -> kodeverkFetcher.refreshKodeverk(entry.getKey()));
+                .forEach((entry) -> kodeverkService.refreshKodeverk(entry.getKey()));
     }
 
 
     @PostConstruct
     public void lastKodeverk() {
-        kodeverkFetcher.hentKodeverk("Landkoder");
-        kodeverkFetcher.hentKodeverk("Sivilstander");
-        kodeverkFetcher.hentKodeverk("Postnummer");
+        kodeverkService.hentKodeverk("Landkoder");
+        kodeverkService.hentKodeverk("Sivilstander");
+        kodeverkService.hentKodeverk("Postnummer");
     }
 
 }
