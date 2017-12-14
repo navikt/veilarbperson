@@ -84,7 +84,7 @@ class FallbackCacheTest {
         KodeverkService kodeverkServiceMock = mock(KodeverkService.class);
         when(kodeverkServiceMock.hentKodeverk(anyString()))
                 .thenThrow(SocketTimeoutException.class)
-                .thenCallRealMethod();
+                .thenReturn(new KodeverkTestImpl());
 
         FallbackCache<String, Kodeverk> klient = new FallbackCache<>(kodeverkServiceMock::hentKodeverk, new Kodeverk.KodeverkFallback());
 
@@ -102,10 +102,10 @@ class FallbackCacheTest {
 
         assertThat(kodeverk1.getClass()).isEqualTo(Kodeverk.KodeverkFallback.class);
         assertThat(kodeverk2.getClass()).isEqualTo(Kodeverk.KodeverkFallback.class);
-        assertThat(kodeverk3.getClass()).isEqualTo(Kodeverk.class);
-        assertThat(kodeverk1.getNavn("land", "NOR")).isEqualTo("NOR");
-        assertThat(kodeverk2.getNavn("land", "NOR")).isEqualTo("NOR");
-        assertThat(kodeverk3.getNavn("land", "NOR")).isEqualTo("Norge");
+        assertThat(kodeverk3.getClass()).isEqualTo(KodeverkTestImpl.class);
+        assertThat(kodeverk1.getNavn("NOR", "NB")).isEqualTo("NOR");
+        assertThat(kodeverk2.getNavn("NOR", "NB")).isEqualTo("NOR");
+        assertThat(kodeverk3.getNavn("NOR", "NB")).isEqualTo("Norge");
     }
 
     @Test
@@ -113,7 +113,7 @@ class FallbackCacheTest {
         KodeverkService kodeverkServiceMock = mock(KodeverkService.class);
         Kodeverk kodeverkMock = mock(Kodeverk.class);
         when(kodeverkServiceMock.hentKodeverk(anyString()))
-                .thenCallRealMethod()
+                .thenReturn(new KodeverkTestImpl())
                 .thenThrow(SocketTimeoutException.class);
         when(kodeverkMock.getNavn(anyString(), anyString())).thenReturn("Norge");
 
@@ -134,11 +134,11 @@ class FallbackCacheTest {
         Thread.sleep(1000);
 
         assertThat(kodeverk1.getClass()).isEqualTo(Kodeverk.KodeverkFallback.class);
-        assertThat(kodeverk2.getClass()).isEqualTo(Kodeverk.class);
-        assertThat(kodeverk3.getClass()).isEqualTo(Kodeverk.class);
-        assertThat(kodeverk1.getNavn("land", "NOR")).isEqualTo("NOR");
-        assertThat(kodeverk2.getNavn("land", "NOR")).isEqualTo("Norge");
-        assertThat(kodeverk3.getNavn("land", "NOR")).isEqualTo("Norge");
+        assertThat(kodeverk2.getClass()).isEqualTo(KodeverkTestImpl.class);
+        assertThat(kodeverk3.getClass()).isEqualTo(KodeverkTestImpl.class);
+        assertThat(kodeverk1.getNavn("NOR", "NB")).isEqualTo("NOR");
+        assertThat(kodeverk2.getNavn("NOR", "NB")).isEqualTo("Norge");
+        assertThat(kodeverk3.getNavn("NOR", "NB")).isEqualTo("Norge");
     }
 
     @Test
@@ -196,10 +196,10 @@ class FallbackCacheTest {
     public void fallbackUntilFixIsOk() throws InterruptedException {
         KodeverkService kodeverkServiceMock = mock(KodeverkService.class);
         when(kodeverkServiceMock.hentKodeverk(anyString()))
-                .thenCallRealMethod()
+                .thenReturn(new KodeverkTestImpl())
                 .thenThrow(SocketTimeoutException.class)
-                .thenCallRealMethod()
-                .thenCallRealMethod();
+                .thenReturn(new KodeverkTestImpl())
+                .thenReturn(new KodeverkTestImpl());
 
         FallbackCache<String, Kodeverk> klient = new FallbackCache<>(kodeverkServiceMock::hentKodeverk, new Kodeverk.KodeverkFallback());
 
@@ -220,17 +220,17 @@ class FallbackCacheTest {
         klient.get("land");
         klient.get("land");
 
-        assertThat(kjonnKodeverk1.getClass()).isEqualTo(Kodeverk.class);
+        assertThat(kjonnKodeverk1.getClass()).isEqualTo(KodeverkTestImpl.class);
         assertThat(applikasjonKodeverk1.getClass()).isEqualTo(Kodeverk.KodeverkFallback.class);
         assertThat(applikasjonKodeverk2.getClass()).isEqualTo(Kodeverk.KodeverkFallback.class);
         assertThat(applikasjonKodeverk3.getClass()).isEqualTo(Kodeverk.KodeverkFallback.class);
-        assertThat(landKodeverk1.getClass()).isEqualTo(Kodeverk.class);
+        assertThat(landKodeverk1.getClass()).isEqualTo(KodeverkTestImpl.class);
 
         klient.fix();
         Thread.sleep(100);
 
         Kodeverk applikasjonKodeverk4 = klient.get("applikasjon");
-        assertThat(applikasjonKodeverk4.getClass()).isEqualTo(Kodeverk.class);
+        assertThat(applikasjonKodeverk4.getClass()).isEqualTo(KodeverkTestImpl.class);
         verify(kodeverkServiceMock, times(4)).hentKodeverk(anyString());
     }
 
