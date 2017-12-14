@@ -1,9 +1,13 @@
 package no.nav.fo.veilarbperson.consumer.cache;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 
+@Slf4j
 public class FallbackCache<REQUESTTYPE, DATATYPE> {
     private final Fetcher<REQUESTTYPE, DATATYPE> fetcher;
     private final DATATYPE fallback;
@@ -18,10 +22,12 @@ public class FallbackCache<REQUESTTYPE, DATATYPE> {
     public DATATYPE get(REQUESTTYPE request) {
         CompletableFuture<DATATYPE> data = cache.computeIfAbsent(request, this::getFromFetcher);
 
-        if (data.isCompletedExceptionally()) {
+        try {
+            return data.getNow(fallback);
+        } catch (CompletionException e) {
+            log.warn("Data completed exceptionally, falling back to default: ", e);
             return fallback;
         }
-        return data.getNow(fallback);
     }
 
     public void refresh(REQUESTTYPE request) {
@@ -30,13 +36,6 @@ public class FallbackCache<REQUESTTYPE, DATATYPE> {
         newData.thenRun(() -> {
             cache.put(request, newData);
         });
-    }
-
-    public void fix() {
-        this.cache.entrySet()
-                .stream()
-                .filter((entry) -> entry.getValue().isCompletedExceptionally())
-                .forEach((entry) -> this.refresh(entry.getKey()));
     }
 
     private CompletableFuture<DATATYPE> getFromFetcher(final REQUESTTYPE request) {
