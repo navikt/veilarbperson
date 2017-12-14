@@ -1,7 +1,6 @@
 package no.nav.fo.veilarbperson.config;
 
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
-import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
@@ -55,11 +54,6 @@ public class ServiceConfig {
     @Bean
     DigitalKontaktinformasjonService digitalKontaktinformasjonService() {
         return new DigitalKontaktinformasjonService(digitalKontaktinformasjonV1);
-    }
-
-    @Bean
-    KodeverkService kodeverkService() {
-        return new KodeverkService(kodeverkPortType);
     }
 
     @Bean

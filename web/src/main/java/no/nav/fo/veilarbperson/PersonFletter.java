@@ -90,14 +90,12 @@ public class PersonFletter {
     }
 
     private void flettKodeverk(PersonData personData) {
-        personData.setStatsborgerskap(kodeverkManager.getBeskrivelseForLandkode(personData.getStatsborgerskap())
-                .orElse(personData.getStatsborgerskap()));
+        personData.setStatsborgerskap(kodeverkManager.getBeskrivelseForLandkode(personData.getStatsborgerskap()));
 
         if (personData.getSivilstand() != null) {
             String sivilstandKode = personData.getSivilstand().getSivilstand();
             Sivilstand sivilstand = personData.getSivilstand()
-                    .withSivilstand(kodeverkManager.getBeskrivelseForSivilstand(sivilstandKode)
-                            .orElse(sivilstandKode));
+                    .withSivilstand(kodeverkManager.getBeskrivelseForSivilstand(sivilstandKode));
             personData.setSivilstand(sivilstand);
         }
         kanskjePoststedBostedsadresse(personData);
@@ -108,26 +106,24 @@ public class PersonFletter {
 
     private void kanskjePoststedBostedsadresse(PersonData personData) {
         personData.getPostnummerForBostedsadresse()
-                .flatMap(kodeverkManager::getPoststed)
+                .map(kodeverkManager::getPoststed)
                 .ifPresent(personData::setPoststedForBostedsadresse);
     }
 
     private void kanskjePoststedMidlertidigAdresseNorge(PersonData personData) {
         personData.getPostnummerForMidlertidigAdresseNorge()
-                .flatMap(kodeverkManager::getPoststed)
+                .map(kodeverkManager::getPoststed)
                 .ifPresent(personData::setPoststedForMidlertidigAdresseNorge);
     }
 
     private UstrukturertAdresse withLandForUstrukturertAdresse(UstrukturertAdresse ustrukturertAdresse) {
         String landkode = ustrukturertAdresse.getLandkode();
-        return ustrukturertAdresse.withLandkode(kodeverkManager.getBeskrivelseForLandkode(landkode)
-            .orElse(landkode));
+        return ustrukturertAdresse.withLandkode(kodeverkManager.getBeskrivelseForLandkode(landkode));
     }
 
     private StrukturertAdresse withLandForStrukturertAdresse(StrukturertAdresse strukturertAdresse) {
         String landkode = strukturertAdresse.getLandkode();
-        return strukturertAdresse.withLandkode(kodeverkManager.getBeskrivelseForLandkode(landkode)
-                .orElse(landkode));
+        return strukturertAdresse.withLandkode(kodeverkManager.getBeskrivelseForLandkode(landkode));
     }
 
     private void hentLandForAdresser(PersonData personData) {
@@ -141,12 +137,12 @@ public class PersonFletter {
                     .withUstrukturertAdresse(withLandForUstrukturertAdresse(personData.getPostAdresse().getUstrukturertAdresse()));
         }
 
-        if(personData.getBostedsadresse() != null) {
+        if (personData.getBostedsadresse() != null) {
             personData.getBostedsadresse()
                     .withStrukturertAdresse(withLandForStrukturertAdresse(personData.getBostedsadresse().getStrukturertAdresse()));
         }
 
-        if(personData.getMidlertidigAdresseNorge() != null) {
+        if (personData.getMidlertidigAdresseNorge() != null) {
             personData.getMidlertidigAdresseNorge()
                     .withStrukturertAdresse(withLandForStrukturertAdresse(personData.getMidlertidigAdresseNorge().getStrukturertAdresse()));
         }
