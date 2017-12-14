@@ -1,17 +1,14 @@
 package no.nav.fo.veilarbperson.consumer.kodeverk;
 
-import no.nav.tjeneste.virksomhet.kodeverk.v2.HentKodeverkHentKodeverkKodeverkIkkeFunnet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Optional;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -24,11 +21,12 @@ public class KodeverkManagerTest {
     private KodeverkManager kodeverkManager;
 
     @Test
-    public void getBeskrivelseForKodeSkalReturnereTomOptionalDersomKodeverketIkkeEksisterer() throws Exception {
-        when(kodeverkService.hentKodeverk(any())).thenThrow(new HentKodeverkHentKodeverkKodeverkIkkeFunnet());
+    public void getBeskrivelseForKodeSkalReturnereKodeDersomKodeverketIkkeEksisterer() throws Exception {
+        final String NOR = "NOR";
+        when(kodeverkService.getVerdi(anyString(), anyString(), anyString())).thenReturn(NOR);
 
-        final Optional<String> beskrivelseForLandkode = kodeverkManager.getBeskrivelseForLandkode("");
+        final String beskrivelseForLandkode = kodeverkManager.getBeskrivelseForLandkode(NOR);
 
-        assertThat(beskrivelseForLandkode.isPresent(), is(false));
+        assertThat(beskrivelseForLandkode, is(NOR));
     }
 }

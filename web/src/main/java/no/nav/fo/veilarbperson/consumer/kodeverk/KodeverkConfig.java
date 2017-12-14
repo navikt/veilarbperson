@@ -1,8 +1,8 @@
 package no.nav.fo.veilarbperson.consumer.kodeverk;
 
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
-import no.nav.sbl.dialogarena.types.Pingable.Ping.PingMetadata;
 import no.nav.sbl.dialogarena.types.Pingable;
+import no.nav.sbl.dialogarena.types.Pingable.Ping.PingMetadata;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.KodeverkPortType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +21,16 @@ public class KodeverkConfig {
     public KodeverkPortType kodverkPortType() {
         KodeverkPortType prod = factory().build();
         return createMetricsProxyWithInstanceSwitcher("kodeverk", prod, null, KODEVERK_MOCK_KEY, KodeverkPortType.class);
+    }
+
+    @Bean
+    KodeverkService kodeverkService(KodeverkPortType kodeverkPortType) {
+        return new KodeverkService(kodeverkPortType);
+    }
+
+    @Bean
+    KodeverkSchedule kodeverkSchedule(KodeverkService kodeverkService) {
+        return new KodeverkSchedule(kodeverkService);
     }
 
     @Bean
