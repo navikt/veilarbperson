@@ -13,6 +13,10 @@
     <artifactId>veilarbperson-web</artifactId>
     <packaging>war</packaging>
 
+    <properties>
+        <javax.annotation.api.version>1.2</javax.annotation.api.version>
+    </properties>
+
     <dependencies>
         <!-- Consumer -->
         <dependency>
@@ -68,6 +72,11 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation.api.version}</version>
         </dependency>
 
         <!-- Jersey -->
@@ -182,6 +191,14 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
