@@ -19,11 +19,11 @@ public class KodeverkService {
 
     public KodeverkService(KodeverkPortType kodeverkPortType) {
         this.kodeverkPortType = kodeverkPortType;
-        this.klient = new FallbackCache<>(this::hentKodeverkFraPorttype, new Kodeverk.KodeverkFallback());
+        this.klient = new FallbackCache<>(this::hentKodeverkFraPortType, new Kodeverk.KodeverkFallback());
     }
 
     public String getVerdi(String kodeverkRef, String kode, String sprak) {
-        return this.hentKodeverk(kodeverkRef)
+        return hentKodeverk(kodeverkRef)
                 .getNavn(kode, sprak);
     }
 
@@ -36,7 +36,7 @@ public class KodeverkService {
     }
 
 
-    private Kodeverk hentKodeverkFraPorttype(String kodeverkRef) throws HentKodeverkHentKodeverkKodeverkIkkeFunnet {
+    private Kodeverk hentKodeverkFraPortType(String kodeverkRef) throws HentKodeverkHentKodeverkKodeverkIkkeFunnet {
         XMLHentKodeverkRequest request = new XMLHentKodeverkRequest().withNavn(kodeverkRef);
         XMLKodeverk kodeverk = kodeverkPortType.hentKodeverk(request).getKodeverk();
 

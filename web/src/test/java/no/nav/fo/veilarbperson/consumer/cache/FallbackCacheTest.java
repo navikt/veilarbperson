@@ -226,7 +226,7 @@ class FallbackCacheTest {
         assertThat(applikasjonKodeverk3.getClass()).isEqualTo(Kodeverk.KodeverkFallback.class);
         assertThat(landKodeverk1.getClass()).isEqualTo(KodeverkTestImpl.class);
 
-        klient.fix();
+        fix(klient);
         Thread.sleep(100);
 
         Kodeverk applikasjonKodeverk4 = klient.get("applikasjon");
@@ -239,5 +239,12 @@ class FallbackCacheTest {
             Thread.sleep(delay);
             return kodeverk;
         };
+    }
+
+    private void fix(FallbackCache<String, Kodeverk> cache) {
+        cache.cache.entrySet()
+                .stream()
+                .filter((entry) -> entry.getValue().isCompletedExceptionally())
+                .forEach((entry) -> cache.refresh(entry.getKey()));
     }
 }

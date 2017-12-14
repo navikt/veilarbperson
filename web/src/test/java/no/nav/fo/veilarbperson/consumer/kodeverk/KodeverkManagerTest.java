@@ -21,7 +21,7 @@ public class KodeverkManagerTest {
     private KodeverkManager kodeverkManager;
 
     @Test
-    public void getBeskrivelseForKodeSkalReturnereTomOptionalDersomKodeverketIkkeEksisterer() throws Exception {
+    public void getBeskrivelseForKodeSkalReturnereKodeDersomKodeverketIkkeEksisterer() throws Exception {
         final String NOR = "NOR";
         when(kodeverkService.getVerdi(anyString(), anyString(), anyString())).thenReturn(NOR);
 

@@ -3,8 +3,6 @@ package no.nav.fo.veilarbperson.consumer.kodeverk;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-
 @Component
 public class KodeverkSchedule {
 
@@ -12,6 +10,7 @@ public class KodeverkSchedule {
 
     public KodeverkSchedule(KodeverkService kodeverkService) {
         this.kodeverkService = kodeverkService;
+        lastKodeverk();
     }
 
     @Scheduled(cron = "0 0 6 * * *")
@@ -30,8 +29,7 @@ public class KodeverkSchedule {
     }
 
 
-    @PostConstruct
-    public void lastKodeverk() {
+    private void lastKodeverk() {
         kodeverkService.hentKodeverk("Landkoder");
         kodeverkService.hentKodeverk("Sivilstander");
         kodeverkService.hentKodeverk("Postnummer");
