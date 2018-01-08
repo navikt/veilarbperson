@@ -20,6 +20,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class ApplicationConfig implements ApiApplication {
 
     @Override
+    public String getApplicationName() {
+        return "veilarbperson";
+    }
+
+    @Override
     public Sone getSone() {
         return Sone.FSS;
     }
