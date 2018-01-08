@@ -16,6 +16,11 @@ import no.nav.sbl.dialogarena.common.abac.pep.context.AbacContext;
 public class ApplicationConfig implements ApiApplication {
 
     @Override
+    public String getApplicationName() {
+        return "veilarbperson";
+    }
+
+    @Override
     public Sone getSone() {
         return Sone.FSS;
     }
