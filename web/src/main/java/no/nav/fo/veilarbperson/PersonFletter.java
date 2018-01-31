@@ -56,7 +56,7 @@ public class PersonFletter {
         try {
             flettPersoninfoFraPortefolje(personData, fodselsnummer, cookie);
         } catch (Exception e) {
-            LOGGER.warn("Bruker fallbackløsning for sikkerhetstiltak og egenAnsatt-sjekk", e);
+            LOGGER.info("Bruker fallbackløsning for sikkerhetstiltak og egenAnsatt-sjekk", e);
             flettEgenAnsatt(fodselsnummer, personData);
             flettSikkerhetstiltak(fodselsnummer, personData);
         }
