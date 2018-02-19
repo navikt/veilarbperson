@@ -28,7 +28,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @PactBroker(
         protocol = "https",
         host = "${PACT_BROKER:pact-broker.nais.preprod.local}",
-        authentication = @PactBrokerAuth(username = "${PACT_USERNAME}", password = "${PACT_PASSWORD}"),
+        authentication = @PactBrokerAuth(username = "${PACT_USERNAME:pactuser}", password = "${PACT_PASSWORD}"),
         port = "443")
 @IgnoreNoPactsToVerify
 public class PactProviderTest {
