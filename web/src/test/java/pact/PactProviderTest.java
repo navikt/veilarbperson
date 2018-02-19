@@ -6,6 +6,7 @@ import au.com.dius.pact.provider.junit.loader.PactBrokerAuth;
 import au.com.dius.pact.provider.junit.target.HttpTarget;
 import au.com.dius.pact.provider.junit.target.Target;
 import au.com.dius.pact.provider.junit.target.TestTarget;
+import no.nav.dialogarena.config.fasit.FasitUtils;
 import no.nav.dialogarena.config.security.ISSOProvider;
 import no.nav.fo.pact.runner.NavPactRunner;
 import org.apache.http.HttpRequest;
@@ -18,7 +19,6 @@ import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -27,15 +27,15 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Consumer("veilarbpersonfs")
 @PactBroker(
         protocol = "https",
-        host = "${PACT_BROKER:pact-broker.nais.preprod.local}",
-        authentication = @PactBrokerAuth(username = "${PACT_USERNAME:pactuser}", password = "${PACT_PASSWORD}"),
+        host = "${PACT_BROKER}",
+        authentication = @PactBrokerAuth(username = "${PACT_USERNAME}", password = "${PACT_PASSWORD}"),
         port = "443")
 @IgnoreNoPactsToVerify
 public class PactProviderTest {
 
     private static final Logger LOG = getLogger(PactProviderTest.class);
 
-    private final static String TARGET_URL = Optional.ofNullable(System.getenv("PACT_TARGET_URL")).orElseThrow(() -> new RuntimeException("PACT_TARGET_URL environment variable is not set."));
+    private final static String TARGET_URL = String.format("https://app-%s.adeo.no", FasitUtils.getDefaultEnvironment());
 
     @TestTarget
     public static Target target;
