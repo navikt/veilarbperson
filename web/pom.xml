@@ -195,6 +195,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
         </dependency>
+        <dependency>
+            <groupId>no.nav.sbl</groupId>
+            <artifactId>fasit</artifactId>
+            <version>2018.02.19.17.15</version>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>no.nav.fo</groupId>
