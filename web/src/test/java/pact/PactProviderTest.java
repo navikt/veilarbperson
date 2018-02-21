@@ -1,59 +1,16 @@
 package pact;
 
-import au.com.dius.pact.provider.junit.*;
-import au.com.dius.pact.provider.junit.loader.PactBroker;
-import au.com.dius.pact.provider.junit.loader.PactBrokerAuth;
-import au.com.dius.pact.provider.junit.target.HttpTarget;
-import au.com.dius.pact.provider.junit.target.Target;
-import au.com.dius.pact.provider.junit.target.TestTarget;
-import no.nav.dialogarena.config.fasit.FasitUtils;
-import no.nav.dialogarena.config.security.ISSOProvider;
-import no.nav.fo.pact.runner.NavPactRunner;
-import org.apache.http.HttpRequest;
-import org.junit.BeforeClass;
+import au.com.dius.pact.provider.junit.Consumer;
+import au.com.dius.pact.provider.junit.Provider;
+import au.com.dius.pact.provider.junit.State;
+import no.nav.pact.runner.NavHttpsPactTest;
+import no.nav.pact.runner.NavPactRunner;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-
-import javax.ws.rs.core.HttpHeaders;
-import java.net.HttpCookie;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 @RunWith(NavPactRunner.class)
 @Provider("veilarbperson")
 @Consumer("veilarbpersonfs")
-@PactBroker(
-        protocol = "https",
-        host = "${PACT_BROKER}",
-        authentication = @PactBrokerAuth(username = "${PACT_USERNAME}", password = "${PACT_PASSWORD}"),
-        port = "443")
-@IgnoreNoPactsToVerify
-public class PactProviderTest {
-
-    private static final Logger LOG = getLogger(PactProviderTest.class);
-
-    private final static String TARGET_URL = String.format("https://app-%s.adeo.no", FasitUtils.getDefaultEnvironment());
-
-    @TestTarget
-    public static Target target;
-
-    private static List<HttpCookie> issoCookies = ISSOProvider.getISSOCookies();
-
-    @BeforeClass
-    public static void setUp() throws MalformedURLException {
-        target = new HttpTarget(new URL(TARGET_URL));
-    }
-
-    @TargetRequestFilter
-    public void requestFilter(HttpRequest httpRequest) {
-        LOG.info(httpRequest.getRequestLine().getUri());
-        issoCookies.forEach(c -> {
-            httpRequest.addHeader(HttpHeaders.COOKIE, String.format("%s=%s", c.getName(), c.getValue()));
-        });
-    }
+public class PactProviderTest extends NavHttpsPactTest {
 
     @State("has a single person without children")
     public void verifyProviderStateSinglePersonNoChildren() {
@@ -63,5 +20,15 @@ public class PactProviderTest {
     @State("does not have person")
     public void verifyProviderStateNoData() {
         System.out.println("No data");
+    }
+
+    @State("is alive state")
+    public void verifyIsAlive() {
+        System.out.println("Is Alive?");
+    }
+
+    @Override
+    public String getHttpTarget() {
+        return "https://app-t6.adeo.no";
     }
 }

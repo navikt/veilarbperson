@@ -198,24 +198,19 @@
         <dependency>
             <groupId>no.nav.sbl</groupId>
             <artifactId>fasit</artifactId>
-            <version>2018.02.19.17.15</version>
+            <version>2018.02.21.14.01</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>no.nav.fo</groupId>
+            <groupId>no.nav.pact</groupId>
             <artifactId>pact-fo</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId> org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
         </dependency>
 
         <dependency>
             <groupId>au.com.dius</groupId>
             <artifactId>pact-jvm-provider-junit_2.12</artifactId>
-            <version>3.5.12</version>
+            <version>3.5.13</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
