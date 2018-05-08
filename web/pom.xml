@@ -100,6 +100,10 @@
             <artifactId>api-app</artifactId>
         </dependency>
         <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>auth</artifactId>
+        </dependency>
+        <dependency>
             <groupId>no.nav.sbl.dialogarena</groupId>
             <artifactId>common-jetty</artifactId>
             <scope>test</scope>
@@ -125,33 +129,10 @@
             <artifactId>rest</artifactId>
         </dependency>
 
-
-        <!--oidc-security-->
-        <dependency>
-            <groupId>no.nav.dialogarena</groupId>
-            <artifactId>oidc-security</artifactId>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.dialogarena</groupId>
-            <artifactId>oidc-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.components</groupId>
-            <artifactId>geronimo-jaspi</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.modig</groupId>
-            <artifactId>modig-security-core</artifactId>
-            <scope>test</scope>
-            <type>test-jar</type>
         </dependency>
 
         <!-- Cache -->
@@ -198,8 +179,6 @@
         <dependency>
             <groupId>no.nav.sbl</groupId>
             <artifactId>fasit</artifactId>
-            <version>2018.02.21.14.01</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
