@@ -1,7 +1,8 @@
 package no.nav.fo.veilarbperson.services;
 
 import no.nav.brukerdialog.security.context.SubjectHandler;
-import no.nav.brukerdialog.security.domain.OidcCredential;
+import no.nav.brukerdialog.security.oidc.OidcTokenUtils;
+import no.nav.common.auth.SsoToken;
 import no.nav.sbl.dialogarena.common.abac.pep.Pep;
 import no.nav.sbl.dialogarena.common.abac.pep.domain.response.BiasedDecisionResponse;
 import no.nav.sbl.dialogarena.common.abac.pep.domain.response.Decision;
@@ -11,6 +12,8 @@ import org.slf4j.Logger;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 
+import static no.nav.common.auth.SsoToken.Type.OIDC;
+import static no.nav.common.auth.SubjectHandler.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class PepClient {
@@ -23,9 +26,13 @@ public class PepClient {
     }
 
     public boolean isServiceCallAllowed(String fnr) {
+        return getSsoToken(OIDC).map(t -> isServiceCallAllowed(fnr, t)).orElse(false);
+    }
+
+    private boolean isServiceCallAllowed(String fnr, String oidcToken) {
         BiasedDecisionResponse callAllowed;
         try {
-            callAllowed = pep.isServiceCallAllowedWithOidcToken(getToken(), "veilarb", fnr);
+            callAllowed = pep.isServiceCallAllowedWithOidcToken(oidcToken, "veilarb", fnr);
 
         } catch (PepException e) {
             LOG.error("Something went wrong in PEP", e);
@@ -36,16 +43,6 @@ public class PepClient {
             throw new NotAuthorizedException(ident + " doesn't have access to " + fnr);
         }
         return callAllowed.getBiasedDecision().equals(Decision.Permit);
-    }
-
-    private String getToken() {
-
-        final OidcCredential credential = (OidcCredential) SubjectHandler.getSubjectHandler().getSubject()
-                .getPublicCredentials()
-                .stream()
-                .filter(cred -> cred instanceof OidcCredential).findFirst()
-                .get();
-        return credential.getToken();
     }
 
 }
