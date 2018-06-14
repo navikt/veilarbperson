@@ -24,9 +24,4 @@ public class ApplicationConfig implements ApiApplication {
         return "veilarbperson";
     }
 
-    @Override
-    public Sone getSone() {
-        return Sone.FSS;
-    }
-
 }
