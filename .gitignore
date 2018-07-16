@@ -7,3 +7,4 @@ target/
 !.idea/runConfigurations
 *.bak
 *.properties
+SERVICE_CALLS_HOME_IS_UNDEFINED/*.log
