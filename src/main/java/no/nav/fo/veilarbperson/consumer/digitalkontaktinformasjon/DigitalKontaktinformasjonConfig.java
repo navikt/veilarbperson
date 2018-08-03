@@ -16,6 +16,7 @@ import static no.nav.sbl.dialogarena.types.Pingable.Ping.lyktes;
 @Configuration
 public class DigitalKontaktinformasjonConfig {
     private static final String DIGITAL_KONTAKTINFORMASJON_MOCK_KEY = "digitalkontaktinformasjon.withmock";
+    public static final String DIGITAL_KONTAKTINFORMASJON_ENDPOINT = "digitalkontaktinformasjon.endpoint.url";
 
     @Bean
     public DigitalKontaktinformasjonV1 digitalKontaktinformasjonPortType() {
@@ -48,15 +49,14 @@ public class DigitalKontaktinformasjonConfig {
     }
     private CXFClient<DigitalKontaktinformasjonV1> factory() {
         return new CXFClient<>(DigitalKontaktinformasjonV1.class)
-                .address(getProperty("digitalkontaktinformasjon.endpoint.url"))
-                .withOutInterceptor(new LoggingOutInterceptor())
-                ;
+                .address(getProperty(DIGITAL_KONTAKTINFORMASJON_ENDPOINT))
+                .withOutInterceptor(new LoggingOutInterceptor());
     }
 
     private static String getEndpoint() {
         if ("true".equalsIgnoreCase(System.getProperty(DIGITAL_KONTAKTINFORMASJON_MOCK_KEY))) {
             return "MOCK";
         }
-        return System.getProperty("digitalkontaktinformasjon.endpoint.url");
+        return System.getProperty(DIGITAL_KONTAKTINFORMASJON_ENDPOINT);
     }
 }
