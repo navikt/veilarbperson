@@ -19,6 +19,7 @@ public class TpsConfig {
 
     private static final String PERSON_TPS_MOCK_KEY = "personservice.withmock";
     private static final String EGENANSATT_TPS_MOCK_KEY = "egenansatt.withmock";
+    public static final String TPS_ENDPOINT = "egenansatt.endpoint.url";
 
     @Bean
     public PersonV3 personPortType() {
@@ -65,7 +66,7 @@ public class TpsConfig {
                 .build();
 
         PingMetadata metadata = new PingMetadata(
-                "virksomhet:EgenAnsatt_v1 via " + getEndpoint(EGENANSATT_TPS_MOCK_KEY, "egenansatt.endpoint.url"),
+                "virksomhet:EgenAnsatt_v1 via " + getEndpoint(EGENANSATT_TPS_MOCK_KEY, TPS_ENDPOINT),
                 "Tjeneste for å hente informasjon om EgenAnsatt",
                 true
         );
@@ -88,7 +89,7 @@ public class TpsConfig {
 
     private CXFClient<EgenAnsattV1> egenAnsattFactory() {
         return new CXFClient<>(EgenAnsattV1.class)
-                .address(getProperty("egenansatt.endpoint.url"))
+                .address(getProperty(TPS_ENDPOINT))
                 .withOutInterceptor(new LoggingOutInterceptor());
     }
 
