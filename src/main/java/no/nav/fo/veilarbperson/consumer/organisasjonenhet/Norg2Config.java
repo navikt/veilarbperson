@@ -16,7 +16,7 @@ import static no.nav.sbl.dialogarena.types.Pingable.Ping.lyktes;
 @Configuration
 public class Norg2Config {
 
-    private static final String ENHET_NORG2_ENDPOINT_KEY = "organisasjonenhet.endpoint.url";
+    public static final String ENHET_NORG2_ENDPOINT_KEY = "organisasjonenhet.endpoint.url";
     private static final String ENHET_NORG2_MOCK_KEY = "organisasjonenhet.endpoint.url";
 
     @Bean

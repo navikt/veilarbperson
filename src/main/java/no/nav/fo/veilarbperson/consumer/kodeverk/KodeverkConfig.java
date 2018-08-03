@@ -16,6 +16,7 @@ import static org.apache.cxf.ws.security.SecurityConstants.MUST_UNDERSTAND;
 @Configuration
 public class KodeverkConfig {
     private static final String KODEVERK_MOCK_KEY = "kodeverk.withmock";
+    public static final String KODEVERK_ENDPOINT = "kodeverk.endpoint.url";
 
     @Bean
     public KodeverkPortType kodverkPortType() {
@@ -57,7 +58,7 @@ public class KodeverkConfig {
     private CXFClient<KodeverkPortType> factory() {
         return new CXFClient<>(KodeverkPortType.class)
                 .wsdl("classpath:kodeverk/no/nav/tjeneste/virksomhet/kodeverk/v2/Kodeverk.wsdl")
-                .address(getProperty("kodeverk.endpoint.url"))
+                .address(getProperty(KODEVERK_ENDPOINT))
                 .timeout(10000, 30000)
                 .withProperty(MUST_UNDERSTAND, false);
     }
@@ -66,6 +67,6 @@ public class KodeverkConfig {
         if ("true".equalsIgnoreCase(System.getProperty(KODEVERK_MOCK_KEY))) {
             return "MOCK";
         }
-        return System.getProperty("kodeverk.endpoint.url");
+        return System.getProperty(KODEVERK_ENDPOINT);
     }
 }
