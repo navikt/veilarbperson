@@ -278,6 +278,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>veilarbperson</finalName>
     </build>
 
     <profiles>
