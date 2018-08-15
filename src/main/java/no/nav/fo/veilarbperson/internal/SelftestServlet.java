@@ -21,11 +21,6 @@ public class SelftestServlet extends SelfTestBaseServlet {
     }
 
     @Override
-    public String getApplicationName() {
-        return "veilarbperson";
-    }
-
-    @Override
     public Collection<? extends Pingable> getPingables() {
         return new ArrayList<>(applicationContext.getBeansOfType(Pingable.class).values());
     }
