@@ -21,11 +21,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class ApplicationConfig implements ApiApplication.NaisApiApplication {
 
     @Override
-    public String getApplicationName() {
-        return "veilarbperson";
-    }
-
-    @Override
     public void configure(ApiAppConfigurator apiAppConfigurator) {
         apiAppConfigurator
                 .issoLogin()

@@ -8,7 +8,7 @@ class MainTest {
     public static void main(String[] args) {
         TestContext.setup();
 
-        ApiAppTest.setupTestContext();
+        ApiAppTest.setupTestContext(ApiAppTest.Config.builder().applicationName("veilarbperson").build());
 
         Main.main(TEST_PORT);
     }
