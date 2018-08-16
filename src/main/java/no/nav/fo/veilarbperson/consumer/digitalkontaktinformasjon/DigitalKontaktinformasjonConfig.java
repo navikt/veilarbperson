@@ -8,10 +8,10 @@ import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static java.lang.System.getProperty;
 import static no.nav.sbl.dialogarena.common.cxf.InstanceSwitcher.createMetricsProxyWithInstanceSwitcher;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.feilet;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.lyktes;
+import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 
 @Configuration
 public class DigitalKontaktinformasjonConfig {
@@ -49,14 +49,14 @@ public class DigitalKontaktinformasjonConfig {
     }
     private CXFClient<DigitalKontaktinformasjonV1> factory() {
         return new CXFClient<>(DigitalKontaktinformasjonV1.class)
-                .address(getProperty(DIGITAL_KONTAKTINFORMASJON_ENDPOINT))
+                .address(getRequiredProperty(DIGITAL_KONTAKTINFORMASJON_ENDPOINT))
                 .withOutInterceptor(new LoggingOutInterceptor());
     }
 
     private static String getEndpoint() {
-        if ("true".equalsIgnoreCase(System.getProperty(DIGITAL_KONTAKTINFORMASJON_MOCK_KEY))) {
+        if ("true".equalsIgnoreCase(getRequiredProperty(DIGITAL_KONTAKTINFORMASJON_MOCK_KEY))) {
             return "MOCK";
         }
-        return System.getProperty(DIGITAL_KONTAKTINFORMASJON_ENDPOINT);
+        return getRequiredProperty(DIGITAL_KONTAKTINFORMASJON_ENDPOINT);
     }
 }
