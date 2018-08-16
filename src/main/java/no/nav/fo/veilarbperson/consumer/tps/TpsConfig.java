@@ -9,10 +9,10 @@ import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static java.lang.System.getProperty;
 import static no.nav.sbl.dialogarena.common.cxf.InstanceSwitcher.createMetricsProxyWithInstanceSwitcher;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.feilet;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.lyktes;
+import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 
 @Configuration
 public class TpsConfig {
@@ -83,20 +83,20 @@ public class TpsConfig {
 
     private CXFClient<PersonV3> factory() {
         return new CXFClient<>(PersonV3.class)
-                .address(getProperty("person.endpoint.url"))
+                .address(getRequiredProperty("person.endpoint.url"))
                 .withOutInterceptor(new LoggingOutInterceptor());
     }
 
     private CXFClient<EgenAnsattV1> egenAnsattFactory() {
         return new CXFClient<>(EgenAnsattV1.class)
-                .address(getProperty(TPS_ENDPOINT))
+                .address(getRequiredProperty(TPS_ENDPOINT))
                 .withOutInterceptor(new LoggingOutInterceptor());
     }
 
     private static String getEndpoint(String mockKey, String endpointKey) {
-        if ("true".equalsIgnoreCase(System.getProperty(mockKey))) {
+        if ("true".equalsIgnoreCase(getRequiredProperty(mockKey))) {
             return "MOCK";
         }
-        return System.getProperty(endpointKey);
+        return getRequiredProperty(endpointKey);
     }
 }

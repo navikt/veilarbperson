@@ -7,10 +7,10 @@ import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static java.lang.System.getProperty;
 import static no.nav.sbl.dialogarena.common.cxf.InstanceSwitcher.createMetricsProxyWithInstanceSwitcher;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.feilet;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.lyktes;
+import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 
 
 @Configuration
@@ -28,7 +28,7 @@ public class Norg2Config {
 
     private CXFClient<OrganisasjonEnhetV2> factory() {
         return new CXFClient<>(OrganisasjonEnhetV2.class)
-                .address(getProperty(ENHET_NORG2_ENDPOINT_KEY))
+                .address(getRequiredProperty(ENHET_NORG2_ENDPOINT_KEY))
                 .withOutInterceptor(new LoggingOutInterceptor())
                 ;
     }
@@ -56,9 +56,9 @@ public class Norg2Config {
     }
 
     private static String getEndpoint() {
-        if ("true".equalsIgnoreCase(System.getProperty(ENHET_NORG2_MOCK_KEY))) {
+        if ("true".equalsIgnoreCase(getRequiredProperty(ENHET_NORG2_MOCK_KEY))) {
             return "MOCK";
         }
-        return System.getProperty(ENHET_NORG2_ENDPOINT_KEY);
+        return getRequiredProperty(ENHET_NORG2_ENDPOINT_KEY);
     }
 }
