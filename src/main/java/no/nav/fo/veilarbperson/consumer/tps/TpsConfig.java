@@ -9,6 +9,7 @@ import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static java.lang.System.getProperty;
 import static no.nav.sbl.dialogarena.common.cxf.InstanceSwitcher.createMetricsProxyWithInstanceSwitcher;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.feilet;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.lyktes;
@@ -19,7 +20,8 @@ public class TpsConfig {
 
     private static final String PERSON_TPS_MOCK_KEY = "personservice.withmock";
     private static final String EGENANSATT_TPS_MOCK_KEY = "egenansatt.withmock";
-    public static final String TPS_ENDPOINT = "egenansatt.endpoint.url";
+    public static final String EGENANSATT_ENDPOINT = "egenansatt.endpoint.url";
+    public static final String PERSON_ENDPOINT = "person.endpoint.url";
 
     @Bean
     public PersonV3 personPortType() {
@@ -36,7 +38,7 @@ public class TpsConfig {
                 .build();
 
         Pingable.Ping.PingMetadata metadata = new Pingable.Ping.PingMetadata(
-                "virksomhet:Person_V3 via " + getEndpoint(PERSON_TPS_MOCK_KEY, "person.endpoint.url"),
+                "virksomhet:Person_V3 via " + getEndpoint(PERSON_TPS_MOCK_KEY, PERSON_ENDPOINT),
                 "Henter informasjon om en bestemt person (TPS).",
                 true
         );
@@ -66,7 +68,7 @@ public class TpsConfig {
                 .build();
 
         PingMetadata metadata = new PingMetadata(
-                "virksomhet:EgenAnsatt_v1 via " + getEndpoint(EGENANSATT_TPS_MOCK_KEY, TPS_ENDPOINT),
+                "virksomhet:EgenAnsatt_v1 via " + getEndpoint(EGENANSATT_TPS_MOCK_KEY, EGENANSATT_ENDPOINT),
                 "Tjeneste for å hente informasjon om EgenAnsatt",
                 true
         );
@@ -83,18 +85,18 @@ public class TpsConfig {
 
     private CXFClient<PersonV3> factory() {
         return new CXFClient<>(PersonV3.class)
-                .address(getRequiredProperty("person.endpoint.url"))
+                .address(getRequiredProperty(PERSON_ENDPOINT))
                 .withOutInterceptor(new LoggingOutInterceptor());
     }
 
     private CXFClient<EgenAnsattV1> egenAnsattFactory() {
         return new CXFClient<>(EgenAnsattV1.class)
-                .address(getRequiredProperty(TPS_ENDPOINT))
+                .address(getRequiredProperty(EGENANSATT_ENDPOINT))
                 .withOutInterceptor(new LoggingOutInterceptor());
     }
 
     private static String getEndpoint(String mockKey, String endpointKey) {
-        if ("true".equalsIgnoreCase(getRequiredProperty(mockKey))) {
+        if ("true".equalsIgnoreCase(getProperty(mockKey))) {
             return "MOCK";
         }
         return getRequiredProperty(endpointKey);

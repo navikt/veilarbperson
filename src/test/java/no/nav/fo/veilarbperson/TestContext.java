@@ -39,7 +39,9 @@ public class TestContext {
 
         setProperty(Norg2Config.ENHET_NORG2_ENDPOINT_KEY, "https://app-" + getDefaultEnvironment() + ".adeo.no/norg2/ws/OrganisasjonEnhet/v2");
 
-        setProperty(TpsConfig.TPS_ENDPOINT, "https://wasapp-" + getDefaultEnvironment() + ".adeo.no/tpsws/ws/Person/v3");
+        setProperty(TpsConfig.EGENANSATT_ENDPOINT, "https://wasapp-" + getDefaultEnvironment() + ".adeo.no/tpsws/EgenAnsatt_v1");
+
+        setProperty(TpsConfig.PERSON_ENDPOINT, "https://wasapp-" + getDefaultEnvironment() + ".adeo.no/tpsws/ws/Person/v3");
 
         setProperty(ABAC_ENDPOINT_URL_PROPERTY_NAME, FasitUtils.getRestService("abac.pdp.endpoint", getDefaultEnvironment()).getUrl());
         setProperty(CredentialConstants.SYSTEMUSER_USERNAME, srvveilarbperson.getUsername());
