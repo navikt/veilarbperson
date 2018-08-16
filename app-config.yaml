@@ -1,5 +1,6 @@
 # ref https://raw.githubusercontent.com/nais/naisd/master/nais_example.yaml
 image: docker.adeo.no:5000/fo/veilarbperson
+team: forenkletOppfolgning
 replicas:
   min: 2
   max: 4
@@ -15,18 +16,35 @@ healthcheck:
 prometheus:
   enabled: true
   path: veilarbperson/internal/metrics
+resources: # Optional. See: http://kubernetes.io/docs/user-guide/compute-resources/
+  limits:
+    cpu: 3000m
+    memory: 1024Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
 fasitResources:
   used:
+  - alias: appdynamics
+    resourceType: applicationproperties
   - alias: srvveilarbperson
     resourceType: credential
   - alias: securityTokenService
     resourceType: baseUrl
   - alias: openam
     resourceType: openam
-  - alias: BehandleOppfolgingV1
+
+  - alias: virksomhet:OrganisasjonEnhet_v2
     resourceType: webserviceendpoint
-  - alias: serviceGateway
-    resourceType: webservicegateway
+  - alias: virksomhet:Kodeverk_v2
+    resourceType: webserviceendpoint
+  - alias: virksomhet:DigitalKontakinformasjon_v1
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Person_V3
+    resourceType: webserviceendpoint
+  - alias: virksomhet:EgenAnsatt_v1
+    resourceType: webserviceendpoint
+
   exposed:
   - alias: veilarbpersonAPI
     resourceType: restservice

@@ -11,6 +11,7 @@ import static java.lang.System.getProperty;
 import static no.nav.sbl.dialogarena.common.cxf.InstanceSwitcher.createMetricsProxyWithInstanceSwitcher;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.feilet;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.lyktes;
+import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 import static org.apache.cxf.ws.security.SecurityConstants.MUST_UNDERSTAND;
 
 @Configuration
@@ -58,7 +59,7 @@ public class KodeverkConfig {
     private CXFClient<KodeverkPortType> factory() {
         return new CXFClient<>(KodeverkPortType.class)
                 .wsdl("classpath:kodeverk/no/nav/tjeneste/virksomhet/kodeverk/v2/Kodeverk.wsdl")
-                .address(getProperty(KODEVERK_ENDPOINT))
+                .address(getRequiredProperty(KODEVERK_ENDPOINT))
                 .timeout(10000, 30000)
                 .withProperty(MUST_UNDERSTAND, false);
     }
@@ -67,6 +68,6 @@ public class KodeverkConfig {
         if ("true".equalsIgnoreCase(System.getProperty(KODEVERK_MOCK_KEY))) {
             return "MOCK";
         }
-        return System.getProperty(KODEVERK_ENDPOINT);
+        return getRequiredProperty(KODEVERK_ENDPOINT);
     }
 }
