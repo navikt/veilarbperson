@@ -31,8 +31,6 @@ fasitResources:
     resourceType: credential
   - alias: securityTokenService
     resourceType: baseUrl
-  - alias: openam
-    resourceType: openam
 
   - alias: virksomhet:OrganisasjonEnhet_v2
     resourceType: webserviceendpoint
