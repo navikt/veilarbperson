@@ -17,7 +17,7 @@ import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 @Configuration
 public class DigitalKontaktinformasjonConfig {
     private static final String DIGITAL_KONTAKTINFORMASJON_MOCK_KEY = "digitalkontaktinformasjon.withmock";
-    public static final String DIGITAL_KONTAKTINFORMASJON_ENDPOINT = "digitalkontaktinformasjon.endpoint.url";
+    public static final String DIGITAL_KONTAKTINFORMASJON_ENDPOINT = "VIRKSOMHET_DIGITALKONTAKTINFORMASJON_V1_ENDPOINTURL";
 
     @Bean
     public DigitalKontaktinformasjonV1 digitalKontaktinformasjonPortType() {
