@@ -17,7 +17,7 @@ import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 @Configuration
 public class Norg2Config {
 
-    public static final String ENHET_NORG2_ENDPOINT_KEY = "organisasjonenhet.endpoint.url";
+    public static final String ENHET_NORG2_ENDPOINT_KEY = "VIRKSOMHET_ORGANISASJONSENHET_V2_ENDPOINTURL";
     private static final String ENHET_NORG2_MOCK_KEY = "VIRKSOMHET_ORGANISASJONSENHET_V2_ENDPOINTURL";
 
     @Bean
