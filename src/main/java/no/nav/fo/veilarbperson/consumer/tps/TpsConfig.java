@@ -20,8 +20,8 @@ public class TpsConfig {
 
     private static final String PERSON_TPS_MOCK_KEY = "personservice.withmock";
     private static final String EGENANSATT_TPS_MOCK_KEY = "egenansatt.withmock";
-    public static final String EGENANSATT_ENDPOINT = "egenansatt.endpoint.url";
-    public static final String PERSON_ENDPOINT = "person.endpoint.url";
+    public static final String EGENANSATT_ENDPOINT = "VIRKSOMHET_EGENANSATT_V1_ENDPOINTURL";
+    public static final String PERSON_ENDPOINT = "VIRKSOMHET_PERSON_V3_ENDPOINTURL";
 
     @Bean
     public PersonV3 personPortType() {
