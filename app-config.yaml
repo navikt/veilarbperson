@@ -54,6 +54,8 @@ fasitResources:
     resourceType: credential
   - alias: veilarblogin.redirect-url
     resourceType: baseurl
+  - alias: abac.pdp.endpoint
+    resourceType: restservice
   exposed:
   - alias: veilarbpersonAPI
     resourceType: restservice
