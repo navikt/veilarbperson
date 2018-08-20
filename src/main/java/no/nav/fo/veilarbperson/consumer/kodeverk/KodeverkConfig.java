@@ -17,7 +17,7 @@ import static org.apache.cxf.ws.security.SecurityConstants.MUST_UNDERSTAND;
 @Configuration
 public class KodeverkConfig {
     private static final String KODEVERK_MOCK_KEY = "kodeverk.withmock";
-    public static final String KODEVERK_ENDPOINT = "kodeverk.endpoint.url";
+    public static final String KODEVERK_ENDPOINT = "VIRKSOMHET_KODEVERK_V2_ENDPOINTURL";
 
     @Bean
     public KodeverkPortType kodverkPortType() {

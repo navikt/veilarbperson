@@ -31,7 +31,6 @@ fasitResources:
     resourceType: credential
   - alias: securityTokenService
     resourceType: baseUrl
-
   - alias: virksomhet:OrganisasjonEnhet_v2
     resourceType: webserviceendpoint
   - alias: virksomhet:Kodeverk_v2
@@ -55,7 +54,6 @@ fasitResources:
     resourceType: credential
   - alias: veilarblogin.redirect-url
     resourceType: baseurl
-
   exposed:
   - alias: veilarbpersonAPI
     resourceType: restservice
