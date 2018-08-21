@@ -27,6 +27,8 @@ fasitResources:
   used:
   - alias: appdynamics
     resourceType: applicationproperties
+  - alias: veilarbperson.properties
+    resourceType: applicationproperties
   - alias: srvveilarbperson
     resourceType: credential
   - alias: securityTokenService
