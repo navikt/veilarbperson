@@ -37,8 +37,6 @@ fasitResources:
     resourceType: webserviceendpoint
   - alias: virksomhet:DigitalKontakinformasjon_v1
     resourceType: webserviceendpoint
-    propertyMap:
-      url: VIRKSOMHET_DIGITALKONTAKTINFORMASJON_V1_ENDPOINTURL
   - alias: virksomhet:Person_V3
     resourceType: webserviceendpoint
   - alias: virksomhet:EgenAnsatt_v1
