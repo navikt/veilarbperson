@@ -43,6 +43,11 @@ fasitResources:
     resourceType: webserviceendpoint
   - alias: virksomhet:EgenAnsatt_v1
     resourceType: webserviceendpoint
+  - alias: veilarblogin.redirect-url
+    resourceType: restservice
+    propertyMap:
+      url: oidc-redirect.url
+
 # ISSO
   - alias: isso-host
     resourceType: baseurl
