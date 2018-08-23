@@ -56,7 +56,7 @@ fasitResources:
   - alias: abac.pdp.endpoint
     resourceType: restservice
   - alias: veilarblogin.redirect-url
-    resourceType: restservice
+    resourceType: baseurl
     propertyMap:
       url: oidc-redirect.url
   - alias: ldap
