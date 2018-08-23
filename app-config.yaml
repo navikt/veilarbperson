@@ -25,6 +25,8 @@ resources:
     memory: 256Mi
 fasitResources:
   used:
+  - alias: loadbalancer:veilarbperson
+    resourceType: loadbalancerconfig
   - alias: appdynamics
     resourceType: applicationproperties
   - alias: srvveilarbperson
@@ -42,7 +44,7 @@ fasitResources:
   - alias: virksomhet:EgenAnsatt_v1
     resourceType: webserviceendpoint
   - alias: veilarbperson.properties
-     resourceType: applicationproperties
+    resourceType: applicationproperties
 
 # ISSO
   - alias: isso-host
@@ -57,12 +59,10 @@ fasitResources:
     resourceType: credential
   - alias: abac.pdp.endpoint
     resourceType: restservice
-    propertyMap:
-      url: abac.endpoint.url
   - alias: veilarblogin.redirect-url
-    resourceType: restservice
+    resourceType: baseurl
     propertyMap:
-      url: oidc-redirect.url
+      url: OIDC_REDIRECT_URL
   - alias: ldap
     resourceType: ldap
   exposed:
