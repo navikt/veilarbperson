@@ -41,6 +41,8 @@ fasitResources:
     resourceType: webserviceendpoint
   - alias: virksomhet:EgenAnsatt_v1
     resourceType: webserviceendpoint
+  - alias: veilarbperson.properties
+     resourceType: applicationproperties
 
 # ISSO
   - alias: isso-host
@@ -55,8 +57,10 @@ fasitResources:
     resourceType: credential
   - alias: abac.pdp.endpoint
     resourceType: restservice
+    propertyMap:
+      url: abac.endpoint.url
   - alias: veilarblogin.redirect-url
-    resourceType: baseurl
+    resourceType: restservice
     propertyMap:
       url: oidc-redirect.url
   - alias: ldap
