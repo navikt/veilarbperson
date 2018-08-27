@@ -11,8 +11,13 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
+
 @Configuration
 public class PingConfig {
+
+    public final static String ISSO_ISALIVE = "ISSO_ISALIVE";
+    public final static String ABAC_PDP_ENDPOINT_URL = "ABAC_PDP_ENDPOINT_URL";
 
     private final Pep pep;
 
@@ -23,7 +28,7 @@ public class PingConfig {
     @Bean
     public Pingable pepPing() {
         PingMetadata metadata = new PingMetadata(
-                "ABAC via " + System.getProperty("abac.endpoint.url"),
+                "ABAC via " + getRequiredProperty(ABAC_PDP_ENDPOINT_URL),
                 "Tilgangskontroll. Sjekker om veileder har tilgang til bruker.",
                 true
         );
@@ -40,14 +45,14 @@ public class PingConfig {
     @Bean
     public Pingable issoPing() throws IOException {
         PingMetadata metadata = new Pingable.Ping.PingMetadata(
-                "ISSO via " + System.getProperty("isso.isalive.url"),
+                "ISSO via " + getRequiredProperty(ISSO_ISALIVE),
                 "Pålogging og autorisering (single-signon).",
                 true
         );
 
         return () -> {
             try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(System.getProperty("isso.isalive.url")).openConnection();
+                HttpURLConnection connection = (HttpURLConnection) new URL(System.getProperty("ISSO_ISALIVÉ")).openConnection();
                 connection.connect();
                 if (connection.getResponseCode() == 200) {
                     return Pingable.Ping.lyktes(metadata);
