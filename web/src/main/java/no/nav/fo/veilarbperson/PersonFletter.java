@@ -85,7 +85,7 @@ public class PersonFletter {
 
     private void flettOrganisasjonsenhet(PersonData personData) {
         if (personData.getGeografiskTilknytning() != null) {
-            personData.setBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getGeografiskTilknytning()));
+            personData.setGeografiskEnhet(enhetService.hentGeografiskEnhet(personData.getGeografiskTilknytning()));
         }
     }
 
