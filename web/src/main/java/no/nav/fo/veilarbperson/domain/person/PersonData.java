@@ -1,7 +1,9 @@
 package no.nav.fo.veilarbperson.domain.person;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.Enhet;
 
@@ -19,7 +21,8 @@ public class PersonData extends Person {
     private String diskresjonskode;
     private String kontonummer;
     private String geografiskTilknytning;
-    private Enhet behandlendeEnhet;
+    private Enhet behandlendeEnhet; //TODO: slett behandlendeenhet når frontend har fått geografiskenhet
+    private Enhet geografiskEnhet;
     private String telefon;
     private String epost;
     private String statsborgerskap;
@@ -50,6 +53,7 @@ public class PersonData extends Person {
                        String kontonummer,
                        String geografiskTilknytning,
                        Enhet behandlendeEnhet,
+                       Enhet geografiskEnhet,
                        String telefon,
                        String epost,
                        String statsborgerskap,
@@ -69,6 +73,7 @@ public class PersonData extends Person {
         this.kontonummer = kontonummer;
         this.geografiskTilknytning = geografiskTilknytning;
         this.behandlendeEnhet = behandlendeEnhet;
+        this.geografiskEnhet = geografiskEnhet;
         this.telefon = telefon;
         this.epost = epost;
         this.statsborgerskap = statsborgerskap;
