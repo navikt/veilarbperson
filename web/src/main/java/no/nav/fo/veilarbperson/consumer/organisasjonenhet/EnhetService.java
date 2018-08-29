@@ -23,7 +23,7 @@ public class EnhetService {
     }
 
     @Cacheable(ENHET)
-    public Enhet hentBehandlendeEnhet(String geografiskTilknytning) {
+    public Enhet hentGeografiskEnhet(String geografiskTilknytning) {
         try {
             WSFinnNAVKontorResponse response = organisasjonenhet.finnNAVKontor(lagRequest(geografiskTilknytning));
             return mapTilEnhet(response.getNAVKontor());
