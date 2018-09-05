@@ -15,13 +15,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         ServiceConfig.class,
         PersonFletter.class,
         CacheConfig.class,
-        AbacContext.class
+        AbacContext.class,
+        PepConfig.class
 })
 public class ApplicationConfig implements ApiApplication {
-
-    @Override
-    public String getApplicationName() {
-        return "veilarbperson";
-    }
-
 }
