@@ -5,7 +5,6 @@ import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontakt
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkManager;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
-import no.nav.fo.veilarbperson.consumer.organisasjonenhet.Enhet;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
@@ -86,9 +85,7 @@ public class PersonFletter {
 
     private void flettGeografiskEnhet(PersonData personData) {
         if (personData.getGeografiskTilknytning() != null) {
-            Enhet enhet = enhetService.hentGeografiskEnhet(personData.getGeografiskTilknytning());
-            personData.setBehandlendeEnhet(enhet); //TODO: slett behandlendeenhet når frontend har fått geografiskenhet
-            personData.setGeografiskEnhet(enhet);
+            personData.setGeografiskEnhet(enhetService.hentGeografiskEnhet(personData.getGeografiskTilknytning()));
         }
     }
 
