@@ -91,10 +91,15 @@ public class PersonRessurs {
 
     @GET
     @Path("/tilgangTilBruker")
-    public Response tilgangTilBruker(@PathParam("fodselsnummer") String fodselsnummer) {
+    public boolean tilgangTilBruker(@PathParam("fodselsnummer") String fodselsnummer) {
         logger.info("Sjekker om veileder har tilgang til bruker med fodselsnummer: " + fodselsnummer);
 
-        pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
-        return Response.ok().build();
+        try {
+            pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
+            return true;
+        } catch (RuntimeException e) {
+            logger.info("Veileder har ikke tilgang til bruker med fodselsnummer: " + fodselsnummer);
+            return false;
+        }
     }
 }
