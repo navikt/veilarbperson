@@ -5,7 +5,8 @@ import no.nav.sbl.dialogarena.types.Pingable;
 import org.springframework.context.ApplicationContext;
 
 import javax.servlet.ServletException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static org.springframework.web.context.support.WebApplicationContextUtils.getWebApplicationContext;
 
@@ -17,11 +18,6 @@ public class SelftestServlet extends SelfTestBaseServlet {
     public void init() throws ServletException {
         super.init();
         applicationContext = getWebApplicationContext(getServletContext());
-    }
-
-    @Override
-    public String getApplicationName() {
-        return "veilarbperson";
     }
 
     @Override

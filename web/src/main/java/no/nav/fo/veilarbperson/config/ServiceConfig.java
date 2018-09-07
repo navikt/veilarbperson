@@ -4,7 +4,6 @@ import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontakt
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
-import no.nav.fo.veilarbperson.services.PepClient;
 import no.nav.sbl.dialogarena.common.abac.pep.Pep;
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.DigitalKontaktinformasjonV1;
@@ -55,10 +54,4 @@ public class ServiceConfig {
     DigitalKontaktinformasjonService digitalKontaktinformasjonService() {
         return new DigitalKontaktinformasjonService(digitalKontaktinformasjonV1);
     }
-
-    @Bean
-    PepClient pepClient() {
-        return new PepClient(pep);
-    }
-
 }

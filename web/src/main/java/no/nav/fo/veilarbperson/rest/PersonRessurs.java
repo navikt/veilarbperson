@@ -2,6 +2,7 @@ package no.nav.fo.veilarbperson.rest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import no.nav.apiapp.security.PepClient;
 import no.nav.fo.veilarbperson.PersonFletter;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
@@ -10,7 +11,6 @@ import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.Feilmelding;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
-import no.nav.fo.veilarbperson.services.PepClient;
 import no.nav.tjeneste.virksomhet.person.v3.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.HentPersonSikkerhetsbegrensning;
 import org.slf4j.Logger;
@@ -65,7 +65,7 @@ public class PersonRessurs {
 
         logger.info("Henter persondata med fodselsnummer: " + fodselsnummer);
 
-        pepClient.isServiceCallAllowed(fodselsnummer);
+        pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
 
         try {
             String cookie = request.getHeader(HttpHeaders.COOKIE);
@@ -89,4 +89,17 @@ public class PersonRessurs {
         }
     }
 
+    @GET
+    @Path("/tilgangTilBruker")
+    public boolean tilgangTilBruker(@PathParam("fodselsnummer") String fodselsnummer) {
+        logger.info("Sjekker om veileder har tilgang til bruker med fodselsnummer: " + fodselsnummer);
+
+        try {
+            pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
+            return true;
+        } catch (RuntimeException e) {
+            logger.info("Veileder har ikke tilgang til bruker med fodselsnummer: " + fodselsnummer);
+            return false;
+        }
+    }
 }
