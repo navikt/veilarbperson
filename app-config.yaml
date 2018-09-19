@@ -1,0 +1,69 @@
+# ref https://raw.githubusercontent.com/nais/naisd/master/nais_example.yaml
+image: docker.adeo.no:5000/fo/veilarbperson
+team: oppfolging
+replicas:
+  min: 2
+  max: 4
+  cpuThresholdPercentage: 50
+port: 8080
+healthcheck:
+  liveness:
+    path: veilarbperson/internal/isAlive
+    initialDelay: 20
+  readiness:
+    path: veilarbperson/internal/selftest
+    initialDelay: 20
+prometheus:
+  enabled: true
+  path: veilarbperson/internal/metrics
+resources:
+  limits:
+    cpu: 3000m
+    memory: 1024Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+fasitResources:
+  used:
+  - alias: appdynamics
+    resourceType: applicationproperties
+  - alias: srvveilarbperson
+    resourceType: credential
+  - alias: securityTokenService
+    resourceType: baseUrl
+  - alias: virksomhet:OrganisasjonEnhet_v2
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Kodeverk_v2
+    resourceType: webserviceendpoint
+  - alias: virksomhet:DigitalKontakinformasjon_v1
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Person_V3
+    resourceType: webserviceendpoint
+  - alias: virksomhet:EgenAnsatt_v1
+    resourceType: webserviceendpoint
+  - alias: veilarbperson.properties
+    resourceType: applicationproperties
+
+# ISSO
+  - alias: isso-host
+    resourceType: baseurl
+  - alias: isso-jwks
+    resourceType: baseurl
+  - alias: isso-issuer
+    resourceType: baseurl
+  - alias: isso.isalive
+    resourceType: baseurl
+  - alias: isso-rp-user
+    resourceType: credential
+  - alias: abac.pdp.endpoint
+    resourceType: restservice
+  - alias: veilarblogin.redirect-url
+    resourceType: baseurl
+    propertyMap:
+      url: OIDC_REDIRECT_URL
+  - alias: ldap
+    resourceType: ldap
+  exposed:
+  - alias: veilarbpersonAPI
+    resourceType: restservice
+    path: /veilarbperson/api
