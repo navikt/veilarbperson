@@ -238,6 +238,7 @@
         <dependency>
             <groupId>no.bekk.bekkopen</groupId>
             <artifactId>nocommons</artifactId>
+            <version>0.8.1</version>
         </dependency>
 
         <dependency>
