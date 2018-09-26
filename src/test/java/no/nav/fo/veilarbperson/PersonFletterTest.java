@@ -52,7 +52,7 @@ public class PersonFletterTest {
 
     @Before
     public void setup() throws Exception {
-        when(enhetService.hentBehandlendeEnhet(anyString())).thenReturn(new Enhet());
+        when(enhetService.hentGeografiskEnhet(anyString())).thenReturn(new Enhet());
         when(digitalKontaktinformasjonService.hentDigitalKontaktinformasjon(anyString())).thenReturn(new DigitalKontaktinformasjon());
         when(personService.hentPerson(anyString())).thenReturn(lagPersonData());
         when(personService.hentSikkerhetstiltak(anyString())).thenReturn(new Sikkerhetstiltak(null));

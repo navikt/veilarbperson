@@ -61,7 +61,7 @@ public class PersonFletter {
             flettSikkerhetstiltak(fodselsnummer, personData);
         }
 
-        flettOrganisasjonsenhet(personData);
+        flettGeografiskEnhet(personData);
         flettDigitalKontaktinformasjon(fodselsnummer, personData);
         flettKodeverk(personData);
         return personData;
@@ -83,9 +83,9 @@ public class PersonFletter {
         personData.setEgenAnsatt(egenAnsattService.erEgenAnsatt(fodselsnummer));
     }
 
-    private void flettOrganisasjonsenhet(PersonData personData) {
+    private void flettGeografiskEnhet(PersonData personData) {
         if (personData.getGeografiskTilknytning() != null) {
-            personData.setBehandlendeEnhet(enhetService.hentBehandlendeEnhet(personData.getGeografiskTilknytning()));
+            personData.setGeografiskEnhet(enhetService.hentGeografiskEnhet(personData.getGeografiskTilknytning()));
         }
     }
 
