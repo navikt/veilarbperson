@@ -1,3 +1,5 @@
+Denne ligger nå på Github: https://github.com/navikt/veilarbperson
+
 # VeilArbPerson
 
 * Applikasjonen kjører på Embedded Jetty lokalt.
