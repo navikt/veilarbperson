@@ -28,15 +28,18 @@ public class TestUtil {
     }
 
     public static String calculateDNummer(String fnr) {
-        int firstDigit = Integer.parseInt(fnr.substring(0, 1));
-        firstDigit = (firstDigit + 4) % 10;
-        return Integer.toString(firstDigit) + fnr.substring(1);
+        return incrementDigit(fnr, 0, 4);
     }
 
     public static String calculateHNumber(String fnr) {
-        int digit = Integer.parseInt(fnr.substring(2, 3));
-        digit = (digit + 4) % 10;
-        return fnr.substring(0, 2) + Integer.toString(digit) + fnr.substring(3);
+        return incrementDigit(fnr, 2, 4);
+    }
+
+    private static String incrementDigit(String fnr, int index, int increment) {
+        int digit = Integer.parseInt(fnr.substring(index, index + 1));
+        digit = (digit + increment) % 10;
+
+        return fnr.substring(0, index) + Integer.toString(digit) + fnr.substring(index + 1);
     }
 
 }
