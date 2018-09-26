@@ -21,7 +21,7 @@ public class PersonData extends Person {
     private String diskresjonskode;
     private String kontonummer;
     private String geografiskTilknytning;
-    private Enhet behandlendeEnhet;
+    private Enhet geografiskEnhet;
     private String telefon;
     private String epost;
     private String statsborgerskap;
@@ -51,7 +51,7 @@ public class PersonData extends Person {
                        String diskresjonskode,
                        String kontonummer,
                        String geografiskTilknytning,
-                       Enhet behandlendeEnhet,
+                       Enhet geografiskEnhet,
                        String telefon,
                        String epost,
                        String statsborgerskap,
@@ -70,7 +70,7 @@ public class PersonData extends Person {
         this.diskresjonskode = diskresjonskode;
         this.kontonummer = kontonummer;
         this.geografiskTilknytning = geografiskTilknytning;
-        this.behandlendeEnhet = behandlendeEnhet;
+        this.geografiskEnhet = geografiskEnhet;
         this.telefon = telefon;
         this.epost = epost;
         this.statsborgerskap = statsborgerskap;

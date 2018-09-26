@@ -40,7 +40,7 @@ public class EnhetServiceTest {
         when(organisasjonEnhet.finnNAVKontor(any(WSFinnNAVKontorRequest.class)))
                 .thenReturn(navkontorResponse);
 
-        Enhet enhet = service.hentBehandlendeEnhet(MOCK_GEOGRAFISK_NEDSLAGSFELT);
+        Enhet enhet = service.hentGeografiskEnhet(MOCK_GEOGRAFISK_NEDSLAGSFELT);
 
         assertThat(enhet.getEnhetsnummer(), is(equalTo(MOCK_ENHET_ID)));
         assertThat(enhet.getNavn(), is(equalTo(MOCK_ENHET_NAVN)));
@@ -58,7 +58,7 @@ public class EnhetServiceTest {
         when(organisasjonEnhet.finnNAVKontor(any(WSFinnNAVKontorRequest.class)))
                 .thenReturn(nullResponse);
 
-        Enhet enhet = service.hentBehandlendeEnhet(MOCK_GEOGRAFISK_NEDSLAGSFELT);
+        Enhet enhet = service.hentGeografiskEnhet(MOCK_GEOGRAFISK_NEDSLAGSFELT);
 
         assertThat(enhet, is(equalTo(null)));
     }
@@ -68,7 +68,7 @@ public class EnhetServiceTest {
         when(organisasjonEnhet.finnNAVKontor(any(WSFinnNAVKontorRequest.class)))
                 .thenThrow(new FinnNAVKontorUgyldigInput());
 
-        Enhet enhet = service.hentBehandlendeEnhet(MOCK_GEOGRAFISK_NEDSLAGSFELT);
+        Enhet enhet = service.hentGeografiskEnhet(MOCK_GEOGRAFISK_NEDSLAGSFELT);
 
         assertThat(enhet, is(equalTo(null)));
     }

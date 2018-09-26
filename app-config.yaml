@@ -25,6 +25,8 @@ resources:
     memory: 256Mi
 fasitResources:
   used:
+  - alias: loadbalancer:veilarbperson
+    resourceType: loadbalancerconfig
   - alias: appdynamics
     resourceType: applicationproperties
   - alias: srvveilarbperson
