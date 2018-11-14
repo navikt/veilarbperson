@@ -11,7 +11,7 @@ healthcheck:
     path: veilarbperson/internal/isAlive
     initialDelay: 60
   readiness:
-    path: veilarbperson/internal/selftest
+    path: veilarbperson/internal/isReady
     initialDelay: 60
 prometheus:
   enabled: true
@@ -60,7 +60,7 @@ fasitResources:
   - alias: abac.pdp.endpoint
     resourceType: restservice
   - alias: veilarblogin.redirect-url
-    resourceType: baseurl
+    resourceType: restservice
     propertyMap:
       url: OIDC_REDIRECT_URL
   - alias: ldap
@@ -69,3 +69,6 @@ fasitResources:
   - alias: veilarbpersonAPI
     resourceType: restservice
     path: /veilarbperson/api
+
+alertProfiles:
+  - common-java-modules
