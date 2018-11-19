@@ -7,6 +7,7 @@ import no.nav.fo.veilarbperson.PersonFletter;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
+import no.nav.fo.veilarbperson.consumer.portefolje.PortefoljeService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.Feilmelding;
@@ -44,7 +45,9 @@ public class PersonRessurs {
                          PersonService personService,
                          EgenAnsattService egenAnsattService,
                          KodeverkService kodeverkService,
-                         PepClient pepClient) {
+                         PortefoljeService portefoljeService,
+                         PepClient pepClient
+    ) {
 
         this.pepClient = pepClient;
 
@@ -53,7 +56,9 @@ public class PersonRessurs {
                 digitalKontaktinformasjonService,
                 personService,
                 egenAnsattService,
-                kodeverkService);
+                kodeverkService,
+                portefoljeService
+        );
     }
 
     @GET

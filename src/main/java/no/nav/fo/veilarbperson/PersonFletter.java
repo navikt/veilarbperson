@@ -6,6 +6,7 @@ import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontakt
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkManager;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
+import no.nav.fo.veilarbperson.consumer.portefolje.PortefoljeService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.Personinfo;
@@ -29,25 +30,27 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class PersonFletter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PersonFletter.class);
-    private static final Client restClient = RestUtils.createClient();
 
     private final PersonService personService;
     private final EgenAnsattService egenAnsattService;
     private final EnhetService enhetService;
     private final DigitalKontaktinformasjonService digitalKontaktinformasjonService;
     private final KodeverkManager kodeverkManager;
+    private final PortefoljeService portefoljeService;
 
     public PersonFletter(EnhetService enhetService,
                          DigitalKontaktinformasjonService digitalKontaktinformasjonService,
                          PersonService personService,
                          EgenAnsattService egenAnsattService,
-                         KodeverkService kodeverkService) {
-
+                         KodeverkService kodeverkService,
+                         PortefoljeService portefoljeService
+    ) {
         this.enhetService = enhetService;
         this.digitalKontaktinformasjonService = digitalKontaktinformasjonService;
         this.kodeverkManager = new KodeverkManager(kodeverkService);
         this.personService = personService;
         this.egenAnsattService = egenAnsattService;
+        this.portefoljeService = portefoljeService;
     }
 
     public PersonData hentPerson(String fodselsnummer, String cookie) throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
@@ -68,13 +71,7 @@ public class PersonFletter {
     }
 
     private void flettPersoninfoFraPortefolje(PersonData personData, String fodselsnummer, String cookie) {
-        Personinfo personinfo = restClient
-                .target(String.format("https://app%s.adeo.no/veilarbportefolje/api/personinfo/%s", getEnvironment(), fodselsnummer))
-                .request()
-                .header(ACCEPT, APPLICATION_JSON)
-                .header(HttpHeaders.COOKIE, cookie)
-                .get(Personinfo.class);
-
+        Personinfo personinfo = portefoljeService.hentPersonInfo(fodselsnummer, cookie);
         personData.setSikkerhetstiltak(personinfo.sikkerhetstiltak);
         personData.setEgenAnsatt(personinfo.egenAnsatt);
     }
@@ -169,12 +166,4 @@ public class PersonFletter {
         }
     }
 
-    public String getEnvironment() {
-        String environment = System.getProperty("environment.name");
-        if ("p".equals(environment)) {
-            return "";
-        } else {
-            return "-" + environment;
-        }
-    }
 }
