@@ -3,6 +3,7 @@ package no.nav.fo.veilarbperson.rest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import no.nav.apiapp.security.PepClient;
+import no.nav.common.auth.SubjectHandler;
 import no.nav.fo.veilarbperson.PersonFletter;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
@@ -12,6 +13,9 @@ import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.Feilmelding;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
+import no.nav.fo.veilarbperson.domain.person.PersonNavn;
+import no.nav.fo.veilarbperson.utils.AutentiseringHjelper;
+import no.nav.fo.veilarbperson.utils.FeilmeldingResponsHjelper;
 import no.nav.tjeneste.virksomhet.person.v3.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.HentPersonSikkerhetsbegrensning;
 import org.slf4j.Logger;
@@ -25,7 +29,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -39,6 +42,7 @@ public class PersonRessurs {
 
     private final PersonFletter personFletter;
     private final PepClient pepClient;
+    private final PersonService personService;
 
     public PersonRessurs(EnhetService enhetService,
                          DigitalKontaktinformasjonService digitalKontaktinformasjonService,
@@ -50,6 +54,7 @@ public class PersonRessurs {
     ) {
 
         this.pepClient = pepClient;
+        this.personService = personService;
 
         personFletter = new PersonFletter(
                 enhetService,
@@ -70,6 +75,10 @@ public class PersonRessurs {
 
         logger.info("Henter persondata med fodselsnummer: " + fodselsnummer);
 
+        if(AutentiseringHjelper.erEksternBruker()) {
+            return FeilmeldingResponsHjelper.lagResponsForSluttbrukerIkkeTilgangFeilmelding(fodselsnummer);
+        }
+
         pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
 
         try {
@@ -78,20 +87,42 @@ public class PersonRessurs {
 
             return Response.ok().entity(person).build();
         } catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
-            Feilmelding feilmelding = new Feilmelding("Fant ikke person med fnr: " + fodselsnummer,
-                    hentPersonPersonIkkeFunnet.toString());
-            return Response
-                    .status(Status.NOT_FOUND)
-                    .entity(feilmelding)
-                    .build();
+            return FeilmeldingResponsHjelper.lagResponsForIkkeFunnetFeilmelding(
+                    hentPersonPersonIkkeFunnet, fodselsnummer
+            );
         } catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
-            Feilmelding feilmelding = new Feilmelding("Saksbehandler har ikke tilgang til fnr: " + fodselsnummer,
-                    hentPersonSikkerhetsbegrensning.toString());
-            return Response
-                    .status(Status.UNAUTHORIZED)
-                    .entity(feilmelding)
-                    .build();
+            return FeilmeldingResponsHjelper.lagResponsForIkkeTilgangFeilmelding(
+                    hentPersonSikkerhetsbegrensning, fodselsnummer
+            );
         }
+    }
+
+
+    @GET
+    @Path("/navn")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(value = "Henter navnet til en person")
+    public Response navn(@PathParam("fodselsnummer") String fodselsnummer) {
+
+        logger.info("Henter brukerens navn med fodselsnummer: " + fodselsnummer);
+
+        pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
+
+        try {
+            PersonData personData = personService.hentPerson(fodselsnummer);
+            PersonNavn personNavn = PersonNavn.fraPerson(personData);
+
+            return Response.ok().entity(personNavn).build();
+        } catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
+            return FeilmeldingResponsHjelper.lagResponsForIkkeTilgangFeilmelding(
+                    hentPersonSikkerhetsbegrensning, fodselsnummer
+            );
+        } catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
+            return FeilmeldingResponsHjelper.lagResponsForIkkeFunnetFeilmelding(
+                    hentPersonPersonIkkeFunnet, fodselsnummer
+            );
+        }
+
     }
 
     @GET
