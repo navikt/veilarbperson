@@ -103,6 +103,10 @@
             <groupId>no.nav.common</groupId>
             <artifactId>abac</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+        </dependency>
 
         <!-- Spring -->
         <dependency>

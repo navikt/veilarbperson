@@ -70,6 +70,12 @@ public class PersonFletter {
         return personData;
     }
 
+    public Bostedsadresse hentBostedsadresse(String fodselsnummer) throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
+        PersonData personData = personService.hentPerson(fodselsnummer);
+        kanskjePoststedBostedsadresse(personData);
+        return personData.getBostedsadresse();
+    }
+
     private void flettPersoninfoFraPortefolje(PersonData personData, String fodselsnummer, String cookie) {
         Personinfo personinfo = portefoljeService.hentPersonInfo(fodselsnummer, cookie);
         personData.setSikkerhetstiltak(personinfo.sikkerhetstiltak);

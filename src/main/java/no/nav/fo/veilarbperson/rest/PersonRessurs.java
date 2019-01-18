@@ -2,6 +2,8 @@ package no.nav.fo.veilarbperson.rest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.vavr.control.Try;
+import no.nav.apiapp.feil.IngenTilgang;
 import no.nav.apiapp.security.PepClient;
 import no.nav.common.auth.SubjectHandler;
 import no.nav.fo.veilarbperson.PersonFletter;
@@ -11,7 +13,7 @@ import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.portefolje.PortefoljeService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
-import no.nav.fo.veilarbperson.domain.Feilmelding;
+import no.nav.fo.veilarbperson.domain.person.Bostedsadresse;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.domain.person.PersonNavn;
 import no.nav.fo.veilarbperson.utils.AutentiseringHjelper;
@@ -22,10 +24,7 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -137,6 +136,14 @@ public class PersonRessurs {
             logger.info("Veileder har ikke tilgang til bruker med fodselsnummer: " + fodselsnummer);
             return false;
         }
+    }
+
+    @GET
+    @Path("/bostedsadresse")
+    @Produces(APPLICATION_JSON)
+    public Bostedsadresse bostedsadresse(@PathParam("fodselsnummer") String fodselsnummer) {
+        pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
+        return Try.of(() -> personFletter.hentBostedsadresse(fodselsnummer)).get();
     }
 
 }
