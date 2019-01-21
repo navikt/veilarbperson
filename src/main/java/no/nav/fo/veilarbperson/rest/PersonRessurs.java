@@ -6,6 +6,7 @@ import io.vavr.control.Try;
 import no.nav.apiapp.feil.Feil;
 import no.nav.apiapp.feil.FeilType;
 import no.nav.apiapp.security.PepClient;
+import no.nav.common.auth.SubjectHandler;
 import no.nav.fo.veilarbperson.PersonFletter;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
@@ -20,10 +21,7 @@ import no.nav.fo.veilarbperson.utils.MapExceptionUtil;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 
@@ -31,7 +29,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Component
 @Api(value = "person")
-@Path("/person/{fodselsnummer}")
+@Path("/person")
 public class PersonRessurs {
 
     private final PersonFletter personFletter;
@@ -62,6 +60,7 @@ public class PersonRessurs {
 
     @GET
     @Produces(APPLICATION_JSON)
+    @Path("/{fodselsnummer}")
     @ApiOperation(value = "Henter informasjon om en person",
             notes = "Denne tjenesten gjør kall mot flere baktjenester: " +
                     "Kodeverk, organisasjonenhet_v2, Digitalkontaktinformasjon_v1, Person_v3, Egenansatt_v1")
@@ -89,7 +88,10 @@ public class PersonRessurs {
     @Path("/navn")
     @Produces(APPLICATION_JSON)
     @ApiOperation(value = "Henter navnet til en person")
-    public PersonNavn navn(@PathParam("fodselsnummer") String fodselsnummer) {
+    public PersonNavn navn(@QueryParam("fnr") String fnr) {
+
+        final String fodselsnummer = (fnr == null) ?
+                SubjectHandler.getIdent().orElseThrow(() -> new Feil(FeilType.UGYLDIG_REQUEST)) : fnr;
 
         pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
 
@@ -100,7 +102,7 @@ public class PersonRessurs {
     }
 
     @GET
-    @Path("/tilgangTilBruker")
+    @Path("/{fodselsnummer}/tilgangTilBruker")
     public boolean tilgangTilBruker(@PathParam("fodselsnummer") String fodselsnummer) {
         return Try.of(() -> pepClient.sjekkLeseTilgangTilFnr(fodselsnummer)).isSuccess();
     }
