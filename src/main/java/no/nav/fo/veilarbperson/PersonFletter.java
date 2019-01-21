@@ -70,10 +70,13 @@ public class PersonFletter {
         return personData;
     }
 
-    public Bostedsadresse hentBostedsadresse(String fodselsnummer) throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
+    public BoligInformasjon hentBostedsadresse(String fodselsnummer) throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
         PersonData personData = personService.hentPerson(fodselsnummer);
         kanskjePoststedBostedsadresse(personData);
-        return personData.getBostedsadresse();
+        kanskjePoststedMidlertidigAdresseNorge(personData);
+        return new BoligInformasjon()
+                .setBostedsadresse(personData.getBostedsadresse())
+                .setMidlertidigAdresseNorge(personData.getMidlertidigAdresseNorge());
     }
 
     private void flettPersoninfoFraPortefolje(PersonData personData, String fodselsnummer, String cookie) {

@@ -3,7 +3,7 @@ import no.nav.testconfig.ApiAppTest;
 
 class MainTest {
 
-    public static final String TEST_PORT = "8802";
+    public static final String TEST_PORT = "8438";
 
     public static void main(String[] args) {
         TestContext.setup();
