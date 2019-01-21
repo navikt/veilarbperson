@@ -17,7 +17,6 @@ import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.domain.person.PersonNavn;
 import no.nav.fo.veilarbperson.utils.AutentiseringHjelper;
 import no.nav.fo.veilarbperson.utils.FeilmeldingResponsHjelper;
-import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,14 +25,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 @Api(value = "person")
 @Path("/person/{fodselsnummer}")
 public class PersonRessurs {
-
-    private static final Logger logger = getLogger(PersonRessurs.class);
 
     private final PersonFletter personFletter;
     private final PepClient pepClient;
@@ -90,24 +86,17 @@ public class PersonRessurs {
 
         pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
 
-        Try<PersonNavn> tryPersonNavn = Try.of(() -> {
-            PersonData personData = personService.hentPerson(fodselsnummer);
-            return PersonNavn.fraPerson(personData);
-        });
-
-        return tryPersonNavn.getOrElseThrow(FeilmeldingResponsHjelper::feilHanteringHjelper);
+        return Try.of(()-> personService.hentPerson(fodselsnummer))
+                .map(PersonNavn::fraPerson)
+                .getOrElseThrow(FeilmeldingResponsHjelper::feilHanteringHjelper);
     }
 
     @GET
     @Path("/tilgangTilBruker")
     public boolean tilgangTilBruker(@PathParam("fodselsnummer") String fodselsnummer) {
-        try {
-            pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
-            return true;
-        } catch (RuntimeException e) {
-            logger.info("Veileder har ikke tilgang til fodselsnummer");
-            return false;
-        }
+        return Try.of(() -> pepClient.sjekkLeseTilgangTilFnr(fodselsnummer))
+                .map(fnr -> true)
+                .getOrElseGet(exception -> false);
     }
 
     @GET
