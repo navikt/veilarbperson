@@ -11,7 +11,6 @@ import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.Personinfo;
 import no.nav.fo.veilarbperson.domain.person.*;
-import no.nav.sbl.rest.RestUtils;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonSikkerhetsbegrensing;
@@ -21,11 +20,6 @@ import no.nav.tjeneste.virksomhet.person.v3.HentSikkerhetstiltakPersonIkkeFunnet
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.HttpHeaders;
-
-import static javax.ws.rs.core.HttpHeaders.ACCEPT;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class PersonFletter {
 
@@ -70,13 +64,8 @@ public class PersonFletter {
         return personData;
     }
 
-    public BoligInformasjon hentBoligInformasjon(String fodselsnummer) throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
-        PersonData personData = personService.hentPerson(fodselsnummer);
-        kanskjePoststedBostedsadresse(personData);
-        kanskjePoststedMidlertidigAdresseNorge(personData);
-        return new BoligInformasjon()
-                .setBostedsadresse(personData.getBostedsadresse())
-                .setMidlertidigAdresseNorge(personData.getMidlertidigAdresseNorge());
+    public GeografiskTilknytning hentGeografisktilknytning(String fodselsnummer) throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
+        return personService.hentGeografiskTilknytning(fodselsnummer);
     }
 
     private void flettPersoninfoFraPortefolje(PersonData personData, String fodselsnummer, String cookie) {
