@@ -14,10 +14,12 @@ import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.portefolje.PortefoljeService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
+import no.nav.fo.veilarbperson.domain.person.BoligInformasjon;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.domain.person.PersonNavn;
 import no.nav.fo.veilarbperson.utils.AutentiseringHjelper;
 import no.nav.fo.veilarbperson.utils.MapExceptionUtil;
+import org.bouncycastle.crypto.RuntimeCryptoException;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,6 +61,7 @@ public class PersonRessurs {
     }
 
     @GET
+    @Path("/{fodselsnummer}")
     @Produces(APPLICATION_JSON)
     @Path("/{fodselsnummer}")
     @ApiOperation(value = "Henter informasjon om en person",
@@ -72,20 +75,15 @@ public class PersonRessurs {
         }
 
         pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
+        String cookie = request.getHeader(HttpHeaders.COOKIE);
 
-        return Try.of(() -> {
-
-            String cookie = request.getHeader(HttpHeaders.COOKIE);
-
-            return personFletter.hentPerson(fodselsnummer, cookie);
-
-        }).getOrElseThrow(MapExceptionUtil::map);
-
+        return Try.of(() -> personFletter.hentPerson(fodselsnummer, cookie))
+                .getOrElseThrow(MapExceptionUtil::map);
     }
 
 
     @GET
-    @Path("/navn")
+    @Path("/{fodselsnummer}/navn")
     @Produces(APPLICATION_JSON)
     @ApiOperation(value = "Henter navnet til en person")
     public PersonNavn navn(@QueryParam("fnr") String fnr) {
@@ -106,6 +104,25 @@ public class PersonRessurs {
     @Path("/{fodselsnummer}/tilgangTilBruker")
     public boolean tilgangTilBruker(@PathParam("fodselsnummer") String fodselsnummer) {
         return Try.of(() -> pepClient.sjekkLeseTilgangTilFnr(fodselsnummer)).isSuccess();
+    }
+
+
+    @GET
+    @Path("/boliginformasjon")
+    @Produces(APPLICATION_JSON)
+    public BoligInformasjon bostedsadresse(@QueryParam("fnr") String fodselsnummer) {
+        if(AutentiseringHjelper.erEksternBruker()) {
+            String fnr = SubjectHandler.getIdent().orElseThrow(RuntimeException::new);
+            return Try.of(() -> personFletter.hentBoligInformasjon(fnr))
+                    .getOrElseThrow(MapExceptionUtil::map);
+        }
+        else if(AutentiseringHjelper.erInternBruker()) {
+            pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
+            return Try.of(() -> personFletter.hentBoligInformasjon(fodselsnummer))
+                    .getOrElseThrow(MapExceptionUtil::map);
+        }
+
+        throw new Feil(FeilType.INGEN_TILGANG);
     }
 
 }
