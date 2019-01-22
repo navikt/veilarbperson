@@ -19,7 +19,6 @@ import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.domain.person.PersonNavn;
 import no.nav.fo.veilarbperson.utils.AutentiseringHjelper;
 import no.nav.fo.veilarbperson.utils.MapExceptionUtil;
-import org.bouncycastle.crypto.RuntimeCryptoException;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,7 +60,6 @@ public class PersonRessurs {
     }
 
     @GET
-    @Path("/{fodselsnummer}")
     @Produces(APPLICATION_JSON)
     @Path("/{fodselsnummer}")
     @ApiOperation(value = "Henter informasjon om en person",
