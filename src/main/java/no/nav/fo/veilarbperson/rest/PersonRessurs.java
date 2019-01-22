@@ -90,8 +90,9 @@ public class PersonRessurs {
     @ApiOperation(value = "Henter navnet til en person")
     public PersonNavn navn(@QueryParam("fnr") String fnr) {
 
-        final String fodselsnummer = (fnr == null) ?
-                SubjectHandler.getIdent().orElseThrow(() -> new Feil(FeilType.UGYLDIG_REQUEST)) : fnr;
+        // Fnr fra query param kan kun brukes av interne brukere, eksterne må bruke token
+        final String fodselsnummer = (fnr != null && AutentiseringHjelper.erInternBruker()) ?
+                fnr : SubjectHandler.getIdent().orElseThrow(() -> new Feil(FeilType.UGYLDIG_REQUEST));
 
         pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
 
