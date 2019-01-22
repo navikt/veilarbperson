@@ -15,5 +15,4 @@ public class AutentiseringHjelper {
         return IdentType.InternBruker.equals(identType);
     }
 
-
 }

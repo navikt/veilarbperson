@@ -19,7 +19,6 @@ import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.domain.person.PersonNavn;
 import no.nav.fo.veilarbperson.utils.AutentiseringHjelper;
 import no.nav.fo.veilarbperson.utils.MapExceptionUtil;
-import org.bouncycastle.crypto.RuntimeCryptoException;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,8 +60,8 @@ public class PersonRessurs {
     }
 
     @GET
-    @Path("/{fodselsnummer}")
     @Produces(APPLICATION_JSON)
+    @Path("/{fodselsnummer}")
     @ApiOperation(value = "Henter informasjon om en person",
             notes = "Denne tjenesten gjør kall mot flere baktjenester: " +
                     "Kodeverk, organisasjonenhet_v2, Digitalkontaktinformasjon_v1, Person_v3, Egenansatt_v1")
@@ -85,7 +84,11 @@ public class PersonRessurs {
     @Path("/{fodselsnummer}/navn")
     @Produces(APPLICATION_JSON)
     @ApiOperation(value = "Henter navnet til en person")
-    public PersonNavn navn(@PathParam("fodselsnummer") String fodselsnummer) {
+    public PersonNavn navn(@QueryParam("fnr") String fnr) {
+
+        // Fnr fra query param kan kun brukes av interne brukere, eksterne må bruke token
+        final String fodselsnummer = (fnr != null && AutentiseringHjelper.erInternBruker()) ?
+                fnr : SubjectHandler.getIdent().orElseThrow(() -> new Feil(FeilType.UGYLDIG_REQUEST));
 
         pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
 
