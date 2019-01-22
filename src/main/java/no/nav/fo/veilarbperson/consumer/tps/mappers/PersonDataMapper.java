@@ -232,7 +232,7 @@ public class PersonDataMapper {
                         .orElse(null));
     }
 
-    private static String geografiskTilknytning(WSPerson person) {
+   public static String geografiskTilknytning(WSPerson person) {
         if (person instanceof WSBruker) {
             return of(person)
                     .map(wsPerson -> ((WSBruker) wsPerson).getGeografiskTilknytning())

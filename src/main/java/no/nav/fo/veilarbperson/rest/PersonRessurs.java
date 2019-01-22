@@ -14,12 +14,11 @@ import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.portefolje.PortefoljeService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
-import no.nav.fo.veilarbperson.domain.person.BoligInformasjon;
+import no.nav.fo.veilarbperson.domain.person.GeografiskTilknytning;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.domain.person.PersonNavn;
 import no.nav.fo.veilarbperson.utils.AutentiseringHjelper;
 import no.nav.fo.veilarbperson.utils.MapExceptionUtil;
-import org.bouncycastle.crypto.RuntimeCryptoException;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -103,17 +102,17 @@ public class PersonRessurs {
 
 
     @GET
-    @Path("/boliginformasjon")
+    @Path("/geografisktilknytning")
     @Produces(APPLICATION_JSON)
-    public BoligInformasjon bostedsadresse(@QueryParam("fnr") String fodselsnummer) {
+    public GeografiskTilknytning geografisktilknytning(@QueryParam("fnr") String fodselsnummer) {
         if(AutentiseringHjelper.erEksternBruker()) {
             String fnr = SubjectHandler.getIdent().orElseThrow(RuntimeException::new);
-            return Try.of(() -> personFletter.hentBoligInformasjon(fnr))
+            return Try.of(() -> personFletter.hentGeografisktilknytning(fnr))
                     .getOrElseThrow(MapExceptionUtil::map);
         }
         else if(AutentiseringHjelper.erInternBruker()) {
             pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
-            return Try.of(() -> personFletter.hentBoligInformasjon(fodselsnummer))
+            return Try.of(() -> personFletter.hentGeografisktilknytning(fodselsnummer))
                     .getOrElseThrow(MapExceptionUtil::map);
         }
 

@@ -15,6 +15,7 @@ public class CacheConfig {
 
     public static final String ENHET = "enhet";
     public static final String PERSON = "person";
+    public static final String GEOGRAFISK_TILKNYTNING = "geografiskTilknytning";
     public static final String SIKKERHETSTILTAK = "sikkerhetstiltak";
     public static final String DIGITAL_KONTAKTINFO = "digital_kontaktinfo";
     public static final String EGEN_ANSATT = "egen_ansatt";
@@ -25,6 +26,7 @@ public class CacheConfig {
     private static final CacheConfiguration SIKKERHETSTILTAK_CACHE = kortCache(SIKKERHETSTILTAK);
     private static final CacheConfiguration DIGITAL_KONTAKTINFO_CACHE = kortCache(DIGITAL_KONTAKTINFO);
     private static final CacheConfiguration EGEN_ANSATT_CACHE = kortCache(EGEN_ANSATT);
+    private static final CacheConfiguration GEOGRAFISK_TILKNYTNING_CACHE = kortCache(GEOGRAFISK_TILKNYTNING);
 
     @Bean
     public CacheManager cacheManager() {
@@ -35,6 +37,7 @@ public class CacheConfig {
         config.addCache(ENHET_CACHE);
         config.addCache(DIGITAL_KONTAKTINFO_CACHE);
         config.addCache(EGEN_ANSATT_CACHE);
+        config.addCache(GEOGRAFISK_TILKNYTNING_CACHE);
         return new EhCacheCacheManager(net.sf.ehcache.CacheManager.newInstance(config));
     }
 
