@@ -81,7 +81,7 @@ public class PersonRessurs {
 
 
     @GET
-    @Path("/{fodselsnummer}/navn")
+    @Path("/navn")
     @Produces(APPLICATION_JSON)
     @ApiOperation(value = "Henter navnet til en person")
     public PersonNavn navn(@QueryParam("fnr") String fnr) {
