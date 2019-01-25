@@ -17,6 +17,7 @@ import static no.nav.brukerdialog.security.oidc.provider.AzureADB2CConfig.AZUREA
 import static no.nav.brukerdialog.security.oidc.provider.AzureADB2CConfig.AZUREAD_B2C_EXPECTED_AUDIENCE_PROPERTY_NAME;
 import static no.nav.dialogarena.config.fasit.FasitUtils.Zone.FSS;
 import static no.nav.dialogarena.config.fasit.FasitUtils.getDefaultEnvironment;
+import static no.nav.fo.veilarbperson.consumer.portefolje.PortefoljeService.NAIS_NAMESPACE_PROPERTY;
 import static no.nav.sbl.dialogarena.common.abac.pep.service.AbacServiceConfig.ABAC_ENDPOINT_URL_PROPERTY_NAME;
 
 
@@ -25,9 +26,11 @@ public class TestContext {
     public static final String APPLICATION_NAME = "veilarbperson";
 
     public static void setup() {
+
         String securityTokenService = FasitUtils.getBaseUrl("securityTokenService", FSS);
         ServiceUser srvveilarbperson = FasitUtils.getServiceUser("srvveilarbperson", APPLICATION_NAME);
 
+        setProperty(NAIS_NAMESPACE_PROPERTY, "test");
         setProperty(StsSecurityConstants.STS_URL_KEY, securityTokenService);
         setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, srvveilarbperson.getUsername());
         setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, srvveilarbperson.getPassword());

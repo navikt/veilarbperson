@@ -13,11 +13,15 @@ import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 
 @Component
 public class PortefoljeService implements Helsesjekk {
 
+    public static final String NAIS_NAMESPACE_PROPERTY = "NAIS_NAMESPACE";
+
     private static final Client restClient = RestUtils.createClient();
+    private final String apiBaseUrl = "http://veilarbportefolje." + getRequiredProperty(NAIS_NAMESPACE_PROPERTY) + ".svc.nais.local/veilarbportefolje/api";
 
     public Personinfo hentPersonInfo(String fodselsnummer, String cookie) {
         return apiTarget()
@@ -49,7 +53,7 @@ public class PortefoljeService implements Helsesjekk {
     }
 
     private WebTarget apiTarget() {
-        return restClient.target("http://veilarbportefolje/veilarbportefolje/api");
+        return restClient.target(apiBaseUrl);
     }
 
     private WebTarget pingPath() {
