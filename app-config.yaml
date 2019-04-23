@@ -45,6 +45,8 @@ fasitResources:
     resourceType: webserviceendpoint
   - alias: veilarbperson.properties
     resourceType: applicationproperties
+  - alias: Aktoer_v2
+    resourceType: webserviceendpoint
 
 # oidc med AzureAD B2C
   - alias: aad_b2c_clientid

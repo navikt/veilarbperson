@@ -107,6 +107,11 @@
             <groupId>no.nav.common</groupId>
             <artifactId>abac</artifactId>
         </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>aktor-klient</artifactId>
+        </dependency>
+
 
         <!-- Spring -->
         <dependency>
