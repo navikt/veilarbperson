@@ -7,6 +7,7 @@ import no.nav.apiapp.feil.Feil;
 import no.nav.apiapp.feil.FeilType;
 import no.nav.apiapp.security.PepClient;
 import no.nav.common.auth.SubjectHandler;
+import no.nav.dialogarena.aktor.AktorService;
 import no.nav.fo.veilarbperson.PersonFletter;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkService;
@@ -14,6 +15,7 @@ import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.portefolje.PortefoljeService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
+import no.nav.fo.veilarbperson.domain.person.AktoerId;
 import no.nav.fo.veilarbperson.domain.person.GeografiskTilknytning;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.domain.person.PersonNavn;
@@ -36,6 +38,7 @@ public class PersonRessurs {
     private final PersonFletter personFletter;
     private final PepClient pepClient;
     private final PersonService personService;
+    private final AktorService aktorService;
 
     public PersonRessurs(EnhetService enhetService,
                          DigitalKontaktinformasjonService digitalKontaktinformasjonService,
@@ -43,11 +46,13 @@ public class PersonRessurs {
                          EgenAnsattService egenAnsattService,
                          KodeverkService kodeverkService,
                          PortefoljeService portefoljeService,
-                         PepClient pepClient
+                         PepClient pepClient,
+                         AktorService aktorService
     ) {
 
         this.pepClient = pepClient;
         this.personService = personService;
+        this.aktorService = aktorService;
 
         personFletter = new PersonFletter(
                 enhetService,
@@ -79,6 +84,19 @@ public class PersonRessurs {
                 .getOrElseThrow(MapExceptionUtil::map);
     }
 
+    @GET
+    @Produces(APPLICATION_JSON)
+    @Path("/aktorid")
+    public AktoerId aktorid(@QueryParam("fnr") String fodselsnummer){
+        if(AutentiseringHjelper.erInternBruker()) {
+            pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
+            return aktorService.getAktorId(fodselsnummer)
+                    .map(AktoerId::new)
+                    .orElseThrow(() -> new IllegalArgumentException("Fant ikke aktør for fnr: " + fodselsnummer));
+        }
+
+        throw new Feil(FeilType.INGEN_TILGANG);
+    }
 
     @GET
     @Path("/navn")
