@@ -8,6 +8,7 @@ import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 
 import static net.sf.ehcache.store.MemoryStoreEvictionPolicy.LRU;
+import static no.nav.dialogarena.aktor.AktorConfig.AKTOR_ID_FROM_FNR_CACHE;
 import static no.nav.sbl.dialogarena.common.abac.pep.context.AbacContext.ABAC_CACHE;
 
 @EnableCaching
@@ -38,6 +39,7 @@ public class CacheConfig {
         config.addCache(DIGITAL_KONTAKTINFO_CACHE);
         config.addCache(EGEN_ANSATT_CACHE);
         config.addCache(GEOGRAFISK_TILKNYTNING_CACHE);
+        config.addCache(AKTOR_ID_FROM_FNR_CACHE);
         return new EhCacheCacheManager(net.sf.ehcache.CacheManager.newInstance(config));
     }
 
