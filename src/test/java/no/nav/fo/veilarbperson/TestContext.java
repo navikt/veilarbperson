@@ -2,22 +2,22 @@ package no.nav.fo.veilarbperson;
 
 import no.nav.brukerdialog.security.Constants;
 import no.nav.brukerdialog.tools.SecurityConstants;
-import no.nav.dialogarena.config.fasit.FasitUtils;
-import no.nav.dialogarena.config.fasit.ServiceUser;
-import no.nav.dialogarena.config.util.Util;
+import no.nav.fasit.FasitUtils;
+import no.nav.fasit.ServiceUser;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonConfig;
 import no.nav.fo.veilarbperson.consumer.kodeverk.KodeverkConfig;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.Norg2Config;
 import no.nav.fo.veilarbperson.consumer.tps.TpsConfig;
 import no.nav.sbl.dialogarena.common.abac.pep.CredentialConstants;
 import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants;
+import no.nav.testconfig.util.Util;
 
 import static java.lang.System.setProperty;
 import static no.nav.brukerdialog.security.oidc.provider.AzureADB2CConfig.AZUREAD_B2C_DISCOVERY_URL_PROPERTY_NAME;
 import static no.nav.brukerdialog.security.oidc.provider.AzureADB2CConfig.AZUREAD_B2C_EXPECTED_AUDIENCE_PROPERTY_NAME;
-import static no.nav.dialogarena.config.fasit.FasitUtils.Zone.FSS;
-import static no.nav.dialogarena.config.fasit.FasitUtils.getDefaultEnvironment;
-import static no.nav.dialogarena.config.fasit.FasitUtils.getWebServiceEndpoint;
+import static no.nav.fasit.FasitUtils.Zone.FSS;
+import static no.nav.fasit.FasitUtils.getDefaultEnvironment;
+import static no.nav.fasit.FasitUtils.getWebServiceEndpoint;
 import static no.nav.fo.veilarbperson.config.ApplicationConfig.AKTOER_V2_URL_PROPERTY;
 import static no.nav.fo.veilarbperson.consumer.portefolje.PortefoljeService.NAIS_NAMESPACE_PROPERTY;
 import static no.nav.sbl.dialogarena.common.abac.pep.service.AbacServiceConfig.ABAC_ENDPOINT_URL_PROPERTY_NAME;
@@ -57,7 +57,7 @@ public class TestContext {
         String issoHost = FasitUtils.getBaseUrl("isso-host");
         String issoJWS = FasitUtils.getBaseUrl("isso-jwks");
         String issoISSUER = FasitUtils.getBaseUrl("isso-issuer");
-        String issoIsAlive = FasitUtils.getBaseUrl("isso.isalive", FasitUtils.Zone.FSS);
+        String issoIsAlive = FasitUtils.getBaseUrl("isso.isalive", FSS);
         ServiceUser isso_rp_user = FasitUtils.getServiceUser("isso-rp-user", APPLICATION_NAME);
         String loginUrl = FasitUtils.getRestService("veilarblogin.redirect-url", getDefaultEnvironment()).getUrl();
 
