@@ -1,7 +1,15 @@
 package no.nav.fo.veilarbperson.consumer.tps.mappers;
 
 import no.nav.fo.veilarbperson.domain.person.*;
+import no.nav.fo.veilarbperson.domain.person.Gateadresse;
+import no.nav.fo.veilarbperson.domain.person.Matrikkeladresse;
+import no.nav.fo.veilarbperson.domain.person.UstrukturertAdresse;
+import no.nav.fo.veilarbperson.domain.person.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Diskresjonskoder;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Sivilstand;
 import org.hamcrest.CustomMatcher;
 import org.hamcrest.Matcher;
 import org.junit.Test;
@@ -26,7 +34,7 @@ public class PersonDataMapperTest {
     @Test
     public void fornavnMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "fornavn";
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(new WSPersonnavn().withFornavn(forventetVerdi));
+        final Person wsPerson = new Person().withPersonnavn(new Personnavn().withFornavn(forventetVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -35,7 +43,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void fornavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(null);
+        final Person wsPerson = new Person().withPersonnavn(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -44,7 +52,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void fornavnMappesTilNullDersomPersonnavnErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(new WSPersonnavn().withFornavn(null));
+        final Person wsPerson = new Person().withPersonnavn(new Personnavn().withFornavn(null));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -54,7 +62,7 @@ public class PersonDataMapperTest {
     @Test
     public void etternavnMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "etternavn";
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(new WSPersonnavn().withEtternavn(forventetVerdi));
+        final Person wsPerson = new Person().withPersonnavn(new Personnavn().withEtternavn(forventetVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -63,7 +71,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void etternavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(null);
+        final Person wsPerson = new Person().withPersonnavn(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -72,7 +80,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void etternavnMappesTilNullDersomEtternavnErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(new WSPersonnavn().withEtternavn(null));
+        final Person wsPerson = new Person().withPersonnavn(new Personnavn().withEtternavn(null));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -82,7 +90,7 @@ public class PersonDataMapperTest {
     @Test
     public void mellomnavnMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "mellomnavn";
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(new WSPersonnavn().withMellomnavn(forventetVerdi));
+        final Person wsPerson = new Person().withPersonnavn(new Personnavn().withMellomnavn(forventetVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -91,7 +99,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void mellomnavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(null);
+        final Person wsPerson = new Person().withPersonnavn(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -100,7 +108,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void mellomnavnMappesTilNullDersomMellomnavnErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(new WSPersonnavn().withMellomnavn(null));
+        final Person wsPerson = new Person().withPersonnavn(new Personnavn().withMellomnavn(null));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -110,7 +118,7 @@ public class PersonDataMapperTest {
     @Test
     public void sammensattNavnMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "sammensattNavn";
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(new WSPersonnavn().withSammensattNavn(forventetVerdi));
+        final Person wsPerson = new Person().withPersonnavn(new Personnavn().withSammensattNavn(forventetVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -119,7 +127,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void sammensattNavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(null);
+        final Person wsPerson = new Person().withPersonnavn(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -128,7 +136,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void sammensattNavnMappesTilNullDersomMellomnavnErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withPersonnavn(new WSPersonnavn().withSammensattNavn(null));
+        final Person wsPerson = new Person().withPersonnavn(new Personnavn().withSammensattNavn(null));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -138,7 +146,7 @@ public class PersonDataMapperTest {
     @Test
     public void fodselsnummerMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "fodseslnummer";
-        final WSPerson wsPerson = new WSPerson().withAktoer(new WSPersonIdent().withIdent(new WSNorskIdent().withIdent(forventetVerdi)));
+        final Person wsPerson = new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(forventetVerdi)));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -147,7 +155,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void fodselsnummerMappesTilNullDersomWSAktoerErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson();
+        final Person wsPerson = new Person();
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -156,7 +164,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void fodselsnummerMappesTilNullDersomWSNorskIdentErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withAktoer(new WSPersonIdent());
+        final Person wsPerson = new Person().withAktoer(new PersonIdent());
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -165,7 +173,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void fodselsnummerMappesTilNullDersomIdentErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withAktoer(new WSPersonIdent().withIdent(new WSNorskIdent().withIdent(null)));
+        final Person wsPerson = new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(null)));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -178,7 +186,7 @@ public class PersonDataMapperTest {
         final int forventetManed = 12;
         final int forventetDag = 13;
         final XMLGregorianCalendar foedselsdato = lagDato(forventetAr, forventetManed, forventetDag);
-        final WSPerson wsPerson = new WSPerson().withFoedselsdato(new WSFoedselsdato().withFoedselsdato(foedselsdato));
+        final Person wsPerson = new Person().withFoedselsdato(new Foedselsdato().withFoedselsdato(foedselsdato));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -187,7 +195,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void fodselsdatoMappesTilNullDersomWSFoedselsdatoErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withFoedselsdato(null);
+        final Person wsPerson = new Person().withFoedselsdato(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -196,7 +204,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void fodselsdatoMappesTilNullDersomFoedselsdatoErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withFoedselsdato(null);
+        final Person wsPerson = new Person().withFoedselsdato(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -206,7 +214,7 @@ public class PersonDataMapperTest {
     @Test
     public void kjonnMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "K";
-        final WSPerson wsPerson = new WSPerson().withKjoenn(new WSKjoenn().withKjoenn(new WSKjoennstyper().withValue(forventetVerdi)));
+        final Person wsPerson = new Person().withKjoenn(new Kjoenn().withKjoenn(new Kjoennstyper().withValue(forventetVerdi)));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -215,7 +223,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void kjonnMappesTilNullDersomWSKjoennErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withKjoenn(null);
+        final Person wsPerson = new Person().withKjoenn(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -224,7 +232,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void kjonnMappesTilNullDersomWSKjoennstyperErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withKjoenn(new WSKjoenn().withKjoenn(null));
+        final Person wsPerson = new Person().withKjoenn(new Kjoenn().withKjoenn(null));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -233,7 +241,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void kjonnMappesTilNullDersomValueErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withKjoenn(new WSKjoenn().withKjoenn(new WSKjoennstyper().withValue(null)));
+        final Person wsPerson = new Person().withKjoenn(new Kjoenn().withKjoenn(new Kjoennstyper().withValue(null)));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -243,8 +251,8 @@ public class PersonDataMapperTest {
     @Test
     public void kode6MappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "6";
-        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(new WSDiskresjonskoder()
-                .withValue(Diskresjonskoder.STRENGT_FORTROLIG_ADRESSE.kodeverkVerdi));
+        final Person wsPerson = new Person().withDiskresjonskode(new Diskresjonskoder()
+                .withValue(no.nav.fo.veilarbperson.domain.person.Diskresjonskoder.STRENGT_FORTROLIG_ADRESSE.kodeverkVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -254,8 +262,8 @@ public class PersonDataMapperTest {
     @Test
     public void kode7MappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "7";
-        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(new WSDiskresjonskoder()
-                .withValue(Diskresjonskoder.FORTROLIG_ADRESSE.kodeverkVerdi));
+        final Person wsPerson = new Person().withDiskresjonskode(new Diskresjonskoder()
+                .withValue(no.nav.fo.veilarbperson.domain.person.Diskresjonskoder.FORTROLIG_ADRESSE.kodeverkVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -264,7 +272,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void diskresjonskodeMappesTilNullDersomWSDiskresjonskoderErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(null);
+        final Person wsPerson = new Person().withDiskresjonskode(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -273,7 +281,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void diskresjonskodeMappesTilNullDersomValueErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withDiskresjonskode(new WSDiskresjonskoder().withValue(null));
+        final Person wsPerson = new Person().withDiskresjonskode(new Diskresjonskoder().withValue(null));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -284,8 +292,8 @@ public class PersonDataMapperTest {
     public void kontonummerMappesDersomBankkontoErNorge() throws Exception {
         final String forventetVerdi = "123456789";
 
-        final WSPerson wsPerson = new WSBruker().withBankkonto(
-                new WSBankkontoNorge().withBankkonto(new WSBankkontonummer().withBankkontonummer(forventetVerdi))
+        final Person wsPerson = new Bruker().withBankkonto(
+                new BankkontoNorge().withBankkonto(new Bankkontonummer().withBankkontonummer(forventetVerdi))
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -296,8 +304,8 @@ public class PersonDataMapperTest {
     @Test
     public void kontonummerMappesDersomBankkontoErUtland() throws Exception {
         final String forventetVerdi = "987654321";
-        final WSPerson wsPerson = new WSBruker().withBankkonto(
-                new WSBankkontoUtland().withBankkontoUtland(new WSBankkontonummerUtland().withBankkontonummer(forventetVerdi))
+        final Person wsPerson = new Bruker().withBankkonto(
+                new BankkontoUtland().withBankkontoUtland(new BankkontonummerUtland().withBankkontonummer(forventetVerdi))
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -307,7 +315,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void kontonummerMappesTilNullDersomWSBankkontoErNull() throws Exception {
-        final WSPerson wsPerson = new WSBruker().withBankkonto(null);
+        final Person wsPerson = new Bruker().withBankkonto(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -316,8 +324,8 @@ public class PersonDataMapperTest {
 
     @Test
     public void kontonummerMappesTilNullDersomWSBankkontonummerErNull() throws Exception {
-        final WSPerson wsPerson = new WSBruker().withBankkonto(
-                new WSBankkontoNorge().withBankkonto(null)
+        final Person wsPerson = new Bruker().withBankkonto(
+                new BankkontoNorge().withBankkonto(null)
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -327,8 +335,8 @@ public class PersonDataMapperTest {
 
     @Test
     public void kontonummerMappesTilNullDersomWSBankkontonummerVerdiErNull() throws Exception {
-        final WSPerson wsPerson = new WSBruker().withBankkonto(
-                new WSBankkontoNorge().withBankkonto(new WSBankkontonummer().withBankkontonummer(null))
+        final Person wsPerson = new Bruker().withBankkonto(
+                new BankkontoNorge().withBankkonto(new Bankkontonummer().withBankkontonummer(null))
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -338,8 +346,8 @@ public class PersonDataMapperTest {
 
     @Test
     public void kontonummerMappesTilNullDersomWSBankkontonummerUtlandErNull() throws Exception {
-        final WSPerson wsPerson = new WSBruker().withBankkonto(
-                new WSBankkontoUtland().withBankkontoUtland(null)
+        final Person wsPerson = new Bruker().withBankkonto(
+                new BankkontoUtland().withBankkontoUtland(null)
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -349,8 +357,8 @@ public class PersonDataMapperTest {
 
     @Test
     public void kontonummerMappesTilNullDersomWSBankkontonummerUtlandVerdiErNull() throws Exception {
-        final WSPerson wsPerson = new WSBruker().withBankkonto(
-                new WSBankkontoUtland().withBankkontoUtland(new WSBankkontonummerUtland().withBankkontonummer(null))
+        final Person wsPerson = new Bruker().withBankkonto(
+                new BankkontoUtland().withBankkontoUtland(new BankkontonummerUtland().withBankkontonummer(null))
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -361,8 +369,8 @@ public class PersonDataMapperTest {
     @Test
     public void geografiskTilknytningKommuneMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "2890";
-        final WSPerson wsPerson = new WSBruker().withGeografiskTilknytning(
-                new WSKommune().withGeografiskTilknytning(forventetVerdi));
+        final Person wsPerson = new Bruker().withGeografiskTilknytning(
+                new Kommune().withGeografiskTilknytning(forventetVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -372,8 +380,8 @@ public class PersonDataMapperTest {
     @Test
     public void geografiskTilknytningLandMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "SWE";
-        final WSPerson wsPerson = new WSBruker().withGeografiskTilknytning(
-                new WSLand().withGeografiskTilknytning(forventetVerdi));
+        final Person wsPerson = new Bruker().withGeografiskTilknytning(
+                new Land().withGeografiskTilknytning(forventetVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -383,8 +391,8 @@ public class PersonDataMapperTest {
     @Test
     public void geografiskTilknytningBydelMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "289033";
-        final WSPerson wsPerson = new WSBruker().withGeografiskTilknytning(
-                new WSBydel().withGeografiskTilknytning(forventetVerdi));
+        final Person wsPerson = new Bruker().withGeografiskTilknytning(
+                new Bydel().withGeografiskTilknytning(forventetVerdi));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -393,7 +401,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void geografiskTilknytningMappesTilNullDersomInputIkkeErWSBruker() throws Exception {
-        final WSPerson wsPerson = new WSPerson();
+        final Person wsPerson = new Person();
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -402,7 +410,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void geografiskTilknytningMappesTilNullDersomWSAnsvarligEnhetErNull() throws Exception {
-        final WSPerson wsPerson = new WSBruker().withGeografiskTilknytning(null);
+        final Person wsPerson = new Bruker().withGeografiskTilknytning(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -411,7 +419,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void geografiskTilknytningMappesTilNullDersomGeografiskTilknytning() throws Exception {
-        final WSPerson wsPerson = new WSBruker().withGeografiskTilknytning(new WSBydel().withGeografiskTilknytning(null));
+        final Person wsPerson = new Bruker().withGeografiskTilknytning(new Bydel().withGeografiskTilknytning(null));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -421,8 +429,8 @@ public class PersonDataMapperTest {
     @Test
     public void statsborgerskapMappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "NORGE";
-        final WSPerson wsPerson = new WSPerson().withStatsborgerskap(
-                new WSStatsborgerskap().withLand(new WSLandkoder().withValue(forventetVerdi))
+        final Person wsPerson = new Person().withStatsborgerskap(
+                new Statsborgerskap().withLand(new Landkoder().withValue(forventetVerdi))
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -432,7 +440,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void statsborgerskapMappesTilNullDersomWSStatsborgerskapErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withStatsborgerskap(null);
+        final Person wsPerson = new Person().withStatsborgerskap(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -441,8 +449,8 @@ public class PersonDataMapperTest {
 
     @Test
     public void statsborgerskapMappesTilNullDersomLandErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withStatsborgerskap(
-                new WSStatsborgerskap().withLand(null)
+        final Person wsPerson = new Person().withStatsborgerskap(
+                new Statsborgerskap().withLand(null)
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -452,8 +460,8 @@ public class PersonDataMapperTest {
 
     @Test
     public void statsborgerskapMappesTilNullDersomValueErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withStatsborgerskap(
-                new WSStatsborgerskap().withLand(new WSLandkoder().withValue(null))
+        final Person wsPerson = new Person().withStatsborgerskap(
+                new Statsborgerskap().withLand(new Landkoder().withValue(null))
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -467,9 +475,9 @@ public class PersonDataMapperTest {
         final int forventetAr = 1999;
         final int forventetManed = 12;
         final int forventetDag = 13;
-        final WSPerson wsPerson = new WSPerson().withSivilstand(
-                new WSSivilstand().withFomGyldighetsperiode(lagDato(forventetAr, forventetManed, forventetDag))
-                        .withSivilstand(new WSSivilstander().withValue(forventetSiviltilstand))
+        final Person wsPerson = new Person().withSivilstand(
+                new Sivilstand().withFomGyldighetsperiode(lagDato(forventetAr, forventetManed, forventetDag))
+                        .withSivilstand(new Sivilstander().withValue(forventetSiviltilstand))
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -481,7 +489,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void siviltilstandMappesTilNullDersomWSSivilstandErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withSivilstand(null);
+        final Person wsPerson = new Person().withSivilstand(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -493,8 +501,8 @@ public class PersonDataMapperTest {
         final int forventetAr = 1999;
         final int forventetManed = 12;
         final int forventetDag = 13;
-        final WSPerson wsPerson = new WSPerson().withDoedsdato(
-                new WSDoedsdato().withDoedsdato(lagDato(forventetAr, forventetManed, forventetDag))
+        final Person wsPerson = new Person().withDoedsdato(
+                new Doedsdato().withDoedsdato(lagDato(forventetAr, forventetManed, forventetDag))
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -504,7 +512,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void dodsdatoMappesTilNullDersomWSDoedsdatoErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withDoedsdato(null);
+        final Person wsPerson = new Person().withDoedsdato(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -513,7 +521,7 @@ public class PersonDataMapperTest {
 
     @Test
     public void dodsdatoMappesTilNullDersomDoedsdatoErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withDoedsdato(new WSDoedsdato().withDoedsdato(null));
+        final Person wsPerson = new Person().withDoedsdato(new Doedsdato().withDoedsdato(null));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
@@ -528,9 +536,9 @@ public class PersonDataMapperTest {
         final String forventetHusbokstav = "A";
         final int forventetGatenummer = 1;
         final String forventetKommunenummer = "1234";
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
-                new WSBostedsadresse().withStrukturertAdresse(
-                        lagGateadresse(forventetGatenavn, forventetGatenummer, forventetHusnummer, forventetHusbokstav, forventetKommunenummer, new WSPostnummer().withValue(forventetPostnummer))
+        final Person wsPerson = new Person().withBostedsadresse(
+                new Bostedsadresse().withStrukturertAdresse(
+                        lagGateadresse(forventetGatenavn, forventetGatenummer, forventetHusnummer, forventetHusbokstav, forventetKommunenummer, new Postnummer().withValue(forventetPostnummer))
                 )
         );
 
@@ -554,9 +562,9 @@ public class PersonDataMapperTest {
 
     @Test
     public void verdierIWSGateadresseMappesTilNullDersomDeErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
-                new WSBostedsadresse().withStrukturertAdresse(
-                        lagGateadresse(null, 0, 0, null, null, new WSPostnummer())
+        final Person wsPerson = new Person().withBostedsadresse(
+                new Bostedsadresse().withStrukturertAdresse(
+                        lagGateadresse(null, 0, 0, null, null, new Postnummer())
                 )
         );
 
@@ -586,8 +594,8 @@ public class PersonDataMapperTest {
         final String forventetSeksjonsnummer = "seksjonsnummer";
         final String forventetUndernummer = "undernummer";
         final String forventetEiendomsnavn = "eiendomsnavn";
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
-                new WSBostedsadresse().withStrukturertAdresse(
+        final Person wsPerson = new Person().withBostedsadresse(
+                new Bostedsadresse().withStrukturertAdresse(
                         lagMatrikkeladresse(
                                 forventetEiendomsnavn,
                                 forventetGardsnummer,
@@ -620,8 +628,8 @@ public class PersonDataMapperTest {
 
     @Test
     public void verdierIWSMatrikkeladresseMappesTilNullDersomDeErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
-                new WSBostedsadresse().withStrukturertAdresse(
+        final Person wsPerson = new Person().withBostedsadresse(
+                new Bostedsadresse().withStrukturertAdresse(
                         lagMatrikkeladresse(null, null, null, null, null, null, null)
                 )
         );
@@ -640,11 +648,11 @@ public class PersonDataMapperTest {
         final String forventetPostboksanlegg = "postboksanlegg";
         final String forventetPostboksnummer = "postboksnummer";
         final String forventetPostnummer = "0000";
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
-                new WSPostboksadresseNorsk()
+        final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
+                new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
                         .withPostboksanlegg(forventetPostboksanlegg)
                         .withPostboksnummer(forventetPostboksnummer)
-                        .withPoststed(new WSPostnummer().withValue(forventetPostnummer))
+                        .withPoststed(new Postnummer().withValue(forventetPostnummer))
                 )
         );
 
@@ -661,11 +669,11 @@ public class PersonDataMapperTest {
 
     @Test
     public void verdierIWSPostadresseNorskTilNullDersomDeErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
-                new WSPostboksadresseNorsk()
+        final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
+                new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
                         .withPostboksanlegg(null)
                         .withPostboksnummer(null)
-                        .withPoststed(new WSPostnummer().withValue(null))
+                        .withPoststed(new Postnummer().withValue(null))
                 )
         );
 
@@ -683,10 +691,10 @@ public class PersonDataMapperTest {
     @Test
     public void wsStrukturertAdresseLandkodeMappesDersomDenEksisterer() throws Exception {
         final String forventetLandkode = "NO";
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
-                new WSPostboksadresseNorsk()
-                        .withPoststed(new WSPostnummer())
-                        .withLandkode(new WSLandkoder().withValue(forventetLandkode)))
+        final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
+                new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
+                        .withPoststed(new Postnummer())
+                        .withLandkode(new Landkoder().withValue(forventetLandkode)))
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -698,9 +706,9 @@ public class PersonDataMapperTest {
 
     @Test
     public void wsStrukturertAdresseLandkodeMappesTilNullDersomDenErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
-                new WSPostboksadresseNorsk()
-                        .withPoststed(new WSPostnummer())
+        final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
+                new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
+                        .withPoststed(new Postnummer())
                         .withLandkode(null))
         );
 
@@ -714,9 +722,9 @@ public class PersonDataMapperTest {
     @Test
     public void wsStrukturertAdresseTilleggsadresseMappesDersomDenEksisterer() throws Exception {
         final String forventetTilleggsadresse = "C/O tilleggsadresse";
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
-                new WSPostboksadresseNorsk()
-                        .withPoststed(new WSPostnummer())
+        final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
+                new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
+                        .withPoststed(new Postnummer())
                         .withTilleggsadresse(forventetTilleggsadresse)));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -727,9 +735,9 @@ public class PersonDataMapperTest {
 
     @Test
     public void wsStrukturertAdresseTilleggsadresseMappesTilNullDersomDenErNull() {
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
-                new WSPostboksadresseNorsk()
-                        .withPoststed(new WSPostnummer())
+        final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
+                new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
+                        .withPoststed(new Postnummer())
                         .withTilleggsadresse(null)));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -740,10 +748,10 @@ public class PersonDataMapperTest {
 
     @Test
     public void wsStrukturertAdresseLandkodeMappesTilNullDersomValueDenErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(new WSBostedsadresse().withStrukturertAdresse(
-                new WSPostboksadresseNorsk()
-                        .withPoststed(new WSPostnummer())
-                        .withLandkode(new WSLandkoder().withValue(null)))
+        final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
+                new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
+                        .withPoststed(new Postnummer())
+                        .withLandkode(new Landkoder().withValue(null)))
         );
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -761,9 +769,9 @@ public class PersonDataMapperTest {
         final String forventetHusbokstav = "A";
         final int forventetGatenummer = 1;
         final String forventetKommunenummer = "1234";
-        final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
-                new WSMidlertidigPostadresseNorge().withStrukturertAdresse(
-                        lagGateadresse(forventetGatenavn, forventetGatenummer, forventetHusnummer, forventetHusbokstav, forventetKommunenummer, new WSPostnummer().withValue(forventetPostnummer))
+        final Person wsPerson = new Bruker().withMidlertidigPostadresse(
+                new MidlertidigPostadresseNorge().withStrukturertAdresse(
+                        lagGateadresse(forventetGatenavn, forventetGatenummer, forventetHusnummer, forventetHusbokstav, forventetKommunenummer, new Postnummer().withValue(forventetPostnummer))
                 )
         );
 
@@ -786,9 +794,9 @@ public class PersonDataMapperTest {
 
     @Test
     public void wsMidlertidigPostadresseNorgeMappesTilNullDersomDenErNull() throws Exception {
-        final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
-                new WSMidlertidigPostadresseNorge().withStrukturertAdresse(
-                        lagGateadresse(null, 0, 0, null, null, new WSPostnummer())
+        final Person wsPerson = new Bruker().withMidlertidigPostadresse(
+                new MidlertidigPostadresseNorge().withStrukturertAdresse(
+                        lagGateadresse(null, 0, 0, null, null, new Postnummer())
                 )
         );
 
@@ -803,9 +811,9 @@ public class PersonDataMapperTest {
 
     @Test
     public void wsMidlertidigPostadresseNorgeMappesTilNullDersomPersonIkkeErBruker() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
-                new WSBostedsadresse().withStrukturertAdresse(
-                        lagGateadresse("gatenavn", 0, 0, "Husbokstav", "Kommunenummer", new WSPostnummer().withValue("Poststed"))
+        final Person wsPerson = new Person().withBostedsadresse(
+                new Bostedsadresse().withStrukturertAdresse(
+                        lagGateadresse("gatenavn", 0, 0, "Husbokstav", "Kommunenummer", new Postnummer().withValue("Poststed"))
                 )
         );
 
@@ -820,8 +828,8 @@ public class PersonDataMapperTest {
         String forventetAdresselinje3 = "Adresselinje3";
         String forventetAdresselinje4 = "Adresselinje4";
         String forventetLandkode = "LAND";
-        final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
-                new WSMidlertidigPostadresseUtland().withUstrukturertAdresse(
+        final Person wsPerson = new Bruker().withMidlertidigPostadresse(
+                new MidlertidigPostadresseUtland().withUstrukturertAdresse(
                         lagUstrukturertAdresse(forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode)
                 ));
 
@@ -833,8 +841,8 @@ public class PersonDataMapperTest {
 
     @Test
     public void wsMidlertidigPostadresseUtlandMappesTilNullDersomDenErNull()throws Exception {
-        final WSPerson wsPerson = new WSBruker().withMidlertidigPostadresse(
-                new WSMidlertidigPostadresseUtland().withUstrukturertAdresse(
+        final Person wsPerson = new Bruker().withMidlertidigPostadresse(
+                new MidlertidigPostadresseUtland().withUstrukturertAdresse(
                         lagUstrukturertAdresse(null, null, null, null, null)
                 ));
 
@@ -845,9 +853,9 @@ public class PersonDataMapperTest {
     }
     @Test
     public void wsMidlertidigPostadresseUtlandetMappesTilNullDersomPersonIkkeErBruker() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withBostedsadresse(
-                new WSBostedsadresse().withStrukturertAdresse(
-                        lagGateadresse(null, 0, 0, null, null, new WSPostnummer().withValue(null))
+        final Person wsPerson = new Person().withBostedsadresse(
+                new Bostedsadresse().withStrukturertAdresse(
+                        lagGateadresse(null, 0, 0, null, null, new Postnummer().withValue(null))
                 ));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
@@ -861,8 +869,8 @@ public class PersonDataMapperTest {
         String forventetAdresselinje3 = "Adresselinje3";
         String forventetAdresselinje4 = "Adresselinje4";
         String forventetLandkode = "LAND";
-        final WSPerson wsPerson = new WSPerson().withPostadresse(
-                new WSPostadresse().withUstrukturertAdresse(
+        final Person wsPerson = new Person().withPostadresse(
+                new no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse().withUstrukturertAdresse(
                         lagUstrukturertAdresse(forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode)
                 ));
 
@@ -875,8 +883,8 @@ public class PersonDataMapperTest {
 
     @Test
     public void wsPostadresseSkalMappesTilNullDersomDenErNull() throws Exception {
-        final WSPerson wsPerson = new WSPerson().withPostadresse(
-                new WSPostadresse().withUstrukturertAdresse(lagUstrukturertAdresse(null, null, null, null, null)));
+        final Person wsPerson = new Person().withPostadresse(
+                new Postadresse().withUstrukturertAdresse(lagUstrukturertAdresse(null, null, null, null, null)));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
         assertThat(personData.getPostAdresse(), notNullValue());
@@ -884,14 +892,14 @@ public class PersonDataMapperTest {
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null, null);
     }
 
-    private WSUstrukturertAdresse lagUstrukturertAdresse(String adresselinje1, String adresselinje2, String adresselinje3, String adresselinje4, String landkode) {
+    private no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse lagUstrukturertAdresse(String adresselinje1, String adresselinje2, String adresselinje3, String adresselinje4, String landkode) {
 
-        return new WSUstrukturertAdresse()
+        return new no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse()
                 .withAdresselinje1(adresselinje1)
                 .withAdresselinje2(adresselinje2)
                 .withAdresselinje3(adresselinje3)
                 .withAdresselinje4(adresselinje4)
-                .withLandkode(new WSLandkoder().withValue(landkode));
+                .withLandkode(new Landkoder().withValue(landkode));
     }
 
     private void sjekkAtUstrukturertAdresseHarForventaVerdier(
@@ -911,9 +919,9 @@ public class PersonDataMapperTest {
         assertThat(ustrukturertAdresse.getLandkode(), is(forventaLandkode));
     }
 
-    private WSGateadresse lagGateadresse(String gatenavn, int gatenummer, int husnummer, String husbokstav, String kommunenummer, WSPostnummer poststed) {
+    private no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse lagGateadresse(String gatenavn, int gatenummer, int husnummer, String husbokstav, String kommunenummer, Postnummer poststed) {
 
-        return new WSGateadresse()
+        return new no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse()
                 .withGatenavn(gatenavn)
                 .withGatenummer(gatenummer)
                 .withHusbokstav(husbokstav)
@@ -939,7 +947,7 @@ public class PersonDataMapperTest {
         assertThat(gateadresse.getPostnummer(), is(forventetPostnummer));
     }
 
-    private WSMatrikkeladresse lagMatrikkeladresse(
+    private no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse lagMatrikkeladresse(
             String eiendomsnavn,
             String gardsnummer,
             String bruksnummer,
@@ -948,11 +956,11 @@ public class PersonDataMapperTest {
             String undernummer,
             String postnummer) {
 
-        return new WSMatrikkeladresse()
+        return new no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse()
                 .withEiendomsnavn(eiendomsnavn)
-                .withPoststed(new WSPostnummer().withValue(postnummer))
+                .withPoststed(new Postnummer().withValue(postnummer))
                 .withMatrikkelnummer(
-                        new WSMatrikkelnummer()
+                        new no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkelnummer()
                                 .withGaardsnummer(gardsnummer)
                                 .withBruksnummer(bruksnummer)
                                 .withFestenummer(festenummer)

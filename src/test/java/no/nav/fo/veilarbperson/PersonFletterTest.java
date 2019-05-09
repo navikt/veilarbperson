@@ -13,8 +13,10 @@ import no.nav.fo.veilarbperson.domain.person.Sikkerhetstiltak;
 import no.nav.fo.veilarbperson.domain.person.Sivilstand;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLEnkeltKodeverk;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLKode;
-import no.nav.tjeneste.virksomhet.person.v3.HentPersonPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.HentPersonSikkerhetsbegrensning;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
+import no.nav.tjeneste.virksomhet.person.v3.feil.PersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.feil.Sikkerhetsbegrensning;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -98,14 +100,14 @@ public class PersonFletterTest {
 
     @Test(expected = HentPersonPersonIkkeFunnet.class)
     public void hentPersonForIkkeEksisterendePersonSkalKasteFeil() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
-        when(personService.hentPerson(anyString())).thenThrow(new HentPersonPersonIkkeFunnet());
+        when(personService.hentPerson(anyString())).thenThrow(new HentPersonPersonIkkeFunnet("", new PersonIkkeFunnet()));
         String fnr = TestUtil.fodselsnummerForDato("1988-02-17");
         personFletter.hentPerson(fnr, "");
     }
 
     @Test(expected = HentPersonSikkerhetsbegrensning.class)
     public void hentPersonNarSaksbehandlerIkkeHarTilgangSkalKasteFeil() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
-        when(personService.hentPerson(anyString())).thenThrow(new HentPersonSikkerhetsbegrensning());
+        when(personService.hentPerson(anyString())).thenThrow(new HentPersonSikkerhetsbegrensning("", new Sikkerhetsbegrensning()));
         String fnr = TestUtil.fodselsnummerForDato("1988-02-17");
         personFletter.hentPerson(fnr, "");
     }

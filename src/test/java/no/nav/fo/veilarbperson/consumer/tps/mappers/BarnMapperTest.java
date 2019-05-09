@@ -1,10 +1,6 @@
 package no.nav.fo.veilarbperson.consumer.tps.mappers;
 
 import no.nav.fo.veilarbperson.domain.person.Familiemedlem;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.WSDoedsdato;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.WSFamilierelasjon;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.WSFamilierelasjoner;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.WSPerson;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -20,11 +16,11 @@ public class BarnMapperTest {
 
     @Test
     public void resultatSkalInneholdeDodsdato() throws Exception {
-        List<WSFamilierelasjon> familierelasjoner = new ArrayList<>();
+        List<no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon> familierelasjoner = new ArrayList<>();
 
-        familierelasjoner.add(new WSFamilierelasjon()
-                .withTilRolle(new WSFamilierelasjoner().withValue("BARN"))
-                .withTilPerson(new WSPerson().withDoedsdato(new WSDoedsdato().withDoedsdato(lagDato(2017,03,30)))));
+        familierelasjoner.add(new no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon()
+                .withTilRolle(new no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjoner().withValue("BARN"))
+                .withTilPerson(new no.nav.tjeneste.virksomhet.person.v3.informasjon.Person().withDoedsdato(new no.nav.tjeneste.virksomhet.person.v3.informasjon.Doedsdato().withDoedsdato(lagDato(2017,03,30)))));
         BarnMapper barnMapper = new BarnMapper();
 
         List<Familiemedlem> familimedlemmer = barnMapper.familierelasjonerTilBarn(familierelasjoner);
@@ -33,11 +29,11 @@ public class BarnMapperTest {
 
     @Test
     public void resultatSkalHaNullSomDoedsdato() throws Exception {
-        List<WSFamilierelasjon> familierelasjoner = new ArrayList<>();
+        List<no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon> familierelasjoner = new ArrayList<>();
 
-        familierelasjoner.add(new WSFamilierelasjon()
-                .withTilRolle(new WSFamilierelasjoner().withValue("BARN"))
-                .withTilPerson(new WSPerson()));
+        familierelasjoner.add(new no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon()
+                .withTilRolle(new no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjoner().withValue("BARN"))
+                .withTilPerson(new no.nav.tjeneste.virksomhet.person.v3.informasjon.Person()));
         BarnMapper barnMapper = new BarnMapper();
 
         List<Familiemedlem> familimedlemmer = barnMapper.familierelasjonerTilBarn(familierelasjoner);
