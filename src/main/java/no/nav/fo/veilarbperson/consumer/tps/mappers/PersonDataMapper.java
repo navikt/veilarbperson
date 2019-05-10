@@ -132,7 +132,8 @@ public class PersonDataMapper {
         MidlertidigAdresseUtland midlertidigAdresseUtland = null;
 
         if (person instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) {
-            no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresse wsMidlertidigPostadresse = ((no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) person).getMidlertidigPostadresse();
+            no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresse wsMidlertidigPostadresse =
+                    ((no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) person).getMidlertidigPostadresse();
             if (wsMidlertidigPostadresse != null && wsMidlertidigPostadresse instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.MidlertidigPostadresseUtland) {
                 midlertidigAdresseUtland = new MidlertidigAdresseUtland();
                 midlertidigAdresseUtland.withUstrukturertAdresse(tilUstrukturertAdresse(
@@ -259,7 +260,8 @@ public class PersonDataMapper {
 
     private static String kanskjeKontonummer(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
         if (person instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) {
-            no.nav.tjeneste.virksomhet.person.v3.informasjon.Bankkonto bankkonto = ((no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) person).getBankkonto();
+            no.nav.tjeneste.virksomhet.person.v3.informasjon.Bankkonto bankkonto =
+                    ((no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) person).getBankkonto();
             return kanskjeKontonummer(bankkonto);
         }
         return null;
@@ -267,12 +269,16 @@ public class PersonDataMapper {
 
     private static String kanskjeKontonummer(no.nav.tjeneste.virksomhet.person.v3.informasjon.Bankkonto bankkonto) {
         if (bankkonto instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontoNorge) {
-            no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontoNorge bankkontoNorge = (no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontoNorge) bankkonto;
-            return ofNullable(bankkontoNorge.getBankkonto()).map(no.nav.tjeneste.virksomhet.person.v3.informasjon.Bankkontonummer::getBankkontonummer)
+            no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontoNorge bankkontoNorge =
+                    (no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontoNorge) bankkonto;
+            return ofNullable(bankkontoNorge.getBankkonto())
+                    .map(no.nav.tjeneste.virksomhet.person.v3.informasjon.Bankkontonummer::getBankkontonummer)
                     .orElse(null);
         } else if (bankkonto instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontoUtland) {
-            no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontoUtland wsBankkontoUtland = (no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontoUtland) bankkonto;
-            return ofNullable(wsBankkontoUtland.getBankkontoUtland()).map(no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontonummerUtland::getBankkontonummer)
+            no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontoUtland wsBankkontoUtland =
+                    (no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontoUtland) bankkonto;
+            return ofNullable(wsBankkontoUtland.getBankkontoUtland())
+                    .map(no.nav.tjeneste.virksomhet.person.v3.informasjon.BankkontonummerUtland::getBankkontonummer)
                     .orElse(null);
         }
         return null;
