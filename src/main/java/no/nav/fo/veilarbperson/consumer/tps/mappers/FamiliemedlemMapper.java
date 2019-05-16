@@ -2,7 +2,6 @@ package no.nav.fo.veilarbperson.consumer.tps.mappers;
 
 import no.nav.fo.veilarbperson.domain.person.Familiemedlem;
 import no.nav.fo.veilarbperson.utils.FodselsnummerHjelper;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.List;
@@ -13,9 +12,9 @@ public class FamiliemedlemMapper {
 
     private static final String EKTEFELLE = "EKTE";
 
-    static Familiemedlem familierelasjonTilFamiliemedlem(WSFamilierelasjon familierelasjon) {
+    static Familiemedlem familierelasjonTilFamiliemedlem(no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon familierelasjon) {
 
-        WSPerson person = familierelasjon.getTilPerson();
+        no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person = familierelasjon.getTilPerson();
         final String fodselsnummer = kanskjeFodselsnummer(person);
 
         return Familiemedlem.builder()
@@ -30,8 +29,8 @@ public class FamiliemedlemMapper {
                 .build();
     }
 
-    Familiemedlem partner(List<WSFamilierelasjon> familierelasjoner) {
-        for (WSFamilierelasjon relasjon : familierelasjoner) {
+    Familiemedlem partner(List<no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon> familierelasjoner) {
+        for (no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon relasjon : familierelasjoner) {
             if (EKTEFELLE.equals(relasjon.getTilRolle().getValue())) {
                 return familierelasjonTilFamiliemedlem(relasjon);
             }
@@ -39,35 +38,35 @@ public class FamiliemedlemMapper {
         return null;
     }
 
-    private static String kanskjeFornavn(WSPerson person) {
+    private static String kanskjeFornavn(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
         return ofNullable(person.getPersonnavn())
-                .map(WSPersonnavn::getFornavn)
+                .map(no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn::getFornavn)
                 .orElse(null);
     }
 
-    private static String kanskjeEtternavn(WSPerson person) {
+    private static String kanskjeEtternavn(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
         return ofNullable(person.getPersonnavn())
-                .map(WSPersonnavn::getEtternavn)
+                .map(no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn::getEtternavn)
                 .orElse(null);
     }
 
-    private static String kanskjeSammensattNavn(WSPerson person) {
+    private static String kanskjeSammensattNavn(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
         return ofNullable(person.getPersonnavn())
-                .map(WSPersonnavn::getSammensattNavn)
+                .map(no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn::getSammensattNavn)
                 .orElse(null);
     }
 
-    private static String kanskjeFodselsnummer(WSPerson person) {
-        WSAktoer aktoer = person.getAktoer();
-        if (aktoer instanceof WSPersonIdent) {
-            return kanskjeNorskIdent((WSPersonIdent) aktoer);
+    private static String kanskjeFodselsnummer(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
+        no.nav.tjeneste.virksomhet.person.v3.informasjon.Aktoer aktoer = person.getAktoer();
+        if (aktoer instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent) {
+            return kanskjeNorskIdent((no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent) aktoer);
         }
         return null;
     }
 
-    private static String kanskjeNorskIdent(WSPersonIdent aktoer) {
+    private static String kanskjeNorskIdent(no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent aktoer) {
         return ofNullable(aktoer.getIdent())
-                .map(WSNorskIdent::getIdent)
+                .map(no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent::getIdent)
                 .orElse(null);
     }
 
@@ -83,9 +82,9 @@ public class FamiliemedlemMapper {
                 .orElse(null);
     }
 
-    private static String kanskjeDoedsdato(WSPerson person) {
+    private static String kanskjeDoedsdato(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
         return ofNullable(person.getDoedsdato())
-                .map(WSDoedsdato::getDoedsdato)
+                .map(no.nav.tjeneste.virksomhet.person.v3.informasjon.Doedsdato::getDoedsdato)
                 .map(XMLGregorianCalendar::toString)
                 .orElse(null);
     }

@@ -2,7 +2,7 @@ package no.nav.fo.veilarbperson.domain.person;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Builder;
+import lombok.Builder;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

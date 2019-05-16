@@ -5,7 +5,8 @@ import io.swagger.annotations.ApiOperation;
 import io.vavr.control.Try;
 import no.nav.apiapp.feil.Feil;
 import no.nav.apiapp.feil.FeilType;
-import no.nav.apiapp.security.PepClient;
+import no.nav.apiapp.security.veilarbabac.Bruker;
+import no.nav.apiapp.security.veilarbabac.VeilarbAbacPepClient;
 import no.nav.common.auth.SubjectHandler;
 import no.nav.dialogarena.aktor.AktorService;
 import no.nav.fo.veilarbperson.PersonFletter;
@@ -30,6 +31,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static no.nav.apiapp.feil.FeilType.FINNES_IKKE;
 
 @Component
 @Api(value = "person")
@@ -37,7 +39,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class PersonRessurs {
 
     private final PersonFletter personFletter;
-    private final PepClient pepClient;
+    private final VeilarbAbacPepClient pepClient;
     private final PersonService personService;
 
     @Inject
@@ -49,7 +51,7 @@ public class PersonRessurs {
                          EgenAnsattService egenAnsattService,
                          KodeverkService kodeverkService,
                          PortefoljeService portefoljeService,
-                         PepClient pepClient
+                         VeilarbAbacPepClient pepClient
     ) {
 
         this.pepClient = pepClient;
@@ -78,7 +80,7 @@ public class PersonRessurs {
             throw new Feil(FeilType.INGEN_TILGANG);
         }
 
-        pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
+        pepClient.sjekkLesetilgangTilBruker(lagBruker(fodselsnummer));
         String cookie = request.getHeader(HttpHeaders.COOKIE);
 
         return Try.of(() -> personFletter.hentPerson(fodselsnummer, cookie))
@@ -91,11 +93,10 @@ public class PersonRessurs {
     public AktoerId aktorid(@QueryParam("fnr") String fodselsnummer){
 
         if(AutentiseringHjelper.erInternBruker()) {
-            pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
+            Bruker bruker = lagBruker(fodselsnummer);
+            pepClient.sjekkLesetilgangTilBruker(bruker);
 
-            return aktorService.getAktorId(fodselsnummer)
-                    .map(AktoerId::new)
-                    .orElseThrow(() -> new IllegalArgumentException("Fant ikke aktør for fnr: " + fodselsnummer));
+            return new AktoerId(bruker.getAktoerId());
         }
 
         throw new Feil(FeilType.INGEN_TILGANG);
@@ -111,7 +112,7 @@ public class PersonRessurs {
         final String fodselsnummer = (fnr != null && AutentiseringHjelper.erInternBruker()) ?
                 fnr : SubjectHandler.getIdent().orElseThrow(() -> new Feil(FeilType.UGYLDIG_REQUEST));
 
-        pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
+        pepClient.sjekkLesetilgangTilBruker(lagBruker(fodselsnummer));
 
         return Try.of(() -> personService.hentPerson(fodselsnummer))
                 .map(PersonNavn::fraPerson)
@@ -122,9 +123,8 @@ public class PersonRessurs {
     @GET
     @Path("/{fodselsnummer}/tilgangTilBruker")
     public boolean tilgangTilBruker(@PathParam("fodselsnummer") String fodselsnummer) {
-        return Try.of(() -> pepClient.sjekkLeseTilgangTilFnr(fodselsnummer)).isSuccess();
+        return Try.runRunnable(() -> pepClient.sjekkLesetilgangTilBruker(lagBruker(fodselsnummer))).isSuccess();
     }
-
 
     @GET
     @Path("/geografisktilknytning")
@@ -136,12 +136,17 @@ public class PersonRessurs {
                     .getOrElseThrow(MapExceptionUtil::map);
         }
         else if(AutentiseringHjelper.erInternBruker()) {
-            pepClient.sjekkLeseTilgangTilFnr(fodselsnummer);
+            pepClient.sjekkLesetilgangTilBruker(lagBruker(fodselsnummer));
             return Try.of(() -> personFletter.hentGeografisktilknytning(fodselsnummer))
                     .getOrElseThrow(MapExceptionUtil::map);
         }
 
         throw new Feil(FeilType.INGEN_TILGANG);
+    }
+
+    private Bruker lagBruker(String fnr) {
+        return Bruker.fraFnr(fnr)
+                .medAktoerIdSupplier(()->aktorService.getAktorId(fnr).orElseThrow(()->new Feil(FINNES_IKKE, "Finner ikke aktørId for gitt Fnr")));
     }
 
 }

@@ -5,14 +5,17 @@ import no.nav.fo.veilarbperson.consumer.tps.mappers.PersonDataMapper;
 import no.nav.fo.veilarbperson.domain.person.GeografiskTilknytning;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.domain.person.Sikkerhetstiltak;
-import no.nav.tjeneste.virksomhet.person.v3.HentPersonPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.HentPersonSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.person.v3.HentSikkerhetstiltakPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.PersonV3;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.WSHentPersonRequest;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.WSHentSikkerhetstiltakRequest;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.WSHentSikkerhetstiltakResponse;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentSikkerhetstiltakPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personidenter;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentSikkerhetstiltakRequest;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentSikkerhetstiltakResponse;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Optional;
@@ -45,28 +48,28 @@ public class PersonService {
                 .get();
     }
 
-    private WSHentPersonRequest lagHentPersonRequest(String ident) {
-        return new WSHentPersonRequest().withAktoer(new WSPersonIdent().withIdent(new WSNorskIdent().withIdent(ident)))
-                .withInformasjonsbehov(WSInformasjonsbehov.ADRESSE, WSInformasjonsbehov.BANKKONTO,
-                        WSInformasjonsbehov.FAMILIERELASJONER, WSInformasjonsbehov.KOMMUNIKASJON);
+    private HentPersonRequest lagHentPersonRequest(String ident) {
+        return new HentPersonRequest().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(ident)))
+                .withInformasjonsbehov(Informasjonsbehov.ADRESSE, Informasjonsbehov.BANKKONTO,
+                        Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.KOMMUNIKASJON);
     }
 
     public Sikkerhetstiltak hentSikkerhetstiltak(String ident) throws HentSikkerhetstiltakPersonIkkeFunnet {
-        WSHentSikkerhetstiltakResponse wsSikkerhetstiltak = personV3.hentSikkerhetstiltak(lagHentSikkerhetstiltakRequest(ident));
+        HentSikkerhetstiltakResponse wsSikkerhetstiltak = personV3.hentSikkerhetstiltak(lagHentSikkerhetstiltakRequest(ident));
         String beskrivelse = Optional.ofNullable(wsSikkerhetstiltak.getSikkerhetstiltak())
-                .map(WSSikkerhetstiltak::getSikkerhetstiltaksbeskrivelse)
+                .map(no.nav.tjeneste.virksomhet.person.v3.informasjon.Sikkerhetstiltak::getSikkerhetstiltaksbeskrivelse)
                 .orElse(null);
         return new Sikkerhetstiltak(beskrivelse);
     }
 
-    private WSHentSikkerhetstiltakRequest lagHentSikkerhetstiltakRequest(String ident) {
-        WSPersonIdent personIdent = new WSPersonIdent();
+    private HentSikkerhetstiltakRequest lagHentSikkerhetstiltakRequest(String ident) {
+        PersonIdent personIdent = new PersonIdent();
         personIdent.setIdent(
-                new WSNorskIdent()
+                new NorskIdent()
                         .withIdent(ident)
-                        .withType(new WSPersonidenter()
+                        .withType(new Personidenter()
                                 .withValue("fnr")));
-        return new WSHentSikkerhetstiltakRequest().withAktoer(personIdent);
+        return new HentSikkerhetstiltakRequest().withAktoer(personIdent);
     }
 
 }

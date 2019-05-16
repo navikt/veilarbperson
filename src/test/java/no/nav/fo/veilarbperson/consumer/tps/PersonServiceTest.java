@@ -1,16 +1,17 @@
 package no.nav.fo.veilarbperson.consumer.tps;
 
 import no.nav.fo.veilarbperson.domain.person.PersonData;
-import no.nav.fo.veilarbperson.domain.person.Sikkerhetstiltak;
-import no.nav.tjeneste.virksomhet.person.v3.HentPersonPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.HentPersonSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.person.v3.HentSikkerhetstiltakPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.PersonV3;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentSikkerhetstiltakPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
+import no.nav.tjeneste.virksomhet.person.v3.feil.PersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.feil.Sikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.WSHentPersonRequest;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.WSHentPersonResponse;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.WSHentSikkerhetstiltakRequest;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.WSHentSikkerhetstiltakResponse;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentSikkerhetstiltakRequest;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentSikkerhetstiltakResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -40,9 +41,9 @@ public class PersonServiceTest {
 
     @Test
     public void hentPersonHenterPerson() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
-        WSHentPersonResponse hentPersonResponse = new WSHentPersonResponse()
-                .withPerson(new WSPerson().withAktoer(new WSPersonIdent().withIdent(new WSNorskIdent().withIdent(IDENT))));
-        when(personV3.hentPerson(any(WSHentPersonRequest.class))).thenReturn(hentPersonResponse);
+        HentPersonResponse hentPersonResponse = new HentPersonResponse()
+                .withPerson(new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(IDENT))));
+        when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(hentPersonResponse);
 
         PersonData personData = personService.hentPerson(IDENT);
 
@@ -51,52 +52,52 @@ public class PersonServiceTest {
 
     @Test
     public void hentPersonBerOmRelevantInformasjonFraTjenesten() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
-        WSHentPersonResponse hentPersonResponse = new WSHentPersonResponse()
-                .withPerson(new WSPerson().withAktoer(new WSPersonIdent().withIdent(new WSNorskIdent().withIdent(IDENT))));
-        ArgumentCaptor<WSHentPersonRequest> argumentCaptor = ArgumentCaptor.forClass(WSHentPersonRequest.class);
+        HentPersonResponse hentPersonResponse = new HentPersonResponse()
+                .withPerson(new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(IDENT))));
+        ArgumentCaptor<HentPersonRequest> argumentCaptor = ArgumentCaptor.forClass(HentPersonRequest.class);
         when(personV3.hentPerson(argumentCaptor.capture())).thenReturn(hentPersonResponse);
 
         personService.hentPerson(IDENT);
 
-        List<WSInformasjonsbehov> informasjonsBehov = argumentCaptor.getValue().getInformasjonsbehov();
-        assertThat(informasjonsBehov.contains(WSInformasjonsbehov.ADRESSE), is(true));
-        assertThat(informasjonsBehov.contains(WSInformasjonsbehov.KOMMUNIKASJON), is(true));
-        assertThat(informasjonsBehov.contains(WSInformasjonsbehov.FAMILIERELASJONER), is(true));
-        assertThat(informasjonsBehov.contains(WSInformasjonsbehov.BANKKONTO), is(true));
-        assertThat(informasjonsBehov.contains(WSInformasjonsbehov.ADRESSE), is(true));
+        List<Informasjonsbehov> informasjonsBehov = argumentCaptor.getValue().getInformasjonsbehov();
+        assertThat(informasjonsBehov.contains(Informasjonsbehov.ADRESSE), is(true));
+        assertThat(informasjonsBehov.contains(Informasjonsbehov.KOMMUNIKASJON), is(true));
+        assertThat(informasjonsBehov.contains(Informasjonsbehov.FAMILIERELASJONER), is(true));
+        assertThat(informasjonsBehov.contains(Informasjonsbehov.BANKKONTO), is(true));
+        assertThat(informasjonsBehov.contains(Informasjonsbehov.ADRESSE), is(true));
     }
 
     @Test(expected = HentPersonPersonIkkeFunnet.class)
     public void hentPersonSomIkkeFinnesKasterFeil() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
-        when(personV3.hentPerson(any(WSHentPersonRequest.class))).thenThrow(new HentPersonPersonIkkeFunnet());
+        when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonPersonIkkeFunnet("",new PersonIkkeFunnet()));
 
         personService.hentPerson(IDENT);
     }
 
     @Test(expected = HentPersonSikkerhetsbegrensning.class)
     public void hentPersonIkkeTilgangKasterFeil() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
-        when(personV3.hentPerson(any(WSHentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning());
+        when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning("",new Sikkerhetsbegrensning()));
 
         personService.hentPerson(IDENT);
     }
 
     @Test
     public void hentSikkerhetstiltakHenterSikkerhetstiltak() throws HentSikkerhetstiltakPersonIkkeFunnet {
-        WSSikkerhetstiltak wsSikkerhetstiltak = new WSSikkerhetstiltak().withSikkerhetstiltaksbeskrivelse(SIKKHERHETSTILTAK);
-        WSHentSikkerhetstiltakResponse response = new WSHentSikkerhetstiltakResponse().withSikkerhetstiltak(wsSikkerhetstiltak);
-        when(personV3.hentSikkerhetstiltak(any(WSHentSikkerhetstiltakRequest.class))).thenReturn(response);
+        Sikkerhetstiltak wsSikkerhetstiltak = new Sikkerhetstiltak().withSikkerhetstiltaksbeskrivelse(SIKKHERHETSTILTAK);
+        HentSikkerhetstiltakResponse response = new HentSikkerhetstiltakResponse().withSikkerhetstiltak(wsSikkerhetstiltak);
+        when(personV3.hentSikkerhetstiltak(any(HentSikkerhetstiltakRequest.class))).thenReturn(response);
 
-        Sikkerhetstiltak sikkerhetstiltak = personService.hentSikkerhetstiltak(IDENT);
+        no.nav.fo.veilarbperson.domain.person.Sikkerhetstiltak sikkerhetstiltak = personService.hentSikkerhetstiltak(IDENT);
 
         assertThat(sikkerhetstiltak.sikkerhetstiltaksbeskrivelse, is(equalTo(SIKKHERHETSTILTAK)));
     }
 
     @Test
     public void hentSikkerhetstiltakDersomIngenSikkerhetstiltak() throws HentSikkerhetstiltakPersonIkkeFunnet {
-        WSHentSikkerhetstiltakResponse response = new WSHentSikkerhetstiltakResponse();
-        when(personV3.hentSikkerhetstiltak(any(WSHentSikkerhetstiltakRequest.class))).thenReturn(response);
+        HentSikkerhetstiltakResponse response = new HentSikkerhetstiltakResponse();
+        when(personV3.hentSikkerhetstiltak(any(HentSikkerhetstiltakRequest.class))).thenReturn(response);
 
-        Sikkerhetstiltak sikkerhetstiltak = personService.hentSikkerhetstiltak(IDENT);
+        no.nav.fo.veilarbperson.domain.person.Sikkerhetstiltak sikkerhetstiltak = personService.hentSikkerhetstiltak(IDENT);
 
         assertThat(sikkerhetstiltak.sikkerhetstiltaksbeskrivelse, is(nullValue()));
     }

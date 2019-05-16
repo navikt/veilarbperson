@@ -2,8 +2,8 @@ package no.nav.fo.veilarbperson.utils;
 
 import no.nav.apiapp.feil.Feil;
 import no.nav.apiapp.feil.FeilType;
-import no.nav.tjeneste.virksomhet.person.v3.HentPersonPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.HentPersonSikkerhetsbegrensning;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 
 public class MapExceptionUtil {
 

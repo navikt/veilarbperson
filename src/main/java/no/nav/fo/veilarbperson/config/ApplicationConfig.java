@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         AbacContext.class,
         AktorConfig.class,
 })
-public class ApplicationConfig implements ApiApplication.NaisApiApplication {
+public class ApplicationConfig implements ApiApplication {
     public static final String AKTOER_V2_URL_PROPERTY = "AKTOER_V2_ENDPOINTURL";
 
     @Override
