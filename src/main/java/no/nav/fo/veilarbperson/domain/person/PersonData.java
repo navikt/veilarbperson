@@ -33,6 +33,7 @@ public class PersonData extends Person {
     private MidlertidigAdresseUtland midlertidigAdresseUtland;
     private PostAdresse postAdresse;
     private boolean egenAnsatt;
+    private String maalform;
 
     public boolean isEgenAnsatt() {
         return egenAnsatt;
@@ -62,7 +63,8 @@ public class PersonData extends Person {
                        MidlertidigAdresseNorge midlertidigAdresseNorge,
                        MidlertidigAdresseUtland midlertidigAdresseUtland,
                        PostAdresse postAdresse,
-                       boolean egenAnsatt
+                       boolean egenAnsatt,
+                       String maalform
     ) {
         super(fornavn, mellomnavn, etternavn, sammensattnavn, fodselsnummer, fodselsdato, kjonn, dodsdato);
 
@@ -82,6 +84,7 @@ public class PersonData extends Person {
         this.midlertidigAdresseUtland = midlertidigAdresseUtland;
         this.postAdresse = postAdresse;
         this.egenAnsatt = egenAnsatt;
+        this.maalform = maalform;
     }
 
 

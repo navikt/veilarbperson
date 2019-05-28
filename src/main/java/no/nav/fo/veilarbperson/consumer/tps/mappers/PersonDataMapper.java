@@ -48,6 +48,7 @@ public class PersonDataMapper {
                 .midlertidigAdresseUtland(kanskjeMidlertidigAdresseUtland(person))
                 .postAdresse(kanskjePostAdresse(person))
                 .dodsdato(dodsdatoTilString(person))
+                .maalform(kanskjeMaalform(person))
                 .build();
     }
 
@@ -307,6 +308,18 @@ public class PersonDataMapper {
                 .map(XMLGregorianCalendar::toGregorianCalendar)
                 .map(PersonDataMapper::datoTilString)
                 .orElse(null);
+    }
+
+    private static String kanskjeMaalform(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
+        if (person instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) {
+            return of(person)
+                    .map(wsPerson -> (no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) wsPerson)
+                    .flatMap(wsBruker -> ofNullable(wsBruker.getMaalform()))
+                    .map(Spraak::getValue)
+                    .orElse(null);
+        } else {
+            return null;
+        }
     }
 
     private static String datoTilString(GregorianCalendar dato) {
