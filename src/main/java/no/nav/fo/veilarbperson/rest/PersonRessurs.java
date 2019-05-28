@@ -121,6 +121,23 @@ public class PersonRessurs {
     }
 
     @GET
+    @Path("/maalform")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(value = "Henter målform til en person")
+    public String maalform(@QueryParam("fnr") String fnr) {
+
+        if(AutentiseringHjelper.erEksternBruker()) {
+            throw new Feil(FeilType.INGEN_TILGANG);
+        }
+
+        pepClient.sjekkLesetilgangTilBruker(lagBruker(fnr));
+
+        return Try.of(() -> personService.hentPerson(fnr))
+                .map(PersonData::getMaalform)
+                .getOrElseThrow(MapExceptionUtil::map);
+    }
+
+    @GET
     @Path("/{fodselsnummer}/tilgangTilBruker")
     public boolean tilgangTilBruker(@PathParam("fodselsnummer") String fodselsnummer) {
         return Try.runRunnable(() -> pepClient.sjekkLesetilgangTilBruker(lagBruker(fodselsnummer))).isSuccess();
