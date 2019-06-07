@@ -26,8 +26,8 @@ public class ApplicationConfig implements ApiApplication {
     @Override
     public void configure(ApiAppConfigurator apiAppConfigurator) {
         apiAppConfigurator
-                .azureADB2CLogin()
-                .issoLogin()
+                .validateAzureAdExternalUserTokens()
+                .issoLogin() // OpenAM i FSS
                 .sts();
     }
 }
