@@ -892,6 +892,33 @@ public class PersonDataMapperTest {
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null, null);
     }
 
+    @Test
+    public void maalformMappesDersomDetEksisterer() {
+        final Person wsPerson = new Bruker().withMaalform(new Spraak().withValue("NB"));
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getMaalform(), is("NB"));
+    }
+
+    @Test
+    public void maalformMappesTilNullDersomMaalformErNull() {
+        final Person wsPerson = new Bruker().withMaalform(null);
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getMaalform(), nullValue());
+    }
+
+    @Test
+    public void maalformMappesTilNullDersomMaalformVerdiErNull() {
+        final Person wsPerson = new Bruker().withMaalform(new Spraak().withValue(null));
+
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+
+        assertThat(personData.getMaalform(), nullValue());
+    }
+
     private no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse lagUstrukturertAdresse(String adresselinje1, String adresselinje2, String adresselinje3, String adresselinje4, String landkode) {
 
         return new no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse()
