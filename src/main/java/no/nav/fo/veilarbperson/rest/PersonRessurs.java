@@ -16,10 +16,7 @@ import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.portefolje.PortefoljeService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
 import no.nav.fo.veilarbperson.consumer.tps.PersonService;
-import no.nav.fo.veilarbperson.domain.person.AktoerId;
-import no.nav.fo.veilarbperson.domain.person.GeografiskTilknytning;
-import no.nav.fo.veilarbperson.domain.person.PersonData;
-import no.nav.fo.veilarbperson.domain.person.PersonNavn;
+import no.nav.fo.veilarbperson.domain.person.*;
 import no.nav.fo.veilarbperson.utils.AutentiseringHjelper;
 import no.nav.fo.veilarbperson.utils.MapExceptionUtil;
 import org.springframework.stereotype.Component;
@@ -118,6 +115,24 @@ public class PersonRessurs {
                 .map(PersonNavn::fraPerson)
                 .getOrElseThrow(MapExceptionUtil::map);
 
+    }
+
+    @GET
+    @Path("/{fodselsnummer}/malform")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(value = "Henter målform til en person")
+    public Malform malform(@PathParam("fodselsnummer") String fnr) {
+
+        if(AutentiseringHjelper.erEksternBruker()) {
+            throw new Feil(FeilType.INGEN_TILGANG);
+        }
+
+        pepClient.sjekkLesetilgangTilBruker(lagBruker(fnr));
+
+        return Try.of(() -> personService.hentPerson(fnr))
+                .map(PersonData::getMalform)
+                .map(Malform::new)
+                .getOrElseThrow(MapExceptionUtil::map);
     }
 
     @GET
