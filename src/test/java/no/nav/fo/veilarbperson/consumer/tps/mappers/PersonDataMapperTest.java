@@ -893,30 +893,30 @@ public class PersonDataMapperTest {
     }
 
     @Test
-    public void maalformMappesDersomDetEksisterer() {
+    public void malformMappesDersomDetEksisterer() {
         final Person wsPerson = new Bruker().withMaalform(new Spraak().withValue("NB"));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
-        assertThat(personData.getMaalform(), is("NB"));
+        assertThat(personData.getMalform(), is("NB"));
     }
 
     @Test
-    public void maalformMappesTilNullDersomMaalformErNull() {
+    public void malformMappesTilNullDersommalformErNull() {
         final Person wsPerson = new Bruker().withMaalform(null);
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
-        assertThat(personData.getMaalform(), nullValue());
+        assertThat(personData.getMalform(), nullValue());
     }
 
     @Test
-    public void maalformMappesTilNullDersomMaalformVerdiErNull() {
+    public void malformMappesTilNullDersommalformVerdiErNull() {
         final Person wsPerson = new Bruker().withMaalform(new Spraak().withValue(null));
 
         final PersonData personData = personDataMapper.tilPersonData(wsPerson);
 
-        assertThat(personData.getMaalform(), nullValue());
+        assertThat(personData.getMalform(), nullValue());
     }
 
     private no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse lagUstrukturertAdresse(String adresselinje1, String adresselinje2, String adresselinje3, String adresselinje4, String landkode) {

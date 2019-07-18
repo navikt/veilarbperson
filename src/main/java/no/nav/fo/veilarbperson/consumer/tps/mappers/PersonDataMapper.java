@@ -48,7 +48,7 @@ public class PersonDataMapper {
                 .midlertidigAdresseUtland(kanskjeMidlertidigAdresseUtland(person))
                 .postAdresse(kanskjePostAdresse(person))
                 .dodsdato(dodsdatoTilString(person))
-                .maalform(kanskjeMaalform(person))
+                .malform(kanskjeMalform(person))
                 .build();
     }
 
@@ -310,7 +310,7 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private static String kanskjeMaalform(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
+    private static String kanskjeMalform(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
         if (person instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) {
             return of(person)
                     .map(wsPerson -> (no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) wsPerson)

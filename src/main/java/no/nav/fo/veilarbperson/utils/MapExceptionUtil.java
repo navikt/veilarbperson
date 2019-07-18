@@ -9,13 +9,15 @@ public class MapExceptionUtil {
 
     public static Feil map(Throwable error) {
 
+        FeilType feilType;
         if (error instanceof HentPersonPersonIkkeFunnet) {
-            return new Feil(FeilType.FINNES_IKKE);
+            feilType = FeilType.FINNES_IKKE;
         } else if (error instanceof HentPersonSikkerhetsbegrensning) {
-            return new Feil(FeilType.INGEN_TILGANG);
+            feilType = FeilType.INGEN_TILGANG;
         } else {
-            return new Feil(FeilType.UKJENT);
+            feilType = FeilType.UKJENT;
         }
 
+        return new Feil(feilType, error);
     }
 }
