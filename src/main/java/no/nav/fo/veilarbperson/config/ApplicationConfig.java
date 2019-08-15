@@ -2,6 +2,7 @@ package no.nav.fo.veilarbperson.config;
 
 import no.nav.apiapp.ApiApplication;
 import no.nav.apiapp.config.ApiAppConfigurator;
+import no.nav.common.auth.SecurityLevel;
 import no.nav.dialogarena.aktor.AktorConfig;
 import no.nav.fo.veilarbperson.PersonFletter;
 import no.nav.sbl.dialogarena.common.abac.pep.context.AbacContext;
@@ -26,7 +27,7 @@ public class ApplicationConfig implements ApiApplication {
     @Override
     public void configure(ApiAppConfigurator apiAppConfigurator) {
         apiAppConfigurator
-                .validateAzureAdExternalUserTokens()
+                .validateAzureAdExternalUserTokens(SecurityLevel.Level4)
                 .issoLogin() // OpenAM i FSS
                 .sts();
     }
