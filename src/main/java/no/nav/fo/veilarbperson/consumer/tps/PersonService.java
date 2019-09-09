@@ -5,6 +5,7 @@ import no.nav.fo.veilarbperson.consumer.tps.mappers.PersonDataMapper;
 import no.nav.fo.veilarbperson.domain.person.GeografiskTilknytning;
 import no.nav.fo.veilarbperson.domain.person.PersonData;
 import no.nav.fo.veilarbperson.domain.person.Sikkerhetstiltak;
+import no.nav.sbl.featuretoggle.unleash.UnleashService;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentSikkerhetstiltakPersonIkkeFunnet;
@@ -26,17 +27,19 @@ import static no.nav.fo.veilarbperson.config.CacheConfig.PERSON;
 public class PersonService {
 
     private final PersonV3 personV3;
+    private final UnleashService unleashService;
     private final PersonDataMapper personDataMapper;
 
-    public PersonService(PersonV3 personV3) {
+    public PersonService(PersonV3 personV3, UnleashService unleashService) {
         this.personV3 = personV3;
+        this.unleashService = unleashService;
         this.personDataMapper = new PersonDataMapper();
     }
 
     @Cacheable(PERSON)
     public PersonData hentPerson(String ident) throws HentPersonSikkerhetsbegrensning, HentPersonPersonIkkeFunnet {
         return Try.of(() -> personV3.hentPerson(lagHentPersonRequest(ident)))
-                .map(wsPerson -> personDataMapper.tilPersonData(wsPerson.getPerson()))
+                .map(wsPerson -> personDataMapper.tilPersonData(wsPerson.getPerson(), unleashService.isEnabled("veilarbperson.malform")))
                 .get();
     }
 

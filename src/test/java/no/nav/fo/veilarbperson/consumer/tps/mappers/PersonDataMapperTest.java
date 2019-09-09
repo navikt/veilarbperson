@@ -36,7 +36,7 @@ public class PersonDataMapperTest {
         final String forventetVerdi = "fornavn";
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withFornavn(forventetVerdi));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getFornavn(), is(forventetVerdi));
     }
@@ -45,7 +45,7 @@ public class PersonDataMapperTest {
     public void fornavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
         final Person wsPerson = new Person().withPersonnavn(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getFornavn(), nullValue());
     }
@@ -54,7 +54,7 @@ public class PersonDataMapperTest {
     public void fornavnMappesTilNullDersomPersonnavnErNull() throws Exception {
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withFornavn(null));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getFornavn(), nullValue());
     }
@@ -64,7 +64,7 @@ public class PersonDataMapperTest {
         final String forventetVerdi = "etternavn";
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withEtternavn(forventetVerdi));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getEtternavn(), is(forventetVerdi));
     }
@@ -73,7 +73,7 @@ public class PersonDataMapperTest {
     public void etternavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
         final Person wsPerson = new Person().withPersonnavn(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getEtternavn(), nullValue());
     }
@@ -82,7 +82,7 @@ public class PersonDataMapperTest {
     public void etternavnMappesTilNullDersomEtternavnErNull() throws Exception {
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withEtternavn(null));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getEtternavn(), nullValue());
     }
@@ -92,7 +92,7 @@ public class PersonDataMapperTest {
         final String forventetVerdi = "mellomnavn";
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withMellomnavn(forventetVerdi));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getMellomnavn(), is(forventetVerdi));
     }
@@ -101,7 +101,7 @@ public class PersonDataMapperTest {
     public void mellomnavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
         final Person wsPerson = new Person().withPersonnavn(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getMellomnavn(), nullValue());
     }
@@ -110,7 +110,7 @@ public class PersonDataMapperTest {
     public void mellomnavnMappesTilNullDersomMellomnavnErNull() throws Exception {
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withMellomnavn(null));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getMellomnavn(), nullValue());
     }
@@ -120,7 +120,7 @@ public class PersonDataMapperTest {
         final String forventetVerdi = "sammensattNavn";
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withSammensattNavn(forventetVerdi));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getSammensattNavn(), is(forventetVerdi));
     }
@@ -129,7 +129,7 @@ public class PersonDataMapperTest {
     public void sammensattNavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
         final Person wsPerson = new Person().withPersonnavn(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getSammensattNavn(), nullValue());
     }
@@ -138,7 +138,7 @@ public class PersonDataMapperTest {
     public void sammensattNavnMappesTilNullDersomMellomnavnErNull() throws Exception {
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withSammensattNavn(null));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getSammensattNavn(), nullValue());
     }
@@ -148,7 +148,7 @@ public class PersonDataMapperTest {
         final String forventetVerdi = "fodseslnummer";
         final Person wsPerson = new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(forventetVerdi)));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getFodselsnummer(), is(forventetVerdi));
     }
@@ -157,7 +157,7 @@ public class PersonDataMapperTest {
     public void fodselsnummerMappesTilNullDersomWSAktoerErNull() throws Exception {
         final Person wsPerson = new Person();
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getFodselsnummer(), nullValue());
     }
@@ -166,7 +166,7 @@ public class PersonDataMapperTest {
     public void fodselsnummerMappesTilNullDersomWSNorskIdentErNull() throws Exception {
         final Person wsPerson = new Person().withAktoer(new PersonIdent());
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getFodselsnummer(), nullValue());
     }
@@ -175,7 +175,7 @@ public class PersonDataMapperTest {
     public void fodselsnummerMappesTilNullDersomIdentErNull() throws Exception {
         final Person wsPerson = new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(null)));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getFodselsnummer(), nullValue());
     }
@@ -188,7 +188,7 @@ public class PersonDataMapperTest {
         final XMLGregorianCalendar foedselsdato = lagDato(forventetAr, forventetManed, forventetDag);
         final Person wsPerson = new Person().withFoedselsdato(new Foedselsdato().withFoedselsdato(foedselsdato));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getFodselsdato(), erDato(forventetAr, forventetManed, forventetDag));
     }
@@ -197,7 +197,7 @@ public class PersonDataMapperTest {
     public void fodselsdatoMappesTilNullDersomWSFoedselsdatoErNull() throws Exception {
         final Person wsPerson = new Person().withFoedselsdato(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getFodselsdato(), nullValue());
     }
@@ -206,7 +206,7 @@ public class PersonDataMapperTest {
     public void fodselsdatoMappesTilNullDersomFoedselsdatoErNull() throws Exception {
         final Person wsPerson = new Person().withFoedselsdato(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getFodselsdato(), nullValue());
     }
@@ -216,7 +216,7 @@ public class PersonDataMapperTest {
         final String forventetVerdi = "K";
         final Person wsPerson = new Person().withKjoenn(new Kjoenn().withKjoenn(new Kjoennstyper().withValue(forventetVerdi)));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getKjoenn(), is(forventetVerdi));
     }
@@ -225,7 +225,7 @@ public class PersonDataMapperTest {
     public void kjonnMappesTilNullDersomWSKjoennErNull() throws Exception {
         final Person wsPerson = new Person().withKjoenn(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getKjoenn(), nullValue());
     }
@@ -234,7 +234,7 @@ public class PersonDataMapperTest {
     public void kjonnMappesTilNullDersomWSKjoennstyperErNull() throws Exception {
         final Person wsPerson = new Person().withKjoenn(new Kjoenn().withKjoenn(null));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getKjoenn(), nullValue());
     }
@@ -243,7 +243,7 @@ public class PersonDataMapperTest {
     public void kjonnMappesTilNullDersomValueErNull() throws Exception {
         final Person wsPerson = new Person().withKjoenn(new Kjoenn().withKjoenn(new Kjoennstyper().withValue(null)));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getKjoenn(), nullValue());
     }
@@ -254,7 +254,7 @@ public class PersonDataMapperTest {
         final Person wsPerson = new Person().withDiskresjonskode(new Diskresjonskoder()
                 .withValue(no.nav.fo.veilarbperson.domain.person.Diskresjonskoder.STRENGT_FORTROLIG_ADRESSE.kodeverkVerdi));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getDiskresjonskode(), is(forventetVerdi));
     }
@@ -265,7 +265,7 @@ public class PersonDataMapperTest {
         final Person wsPerson = new Person().withDiskresjonskode(new Diskresjonskoder()
                 .withValue(no.nav.fo.veilarbperson.domain.person.Diskresjonskoder.FORTROLIG_ADRESSE.kodeverkVerdi));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getDiskresjonskode(), is(forventetVerdi));
     }
@@ -274,7 +274,7 @@ public class PersonDataMapperTest {
     public void diskresjonskodeMappesTilNullDersomWSDiskresjonskoderErNull() throws Exception {
         final Person wsPerson = new Person().withDiskresjonskode(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getDiskresjonskode(), nullValue());
     }
@@ -283,7 +283,7 @@ public class PersonDataMapperTest {
     public void diskresjonskodeMappesTilNullDersomValueErNull() throws Exception {
         final Person wsPerson = new Person().withDiskresjonskode(new Diskresjonskoder().withValue(null));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getDiskresjonskode(), nullValue());
     }
@@ -296,7 +296,7 @@ public class PersonDataMapperTest {
                 new BankkontoNorge().withBankkonto(new Bankkontonummer().withBankkontonummer(forventetVerdi))
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getKontonummer(), is(forventetVerdi));
     }
@@ -308,7 +308,7 @@ public class PersonDataMapperTest {
                 new BankkontoUtland().withBankkontoUtland(new BankkontonummerUtland().withBankkontonummer(forventetVerdi))
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getKontonummer(), is(forventetVerdi));
     }
@@ -317,7 +317,7 @@ public class PersonDataMapperTest {
     public void kontonummerMappesTilNullDersomWSBankkontoErNull() throws Exception {
         final Person wsPerson = new Bruker().withBankkonto(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getKontonummer(), nullValue());
     }
@@ -328,7 +328,7 @@ public class PersonDataMapperTest {
                 new BankkontoNorge().withBankkonto(null)
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getKontonummer(), nullValue());
     }
@@ -339,7 +339,7 @@ public class PersonDataMapperTest {
                 new BankkontoNorge().withBankkonto(new Bankkontonummer().withBankkontonummer(null))
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getKontonummer(), nullValue());
     }
@@ -350,7 +350,7 @@ public class PersonDataMapperTest {
                 new BankkontoUtland().withBankkontoUtland(null)
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getKontonummer(), nullValue());
     }
@@ -361,7 +361,7 @@ public class PersonDataMapperTest {
                 new BankkontoUtland().withBankkontoUtland(new BankkontonummerUtland().withBankkontonummer(null))
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getKontonummer(), nullValue());
     }
@@ -372,7 +372,7 @@ public class PersonDataMapperTest {
         final Person wsPerson = new Bruker().withGeografiskTilknytning(
                 new Kommune().withGeografiskTilknytning(forventetVerdi));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getGeografiskTilknytning(), is(forventetVerdi));
     }
@@ -383,7 +383,7 @@ public class PersonDataMapperTest {
         final Person wsPerson = new Bruker().withGeografiskTilknytning(
                 new Land().withGeografiskTilknytning(forventetVerdi));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getGeografiskTilknytning(), is(forventetVerdi));
     }
@@ -394,7 +394,7 @@ public class PersonDataMapperTest {
         final Person wsPerson = new Bruker().withGeografiskTilknytning(
                 new Bydel().withGeografiskTilknytning(forventetVerdi));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getGeografiskTilknytning(), is(forventetVerdi));
     }
@@ -403,7 +403,7 @@ public class PersonDataMapperTest {
     public void geografiskTilknytningMappesTilNullDersomInputIkkeErWSBruker() throws Exception {
         final Person wsPerson = new Person();
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getGeografiskTilknytning(), nullValue());
     }
@@ -412,7 +412,7 @@ public class PersonDataMapperTest {
     public void geografiskTilknytningMappesTilNullDersomWSAnsvarligEnhetErNull() throws Exception {
         final Person wsPerson = new Bruker().withGeografiskTilknytning(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getGeografiskTilknytning(), nullValue());
     }
@@ -421,7 +421,7 @@ public class PersonDataMapperTest {
     public void geografiskTilknytningMappesTilNullDersomGeografiskTilknytning() throws Exception {
         final Person wsPerson = new Bruker().withGeografiskTilknytning(new Bydel().withGeografiskTilknytning(null));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getGeografiskTilknytning(), nullValue());
     }
@@ -433,7 +433,7 @@ public class PersonDataMapperTest {
                 new Statsborgerskap().withLand(new Landkoder().withValue(forventetVerdi))
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getStatsborgerskap(), is(forventetVerdi));
     }
@@ -442,7 +442,7 @@ public class PersonDataMapperTest {
     public void statsborgerskapMappesTilNullDersomWSStatsborgerskapErNull() throws Exception {
         final Person wsPerson = new Person().withStatsborgerskap(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getStatsborgerskap(), nullValue());
     }
@@ -453,7 +453,7 @@ public class PersonDataMapperTest {
                 new Statsborgerskap().withLand(null)
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getStatsborgerskap(), nullValue());
     }
@@ -464,7 +464,7 @@ public class PersonDataMapperTest {
                 new Statsborgerskap().withLand(new Landkoder().withValue(null))
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getStatsborgerskap(), nullValue());
     }
@@ -480,7 +480,7 @@ public class PersonDataMapperTest {
                         .withSivilstand(new Sivilstander().withValue(forventetSiviltilstand))
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getSivilstand(), notNullValue());
         assertThat(personData.getSivilstand().getSivilstand(), is(forventetSiviltilstand));
@@ -491,7 +491,7 @@ public class PersonDataMapperTest {
     public void siviltilstandMappesTilNullDersomWSSivilstandErNull() throws Exception {
         final Person wsPerson = new Person().withSivilstand(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getSivilstand(), nullValue());
     }
@@ -505,7 +505,7 @@ public class PersonDataMapperTest {
                 new Doedsdato().withDoedsdato(lagDato(forventetAr, forventetManed, forventetDag))
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getDodsdato(), erDato(forventetAr, forventetManed, forventetDag));
     }
@@ -514,7 +514,7 @@ public class PersonDataMapperTest {
     public void dodsdatoMappesTilNullDersomWSDoedsdatoErNull() throws Exception {
         final Person wsPerson = new Person().withDoedsdato(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getDodsdato(), nullValue());
     }
@@ -523,7 +523,7 @@ public class PersonDataMapperTest {
     public void dodsdatoMappesTilNullDersomDoedsdatoErNull() throws Exception {
         final Person wsPerson = new Person().withDoedsdato(new Doedsdato().withDoedsdato(null));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getDodsdato(), nullValue());
     }
@@ -542,7 +542,7 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
@@ -568,7 +568,7 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
@@ -607,7 +607,7 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
@@ -634,7 +634,7 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
@@ -656,7 +656,7 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
@@ -677,7 +677,7 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
@@ -697,7 +697,7 @@ public class PersonDataMapperTest {
                         .withLandkode(new Landkoder().withValue(forventetLandkode)))
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
@@ -712,7 +712,7 @@ public class PersonDataMapperTest {
                         .withLandkode(null))
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
@@ -727,7 +727,7 @@ public class PersonDataMapperTest {
                         .withPoststed(new Postnummer())
                         .withTilleggsadresse(forventetTilleggsadresse)));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse().getTilleggsadresse(), is(forventetTilleggsadresse));
@@ -740,7 +740,7 @@ public class PersonDataMapperTest {
                         .withPoststed(new Postnummer())
                         .withTilleggsadresse(null)));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse().getTilleggsadresse(), nullValue());
@@ -754,7 +754,7 @@ public class PersonDataMapperTest {
                         .withLandkode(new Landkoder().withValue(null)))
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
@@ -775,7 +775,7 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getMidlertidigAdresseNorge(), notNullValue());
         assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), notNullValue());
@@ -800,7 +800,7 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
 
         assertThat(personData.getMidlertidigAdresseNorge(), notNullValue());
         assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), notNullValue());
@@ -817,7 +817,7 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getMidlertidigAdresseNorge(), nullValue());
     }
 
@@ -833,7 +833,7 @@ public class PersonDataMapperTest {
                         lagUstrukturertAdresse(forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode)
                 ));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
         UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode);
@@ -846,7 +846,7 @@ public class PersonDataMapperTest {
                         lagUstrukturertAdresse(null, null, null, null, null)
                 ));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
         UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null, null);
@@ -858,7 +858,7 @@ public class PersonDataMapperTest {
                         lagGateadresse(null, 0, 0, null, null, new Postnummer().withValue(null))
                 ));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getMidlertidigAdresseUtland(), nullValue());
     }
 
@@ -875,7 +875,7 @@ public class PersonDataMapperTest {
                 ));
 
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getPostAdresse(), notNullValue());
         UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode);
@@ -886,7 +886,7 @@ public class PersonDataMapperTest {
         final Person wsPerson = new Person().withPostadresse(
                 new Postadresse().withUstrukturertAdresse(lagUstrukturertAdresse(null, null, null, null, null)));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getPostAdresse(), notNullValue());
         UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null, null);
@@ -896,7 +896,7 @@ public class PersonDataMapperTest {
     public void malformMappesDersomDetEksisterer() {
         final Person wsPerson = new Bruker().withMaalform(new Spraak().withValue("NB"));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson, true);
 
         assertThat(personData.getMalform(), is("NB"));
     }
@@ -905,7 +905,7 @@ public class PersonDataMapperTest {
     public void malformMappesTilNullDersommalformErNull() {
         final Person wsPerson = new Bruker().withMaalform(null);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson, true);
 
         assertThat(personData.getMalform(), nullValue());
     }
@@ -914,9 +914,13 @@ public class PersonDataMapperTest {
     public void malformMappesTilNullDersommalformVerdiErNull() {
         final Person wsPerson = new Bruker().withMaalform(new Spraak().withValue(null));
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
+        final PersonData personData = personDataMapper.tilPersonData(wsPerson, true);
 
         assertThat(personData.getMalform(), nullValue());
+    }
+
+    private PersonData tilPersonData(Person person) {
+        return personDataMapper.tilPersonData(person, false);
     }
 
     private no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse lagUstrukturertAdresse(String adresselinje1, String adresselinje2, String adresselinje3, String adresselinje4, String landkode) {
