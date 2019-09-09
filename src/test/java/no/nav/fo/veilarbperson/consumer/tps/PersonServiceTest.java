@@ -1,6 +1,7 @@
 package no.nav.fo.veilarbperson.consumer.tps;
 
 import no.nav.fo.veilarbperson.domain.person.PersonData;
+import no.nav.sbl.featuretoggle.unleash.UnleashService;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentSikkerhetstiltakPersonIkkeFunnet;
@@ -32,11 +33,12 @@ public class PersonServiceTest {
     private static String IDENT = TestUtil.fodselsnummerForDato("1980-01-01");
 
     private PersonV3 personV3 = mock(PersonV3.class);
+    private UnleashService unleashService = mock(UnleashService.class);
     private PersonService personService;
 
     @Before
     public void before() {
-        personService = new PersonService(personV3);
+        personService = new PersonService(personV3, unleashService);
     }
 
     @Test
