@@ -1,4 +1,5 @@
 import no.nav.apiapp.ApiApp;
+import no.nav.common.utils.NaisUtils;
 import no.nav.fo.veilarbperson.config.ApplicationConfig;
 
 import static java.lang.System.setProperty;
@@ -10,6 +11,41 @@ public class Main {
 
     public static void main(String... args) {
         setProperty(AKTOER_ENDPOINT_URL, getRequiredProperty(AKTOER_V2_URL_PROPERTY));
+
+        NaisUtils.addConfigMapToEnv("pto-config",
+                "AAD_B2C_DISCOVERY_URL",
+                "ISSO_HOST_URL",
+                "ISSO_ISALIVE_URL",
+                "ISSO_ISSUER_URL",
+                "ISSO_JWKS_URL",
+                "AKTOER_V2_ENDPOINTURL",
+                "AKTOER_V2_SECURITYTOKEN",
+                "AKTOER_V2_WSDLURL",
+                "VIRKSOMHET_ORGANISASJONENHET_V2_ENDPOINTURL",
+                "VIRKSOMHET_ORGANISASJONENHET_V2_SECURITYTOKEN",
+                "VIRKSOMHET_ORGANISASJONENHET_V2_WSDLURL_URL",
+                "SECURITYTOKENSERVICE_URL",
+                "UNLEASH_API_URL",
+                "VEILARBAKTIVITETAPI_URL",
+                "VEILARBDIALOGAPI_URL",
+                "VEILARBLOGIN_REDIRECT_URL_DESCRIPTION",
+                "VEILARBLOGIN_REDIRECT_URL_URL",
+                "VIRKSOMHET_DIGITALKONTAKINFORMASJON_V1_ENDPOINTURL",
+                "VIRKSOMHET_DIGITALKONTAKINFORMASJON_V1_SECURITYTOKEN",
+                "VIRKSOMHET_DIGITALKONTAKINFORMASJON_V1_WSDLURL",
+                "VIRKSOMHET_ENHET_V1_ENDPOINTURL",
+                "VIRKSOMHET_ENHET_V1_SECURITYTOKEN",
+                "VIRKSOMHET_ENHET_V1_WSDLURL",
+                "VEILARBPORTEFOLJEDB_URL",
+                "VEILARBPORTEFOLJEDB_ONSHOSTS",
+                "VIRKSOMHET_KODEVERK_V2_SECURITYTOKEN",
+                "VIRKSOMHET_KODEVERK_V2_ENDPOINTURL",
+                "VIRKSOMHET_KODEVERK_V2_WSDLURL",
+                "VIRKSOMHET_PERSON_V3_SECURITYTOKEN",
+                "VIRKSOMHET_PERSON_V3_ENDPOINTURL",
+                "VIRKSOMHET_PERSON_V3_WSDLURL"
+                );
+
         ApiApp.runApp(ApplicationConfig.class, args);
     }
 
