@@ -20,6 +20,13 @@ spec:
   webproxy: true
   vault:
     enabled: true
+    paths:
+      - kvPath: /serviceuser/data/prod/srvveilarbperson
+        mountPath: /var/run/secrets/nais.io/service_user
+      - kvPath: /oracle/data/prod/creds/veilarbperson-user
+        mountPath: /var/run/secrets/nais.io/oracle_creds
+      - kvPath: /kv/prod/fss/veilarbperson/default
+        mountPath: /var/run/secrets/nais.io/vault
   filesFrom:
     configmap: pto-config
   leaderElection: true
