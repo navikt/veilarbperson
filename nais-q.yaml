@@ -21,11 +21,11 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: /serviceuser/data/prod/srvveilarbperson
+      - kvPath: /serviceuser/data/dev/srvveilarbperson
         mountPath: /var/run/secrets/nais.io/service_user
-      - kvPath: /oracle/data/prod/creds/veilarbperson-user
+      - kvPath: /oracle/data/dev/creds/veilarbperson-user
         mountPath: /var/run/secrets/nais.io/oracle_creds
-      - kvPath: /kv/prod/fss/veilarbperson/default
+      - kvPath: /kv/preprod/fss/veilarbperson/default
         mountPath: /var/run/secrets/nais.io/vault
   filesFrom:
     configmap: pto-config
