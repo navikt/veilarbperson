@@ -28,7 +28,7 @@ spec:
       - kvPath: /kv/prod/fss/veilarbperson/default
         mountPath: /var/run/secrets/nais.io/vault
   filesFrom:
-    configmap: pto-config
+    - configmap: pto-config
   leaderElection: true
   healthcheck:
     liveness:
