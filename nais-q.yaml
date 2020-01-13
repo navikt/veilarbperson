@@ -15,8 +15,8 @@ spec:
     cpuThresholdPercentage: 50
   port: 8080
   ingresses:
-    - https://veilarbperson.nais.adeo.no
-    - https://app.adeo.no/veilarbperson
+    - https://veilarbperson-{{namespace}}.nais.preprod.local
+    - https://app-{{namespace}}.adeo.no/veilarbperson
   webproxy: true
   vault:
     enabled: true
