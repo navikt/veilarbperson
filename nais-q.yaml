@@ -23,7 +23,7 @@ spec:
     paths:
       - kvPath: /serviceuser/data/dev/srvveilarbperson
         mountPath: /var/run/secrets/nais.io/service_user
-      - kvPath: /kv/preprod/fss/veilarbperson/default
+      - kvPath: /kv/preprod/fss/veilarbperson/{{namespace}}
         mountPath: /var/run/secrets/nais.io/vault
   filesFrom:
     - configmap: pto-config
