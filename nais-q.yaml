@@ -6,7 +6,7 @@ metadata:
   namespace: default
   cluster: dev-fss
   labels:
-    team: pus
+    team: pto
 spec:
   image: docker.pkg.github.com/navikt/veilarbperson/veilarbperson:{{version}}
   replicas:
