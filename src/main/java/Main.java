@@ -13,7 +13,6 @@ import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 public class Main {
 
     public static void main(String... args) {
-        setProperty(AKTOER_ENDPOINT_URL, getRequiredProperty(AKTOER_V2_URL_PROPERTY));
 
         NaisUtils.Credentials serviceUser = NaisUtils.getCredentials("service_user");
 
@@ -35,7 +34,7 @@ public class Main {
                 "ISSO_ISALIVE_URL",
                 "ISSO_ISSUER_URL",
                 "ISSO_JWKS_URL",
-                "AKTOER_V2_ENDPOINTURL",
+                AKTOER_V2_URL_PROPERTY,
                 "AKTOER_V2_SECURITYTOKEN",
                 "AKTOER_V2_WSDLURL",
                 "VIRKSOMHET_ORGANISASJONENHET_V2_ENDPOINTURL",
@@ -62,6 +61,8 @@ public class Main {
                 "VIRKSOMHET_PERSON_V3_ENDPOINTURL",
                 "VIRKSOMHET_PERSON_V3_WSDLURL"
                 );
+
+        setProperty(AKTOER_ENDPOINT_URL, getRequiredProperty(AKTOER_V2_URL_PROPERTY));
 
         ApiApp.runApp(ApplicationConfig.class, args);
     }
