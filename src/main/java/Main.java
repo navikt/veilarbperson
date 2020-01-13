@@ -28,42 +28,6 @@ public class Main {
         System.setProperty(SecurityConstants.SYSTEMUSER_USERNAME, serviceUser.username);
         System.setProperty(SecurityConstants.SYSTEMUSER_PASSWORD, serviceUser.password);
 
-        NaisUtils.addConfigMapToEnv("pto-config",
-                "OIDC_REDIRECT_URL",
-                "AAD_B2C_CLIENTID_USERNAME",
-                "AAD_B2C_DISCOVERY_URL",
-                "ISSO_HOST_URL",
-                "ISSO_ISALIVE_URL",
-                "ISSO_ISSUER_URL",
-                "ISSO_JWKS_URL",
-                AKTOER_V2_URL_PROPERTY,
-                "AKTOER_V2_SECURITYTOKEN",
-                "AKTOER_V2_WSDLURL",
-                "VIRKSOMHET_ORGANISASJONENHET_V2_ENDPOINTURL",
-                "VIRKSOMHET_ORGANISASJONENHET_V2_SECURITYTOKEN",
-                "VIRKSOMHET_ORGANISASJONENHET_V2_WSDLURL",
-                "SECURITYTOKENSERVICE_URL",
-                "UNLEASH_API_URL",
-                "VEILARBAKTIVITETAPI_URL",
-                "VEILARBDIALOGAPI_URL",
-                "VEILARBLOGIN_REDIRECT_URL_DESCRIPTION",
-                "VEILARBLOGIN_REDIRECT_URL_URL",
-                "VIRKSOMHET_DIGITALKONTAKINFORMASJON_V1_ENDPOINTURL",
-                "VIRKSOMHET_DIGITALKONTAKINFORMASJON_V1_SECURITYTOKEN",
-                "VIRKSOMHET_DIGITALKONTAKINFORMASJON_V1_WSDLURL",
-                "VIRKSOMHET_ENHET_V1_ENDPOINTURL",
-                "VIRKSOMHET_ENHET_V1_SECURITYTOKEN",
-                "VIRKSOMHET_ENHET_V1_WSDLURL",
-                "VEILARBPORTEFOLJEDB_URL",
-                "VEILARBPORTEFOLJEDB_ONSHOSTS",
-                "VIRKSOMHET_KODEVERK_V2_SECURITYTOKEN",
-                "VIRKSOMHET_KODEVERK_V2_ENDPOINTURL",
-                "VIRKSOMHET_KODEVERK_V2_WSDLURL",
-                "VIRKSOMHET_PERSON_V3_SECURITYTOKEN",
-                "VIRKSOMHET_PERSON_V3_ENDPOINTURL",
-                "VIRKSOMHET_PERSON_V3_WSDLURL"
-                );
-
         setProperty(AKTOER_ENDPOINT_URL, getRequiredProperty(AKTOER_V2_URL_PROPERTY));
 
         ApiApp.runApp(ApplicationConfig.class, args);
