@@ -29,6 +29,7 @@ public class Main {
         System.setProperty(SecurityConstants.SYSTEMUSER_PASSWORD, serviceUser.password);
 
         NaisUtils.addConfigMapToEnv("pto-config",
+                "AAD_B2C_CLIENTID_USERNAME",
                 "AAD_B2C_DISCOVERY_URL",
                 "ISSO_HOST_URL",
                 "ISSO_ISALIVE_URL",
