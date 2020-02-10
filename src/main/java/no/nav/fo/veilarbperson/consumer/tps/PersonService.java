@@ -27,19 +27,17 @@ import static no.nav.fo.veilarbperson.config.CacheConfig.PERSON;
 public class PersonService {
 
     private final PersonV3 personV3;
-    private final UnleashService unleashService;
     private final PersonDataMapper personDataMapper;
 
-    public PersonService(PersonV3 personV3, UnleashService unleashService) {
+    public PersonService(PersonV3 personV3) {
         this.personV3 = personV3;
-        this.unleashService = unleashService;
         this.personDataMapper = new PersonDataMapper();
     }
 
     @Cacheable(PERSON)
     public PersonData hentPerson(String ident) throws HentPersonSikkerhetsbegrensning, HentPersonPersonIkkeFunnet {
         return Try.of(() -> personV3.hentPerson(lagHentPersonRequest(ident)))
-                .map(wsPerson -> personDataMapper.tilPersonData(wsPerson.getPerson(), unleashService.isEnabled("veilarbperson.malform")))
+                .map(wsPerson -> personDataMapper.tilPersonData(wsPerson.getPerson()))
                 .get();
     }
 

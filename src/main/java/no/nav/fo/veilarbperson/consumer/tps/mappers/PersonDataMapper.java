@@ -27,7 +27,7 @@ public class PersonDataMapper {
     private final BarnMapper barnMapper = new BarnMapper();
     private final FamiliemedlemMapper familiemedlemMapper = new FamiliemedlemMapper();
 
-    public PersonData tilPersonData(Person person, boolean hentMalform) {
+    public PersonData tilPersonData(Person person) {
         return PersonData.builder()
                 .fornavn(kanskjeFornavn(person))
                 .mellomnavn(kanskjeMellomnavn(person))
@@ -48,7 +48,7 @@ public class PersonDataMapper {
                 .midlertidigAdresseUtland(kanskjeMidlertidigAdresseUtland(person))
                 .postAdresse(kanskjePostAdresse(person))
                 .dodsdato(dodsdatoTilString(person))
-                .malform(kanskjeMalform(person, hentMalform))
+                .malform(kanskjeMalform(person))
                 .build();
     }
 
@@ -310,8 +310,8 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private static String kanskjeMalform(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person, boolean hentMalform) {
-        if (hentMalform && person instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) {
+    private static String kanskjeMalform(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
+        if (person instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) {
             return of(person)
                     .map(wsPerson -> (no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) wsPerson)
                     .flatMap(wsBruker -> ofNullable(wsBruker.getMaalform()))
