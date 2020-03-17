@@ -33,12 +33,11 @@ public class PersonServiceTest {
     private static String IDENT = TestUtil.fodselsnummerForDato("1980-01-01");
 
     private PersonV3 personV3 = mock(PersonV3.class);
-    private UnleashService unleashService = mock(UnleashService.class);
     private PersonService personService;
 
     @Before
     public void before() {
-        personService = new PersonService(personV3, unleashService);
+        personService = new PersonService(personV3);
     }
 
     @Test

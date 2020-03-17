@@ -47,7 +47,7 @@ public class ServiceConfig {
 
     @Bean
     PersonService personService() {
-        return new PersonService(personV3, unleashService);
+        return new PersonService(personV3);
     }
 
     @Bean

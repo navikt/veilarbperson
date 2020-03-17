@@ -58,7 +58,6 @@ public class KodeverkConfig {
 
     private CXFClient<KodeverkPortType> factory() {
         return new CXFClient<>(KodeverkPortType.class)
-                .wsdl("classpath:kodeverk/no/nav/tjeneste/virksomhet/kodeverk/v2/Kodeverk.wsdl")
                 .address(getRequiredProperty(KODEVERK_ENDPOINT))
                 .timeout(10000, 30000)
                 .withProperty(MUST_UNDERSTAND, false);

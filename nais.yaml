@@ -1,0 +1,49 @@
+# ref https://raw.githubusercontent.com/nais/naiserator/master/examples/nais-max.yaml
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: veilarbperson
+  namespace: default
+  cluster: prod-fss
+  labels:
+    team: pto
+spec:
+  image: docker.pkg.github.com/navikt/veilarbperson/veilarbperson:{{version}}
+  replicas:
+    min: 2
+    max: 4
+    cpuThresholdPercentage: 50
+  port: 8080
+  ingresses:
+    - https://veilarbperson.nais.adeo.no
+    - https://app.adeo.no/veilarbperson
+  webproxy: true
+  vault:
+    enabled: true
+    paths:
+      - kvPath: /serviceuser/data/prod/srvveilarbperson
+        mountPath: /var/run/secrets/nais.io/service_user
+      - kvPath: /kv/prod/fss/veilarbperson/default
+        mountPath: /var/run/secrets/nais.io/vault
+  envFrom:
+    - configmap: pto-config
+  leaderElection: true
+  healthcheck:
+    liveness:
+      path: veilarbperson/internal/isAlive
+      initialDelay: 60
+      timeout: 10
+    readiness:
+      path: veilarbperson/internal/isReady
+      initialDelay: 60
+      timeout: 10
+  prometheus:
+    enabled: true
+    path: veilarbperson/internal/metrics
+  resources:
+    limits:
+      cpu: 3000m
+      memory: 2048Mi
+    requests:
+      cpu: 200m
+      memory: 512Mi

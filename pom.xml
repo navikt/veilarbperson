@@ -7,7 +7,7 @@
     <parent>
         <groupId>no.nav.common</groupId>
         <artifactId>mor-pom</artifactId>
-        <version>1.2019.11.28-16.07-69bf339eebe8</version>
+        <version>1.2020.01.22-08.52-0c45e47cbbb2</version>
     </parent>
 
     <groupId>no.nav.fo</groupId>
@@ -15,12 +15,14 @@
     <version>1</version>
     <packaging>war</packaging>
 
+    <build>
+        <finalName>veilarbperson</finalName>
+    </build>
+
     <properties>
-        <tjenestespesifikasjoner.version>1.2019.04.03-23.09-56488320520a</tjenestespesifikasjoner.version>
+        <tjenestespesifikasjoner.version>1.2019.09.25-00.21-49b69f0625e0</tjenestespesifikasjoner.version>
         <kodeverk.version>2.0.2</kodeverk.version>
         <egenansatt-v1.version>1.0.5</egenansatt-v1.version>
-
-        <sonar.exclusions>**/config/*, **/*Mock*, **/*Servlet*, **/*Config*</sonar.exclusions>
     </properties>
 
     <dependencyManagement>
@@ -45,14 +47,14 @@
                 <version>${tjenestespesifikasjoner.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.nav.sbl.dialogarena</groupId>
+                <groupId>no.nav.tjenestespesifikasjoner</groupId>
                 <artifactId>egenansatt-v1-tjenestespesifikasjon</artifactId>
-                <version>${egenansatt-v1.version}</version>
+                <version>${tjenestespesifikasjoner.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.nav.sbl.dialogarena</groupId>
+                <groupId>no.nav.tjenestespesifikasjoner</groupId>
                 <artifactId>kodeverk-tjenestespesifikasjon</artifactId>
-                <version>${kodeverk.version}</version>
+                <version>${tjenestespesifikasjoner.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.nav.tjenestespesifikasjoner</groupId>
@@ -70,7 +72,7 @@
             <artifactId>person-v3-tjenestespesifikasjon</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.nav.sbl.dialogarena</groupId>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
             <artifactId>egenansatt-v1-tjenestespesifikasjon</artifactId>
         </dependency>
         <dependency>
@@ -78,7 +80,7 @@
             <artifactId>organisasjonenhet-v2-tjenestespesifikasjon</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.nav.sbl.dialogarena</groupId>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
             <artifactId>kodeverk-tjenestespesifikasjon</artifactId>
         </dependency>
         <dependency>
@@ -161,6 +163,10 @@
             <groupId>no.nav.common</groupId>
             <artifactId>rest</artifactId>
         </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>nais</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>no.nav.common</groupId>
@@ -229,61 +235,7 @@
             <groupId>no.nav.common</groupId>
             <artifactId>fasit</artifactId>
         </dependency>
-        <dependency>
-            <groupId>no.nav.common</groupId>
-            <artifactId>pact-fo</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>au.com.dius</groupId>
-            <artifactId>pact-jvm-provider-junit_2.12</artifactId>
-        </dependency>
 
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/Pact*</exclude>
-                    </excludes>
-                    <reuseForks>false</reuseForks>
-                    <useSystemClassLoader>false</useSystemClassLoader>
-                </configuration>
-            </plugin>
-        </plugins>
-        <finalName>veilarbperson</finalName>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>pact</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.20.1</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                                <configuration>
-                                    <includes>
-                                        <include>**/Pact*</include>
-                                    </includes>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
 
 </project>
