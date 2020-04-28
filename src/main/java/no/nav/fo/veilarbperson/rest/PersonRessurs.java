@@ -19,6 +19,7 @@ import no.nav.fo.veilarbperson.consumer.tps.PersonService;
 import no.nav.fo.veilarbperson.domain.person.*;
 import no.nav.fo.veilarbperson.utils.AutentiseringHjelper;
 import no.nav.fo.veilarbperson.utils.MapExceptionUtil;
+import no.nav.fo.veilarbperson.utils.MapKrrExceptionUtil;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -36,6 +37,7 @@ import static no.nav.apiapp.feil.FeilType.FINNES_IKKE;
 public class PersonRessurs {
 
     private final PersonFletter personFletter;
+    private final DigitalKontaktinformasjonService digitalKontaktinformasjonService;
     private final VeilarbAbacPepClient pepClient;
     private final PersonService personService;
 
@@ -50,7 +52,7 @@ public class PersonRessurs {
                          PortefoljeService portefoljeService,
                          VeilarbAbacPepClient pepClient
     ) {
-
+        this.digitalKontaktinformasjonService = digitalKontaktinformasjonService;
         this.pepClient = pepClient;
         this.personService = personService;
 
@@ -115,6 +117,23 @@ public class PersonRessurs {
                 .map(PersonNavn::fraPerson)
                 .getOrElseThrow(MapExceptionUtil::map);
 
+    }
+
+    @GET
+    @Path("/kontaktinfo")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(value = "Henter kontaktinfo til en person")
+    public Kontaktinfo kontaktinfo(@QueryParam("fnr") String fnr) {
+
+        // Fnr fra query param kan kun brukes av interne brukere, eksterne må bruke token
+        final String fodselsnummer = (fnr != null && AutentiseringHjelper.erInternBruker()) ?
+                fnr : SubjectHandler.getIdent().orElseThrow(() -> new Feil(FeilType.UGYLDIG_REQUEST));
+
+        pepClient.sjekkLesetilgangTilBruker(lagBruker(fodselsnummer));
+
+        return Try.of(() -> digitalKontaktinformasjonService.hentDigitalKontaktinformasjon(fodselsnummer))
+                .map(Kontaktinfo::fraKrr)
+                .getOrElseThrow(MapKrrExceptionUtil::map);
     }
 
     @GET
