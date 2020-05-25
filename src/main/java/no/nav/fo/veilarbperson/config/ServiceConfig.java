@@ -1,7 +1,5 @@
 package no.nav.fo.veilarbperson.config;
 
-import no.nav.apiapp.security.veilarbabac.VeilarbAbacPepClient;
-import no.nav.brukerdialog.security.oidc.SystemUserTokenProvider;
 import no.nav.fo.veilarbperson.consumer.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.fo.veilarbperson.consumer.organisasjonenhet.EnhetService;
 import no.nav.fo.veilarbperson.consumer.tps.EgenAnsattService;
@@ -40,8 +38,6 @@ public class ServiceConfig {
         this.pep = pep;
     }
 
-    private SystemUserTokenProvider systemUserTokenProvider = new SystemUserTokenProvider();
-
     @Inject
     UnleashService unleashService;
 
@@ -63,19 +59,6 @@ public class ServiceConfig {
     @Bean
     DigitalKontaktinformasjonService digitalKontaktinformasjonService() {
         return new DigitalKontaktinformasjonService(digitalKontaktinformasjonV1);
-    }
-
-    @Bean
-    public VeilarbAbacPepClient pepClient(Pep pep) {
-
-        return VeilarbAbacPepClient.ny()
-                .medPep(pep)
-                .medResourceTypePerson()
-                .medSystemUserTokenProvider(()->systemUserTokenProvider.getToken())
-                .brukAktoerId(()->unleashService.isEnabled("veilarbperson.veilarbabac.aktor"))
-                .sammenlikneTilgang(()->unleashService.isEnabled("veilarbperson.veilarbabac.sammenlikn"))
-                .foretrekkVeilarbAbacResultat(()->unleashService.isEnabled("veilarbperson.veilarbabac.foretrekk_veilarbabac"))
-                .bygg();
     }
 
 }
