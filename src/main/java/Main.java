@@ -1,6 +1,5 @@
 import no.nav.apiapp.ApiApp;
-import no.nav.brukerdialog.tools.SecurityConstants;
-import no.nav.common.utils.NaisUtils;
+import no.nav.common.nais.utils.NaisUtils;
 import no.nav.fo.veilarbperson.config.ApplicationConfig;
 import no.nav.sbl.dialogarena.common.abac.pep.CredentialConstants;
 import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants;
@@ -23,10 +22,6 @@ public class Main {
         //CXF
         System.setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, serviceUser.username);
         System.setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, serviceUser.password);
-
-        //OIDC
-        System.setProperty(SecurityConstants.SYSTEMUSER_USERNAME, serviceUser.username);
-        System.setProperty(SecurityConstants.SYSTEMUSER_PASSWORD, serviceUser.password);
 
         setProperty(AKTOER_ENDPOINT_URL, getRequiredProperty(AKTOER_V2_URL_PROPERTY));
 

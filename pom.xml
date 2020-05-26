@@ -7,7 +7,7 @@
     <parent>
         <groupId>no.nav.common</groupId>
         <artifactId>mor-pom</artifactId>
-        <version>1.2020.01.22-08.52-0c45e47cbbb2</version>
+        <version>1.2020.05.14_12.07-42e4c0f2251c</version>
     </parent>
 
     <groupId>no.nav.fo</groupId>
@@ -167,17 +167,13 @@
             <groupId>no.nav.common</groupId>
             <artifactId>nais</artifactId>
         </dependency>
-
         <dependency>
             <groupId>no.nav.common</groupId>
-            <artifactId>oidc-security</artifactId>
-            <scope>compile</scope>
+            <artifactId>oidc</artifactId>
         </dependency>
-
         <dependency>
             <groupId>no.nav.common</groupId>
             <artifactId>util</artifactId>
-            <scope>compile</scope>
         </dependency>
 
         <!-- Logging -->
@@ -230,10 +226,6 @@
         <dependency>
             <groupId>no.bekk.bekkopen</groupId>
             <artifactId>nocommons</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.common</groupId>
-            <artifactId>fasit</artifactId>
         </dependency>
 
     </dependencies>

@@ -5,8 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.vavr.control.Try;
 import no.nav.apiapp.feil.Feil;
 import no.nav.apiapp.feil.FeilType;
-import no.nav.apiapp.security.veilarbabac.Bruker;
-import no.nav.apiapp.security.veilarbabac.VeilarbAbacPepClient;
+import no.nav.apiapp.security.PepClient;
 import no.nav.common.auth.SubjectHandler;
 import no.nav.dialogarena.aktor.AktorService;
 import no.nav.fo.veilarbperson.PersonFletter;
@@ -36,7 +35,7 @@ import static no.nav.apiapp.feil.FeilType.FINNES_IKKE;
 public class PersonRessurs {
 
     private final PersonFletter personFletter;
-    private final VeilarbAbacPepClient pepClient;
+    private final PepClient pepClient;
     private final PersonService personService;
 
     @Inject
@@ -48,7 +47,7 @@ public class PersonRessurs {
                          EgenAnsattService egenAnsattService,
                          KodeverkService kodeverkService,
                          PortefoljeService portefoljeService,
-                         VeilarbAbacPepClient pepClient
+                         PepClient pepClient
     ) {
 
         this.pepClient = pepClient;
@@ -77,23 +76,21 @@ public class PersonRessurs {
             throw new Feil(FeilType.INGEN_TILGANG);
         }
 
-        pepClient.sjekkLesetilgangTilBruker(lagBruker(fodselsnummer));
+        pepClient.sjekkLesetilgangTilAktorId(getAktorIdOrThrow(fodselsnummer));
+
         String cookie = request.getHeader(HttpHeaders.COOKIE);
 
-        return Try.of(() -> personFletter.hentPerson(fodselsnummer, cookie))
-                .getOrElseThrow(MapExceptionUtil::map);
+        return Try.of(() -> personFletter.hentPerson(fodselsnummer, cookie)).getOrElseThrow(MapExceptionUtil::map);
     }
 
     @GET
     @Path("/aktorid")
     @Produces(APPLICATION_JSON)
     public AktoerId aktorid(@QueryParam("fnr") String fodselsnummer){
-
         if(AutentiseringHjelper.erInternBruker()) {
-            Bruker bruker = lagBruker(fodselsnummer);
-            pepClient.sjekkLesetilgangTilBruker(bruker);
-
-            return new AktoerId(bruker.getAktoerId());
+            String aktorId = getAktorIdOrThrow(fodselsnummer);
+            pepClient.sjekkLesetilgangTilAktorId(aktorId);
+            return new AktoerId(aktorId);
         }
 
         throw new Feil(FeilType.INGEN_TILGANG);
@@ -109,7 +106,7 @@ public class PersonRessurs {
         final String fodselsnummer = (fnr != null && AutentiseringHjelper.erInternBruker()) ?
                 fnr : SubjectHandler.getIdent().orElseThrow(() -> new Feil(FeilType.UGYLDIG_REQUEST));
 
-        pepClient.sjekkLesetilgangTilBruker(lagBruker(fodselsnummer));
+        pepClient.sjekkLesetilgangTilAktorId(getAktorIdOrThrow(fodselsnummer));
 
         return Try.of(() -> personService.hentPerson(fodselsnummer))
                 .map(PersonNavn::fraPerson)
@@ -127,7 +124,7 @@ public class PersonRessurs {
             throw new Feil(FeilType.INGEN_TILGANG);
         }
 
-        pepClient.sjekkLesetilgangTilBruker(lagBruker(fnr));
+        pepClient.sjekkLesetilgangTilAktorId(getAktorIdOrThrow(fnr));
 
         return Try.of(() -> personService.hentPerson(fnr))
                 .map(PersonData::getMalform)
@@ -138,7 +135,7 @@ public class PersonRessurs {
     @GET
     @Path("/{fodselsnummer}/tilgangTilBruker")
     public boolean tilgangTilBruker(@PathParam("fodselsnummer") String fodselsnummer) {
-        return Try.runRunnable(() -> pepClient.sjekkLesetilgangTilBruker(lagBruker(fodselsnummer))).isSuccess();
+        return Try.runRunnable(() -> pepClient.sjekkLesetilgangTilAktorId(getAktorIdOrThrow(fodselsnummer))).isSuccess();
     }
 
     @GET
@@ -151,7 +148,7 @@ public class PersonRessurs {
                     .getOrElseThrow(MapExceptionUtil::map);
         }
         else if(AutentiseringHjelper.erInternBruker()) {
-            pepClient.sjekkLesetilgangTilBruker(lagBruker(fodselsnummer));
+            pepClient.sjekkLesetilgangTilAktorId(getAktorIdOrThrow(fodselsnummer));
             return Try.of(() -> personFletter.hentGeografisktilknytning(fodselsnummer))
                     .getOrElseThrow(MapExceptionUtil::map);
         }
@@ -159,9 +156,9 @@ public class PersonRessurs {
         throw new Feil(FeilType.INGEN_TILGANG);
     }
 
-    private Bruker lagBruker(String fnr) {
-        return Bruker.fraFnr(fnr)
-                .medAktoerIdSupplier(()->aktorService.getAktorId(fnr).orElseThrow(()->new Feil(FINNES_IKKE, "Finner ikke aktørId for gitt Fnr")));
+    private String getAktorIdOrThrow(String fnr) {
+        return aktorService.getAktorId(fnr)
+                .orElseThrow(() -> new Feil(FINNES_IKKE, "Finner ikke aktørId for gitt Fnr"));
     }
 
 }
