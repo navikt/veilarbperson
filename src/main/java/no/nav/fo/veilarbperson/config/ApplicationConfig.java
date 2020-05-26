@@ -2,18 +2,21 @@ package no.nav.fo.veilarbperson.config;
 
 import no.nav.apiapp.ApiApplication;
 import no.nav.apiapp.config.ApiAppConfigurator;
+import no.nav.apiapp.security.PepClient;
 import no.nav.brukerdialog.security.domain.IdentType;
-import no.nav.brukerdialog.security.oidc.provider.AzureADB2CConfig;
-import no.nav.common.auth.SecurityLevel;
+import no.nav.common.oidc.auth.OidcAuthenticatorConfig;
 import no.nav.dialogarena.aktor.AktorConfig;
 import no.nav.fo.veilarbperson.PersonFletter;
+import no.nav.sbl.dialogarena.common.abac.pep.Pep;
 import no.nav.sbl.dialogarena.common.abac.pep.context.AbacContext;
+import no.nav.sbl.dialogarena.common.abac.pep.domain.ResourceType;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import static no.nav.brukerdialog.security.Constants.AZUREADB2C_OIDC_COOKIE_NAME_FSS;
+import static no.nav.common.oidc.Constants.*;
 import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 
 @Configuration
@@ -29,22 +32,44 @@ import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 public class ApplicationConfig implements ApiApplication {
     public static final String AKTOER_V2_URL_PROPERTY = "AKTOER_V2_ENDPOINTURL";
 
+    public OidcAuthenticatorConfig openAmAuthConfig() {
+        return new OidcAuthenticatorConfig()
+                .withDiscoveryUrl(getRequiredProperty("OPENAM_DISCOVERY_URL"))
+                .withClientId(getRequiredProperty("VEILARBLOGIN_OPENAM_CLIENT_ID"))
+                .withIdTokenCookieName(OPEN_AM_ID_TOKEN_COOKIE_NAME)
+                .withRefreshTokenCookieName(REFRESH_TOKEN_COOKIE_NAME)
+                .withRefreshUrl(getRequiredProperty("VEILARBLOGIN_OPENAM_REFRESH_URL"))
+                .withIdentType(IdentType.InternBruker);
+    }
+
+    public OidcAuthenticatorConfig azureAdAuthConfig() {
+        return new OidcAuthenticatorConfig()
+                .withDiscoveryUrl(getRequiredProperty("AAD_DISCOVERY_URL"))
+                .withClientId(getRequiredProperty("LOGINSERVICE_OIDC_CLIENT_ID"))
+                .withIdTokenCookieName(AZURE_AD_ID_TOKEN_COOKIE_NAME)
+                .withIdentType(IdentType.InternBruker);
+    }
+
+    public OidcAuthenticatorConfig azureAdB2CAuthConfig() {
+        return new OidcAuthenticatorConfig()
+                .withDiscoveryUrl(getRequiredProperty("AAD_B2C_DISCOVERY_URL"))
+                .withClientId(getRequiredProperty("AAD_B2C_CLIENTID_USERNAME"))
+                .withIdTokenCookieName(AZURE_AD_B2C_ID_TOKEN_COOKIE_NAME)
+                .withIdentType(IdentType.EksternBruker);
+    }
+
     @Override
     public void configure(ApiAppConfigurator apiAppConfigurator) {
-        String discoveryUrl = getRequiredProperty("AAD_DISCOVERY_URL");
-        String clientId = getRequiredProperty("VEILARBLOGIN_AAD_CLIENT_ID");
-
-        AzureADB2CConfig config = AzureADB2CConfig.builder()
-                .discoveryUrl(discoveryUrl)
-                .expectedAudience(clientId)
-                .identType(IdentType.InternBruker)
-                .tokenName(AZUREADB2C_OIDC_COOKIE_NAME_FSS)
-                .build();
-
         apiAppConfigurator
-                .validateAzureAdExternalUserTokens(SecurityLevel.Level4)
-                .validateAzureAdInternalUsersTokens(config)
-                .issoLogin() // OpenAM i FSS
+                .addOidcAuthenticator(openAmAuthConfig())
+                .addOidcAuthenticator(azureAdAuthConfig())
+                .addOidcAuthenticator(azureAdB2CAuthConfig())
                 .sts();
     }
+
+    @Bean
+    public PepClient pepClient(Pep pep) {
+        return new PepClient(pep, "veilarb", ResourceType.Person);
+    }
+
 }
