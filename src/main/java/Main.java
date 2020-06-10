@@ -1,12 +1,12 @@
 import no.nav.apiapp.ApiApp;
 import no.nav.common.nais.utils.NaisUtils;
-import no.nav.fo.veilarbperson.config.ApplicationConfig;
+import no.nav.veilarbperson.config.ApplicationConfig;
 import no.nav.sbl.dialogarena.common.abac.pep.CredentialConstants;
 import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants;
 
 import static java.lang.System.setProperty;
 import static no.nav.dialogarena.aktor.AktorConfig.AKTOER_ENDPOINT_URL;
-import static no.nav.fo.veilarbperson.config.ApplicationConfig.AKTOER_V2_URL_PROPERTY;
+import static no.nav.veilarbperson.config.ApplicationConfig.AKTOER_V2_URL_PROPERTY;
 import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 
 public class Main {
