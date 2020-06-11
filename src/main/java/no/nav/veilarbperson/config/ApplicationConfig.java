@@ -1,75 +1,66 @@
 package no.nav.veilarbperson.config;
 
-import no.nav.apiapp.ApiApplication;
-import no.nav.apiapp.config.ApiAppConfigurator;
-import no.nav.apiapp.security.PepClient;
-import no.nav.brukerdialog.security.domain.IdentType;
-import no.nav.common.oidc.auth.OidcAuthenticatorConfig;
-import no.nav.dialogarena.aktor.AktorConfig;
-import no.nav.veilarbperson.PersonFletter;
-import no.nav.sbl.dialogarena.common.abac.pep.Pep;
-import no.nav.sbl.dialogarena.common.abac.pep.context.AbacContext;
-import no.nav.sbl.dialogarena.common.abac.pep.domain.ResourceType;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.common.abac.Pep;
+import no.nav.common.abac.VeilarbPep;
+import no.nav.common.abac.audit.SpringAuditRequestInfoSupplier;
+import no.nav.common.client.aktorregister.AktorregisterClient;
+import no.nav.common.client.aktorregister.AktorregisterHttpClient;
+import no.nav.common.client.aktorregister.CachedAktorregisterClient;
+import no.nav.common.client.norg2.CachedNorg2Client;
+import no.nav.common.client.norg2.Norg2Client;
+import no.nav.common.client.norg2.NorgHttp2Client;
+import no.nav.common.sts.NaisSystemUserTokenProvider;
+import no.nav.common.sts.SystemUserTokenProvider;
+import no.nav.common.utils.Credentials;
+import no.nav.common.utils.NaisUtils;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import static no.nav.common.oidc.Constants.*;
-import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
+import static no.nav.common.utils.NaisUtils.getCredentials;
 
+
+@Slf4j
 @Configuration
 @EnableScheduling
-@ComponentScan(basePackages = "no.nav.fo.veilarbperson")
-@Import({
-        ServiceConfig.class,
-        PersonFletter.class,
-        CacheConfig.class,
-        AbacContext.class,
-        AktorConfig.class,
-})
-public class ApplicationConfig implements ApiApplication {
-    public static final String AKTOER_V2_URL_PROPERTY = "AKTOER_V2_ENDPOINTURL";
+@EnableConfigurationProperties({EnvironmentProperties.class})
+public class ApplicationConfig {
 
-    public OidcAuthenticatorConfig openAmAuthConfig() {
-        return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(getRequiredProperty("OPENAM_DISCOVERY_URL"))
-                .withClientId(getRequiredProperty("VEILARBLOGIN_OPENAM_CLIENT_ID"))
-                .withIdTokenCookieName(OPEN_AM_ID_TOKEN_COOKIE_NAME)
-                .withRefreshTokenCookieName(REFRESH_TOKEN_COOKIE_NAME)
-                .withRefreshUrl(getRequiredProperty("VEILARBLOGIN_OPENAM_REFRESH_URL"))
-                .withIdentType(IdentType.InternBruker);
-    }
+    public final static String APPLICATION_NAME = "veilarbperson";
 
-    public OidcAuthenticatorConfig azureAdAuthConfig() {
-        return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(getRequiredProperty("AAD_DISCOVERY_URL"))
-                .withClientId(getRequiredProperty("LOGINSERVICE_OIDC_CLIENT_ID"))
-                .withIdTokenCookieName(AZURE_AD_ID_TOKEN_COOKIE_NAME)
-                .withIdentType(IdentType.InternBruker);
-    }
-
-    public OidcAuthenticatorConfig azureAdB2CAuthConfig() {
-        return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(getRequiredProperty("AAD_B2C_DISCOVERY_URL"))
-                .withClientId(getRequiredProperty("AAD_B2C_CLIENTID_USERNAME"))
-                .withIdTokenCookieName(AZURE_AD_B2C_ID_TOKEN_COOKIE_NAME)
-                .withIdentType(IdentType.EksternBruker);
-    }
-
-    @Override
-    public void configure(ApiAppConfigurator apiAppConfigurator) {
-        apiAppConfigurator
-                .addOidcAuthenticator(openAmAuthConfig())
-                .addOidcAuthenticator(azureAdAuthConfig())
-                .addOidcAuthenticator(azureAdB2CAuthConfig())
-                .sts();
+    @Bean
+    public Credentials serviceUserCredentials() {
+        return getCredentials("service_user");
     }
 
     @Bean
-    public PepClient pepClient(Pep pep) {
-        return new PepClient(pep, "veilarb", ResourceType.Person);
+    public SystemUserTokenProvider systemUserTokenProvider(EnvironmentProperties properties, Credentials serviceUserCredentials) {
+        return new NaisSystemUserTokenProvider(properties.getStsDiscoveryUrl(), serviceUserCredentials.username, serviceUserCredentials.password);
     }
+
+    @Bean
+    public AktorregisterClient aktorregisterClient(EnvironmentProperties properties, SystemUserTokenProvider tokenProvider) {
+        AktorregisterClient aktorregisterClient = new AktorregisterHttpClient(
+                properties.getAktorregisterUrl(), APPLICATION_NAME, tokenProvider::getSystemUserToken
+        );
+        return new CachedAktorregisterClient(aktorregisterClient);
+    }
+
+    @Bean
+    public Norg2Client norg2Client(EnvironmentProperties properties) {
+        return new CachedNorg2Client(new NorgHttp2Client(properties.getNorg2Url()));
+    }
+
+    @Bean
+    public Pep veilarbPep(EnvironmentProperties properties) {
+        Credentials serviceUserCredentials = NaisUtils.getCredentials("service_user");
+        return new VeilarbPep(
+                properties.getAbacUrl(), serviceUserCredentials.username,
+                serviceUserCredentials.password, new SpringAuditRequestInfoSupplier()
+        );
+    }
+
 
 }

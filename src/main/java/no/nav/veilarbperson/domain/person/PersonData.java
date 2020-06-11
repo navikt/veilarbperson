@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Builder;
-import no.nav.veilarbperson.consumer.organisasjonenhet.Enhet;
+import no.nav.veilarbperson.client.organisasjonenhet.Enhet;
 
 import java.util.List;
 import java.util.Optional;

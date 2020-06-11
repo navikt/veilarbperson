@@ -1,7 +1,7 @@
 package no.nav.veilarbperson.consumer.enhet;
 
-import no.nav.veilarbperson.consumer.organisasjonenhet.Enhet;
-import no.nav.veilarbperson.consumer.organisasjonenhet.EnhetService;
+import no.nav.veilarbperson.client.organisasjonenhet.Enhet;
+import no.nav.veilarbperson.client.organisasjonenhet.EnhetService;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.FinnNAVKontorUgyldigInput;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.OrganisasjonEnhetV2;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.informasjon.WSOrganisasjonsenhet;

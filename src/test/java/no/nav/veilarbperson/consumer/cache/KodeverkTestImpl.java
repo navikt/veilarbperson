@@ -1,6 +1,6 @@
 package no.nav.veilarbperson.consumer.cache;
 
-import no.nav.veilarbperson.consumer.kodeverk.Kodeverk;
+import no.nav.veilarbperson.client.kodeverk.Kodeverk;
 
 public class KodeverkTestImpl implements Kodeverk {
     @Override

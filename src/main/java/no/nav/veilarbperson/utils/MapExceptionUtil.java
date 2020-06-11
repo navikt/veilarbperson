@@ -1,23 +1,23 @@
 package no.nav.veilarbperson.utils;
 
-import no.nav.apiapp.feil.Feil;
-import no.nav.apiapp.feil.FeilType;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 public class MapExceptionUtil {
 
-    public static Feil map(Throwable error) {
+    public static ResponseStatusException map(Throwable error) {
 
-        FeilType feilType;
+        HttpStatus feilStatus;
         if (error instanceof HentPersonPersonIkkeFunnet) {
-            feilType = FeilType.FINNES_IKKE;
+            feilStatus = HttpStatus.NOT_FOUND;
         } else if (error instanceof HentPersonSikkerhetsbegrensning) {
-            feilType = FeilType.INGEN_TILGANG;
+            feilStatus = HttpStatus.FORBIDDEN;
         } else {
-            feilType = FeilType.UKJENT;
+            feilStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
-        return new Feil(feilType, error);
+        return new ResponseStatusException(feilStatus);
     }
 }

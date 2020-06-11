@@ -1,10 +1,11 @@
 package no.nav.veilarbperson.consumer.cache;
 
-import no.nav.veilarbperson.consumer.kodeverk.Kodeverk;
-import no.nav.veilarbperson.consumer.kodeverk.KodeverkImpl;
-import no.nav.veilarbperson.consumer.kodeverk.KodeverkService;
+import no.nav.veilarbperson.client.kodeverk.Kodeverk;
+import no.nav.veilarbperson.client.kodeverk.KodeverkImpl;
+import no.nav.veilarbperson.client.kodeverk.KodeverkService;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.KodeverkPortType;
 import no.nav.tjeneste.virksomhet.kodeverk.v2.informasjon.XMLEnkeltKodeverk;
+import no.nav.veilarbperson.utils.FallbackCache;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
