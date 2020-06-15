@@ -24,4 +24,9 @@ public class ClientConfig {
         return new PersonClientImpl(getRequiredProperty("VIRKSOMHET_PERSON_V3_ENDPOINTURL"));
     }
 
+    @Bean
+    public KodeverkClient kodeverkClient() {
+        return new KodeverkImpl(getRequiredProperty("VIRKSOMHET_KODEVERK_V2_ENDPOINTURL"));
+    }
+
 }

@@ -22,6 +22,7 @@ public class KodeverkService {
         this.klient = new FallbackCache<>(this::hentKodeverkFraPortType, new Kodeverk.KodeverkFallback());
     }
 
+    // I teorien så trenger vi kun denne
     public String getVerdi(String kodeverkRef, String kode, String sprak) {
         return hentKodeverk(kodeverkRef)
                 .getNavn(kode, sprak);
