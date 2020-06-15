@@ -49,11 +49,6 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public Norg2Client norg2Client(EnvironmentProperties properties) {
-        return new CachedNorg2Client(new NorgHttp2Client(properties.getNorg2Url()));
-    }
-
-    @Bean
     public Pep veilarbPep(EnvironmentProperties properties) {
         Credentials serviceUserCredentials = NaisUtils.getCredentials("service_user");
         return new VeilarbPep(

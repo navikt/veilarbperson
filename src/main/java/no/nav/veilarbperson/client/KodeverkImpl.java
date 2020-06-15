@@ -18,6 +18,21 @@ public class KodeverkImpl implements KodeverkClient {
     }
 
     @Override
+    public String getBeskrivelseForLandkode(String kode) {
+        return null;
+    }
+
+    @Override
+    public String getBeskrivelseForSivilstand(String kode) {
+        return null;
+    }
+
+    @Override
+    public String getPoststed(String postnummer) {
+        return null;
+    }
+
+    @Override
     public HealthCheckResult checkHealth() {
         try {
 //            egenAnsattV1Ping.ping();

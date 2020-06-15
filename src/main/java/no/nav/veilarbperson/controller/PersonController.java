@@ -1,11 +1,8 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
-import io.vavr.control.Try;
 import no.nav.veilarbperson.service.AuthService;
-import no.nav.veilarbperson.service.PersonFletterService;
-import no.nav.veilarbperson.client.tps.PersonService;
-import no.nav.veilarbperson.utils.MapExceptionUtil;
+import no.nav.veilarbperson.service.PersonService;
 import no.nav.veilarbperson.domain.person.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +12,11 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/person")
 public class PersonController {
 
-    private final PersonFletterService personFletterService;
-
     private final PersonService personService;
 
     private final AuthService authService;
 
-    public PersonController(PersonFletterService personFletterService, PersonService personService, AuthService authService) {
-        this.personFletterService = personFletterService;
+    public PersonController(PersonService personService, AuthService authService) {
         this.personService = personService;
         this.authService = authService;
     }
@@ -34,8 +28,7 @@ public class PersonController {
     public PersonData person(@PathVariable("fodselsnummer") String fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-
-        return Try.of(() -> personFletterService.hentPerson(fnr)).getOrElseThrow(MapExceptionUtil::map);
+        return personService.hentPerson(fnr);
     }
 
     @GetMapping("/aktorid")
@@ -55,9 +48,7 @@ public class PersonController {
 
         authService.sjekkLesetilgang(fnr);
 
-        return Try.of(() -> personService.hentPerson(fodselsnummer))
-                .map(PersonNavn::fraPerson)
-                .getOrElseThrow(MapExceptionUtil::map);
+        return PersonNavn.fraPerson(personService.hentPerson(fodselsnummer));
     }
 
     @GetMapping("/{fodselsnummer}/malform")
@@ -66,10 +57,8 @@ public class PersonController {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
 
-        return Try.of(() -> personService.hentPerson(fnr))
-                .map(PersonData::getMalform)
-                .map(Malform::new)
-                .getOrElseThrow(MapExceptionUtil::map);
+        PersonData personData = personService.hentPerson(fnr);
+        return new Malform(personData.getMalform());
     }
 
     @GetMapping("/{fodselsnummer}/tilgangTilBruker")
@@ -90,10 +79,7 @@ public class PersonController {
         }
 
         authService.sjekkLesetilgang(fnr);
-
-        return Try.of(() -> personFletterService.hentGeografisktilknytning(fnr))
-                .getOrElseThrow(MapExceptionUtil::map);
+        return personService.hentGeografisktilknytning(fnr);
     }
-
 
 }

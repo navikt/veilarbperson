@@ -17,7 +17,6 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.feil.PersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.feil.Sikkerhetsbegrensning;
-import no.nav.veilarbperson.service.PersonFletterService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

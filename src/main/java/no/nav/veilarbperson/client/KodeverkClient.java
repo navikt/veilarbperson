@@ -9,4 +9,10 @@ public interface KodeverkClient extends HealthCheck {
 
     Kodeverk hentKodeverk(String kodeverkRef);
 
+    String getBeskrivelseForLandkode(String kode);
+
+    String getBeskrivelseForSivilstand(String kode);
+
+    String getPoststed(String postnummer);
+
 }
