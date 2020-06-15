@@ -1,12 +1,11 @@
 package no.nav.veilarbperson.service;
 
-
+import no.nav.common.client.norg2.Norg2Client;
 import no.nav.veilarbperson.client.digitalkontaktinformasjon.DigitalKontaktinformasjon;
 import no.nav.veilarbperson.client.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.veilarbperson.client.kodeverk.KodeverkManager;
 import no.nav.veilarbperson.client.kodeverk.KodeverkService;
-import no.nav.veilarbperson.client.organisasjonenhet.EnhetService;
-import no.nav.veilarbperson.client.portefolje.PortefoljeService;
+import no.nav.veilarbperson.client.VeilarbportefoljeClientImpl;
 import no.nav.veilarbperson.client.tps.EgenAnsattService;
 import no.nav.veilarbperson.client.tps.PersonService;
 import no.nav.veilarbperson.domain.Personinfo;
@@ -21,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
+
 @Service
 public class PersonFletterService {
 
@@ -28,24 +29,24 @@ public class PersonFletterService {
 
     private final PersonService personService;
     private final EgenAnsattService egenAnsattService;
-    private final EnhetService enhetService;
+    private final Norg2Client norg2Client;
     private final DigitalKontaktinformasjonService digitalKontaktinformasjonService;
     private final KodeverkManager kodeverkManager;
-    private final PortefoljeService portefoljeService;
+    private final VeilarbportefoljeClientImpl veilarbportefoljeClientImpl;
 
-    public PersonFletterService(EnhetService enhetService,
+    public PersonFletterService(Norg2Client norg2Client,
                                 DigitalKontaktinformasjonService digitalKontaktinformasjonService,
                                 PersonService personService,
                                 EgenAnsattService egenAnsattService,
                                 KodeverkService kodeverkService,
-                                PortefoljeService portefoljeService
+                                VeilarbportefoljeClientImpl veilarbportefoljeClientImpl
     ) {
-        this.enhetService = enhetService;
+        this.norg2Client = norg2Client;
         this.digitalKontaktinformasjonService = digitalKontaktinformasjonService;
         this.kodeverkManager = new KodeverkManager(kodeverkService);
         this.personService = personService;
         this.egenAnsattService = egenAnsattService;
-        this.portefoljeService = portefoljeService;
+        this.veilarbportefoljeClientImpl = veilarbportefoljeClientImpl;
     }
 
     public PersonData hentPerson(String fodselsnummer) throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
@@ -70,7 +71,7 @@ public class PersonFletterService {
     }
 
     private void flettPersoninfoFraPortefolje(PersonData personData, String fodselsnummer) {
-        Personinfo personinfo = portefoljeService.hentPersonInfo(fodselsnummer);
+        Personinfo personinfo = veilarbportefoljeClientImpl.hentPersonInfo(fodselsnummer);
         personData.setSikkerhetstiltak(personinfo.sikkerhetstiltak);
         personData.setEgenAnsatt(personinfo.egenAnsatt);
     }
@@ -81,7 +82,8 @@ public class PersonFletterService {
 
     private void flettGeografiskEnhet(PersonData personData) {
         if (personData.getGeografiskTilknytning() != null) {
-            personData.setGeografiskEnhet(enhetService.hentGeografiskEnhet(personData.getGeografiskTilknytning()));
+            Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(personData.getGeografiskTilknytning()));
+            personData.setGeografiskEnhet(enhet);
         }
     }
 

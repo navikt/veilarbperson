@@ -1,6 +1,5 @@
 package no.nav.veilarbperson.client.tps.mappers;
 
-import no.nav.fo.veilarbperson.domain.person.*;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.StrukturertAdresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
@@ -22,7 +21,6 @@ public class PersonDataMapper {
     private static final String KODE_6 = "6";
     private static final String KODE_7 = "7";
 
-    private final BarnMapper barnMapper = new BarnMapper();
     private final FamiliemedlemMapper familiemedlemMapper = new FamiliemedlemMapper();
 
     public PersonData tilPersonData(Person person) {
@@ -34,7 +32,7 @@ public class PersonDataMapper {
                 .fodselsnummer(kanskjeFodselsnummer(person))
                 .fodselsdato(kanskjeFodselsdato(person))
                 .kjonn(kanskjeKjonn(person))
-                .barn(barnMapper.familierelasjonerTilBarn(person.getHarFraRolleI()))
+                .barn(BarnMapper.familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .diskresjonskode(kanskjeDiskresjonskode(person))
                 .kontonummer(kanskjeKontonummer(person))
                 .geografiskTilknytning(geografiskTilknytning(person))

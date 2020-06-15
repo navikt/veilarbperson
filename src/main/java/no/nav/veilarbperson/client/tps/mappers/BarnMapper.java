@@ -9,12 +9,10 @@ public class BarnMapper {
 
     private static final String BARN = "BARN";
 
-    private FamiliemedlemMapper familiemedlemMapper = new FamiliemedlemMapper();
-
-    List<Familiemedlem> familierelasjonerTilBarn(List<no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon> familierelasjoner) {
+    public static List<Familiemedlem> familierelasjonerTilBarn(List<no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon> familierelasjoner) {
         return familierelasjoner.stream()
                 .filter(familierelasjon -> BARN.equals(familierelasjon.getTilRolle().getValue()))
-                .map(relasjon -> FamiliemedlemMapper.familierelasjonTilFamiliemedlem(relasjon))
+                .map(FamiliemedlemMapper::familierelasjonTilFamiliemedlem)
                 .collect(Collectors.toList());
     }
 }

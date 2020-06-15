@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Builder;
-import no.nav.veilarbperson.client.organisasjonenhet.Enhet;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,59 +32,6 @@ public class PersonData extends Person {
     private PostAdresse postAdresse;
     private boolean egenAnsatt;
     private String malform;
-
-    public boolean isEgenAnsatt() {
-        return egenAnsatt;
-    }
-
-    @Builder
-    private PersonData(String fornavn,
-                       String mellomnavn,
-                       String etternavn,
-                       String sammensattnavn,
-                       String fodselsnummer,
-                       String fodselsdato,
-                       String kjonn,
-                       String dodsdato,
-                       List<Familiemedlem> barn,
-                       String diskresjonskode,
-                       String kontonummer,
-                       String geografiskTilknytning,
-                       Enhet geografiskEnhet,
-                       String telefon,
-                       String epost,
-                       String statsborgerskap,
-                       String sikkerhetstiltak,
-                       Sivilstand sivilstand,
-                       Familiemedlem partner,
-                       Bostedsadresse bostedsadresse,
-                       MidlertidigAdresseNorge midlertidigAdresseNorge,
-                       MidlertidigAdresseUtland midlertidigAdresseUtland,
-                       PostAdresse postAdresse,
-                       boolean egenAnsatt,
-                       String malform
-    ) {
-        super(fornavn, mellomnavn, etternavn, sammensattnavn, fodselsnummer, fodselsdato, kjonn, dodsdato);
-
-        this.barn = barn;
-        this.diskresjonskode = diskresjonskode;
-        this.kontonummer = kontonummer;
-        this.geografiskTilknytning = geografiskTilknytning;
-        this.geografiskEnhet = geografiskEnhet;
-        this.telefon = telefon;
-        this.epost = epost;
-        this.statsborgerskap = statsborgerskap;
-        this.sikkerhetstiltak = sikkerhetstiltak;
-        this.sivilstand = sivilstand;
-        this.partner = partner;
-        this.bostedsadresse = bostedsadresse;
-        this.midlertidigAdresseNorge = midlertidigAdresseNorge;
-        this.midlertidigAdresseUtland = midlertidigAdresseUtland;
-        this.postAdresse = postAdresse;
-        this.egenAnsatt = egenAnsatt;
-        this.malform = malform;
-    }
-
 
     @JsonIgnore
     public Optional<String> getPostnummerForBostedsadresse() {

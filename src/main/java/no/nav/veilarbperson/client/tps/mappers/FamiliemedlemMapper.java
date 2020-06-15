@@ -12,7 +12,7 @@ public class FamiliemedlemMapper {
 
     private static final String EKTEFELLE = "EKTE";
 
-    static Familiemedlem familierelasjonTilFamiliemedlem(no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon familierelasjon) {
+    public static Familiemedlem familierelasjonTilFamiliemedlem(no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon familierelasjon) {
 
         no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person = familierelasjon.getTilPerson();
         final String fodselsnummer = kanskjeFodselsnummer(person);
@@ -29,7 +29,7 @@ public class FamiliemedlemMapper {
                 .build();
     }
 
-    Familiemedlem partner(List<no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon> familierelasjoner) {
+    public static Familiemedlem partner(List<no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon> familierelasjoner) {
         for (no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon relasjon : familierelasjoner) {
             if (EKTEFELLE.equals(relasjon.getTilRolle().getValue())) {
                 return familierelasjonTilFamiliemedlem(relasjon);
