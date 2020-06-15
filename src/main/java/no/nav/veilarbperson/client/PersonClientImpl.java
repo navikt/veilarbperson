@@ -12,12 +12,14 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentSikkerhetstiltakRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentSikkerhetstiltakResponse;
+import no.nav.veilarbperson.config.CacheConfig;
 import no.nav.veilarbperson.domain.person.GeografiskTilknytning;
 import no.nav.veilarbperson.domain.person.PersonData;
 import no.nav.veilarbperson.domain.person.Sikkerhetstiltak;
 import no.nav.veilarbperson.utils.MapExceptionUtil;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Optional;
 
@@ -41,8 +43,8 @@ public class PersonClientImpl implements PersonClient {
                 .build();
     }
 
+    @Cacheable(CacheConfig.TPS_PERSON_CACHE_NAME)
     @Override
-    // TODO: Cache
     public PersonData hentPersonData(String ident) {
         try {
             HentPersonResponse response = personV3.hentPerson(lagHentPersonRequest(ident));
@@ -59,6 +61,7 @@ public class PersonClientImpl implements PersonClient {
         return new GeografiskTilknytning(personData.getGeografiskTilknytning());
     }
 
+    @Cacheable(CacheConfig.SIKKERHETSTILTAK_CACHE_NAME)
     @Override
     public Sikkerhetstiltak hentSikkerhetstiltak(String ident) {
         try {

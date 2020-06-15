@@ -5,7 +5,9 @@ import no.nav.common.health.HealthCheckResult;
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1;
 import no.nav.tjeneste.pip.egen.ansatt.v1.WSHentErEgenAnsattEllerIFamilieMedEgenAnsattRequest;
 import no.nav.tjeneste.pip.egen.ansatt.v1.WSHentErEgenAnsattEllerIFamilieMedEgenAnsattResponse;
+import no.nav.veilarbperson.config.CacheConfig;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
+import org.springframework.cache.annotation.Cacheable;
 
 public class EgenAnsattClientImpl implements EgenAnsattClient {
 
@@ -27,6 +29,7 @@ public class EgenAnsattClientImpl implements EgenAnsattClient {
                 .build();
     }
 
+    @Cacheable(CacheConfig.EGEN_ANSATT_CACHE_NAME)
     @Override
     public boolean erEgenAnsatt(String ident) {
         final WSHentErEgenAnsattEllerIFamilieMedEgenAnsattRequest request = new WSHentErEgenAnsattEllerIFamilieMedEgenAnsattRequest().withIdent(ident);

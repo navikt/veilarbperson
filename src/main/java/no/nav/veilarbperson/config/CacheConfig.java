@@ -1,62 +1,54 @@
 package no.nav.veilarbperson.config;
 
-
-import net.sf.ehcache.config.CacheConfiguration;
-import org.springframework.cache.CacheManager;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import static net.sf.ehcache.store.MemoryStoreEvictionPolicy.LRU;
-import static no.nav.dialogarena.aktor.AktorConfig.AKTOR_ID_FROM_FNR_CACHE;
-import static no.nav.sbl.dialogarena.common.abac.pep.context.AbacContext.ABAC_CACHE;
+import java.util.concurrent.TimeUnit;
 
+@Configuration
 @EnableCaching
 public class CacheConfig {
 
-    public static final String ENHET = "enhet";
-    public static final String PERSON = "person";
-    public static final String GEOGRAFISK_TILKNYTNING = "geografiskTilknytning";
-    public static final String SIKKERHETSTILTAK = "sikkerhetstiltak";
-    public static final String DIGITAL_KONTAKTINFO = "digital_kontaktinfo";
-    public static final String EGEN_ANSATT = "egen_ansatt";
-
-    private static final CacheConfiguration ENHET_CACHE = langCache(ENHET);
-
-    private static final CacheConfiguration PERSON_CACHE = kortCache(PERSON);
-    private static final CacheConfiguration SIKKERHETSTILTAK_CACHE = kortCache(SIKKERHETSTILTAK);
-    private static final CacheConfiguration DIGITAL_KONTAKTINFO_CACHE = kortCache(DIGITAL_KONTAKTINFO);
-    private static final CacheConfiguration EGEN_ANSATT_CACHE = kortCache(EGEN_ANSATT);
-    private static final CacheConfiguration GEOGRAFISK_TILKNYTNING_CACHE = kortCache(GEOGRAFISK_TILKNYTNING);
+    public static final String VEILARBPORTEFOLJE_PERSONINFO_CACHE_NAME = "veilarbportefolje_personinfo_cache";
+    public static final String TPS_PERSON_CACHE_NAME = "tps_person_cache";
+    public static final String SIKKERHETSTILTAK_CACHE_NAME = "sikkerhetstiltak_cache";
+    public static final String EGEN_ANSATT_CACHE_NAME = "egen_ansatt_cache";
+    public static final String DKIF_KONTAKTINFO_CACHE_NAME = "dkif_kontaktinfo_cache_name";
 
     @Bean
-    public CacheManager cacheManager() {
-        net.sf.ehcache.config.Configuration config = new net.sf.ehcache.config.Configuration();
-        config.addCache(ABAC_CACHE);
-        config.addCache(PERSON_CACHE);
-        config.addCache(SIKKERHETSTILTAK_CACHE);
-        config.addCache(ENHET_CACHE);
-        config.addCache(DIGITAL_KONTAKTINFO_CACHE);
-        config.addCache(EGEN_ANSATT_CACHE);
-        config.addCache(GEOGRAFISK_TILKNYTNING_CACHE);
-        config.addCache(AKTOR_ID_FROM_FNR_CACHE);
-        return new EhCacheCacheManager(net.sf.ehcache.CacheManager.newInstance(config));
+    public Cache veilarbportefoljePersoninfoCache() {
+        return litenCache(VEILARBPORTEFOLJE_PERSONINFO_CACHE_NAME);
     }
 
-    private static CacheConfiguration langCache(String navn) {
-        return cache(navn, 86400);
+    @Bean
+    public Cache tpsPersonCache() {
+        return litenCache(TPS_PERSON_CACHE_NAME);
     }
 
-    private static CacheConfiguration kortCache(String navn) {
-        return cache(navn, 60);
+    @Bean
+    public Cache sikkerhetstiltakCache() {
+        return litenCache(SIKKERHETSTILTAK_CACHE_NAME);
     }
 
-    private static CacheConfiguration cache(String navn, int varighetSekunder) {
-        return new CacheConfiguration(navn, 100)
-                .memoryStoreEvictionPolicy(LRU)
-                .timeToIdleSeconds(varighetSekunder)
-                .timeToLiveSeconds(varighetSekunder);
+    @Bean
+    public Cache egenAnsattCache() {
+        return litenCache(EGEN_ANSATT_CACHE_NAME);
+    }
+
+    @Bean
+    public Cache dkifKontaktinfoCacheName() {
+        return litenCache(DKIF_KONTAKTINFO_CACHE_NAME);
+    }
+
+    private CaffeineCache litenCache(String cacheName) {
+        return new CaffeineCache(cacheName, Caffeine.newBuilder()
+                .expireAfterWrite(1, TimeUnit.MINUTES)
+                .maximumSize(1000)
+                .build());
     }
 
 }
-

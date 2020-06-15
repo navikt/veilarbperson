@@ -3,19 +3,17 @@ package no.nav.veilarbperson.client;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import no.nav.common.health.HealthCheck;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.HealthCheckUtils;
 import no.nav.common.json.JsonUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
+import no.nav.veilarbperson.config.CacheConfig;
 import no.nav.veilarbperson.domain.DkifKontaktinfo;
-import no.nav.veilarbperson.domain.Personinfo;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Optional;
 
@@ -36,9 +34,9 @@ public class DkifClientImpl implements DkifClient {
         this.client = RestClient.baseClient();
     }
 
+    @Cacheable(CacheConfig.DKIF_KONTAKTINFO_CACHE_NAME)
     @SneakyThrows
     @Override
-    // TODO: Cache
     public DkifKontaktinfo hentKontaktInfo(String fnr) {
         Request request = new Request.Builder()
                 .url(joinPaths(dkifUrl, "/api/v1/personer/kontaktinformasjon?inkluderSikkerDigitalPost=false"))

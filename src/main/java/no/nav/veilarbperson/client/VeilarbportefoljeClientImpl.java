@@ -5,12 +5,12 @@ import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.HealthCheckUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
+import no.nav.veilarbperson.config.CacheConfig;
 import no.nav.veilarbperson.domain.Personinfo;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.cache.annotation.Cacheable;
 
 import static no.nav.common.utils.UrlUtils.joinPaths;
 import static no.nav.veilarbperson.utils.RestClientUtils.authHeaderMedInnloggetBruker;
@@ -29,9 +29,9 @@ public class VeilarbportefoljeClientImpl implements VeilarbportefoljeClient {
         this.client = RestClient.baseClient();
     }
 
+    @Cacheable(CacheConfig.VEILARBPORTEFOLJE_PERSONINFO_CACHE_NAME)
     @SneakyThrows
     @Override
-    // TODO: Cache
     public Personinfo hentPersonInfo(String fodselsnummer) {
         Request request = new Request.Builder()
                 .url(joinPaths(veilarbportefoljeUrl, "/api/personinfo/", fodselsnummer))
