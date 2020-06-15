@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>no.nav.common</groupId>
+        <artifactId>mor-pom</artifactId>
+        <version>1.2020.05.14_12.07-42e4c0f2251c</version>
+    </parent>
+
+    <groupId>no.nav.fo</groupId>
+    <artifactId>veilarbperson</artifactId>
+    <version>1</version>
+    <packaging>war</packaging>
+
+    <build>
+        <finalName>veilarbperson</finalName>
+    </build>
+
+    <properties>
+        <tjenestespesifikasjoner.version>1.2019.09.25-00.21-49b69f0625e0</tjenestespesifikasjoner.version>
+        <kodeverk.version>2.0.2</kodeverk.version>
+        <egenansatt-v1.version>1.0.5</egenansatt-v1.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>no.nav.common</groupId>
+                <artifactId>bom</artifactId>
+                <version>${project.parent.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Consumer  -->
+            <dependency>
+                <groupId>no.nav.tjenestespesifikasjoner</groupId>
+                <artifactId>person-v3-tjenestespesifikasjon</artifactId>
+                <version>${tjenestespesifikasjoner.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.tjenestespesifikasjoner</groupId>
+                <artifactId>dkif-tjenestespesifikasjon</artifactId>
+                <version>${tjenestespesifikasjoner.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.tjenestespesifikasjoner</groupId>
+                <artifactId>egenansatt-v1-tjenestespesifikasjon</artifactId>
+                <version>${tjenestespesifikasjoner.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.tjenestespesifikasjoner</groupId>
+                <artifactId>kodeverk-tjenestespesifikasjon</artifactId>
+                <version>${tjenestespesifikasjoner.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.tjenestespesifikasjoner</groupId>
+                <artifactId>organisasjonenhet-v2-tjenestespesifikasjon</artifactId>
+                <version>${tjenestespesifikasjoner.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Consumer -->
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>person-v3-tjenestespesifikasjon</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>egenansatt-v1-tjenestespesifikasjon</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>organisasjonenhet-v2-tjenestespesifikasjon</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>kodeverk-tjenestespesifikasjon</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>dkif-tjenestespesifikasjon</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>abac</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>aktor-klient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>feature-toggle</artifactId>
+        </dependency>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+
+        <!-- Jersey -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+        </dependency>
+
+
+        <!-- Server setup-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+
+        <!-- Nav felles -->
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>api-app</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>types</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>cxf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>nais</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>oidc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>util</artifactId>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Cache -->
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>test-config</artifactId>
+        </dependency>
+
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.bekk.bekkopen</groupId>
+            <artifactId>nocommons</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

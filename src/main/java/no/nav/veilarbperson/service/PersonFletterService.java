@@ -1,17 +1,10 @@
 package no.nav.veilarbperson.service;
 
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.veilarbperson.client.digitalkontaktinformasjon.DigitalKontaktinformasjon;
-import no.nav.veilarbperson.client.digitalkontaktinformasjon.DigitalKontaktinformasjonService;
 import no.nav.veilarbperson.client.kodeverk.KodeverkManager;
 import no.nav.veilarbperson.client.kodeverk.KodeverkService;
 import no.nav.veilarbperson.client.VeilarbportefoljeClientImpl;
-import no.nav.veilarbperson.client.tps.EgenAnsattService;
-import no.nav.veilarbperson.client.tps.PersonService;
 import no.nav.veilarbperson.domain.Personinfo;
-import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonKontaktinformasjonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.HentDigitalKontaktinformasjonSikkerhetsbegrensing;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentSikkerhetstiltakPersonIkkeFunnet;

@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.client.tps.mappers;
+package no.nav.veilarbperson.utils.mappers;
 
 import no.nav.fo.veilarbperson.domain.person.*;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
@@ -7,6 +7,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Diskresjonskoder;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Sivilstand;
 import no.nav.veilarbperson.domain.person.PersonData;
+import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.hamcrest.CustomMatcher;
 import org.hamcrest.Matcher;
 import org.junit.Test;
@@ -214,7 +215,7 @@ public class PersonDataMapperTest {
 
         final PersonData personData = tilPersonData(wsPerson);
 
-        assertThat(personData.getKjoenn(), is(forventetVerdi));
+        assertThat(personData.getKjonn(), is(forventetVerdi));
     }
 
     @Test
@@ -223,7 +224,7 @@ public class PersonDataMapperTest {
 
         final PersonData personData = tilPersonData(wsPerson);
 
-        assertThat(personData.getKjoenn(), nullValue());
+        assertThat(personData.getKjonn(), nullValue());
     }
 
     @Test
@@ -232,7 +233,7 @@ public class PersonDataMapperTest {
 
         final PersonData personData = tilPersonData(wsPerson);
 
-        assertThat(personData.getKjoenn(), nullValue());
+        assertThat(personData.getKjonn(), nullValue());
     }
 
     @Test
@@ -241,7 +242,7 @@ public class PersonDataMapperTest {
 
         final PersonData personData = tilPersonData(wsPerson);
 
-        assertThat(personData.getKjoenn(), nullValue());
+        assertThat(personData.getKjonn(), nullValue());
     }
 
     @Test

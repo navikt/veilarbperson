@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.client.tps.mappers;
+package no.nav.veilarbperson.utils.mappers;
 
 import no.nav.veilarbperson.domain.person.Familiemedlem;
 import org.junit.Test;
@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static no.nav.veilarbperson.client.tps.mappers.MapperTestUtils.lagDato;
+import static no.nav.veilarbperson.utils.mappers.MapperTestUtils.lagDato;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;

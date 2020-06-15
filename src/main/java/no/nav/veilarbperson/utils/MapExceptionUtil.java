@@ -8,8 +8,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class MapExceptionUtil {
 
     public static ResponseStatusException map(Throwable error) {
-
         HttpStatus feilStatus;
+
         if (error instanceof HentPersonPersonIkkeFunnet) {
             feilStatus = HttpStatus.NOT_FOUND;
         } else if (error instanceof HentPersonSikkerhetsbegrensning) {
@@ -20,4 +20,5 @@ public class MapExceptionUtil {
 
         return new ResponseStatusException(feilStatus);
     }
+
 }

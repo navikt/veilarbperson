@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import static java.util.Optional.ofNullable;
 
 @Data
+@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class PersonData extends Person {

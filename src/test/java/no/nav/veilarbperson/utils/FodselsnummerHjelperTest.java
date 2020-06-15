@@ -101,14 +101,14 @@ public class FodselsnummerHjelperTest {
 
     @Test
     public void fodselsnummerTilKjoennSkalOversetteMannRiktig() throws Exception {
-        final String kjonn = FodselsnummerHjelper.fodselsnummerTilKjoenn("XXXXXXXX3XX");
+        final String kjonn = FodselsnummerHjelper.fodselsnummerTilKjonn("XXXXXXXX3XX");
 
         assertThat(kjonn, is("M"));
     }
 
     @Test
     public void fodselsnummerTilKjoennSkalOversetteKvinneRiktig() throws Exception {
-        final String kjonn = FodselsnummerHjelper.fodselsnummerTilKjoenn("XXXXXXXX4XX");
+        final String kjonn = FodselsnummerHjelper.fodselsnummerTilKjonn("XXXXXXXX4XX");
 
         assertThat(kjonn, is("K"));
     }

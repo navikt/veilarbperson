@@ -9,7 +9,7 @@ public class FodselsnummerHjelper {
     public static final int SISTE_DAG_I_MAANED = 31;
     public static final int D_OG_H_NUMMER_OFFSET = 40;
 
-    public static String fodselsnummerTilKjoenn(String fodselsnummer) {
+    public static String fodselsnummerTilKjonn(String fodselsnummer) {
         if (Integer.parseInt(fodselsnummer.substring(8, 9)) % 2 == 0) {
             return "K";
         } else {

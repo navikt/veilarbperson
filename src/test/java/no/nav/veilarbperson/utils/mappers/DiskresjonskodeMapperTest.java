@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.client.tps.mappers;
+package no.nav.veilarbperson.utils.mappers;
 
 import no.nav.veilarbperson.domain.person.Diskresjonskoder;
 import org.junit.Test;

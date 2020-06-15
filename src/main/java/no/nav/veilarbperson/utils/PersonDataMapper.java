@@ -1,8 +1,5 @@
-package no.nav.veilarbperson.client.tps.mappers;
+package no.nav.veilarbperson.utils;
 
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.StrukturertAdresse;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse;
 import no.nav.veilarbperson.domain.person.*;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
@@ -18,44 +15,38 @@ import static java.util.Optional.ofNullable;
 
 public class PersonDataMapper {
 
-    private static final String KODE_6 = "6";
-    private static final String KODE_7 = "7";
-
-    private final FamiliemedlemMapper familiemedlemMapper = new FamiliemedlemMapper();
-
-    public PersonData tilPersonData(Person person) {
-        return PersonData.builder()
-                .fornavn(kanskjeFornavn(person))
-                .mellomnavn(kanskjeMellomnavn(person))
-                .etternavn(kanskjeEtternavn(person))
-                .sammensattnavn(kanskjeSammensattnavn(person))
-                .fodselsnummer(kanskjeFodselsnummer(person))
-                .fodselsdato(kanskjeFodselsdato(person))
-                .kjonn(kanskjeKjonn(person))
-                .barn(BarnMapper.familierelasjonerTilBarn(person.getHarFraRolleI()))
-                .diskresjonskode(kanskjeDiskresjonskode(person))
-                .kontonummer(kanskjeKontonummer(person))
-                .geografiskTilknytning(geografiskTilknytning(person))
-                .statsborgerskap(kanskjeStatsborgerskap(person))
-                .sivilstand(kanskjeSivilstand(person))
-                .partner(familiemedlemMapper.partner(person.getHarFraRolleI()))
-                .bostedsadresse(kanskjeBostedsadresse(person))
-                .midlertidigAdresseNorge(kanskjeMidlertidigAdresseNorge(person))
-                .midlertidigAdresseUtland(kanskjeMidlertidigAdresseUtland(person))
-                .postAdresse(kanskjePostAdresse(person))
-                .dodsdato(dodsdatoTilString(person))
-                .malform(kanskjeMalform(person))
-                .build();
+    public static PersonData tilPersonData(Person person) {
+        return (PersonData) new PersonData()
+                .setBarn(Mappers.familierelasjonerTilBarn(person.getHarFraRolleI()))
+                .setDiskresjonskode(kanskjeDiskresjonskode(person))
+                .setKontonummer(kanskjeKontonummer(person))
+                .setGeografiskTilknytning(geografiskTilknytning(person))
+                .setStatsborgerskap(kanskjeStatsborgerskap(person))
+                .setSivilstand(kanskjeSivilstand(person))
+                .setPartner(FamiliemedlemMapper.partner(person.getHarFraRolleI()))
+                .setBostedsadresse(kanskjeBostedsadresse(person))
+                .setMidlertidigAdresseUtland(kanskjeMidlertidigAdresseUtland(person))
+                .setMidlertidigAdresseNorge(kanskjeMidlertidigAdresseNorge(person))
+                .setPostAdresse(kanskjePostAdresse(person))
+                .setMalform(kanskjeMalform(person))
+                .setFornavn(kanskjeFornavn(person))
+                .setMellomnavn(kanskjeMellomnavn(person))
+                .setEtternavn(kanskjeEtternavn(person))
+                .setSammensattNavn(kanskjeSammensattnavn(person))
+                .setFodselsnummer(kanskjeFodselsnummer(person))
+                .setFodselsdato(kanskjeFodselsdato(person))
+                .setKjonn(kanskjeKjonn(person))
+                .setDodsdato(dodsdatoTilString(person));
     }
 
-    private String kanskjeKjonn(Person person) {
+    private static String kanskjeKjonn(Person person) {
         return ofNullable(person.getKjoenn())
                 .map(Kjoenn::getKjoenn)
                 .map(Kodeverdi::getValue)
                 .orElse(null);
     }
 
-    private String kanskjeFodselsdato(Person person) {
+    private static String kanskjeFodselsdato(Person person) {
         return ofNullable(person.getFoedselsdato())
                 .map(Foedselsdato::getFoedselsdato)
                 .map(dato -> datoTilString(dato.toGregorianCalendar()))
@@ -76,25 +67,25 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private String kanskjeSammensattnavn(Person person) {
+    private static String kanskjeSammensattnavn(Person person) {
         return ofNullable(person.getPersonnavn())
                 .map(Personnavn::getSammensattNavn)
                 .orElse(null);
     }
 
-    private String kanskjeEtternavn(Person person) {
+    private static String kanskjeEtternavn(Person person) {
         return ofNullable(person.getPersonnavn())
                 .map(Personnavn::getEtternavn)
                 .orElse(null);
     }
 
-    private String kanskjeFornavn(Person person) {
+    private static String kanskjeFornavn(Person person) {
         return ofNullable(person.getPersonnavn())
                 .map(Personnavn::getFornavn)
                 .orElse(null);
     }
 
-    private String kanskjeMellomnavn(Person person) {
+    private static String kanskjeMellomnavn(Person person) {
         return ofNullable(person.getPersonnavn())
                 .map(Personnavn::getMellomnavn)
                 .orElse(null);
@@ -152,8 +143,8 @@ public class PersonDataMapper {
         return postAdresse;
     }
 
-    private static StrukturertAdresse mapStrukturertAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.StrukturertAdresse wsStrukturertadresse) {
-        StrukturertAdresse strukturertAdresse = null;
+    private static no.nav.veilarbperson.domain.person.StrukturertAdresse mapStrukturertAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.StrukturertAdresse wsStrukturertadresse) {
+        no.nav.veilarbperson.domain.person.StrukturertAdresse strukturertAdresse = null;
         if (wsStrukturertadresse instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse) {
             strukturertAdresse = tilGateAdresse((no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse) wsStrukturertadresse);
         } else if (wsStrukturertadresse instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk) {
@@ -164,20 +155,20 @@ public class PersonDataMapper {
 
         if (wsStrukturertadresse.getLandkode() != null) {
             if (strukturertAdresse == null) {
-                strukturertAdresse = new StrukturertAdresse();
+                strukturertAdresse = new no.nav.veilarbperson.domain.person.StrukturertAdresse();
             }
             strukturertAdresse.withLandkode(wsStrukturertadresse.getLandkode().getValue());
         }
         if (wsStrukturertadresse.getTilleggsadresse() != null) {
             if (strukturertAdresse == null) {
-                strukturertAdresse = new StrukturertAdresse();
+                strukturertAdresse = new no.nav.veilarbperson.domain.person.StrukturertAdresse();
             }
             strukturertAdresse.withTilleggsadresse(wsStrukturertadresse.getTilleggsadresse());
         }
         return strukturertAdresse;
     }
 
-    private static StrukturertAdresse tilMatrikkeladresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse wsMatrikkeladresse) {
+    private static no.nav.veilarbperson.domain.person.StrukturertAdresse tilMatrikkeladresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse wsMatrikkeladresse) {
         Optional<Matrikkelnummer> kanskjeMatrikkelnummer = ofNullable(wsMatrikkeladresse.getMatrikkelnummer());
         return new no.nav.veilarbperson.domain.person.Matrikkeladresse()
                 .withEiendomsnavn(ofNullable(wsMatrikkeladresse.getEiendomsnavn())
@@ -201,14 +192,14 @@ public class PersonDataMapper {
                         .orElse(null));
     }
 
-    private static PostboksadresseNorsk tilPostboksadresseNorsk(no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk wsPostboksadresseNorsk) {
-        return new PostboksadresseNorsk()
+    private static no.nav.veilarbperson.domain.person.PostboksadresseNorsk tilPostboksadresseNorsk(no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk wsPostboksadresseNorsk) {
+        return new no.nav.veilarbperson.domain.person.PostboksadresseNorsk()
                 .withPostnummer(ofNullable(wsPostboksadresseNorsk.getPoststed().getValue()).orElse(null))
                 .withPostboksanlegg(ofNullable(wsPostboksadresseNorsk.getPostboksanlegg()).orElse(null))
                 .withPostboksnummer(ofNullable(wsPostboksadresseNorsk.getPostboksnummer()).orElse(null));
     }
 
-    private static StrukturertAdresse tilGateAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse wsGateadresse) {
+    private static no.nav.veilarbperson.domain.person.StrukturertAdresse tilGateAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse wsGateadresse) {
         return new no.nav.veilarbperson.domain.person.Gateadresse()
                 .withGatenavn(ofNullable(wsGateadresse.getGatenavn())
                         .orElse(null))
@@ -224,8 +215,8 @@ public class PersonDataMapper {
                         .orElse(null));
     }
 
-    private static UstrukturertAdresse tilUstrukturertAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse wsUstrukturertAdresse) {
-        return new UstrukturertAdresse()
+    private static no.nav.veilarbperson.domain.person.UstrukturertAdresse tilUstrukturertAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse wsUstrukturertAdresse) {
+        return new no.nav.veilarbperson.domain.person.UstrukturertAdresse()
                 .withAdresselinje1(ofNullable(wsUstrukturertAdresse.getAdresselinje1())
                         .orElse(null))
                 .withAdresselinje2(ofNullable(wsUstrukturertAdresse.getAdresselinje2())
@@ -284,7 +275,7 @@ public class PersonDataMapper {
     private static String kanskjeDiskresjonskode(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
         return ofNullable(person.getDiskresjonskode())
                 .map(no.nav.tjeneste.virksomhet.person.v3.informasjon.Kodeverdi::getValue)
-                .map(DiskresjonskodeMapper::mapTilTallkode)
+                .map(Mappers::mapTilTallkode)
                 .orElse(null);
     }
 

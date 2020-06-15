@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.client.tps.mappers;
+package no.nav.veilarbperson.utils;
 
 import no.nav.veilarbperson.domain.person.Familiemedlem;
 import no.nav.veilarbperson.utils.FodselsnummerHjelper;
@@ -78,7 +78,7 @@ public class FamiliemedlemMapper {
 
     private static String kanskjekjonn(String fodselsnummer) {
         return ofNullable(fodselsnummer)
-                .map(FodselsnummerHjelper::fodselsnummerTilKjoenn)
+                .map(FodselsnummerHjelper::fodselsnummerTilKjonn)
                 .orElse(null);
     }
 
