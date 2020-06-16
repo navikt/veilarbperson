@@ -1,5 +1,5 @@
 apiVersion: "nais.io/v1alpha1"
-kind: "no.nav.veilarbperson.Application"
+kind: "Application"
 metadata:
   name: veilarbperson
   namespace: {{namespace}}
