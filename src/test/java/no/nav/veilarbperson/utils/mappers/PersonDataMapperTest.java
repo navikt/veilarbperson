@@ -1,6 +1,5 @@
 package no.nav.veilarbperson.utils.mappers;
 
-import no.nav.fo.veilarbperson.domain.person.*;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Diskresjonskoder;

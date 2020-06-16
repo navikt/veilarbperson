@@ -7,7 +7,6 @@ import no.nav.veilarbperson.client.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static no.nav.common.utils.EnvironmentUtils.getRequiredProperty;
 import static no.nav.common.utils.UrlUtils.clusterUrlForApplication;
 
 @Configuration
@@ -40,7 +39,7 @@ public class ClientConfig {
 
     @Bean
     public KodeverkClient kodeverkClient() {
-        return new KodeverkImpl(getRequiredProperty("VIRKSOMHET_KODEVERK_V2_ENDPOINTURL"));
+        return new KodeverkImpl("http://kodeverk.default.svc.nais.local");
     }
 
 }

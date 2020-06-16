@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.client.tps;
+package no.nav.veilarbperson.client;
 
 import no.nav.veilarbperson.domain.person.PersonData;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
@@ -18,7 +18,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 
-import no.nav.veilarbperson.TestUtil;
+import no.nav.veilarbperson.utils.TestUtil;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -26,17 +26,17 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PersonServiceTest {
+public class PersonServiceImplTest {
 
     private static final String SIKKHERHETSTILTAK = "FARLIG";
     private static String IDENT = TestUtil.fodselsnummerForDato("1980-01-01");
 
     private PersonV3 personV3 = mock(PersonV3.class);
-    private PersonService personService;
+    private PersonClient personClient;
 
     @Before
     public void before() {
-        personService = new PersonService(personV3);
+        personClient = new PersonClientImpl(personV3, null);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class PersonServiceTest {
                 .withPerson(new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(IDENT))));
         when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(hentPersonResponse);
 
-        PersonData personData = personService.hentPerson(IDENT);
+        PersonData personData = personClient.hentPersonData(IDENT);
 
         assertThat(personData.getFodselsnummer(), is(equalTo(IDENT)));
     }
@@ -57,7 +57,7 @@ public class PersonServiceTest {
         ArgumentCaptor<HentPersonRequest> argumentCaptor = ArgumentCaptor.forClass(HentPersonRequest.class);
         when(personV3.hentPerson(argumentCaptor.capture())).thenReturn(hentPersonResponse);
 
-        personService.hentPerson(IDENT);
+        personClient.hentPersonData(IDENT);
 
         List<Informasjonsbehov> informasjonsBehov = argumentCaptor.getValue().getInformasjonsbehov();
         assertThat(informasjonsBehov.contains(Informasjonsbehov.ADRESSE), is(true));
@@ -71,14 +71,14 @@ public class PersonServiceTest {
     public void hentPersonSomIkkeFinnesKasterFeil() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
         when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonPersonIkkeFunnet("",new PersonIkkeFunnet()));
 
-        personService.hentPerson(IDENT);
+        personClient.hentPersonData(IDENT);
     }
 
     @Test(expected = HentPersonSikkerhetsbegrensning.class)
     public void hentPersonIkkeTilgangKasterFeil() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
         when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning("",new Sikkerhetsbegrensning()));
 
-        personService.hentPerson(IDENT);
+        personClient.hentPersonData(IDENT);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class PersonServiceTest {
         HentSikkerhetstiltakResponse response = new HentSikkerhetstiltakResponse().withSikkerhetstiltak(wsSikkerhetstiltak);
         when(personV3.hentSikkerhetstiltak(any(HentSikkerhetstiltakRequest.class))).thenReturn(response);
 
-        no.nav.veilarbperson.domain.person.Sikkerhetstiltak sikkerhetstiltak = personService.hentSikkerhetstiltak(IDENT);
+        no.nav.veilarbperson.domain.person.Sikkerhetstiltak sikkerhetstiltak = personClient.hentSikkerhetstiltak(IDENT);
 
         assertThat(sikkerhetstiltak.sikkerhetstiltaksbeskrivelse, is(equalTo(SIKKHERHETSTILTAK)));
     }
@@ -97,7 +97,7 @@ public class PersonServiceTest {
         HentSikkerhetstiltakResponse response = new HentSikkerhetstiltakResponse();
         when(personV3.hentSikkerhetstiltak(any(HentSikkerhetstiltakRequest.class))).thenReturn(response);
 
-        no.nav.veilarbperson.domain.person.Sikkerhetstiltak sikkerhetstiltak = personService.hentSikkerhetstiltak(IDENT);
+        no.nav.veilarbperson.domain.person.Sikkerhetstiltak sikkerhetstiltak = personClient.hentSikkerhetstiltak(IDENT);
 
         assertThat(sikkerhetstiltak.sikkerhetstiltaksbeskrivelse, is(nullValue()));
     }

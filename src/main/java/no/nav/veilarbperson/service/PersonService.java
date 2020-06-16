@@ -2,9 +2,6 @@ package no.nav.veilarbperson.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentSikkerhetstiltakPersonIkkeFunnet;
 import no.nav.veilarbperson.client.*;
 import no.nav.veilarbperson.domain.DkifKontaktinfo;
 import no.nav.veilarbperson.domain.Personinfo;

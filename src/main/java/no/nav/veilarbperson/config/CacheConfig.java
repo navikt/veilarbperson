@@ -17,7 +17,8 @@ public class CacheConfig {
     public static final String TPS_PERSON_CACHE_NAME = "tps_person_cache";
     public static final String SIKKERHETSTILTAK_CACHE_NAME = "sikkerhetstiltak_cache";
     public static final String EGEN_ANSATT_CACHE_NAME = "egen_ansatt_cache";
-    public static final String DKIF_KONTAKTINFO_CACHE_NAME = "dkif_kontaktinfo_cache_name";
+    public static final String DKIF_KONTAKTINFO_CACHE_NAME = "dkif_kontaktinfo_cache";
+    public static final String KODEVERK_BETYDNING_CACHE_NAME = "kodeverk_betydning_cache";
 
     @Bean
     public Cache veilarbportefoljePersoninfoCache() {
@@ -40,8 +41,16 @@ public class CacheConfig {
     }
 
     @Bean
-    public Cache dkifKontaktinfoCacheName() {
+    public Cache dkifKontaktinfoCache() {
         return litenCache(DKIF_KONTAKTINFO_CACHE_NAME);
+    }
+
+    @Bean
+    public Cache kodeverkBetydningCache() {
+        return new CaffeineCache(KODEVERK_BETYDNING_CACHE_NAME, Caffeine.newBuilder()
+                .expireAfterWrite(12, TimeUnit.HOURS)
+                .maximumSize(3)
+                .build());
     }
 
     private CaffeineCache litenCache(String cacheName) {

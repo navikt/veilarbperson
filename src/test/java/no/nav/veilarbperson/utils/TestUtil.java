@@ -1,4 +1,4 @@
-package no.nav.veilarbperson;
+package no.nav.veilarbperson.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import no.bekk.bekkopen.person.FodselsnummerCalculator;
@@ -6,6 +6,7 @@ import no.bekk.bekkopen.person.FodselsnummerCalculator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 @Slf4j
 public class TestUtil {
@@ -25,6 +26,23 @@ public class TestUtil {
         }
 
         return fodselsnummer;
+    }
+
+    public static String lagFodselsnummer(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMYY");
+        String fnrFodselsdato = dateFormat.format(date);
+        return fnrFodselsdato + randomNumbers(5);
+    }
+
+    public static String randomNumbers(int length) {
+        Random rand = new Random();
+        StringBuffer buffer = new StringBuffer();
+
+        for (int i = 0; i < length; i++) {
+            buffer.append(rand.nextInt(10));
+        }
+
+        return buffer.toString();
     }
 
     public static String calculateDNummer(String fnr) {

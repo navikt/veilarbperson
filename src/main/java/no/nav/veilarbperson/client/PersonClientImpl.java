@@ -43,6 +43,11 @@ public class PersonClientImpl implements PersonClient {
                 .build();
     }
 
+    public PersonClientImpl(PersonV3 personV3, PersonV3 personV3Ping) {
+        this.personV3 = personV3;
+        this.personV3Ping = personV3Ping;
+    }
+
     @Cacheable(CacheConfig.TPS_PERSON_CACHE_NAME)
     @Override
     public PersonData hentPersonData(String ident) {

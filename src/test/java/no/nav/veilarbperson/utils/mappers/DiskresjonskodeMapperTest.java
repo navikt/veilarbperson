@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.utils.mappers;
 
 import no.nav.veilarbperson.domain.person.Diskresjonskoder;
+import no.nav.veilarbperson.utils.Mappers;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -13,7 +14,7 @@ public class DiskresjonskodeMapperTest {
     public void strengtFortroligKodverkVerdiMappesTilTallVerdi() {
         String strengtFortrolig = Diskresjonskoder.STRENGT_FORTROLIG_ADRESSE.kodeverkVerdi;
 
-        String tallkode = DiskresjonskodeMapper.mapTilTallkode(strengtFortrolig);
+        String tallkode = Mappers.mapTilTallkode(strengtFortrolig);
 
         assertThat(tallkode, is(Diskresjonskoder.STRENGT_FORTROLIG_ADRESSE.tallVerdi));
     }
@@ -22,14 +23,14 @@ public class DiskresjonskodeMapperTest {
     public void fortroligKodverkVerdiMappesTilTallVerdi() {
         String fortrolig = Diskresjonskoder.FORTROLIG_ADRESSE.kodeverkVerdi;
 
-        String tallkode = DiskresjonskodeMapper.mapTilTallkode(fortrolig);
+        String tallkode = Mappers.mapTilTallkode(fortrolig);
 
         assertThat(tallkode, is(Diskresjonskoder.FORTROLIG_ADRESSE.tallVerdi));
     }
 
     @Test
     public void ingenDiskresjonskodeMappesTilNull() {
-        String tallkode = DiskresjonskodeMapper.mapTilTallkode(null);
+        String tallkode = Mappers.mapTilTallkode(null);
 
         assertThat(tallkode, is(nullValue()));
     }

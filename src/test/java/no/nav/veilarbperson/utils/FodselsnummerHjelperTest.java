@@ -1,7 +1,6 @@
 package no.nav.veilarbperson.utils;
 
 import org.junit.Test;
-import no.nav.veilarbperson.TestUtil;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
