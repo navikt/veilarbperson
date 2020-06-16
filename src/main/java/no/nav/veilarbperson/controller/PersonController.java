@@ -1,9 +1,13 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
+import no.nav.veilarbperson.domain.AktoerId;
+import no.nav.veilarbperson.domain.GeografiskTilknytning;
+import no.nav.veilarbperson.domain.Malform;
+import no.nav.veilarbperson.client.person.domain.PersonData;
+import no.nav.veilarbperson.domain.PersonNavn;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonService;
-import no.nav.veilarbperson.domain.person.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;

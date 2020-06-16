@@ -3,7 +3,16 @@ package no.nav.veilarbperson.config;
 import no.nav.common.client.norg2.CachedNorg2Client;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
-import no.nav.veilarbperson.client.*;
+import no.nav.veilarbperson.client.dkif.DkifClient;
+import no.nav.veilarbperson.client.dkif.DkifClientImpl;
+import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
+import no.nav.veilarbperson.client.egenansatt.EgenAnsattClientImpl;
+import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
+import no.nav.veilarbperson.client.kodeverk.KodeverkImpl;
+import no.nav.veilarbperson.client.person.PersonClient;
+import no.nav.veilarbperson.client.person.PersonClientImpl;
+import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClientImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

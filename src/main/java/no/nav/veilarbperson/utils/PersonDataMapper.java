@@ -1,9 +1,9 @@
 package no.nav.veilarbperson.utils;
 
-import no.nav.veilarbperson.domain.person.*;
+import no.nav.veilarbperson.client.person.domain.*;
+import no.nav.veilarbperson.client.person.domain.Sivilstand;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
-import no.nav.veilarbperson.domain.person.Sivilstand;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
@@ -91,12 +91,12 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private static no.nav.veilarbperson.domain.person.Bostedsadresse kanskjeBostedsadresse(Person person) {
-        no.nav.veilarbperson.domain.person.Bostedsadresse bostedsadresse = null;
+    private static no.nav.veilarbperson.client.person.domain.Bostedsadresse kanskjeBostedsadresse(Person person) {
+        no.nav.veilarbperson.client.person.domain.Bostedsadresse bostedsadresse = null;
 
         no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse wsBostedsadresse = person.getBostedsadresse();
         if (wsBostedsadresse != null) {
-            bostedsadresse = new no.nav.veilarbperson.domain.person.Bostedsadresse();
+            bostedsadresse = new no.nav.veilarbperson.client.person.domain.Bostedsadresse();
             bostedsadresse.withStrukturertAdresse(mapStrukturertAdresse(wsBostedsadresse.getStrukturertAdresse()));
         }
         return bostedsadresse;
@@ -143,8 +143,8 @@ public class PersonDataMapper {
         return postAdresse;
     }
 
-    private static no.nav.veilarbperson.domain.person.StrukturertAdresse mapStrukturertAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.StrukturertAdresse wsStrukturertadresse) {
-        no.nav.veilarbperson.domain.person.StrukturertAdresse strukturertAdresse = null;
+    private static no.nav.veilarbperson.client.person.domain.StrukturertAdresse mapStrukturertAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.StrukturertAdresse wsStrukturertadresse) {
+        no.nav.veilarbperson.client.person.domain.StrukturertAdresse strukturertAdresse = null;
         if (wsStrukturertadresse instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse) {
             strukturertAdresse = tilGateAdresse((no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse) wsStrukturertadresse);
         } else if (wsStrukturertadresse instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk) {
@@ -155,22 +155,22 @@ public class PersonDataMapper {
 
         if (wsStrukturertadresse.getLandkode() != null) {
             if (strukturertAdresse == null) {
-                strukturertAdresse = new no.nav.veilarbperson.domain.person.StrukturertAdresse();
+                strukturertAdresse = new no.nav.veilarbperson.client.person.domain.StrukturertAdresse();
             }
             strukturertAdresse.withLandkode(wsStrukturertadresse.getLandkode().getValue());
         }
         if (wsStrukturertadresse.getTilleggsadresse() != null) {
             if (strukturertAdresse == null) {
-                strukturertAdresse = new no.nav.veilarbperson.domain.person.StrukturertAdresse();
+                strukturertAdresse = new no.nav.veilarbperson.client.person.domain.StrukturertAdresse();
             }
             strukturertAdresse.withTilleggsadresse(wsStrukturertadresse.getTilleggsadresse());
         }
         return strukturertAdresse;
     }
 
-    private static no.nav.veilarbperson.domain.person.StrukturertAdresse tilMatrikkeladresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse wsMatrikkeladresse) {
+    private static no.nav.veilarbperson.client.person.domain.StrukturertAdresse tilMatrikkeladresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.Matrikkeladresse wsMatrikkeladresse) {
         Optional<Matrikkelnummer> kanskjeMatrikkelnummer = ofNullable(wsMatrikkeladresse.getMatrikkelnummer());
-        return new no.nav.veilarbperson.domain.person.Matrikkeladresse()
+        return new no.nav.veilarbperson.client.person.domain.Matrikkeladresse()
                 .withEiendomsnavn(ofNullable(wsMatrikkeladresse.getEiendomsnavn())
                         .orElse(null))
                 .withGardsnummer(kanskjeMatrikkelnummer
@@ -192,15 +192,15 @@ public class PersonDataMapper {
                         .orElse(null));
     }
 
-    private static no.nav.veilarbperson.domain.person.PostboksadresseNorsk tilPostboksadresseNorsk(no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk wsPostboksadresseNorsk) {
-        return new no.nav.veilarbperson.domain.person.PostboksadresseNorsk()
+    private static no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk tilPostboksadresseNorsk(no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk wsPostboksadresseNorsk) {
+        return new no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk()
                 .withPostnummer(ofNullable(wsPostboksadresseNorsk.getPoststed().getValue()).orElse(null))
                 .withPostboksanlegg(ofNullable(wsPostboksadresseNorsk.getPostboksanlegg()).orElse(null))
                 .withPostboksnummer(ofNullable(wsPostboksadresseNorsk.getPostboksnummer()).orElse(null));
     }
 
-    private static no.nav.veilarbperson.domain.person.StrukturertAdresse tilGateAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse wsGateadresse) {
-        return new no.nav.veilarbperson.domain.person.Gateadresse()
+    private static no.nav.veilarbperson.client.person.domain.StrukturertAdresse tilGateAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse wsGateadresse) {
+        return new no.nav.veilarbperson.client.person.domain.Gateadresse()
                 .withGatenavn(ofNullable(wsGateadresse.getGatenavn())
                         .orElse(null))
                 .withHusnummer(ofNullable(wsGateadresse.getHusnummer())
@@ -215,8 +215,8 @@ public class PersonDataMapper {
                         .orElse(null));
     }
 
-    private static no.nav.veilarbperson.domain.person.UstrukturertAdresse tilUstrukturertAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse wsUstrukturertAdresse) {
-        return new no.nav.veilarbperson.domain.person.UstrukturertAdresse()
+    private static no.nav.veilarbperson.client.person.domain.UstrukturertAdresse tilUstrukturertAdresse(no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse wsUstrukturertAdresse) {
+        return new no.nav.veilarbperson.client.person.domain.UstrukturertAdresse()
                 .withAdresselinje1(ofNullable(wsUstrukturertAdresse.getAdresselinje1())
                         .orElse(null))
                 .withAdresselinje2(ofNullable(wsUstrukturertAdresse.getAdresselinje2())

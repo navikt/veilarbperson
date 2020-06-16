@@ -1,6 +1,6 @@
 package no.nav.veilarbperson.utils.mappers;
 
-import no.nav.veilarbperson.domain.person.Diskresjonskoder;
+import no.nav.veilarbperson.client.person.domain.Diskresjonskoder;
 import no.nav.veilarbperson.utils.Mappers;
 import org.junit.Test;
 

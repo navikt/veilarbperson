@@ -2,16 +2,14 @@ package no.nav.veilarbperson.service;
 
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.veilarbperson.utils.TestUtil;
-import no.nav.veilarbperson.client.*;
-import no.nav.veilarbperson.domain.DkifKontaktinfo;
-import no.nav.veilarbperson.domain.person.PersonData;
-import no.nav.veilarbperson.domain.person.Sikkerhetstiltak;
-import no.nav.veilarbperson.domain.person.Sivilstand;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.person.v3.feil.PersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.feil.Sikkerhetsbegrensning;
+import no.nav.veilarbperson.client.dkif.DkifClient;
+import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
+import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
+import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
+import no.nav.veilarbperson.client.person.PersonClient;
+import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.client.person.domain.PersonData;
+import no.nav.veilarbperson.client.person.domain.Sivilstand;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +41,7 @@ public class PersonServiceTest {
         when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(anyString())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentPersonData(anyString())).thenReturn(lagPersonData());
-        when(personClient.hentSikkerhetstiltak(anyString())).thenReturn(new Sikkerhetstiltak(null));
+        when(personClient.hentSikkerhetstiltak(anyString())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(anyString())).thenReturn(true);
 
         personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkClient, veilarbportefoljeClient);

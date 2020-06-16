@@ -1,6 +1,6 @@
 package no.nav.veilarbperson.utils.mappers;
 
-import no.nav.veilarbperson.domain.person.Familiemedlem;
+import no.nav.veilarbperson.client.person.domain.Familiemedlem;
 import no.nav.veilarbperson.utils.Mappers;
 import org.junit.Test;
 

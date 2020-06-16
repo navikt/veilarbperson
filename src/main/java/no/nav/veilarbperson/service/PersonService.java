@@ -2,10 +2,15 @@ package no.nav.veilarbperson.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.veilarbperson.client.*;
-import no.nav.veilarbperson.domain.DkifKontaktinfo;
-import no.nav.veilarbperson.domain.Personinfo;
-import no.nav.veilarbperson.domain.person.*;
+import no.nav.veilarbperson.client.dkif.DkifClient;
+import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
+import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
+import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
+import no.nav.veilarbperson.client.person.domain.*;
+import no.nav.veilarbperson.client.person.PersonClient;
+import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
+import no.nav.veilarbperson.domain.GeografiskTilknytning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +59,8 @@ public class PersonService {
     }
 
     public GeografiskTilknytning hentGeografisktilknytning(String fodselsnummer) {
-        return personClient.hentGeografiskTilknytning(fodselsnummer);
+        String geografiskTilknytning = personClient.hentPersonData(fodselsnummer).getGeografiskTilknytning();
+        return new GeografiskTilknytning(geografiskTilknytning);
     }
 
     private void flettPersoninfoFraPortefolje(PersonData personData, String fodselsnummer) {
@@ -145,8 +151,8 @@ public class PersonService {
 
     private void flettSikkerhetstiltak(String fnr, PersonData personData) {
         try {
-            Sikkerhetstiltak sikkerhetstiltak = personClient.hentSikkerhetstiltak(fnr);
-            personData.setSikkerhetstiltak(sikkerhetstiltak.sikkerhetstiltaksbeskrivelse);
+            String sikkerhetstiltak = personClient.hentSikkerhetstiltak(fnr);
+            personData.setSikkerhetstiltak(sikkerhetstiltak);
         } catch (Exception e) {
             log.warn("Kunne ikke flette Sikkerhetstiltak", e);
         }

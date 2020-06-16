@@ -1,12 +1,12 @@
 package no.nav.veilarbperson.client;
 
-import no.nav.veilarbperson.domain.person.PersonData;
+import no.nav.veilarbperson.client.person.PersonClient;
+import no.nav.veilarbperson.client.person.PersonClientImpl;
+import no.nav.veilarbperson.client.person.domain.PersonData;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentSikkerhetstiltakPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
-import no.nav.tjeneste.virksomhet.person.v3.feil.PersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.feil.Sikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
@@ -73,9 +73,9 @@ public class PersonServiceImplTest {
         HentSikkerhetstiltakResponse response = new HentSikkerhetstiltakResponse().withSikkerhetstiltak(wsSikkerhetstiltak);
         when(personV3.hentSikkerhetstiltak(any(HentSikkerhetstiltakRequest.class))).thenReturn(response);
 
-        no.nav.veilarbperson.domain.person.Sikkerhetstiltak sikkerhetstiltak = personClient.hentSikkerhetstiltak(IDENT);
+        String sikkerhetstiltak = personClient.hentSikkerhetstiltak(IDENT);
 
-        assertThat(sikkerhetstiltak.sikkerhetstiltaksbeskrivelse, is(equalTo(SIKKHERHETSTILTAK)));
+        assertThat(sikkerhetstiltak, is(equalTo(SIKKHERHETSTILTAK)));
     }
 
     @Test
@@ -83,9 +83,9 @@ public class PersonServiceImplTest {
         HentSikkerhetstiltakResponse response = new HentSikkerhetstiltakResponse();
         when(personV3.hentSikkerhetstiltak(any(HentSikkerhetstiltakRequest.class))).thenReturn(response);
 
-        no.nav.veilarbperson.domain.person.Sikkerhetstiltak sikkerhetstiltak = personClient.hentSikkerhetstiltak(IDENT);
+        String sikkerhetstiltak = personClient.hentSikkerhetstiltak(IDENT);
 
-        assertThat(sikkerhetstiltak.sikkerhetstiltaksbeskrivelse, is(nullValue()));
+        assertThat(sikkerhetstiltak, is(nullValue()));
     }
 
 }

@@ -5,7 +5,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Diskresjonskoder;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Sivilstand;
-import no.nav.veilarbperson.domain.person.PersonData;
+import no.nav.veilarbperson.client.person.domain.PersonData;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.hamcrest.CustomMatcher;
 import org.hamcrest.Matcher;
@@ -248,7 +248,7 @@ public class PersonDataMapperTest {
     public void kode6MappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "6";
         final Person wsPerson = new Person().withDiskresjonskode(new Diskresjonskoder()
-                .withValue(no.nav.veilarbperson.domain.person.Diskresjonskoder.STRENGT_FORTROLIG_ADRESSE.kodeverkVerdi));
+                .withValue(no.nav.veilarbperson.client.person.domain.Diskresjonskoder.STRENGT_FORTROLIG_ADRESSE.kodeverkVerdi));
 
         final PersonData personData = tilPersonData(wsPerson);
 
@@ -259,7 +259,7 @@ public class PersonDataMapperTest {
     public void kode7MappesDersomDetEksisterer() throws Exception {
         final String forventetVerdi = "7";
         final Person wsPerson = new Person().withDiskresjonskode(new Diskresjonskoder()
-                .withValue(no.nav.veilarbperson.domain.person.Diskresjonskoder.FORTROLIG_ADRESSE.kodeverkVerdi));
+                .withValue(no.nav.veilarbperson.client.person.domain.Diskresjonskoder.FORTROLIG_ADRESSE.kodeverkVerdi));
 
         final PersonData personData = tilPersonData(wsPerson);
 
@@ -542,8 +542,8 @@ public class PersonDataMapperTest {
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.domain.person.Gateadresse.class));
-        final no.nav.veilarbperson.domain.person.Gateadresse gateadresse = (no.nav.veilarbperson.domain.person.Gateadresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
+        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) personData.getBostedsadresse().getStrukturertAdresse();
 
         sjekkAtGateadresseHarForventaVerdier(
                 gateadresse,
@@ -568,8 +568,8 @@ public class PersonDataMapperTest {
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.domain.person.Gateadresse.class));
-        final no.nav.veilarbperson.domain.person.Gateadresse gateadresse = (no.nav.veilarbperson.domain.person.Gateadresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
+        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) personData.getBostedsadresse().getStrukturertAdresse();
 
         sjekkAtGateadresseHarForventaVerdier(
                 gateadresse,
@@ -607,8 +607,8 @@ public class PersonDataMapperTest {
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.domain.person.Matrikkeladresse.class));
-        final no.nav.veilarbperson.domain.person.Matrikkeladresse matrikkeladresse = (no.nav.veilarbperson.domain.person.Matrikkeladresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Matrikkeladresse.class));
+        final no.nav.veilarbperson.client.person.domain.Matrikkeladresse matrikkeladresse = (no.nav.veilarbperson.client.person.domain.Matrikkeladresse) personData.getBostedsadresse().getStrukturertAdresse();
 
         sjekkAtMatrikkeladresseHarForventaVerdier(
                 matrikkeladresse,
@@ -634,8 +634,8 @@ public class PersonDataMapperTest {
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.domain.person.Matrikkeladresse.class));
-        final no.nav.veilarbperson.domain.person.Matrikkeladresse matrikkeladresse = (no.nav.veilarbperson.domain.person.Matrikkeladresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Matrikkeladresse.class));
+        final no.nav.veilarbperson.client.person.domain.Matrikkeladresse matrikkeladresse = (no.nav.veilarbperson.client.person.domain.Matrikkeladresse) personData.getBostedsadresse().getStrukturertAdresse();
         sjekkAtMatrikkeladresseHarForventaVerdier(matrikkeladresse, null, null, null, null, null, null, null);
     }
 
@@ -656,8 +656,8 @@ public class PersonDataMapperTest {
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.domain.person.PostboksadresseNorsk.class));
-        final no.nav.veilarbperson.domain.person.PostboksadresseNorsk postboksadresseNorsk = (no.nav.veilarbperson.domain.person.PostboksadresseNorsk) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk.class));
+        final no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk postboksadresseNorsk = (no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk) personData.getBostedsadresse().getStrukturertAdresse();
         assertThat(postboksadresseNorsk.getPostboksanlegg(), is(forventetPostboksanlegg));
         assertThat(postboksadresseNorsk.getPostboksnummer(), is(forventetPostboksnummer));
         assertThat(postboksadresseNorsk.getPostnummer(), is(forventetPostnummer));
@@ -677,8 +677,8 @@ public class PersonDataMapperTest {
 
         assertThat(personData.getBostedsadresse(), notNullValue());
         assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.domain.person.PostboksadresseNorsk.class));
-        final no.nav.veilarbperson.domain.person.PostboksadresseNorsk postboksadresseNorsk = (no.nav.veilarbperson.domain.person.PostboksadresseNorsk) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk.class));
+        final no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk postboksadresseNorsk = (no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk) personData.getBostedsadresse().getStrukturertAdresse();
         assertThat(postboksadresseNorsk.getPostboksanlegg(), nullValue());
         assertThat(postboksadresseNorsk.getPostboksnummer(), nullValue());
         assertThat(postboksadresseNorsk.getPostnummer(), nullValue());
@@ -775,8 +775,8 @@ public class PersonDataMapperTest {
 
         assertThat(personData.getMidlertidigAdresseNorge(), notNullValue());
         assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.domain.person.Gateadresse.class));
-        final no.nav.veilarbperson.domain.person.Gateadresse gateadresse = (no.nav.veilarbperson.domain.person.Gateadresse) personData.getMidlertidigAdresseNorge().getStrukturertAdresse();
+        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
+        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) personData.getMidlertidigAdresseNorge().getStrukturertAdresse();
         sjekkAtGateadresseHarForventaVerdier(
                 gateadresse,
                 forventetGatenavn,
@@ -800,8 +800,8 @@ public class PersonDataMapperTest {
 
         assertThat(personData.getMidlertidigAdresseNorge(), notNullValue());
         assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.domain.person.Gateadresse.class));
-        final no.nav.veilarbperson.domain.person.Gateadresse gateadresse = (no.nav.veilarbperson.domain.person.Gateadresse) personData.getMidlertidigAdresseNorge().getStrukturertAdresse();
+        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
+        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) personData.getMidlertidigAdresseNorge().getStrukturertAdresse();
         sjekkAtGateadresseHarForventaVerdier(gateadresse, null, 0, 0, null, null, null);
     }
 
@@ -831,7 +831,7 @@ public class PersonDataMapperTest {
 
         final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
-        no.nav.veilarbperson.domain.person.UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
+        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode);
     }
 
@@ -844,7 +844,7 @@ public class PersonDataMapperTest {
 
         final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
-        no.nav.veilarbperson.domain.person.UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
+        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null, null);
     }
     @Test
@@ -873,7 +873,7 @@ public class PersonDataMapperTest {
 
         final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getPostAdresse(), notNullValue());
-        no.nav.veilarbperson.domain.person.UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
+        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode);
     }
 
@@ -884,7 +884,7 @@ public class PersonDataMapperTest {
 
         final PersonData personData = tilPersonData(wsPerson);
         assertThat(personData.getPostAdresse(), notNullValue());
-        no.nav.veilarbperson.domain.person.UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
+        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null, null);
     }
 
@@ -930,7 +930,7 @@ public class PersonDataMapperTest {
     }
 
     private void sjekkAtUstrukturertAdresseHarForventaVerdier(
-            no.nav.veilarbperson.domain.person.UstrukturertAdresse ustrukturertAdresse,
+            no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse,
             String forventaAdresselinje1,
             String forventaAdresselinje2,
             String forventaAdresselinje3,
@@ -938,7 +938,7 @@ public class PersonDataMapperTest {
             String forventaLandkode) {
 
         assertThat(ustrukturertAdresse, notNullValue());
-        assertThat(ustrukturertAdresse, instanceOf(no.nav.veilarbperson.domain.person.UstrukturertAdresse.class));
+        assertThat(ustrukturertAdresse, instanceOf(no.nav.veilarbperson.client.person.domain.UstrukturertAdresse.class));
         assertThat(ustrukturertAdresse.getAdresselinje1(), is(forventaAdresselinje1));
         assertThat(ustrukturertAdresse.getAdresselinje2(), is(forventaAdresselinje2));
         assertThat(ustrukturertAdresse.getAdresselinje3(), is(forventaAdresselinje3));
@@ -958,7 +958,7 @@ public class PersonDataMapperTest {
     }
 
     private void sjekkAtGateadresseHarForventaVerdier(
-            no.nav.veilarbperson.domain.person.Gateadresse gateadresse,
+            no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse,
             String forventetGatenavn,
             int forventetGatenummer,
             int forventetHusnummer,
@@ -996,7 +996,7 @@ public class PersonDataMapperTest {
     }
 
     private void sjekkAtMatrikkeladresseHarForventaVerdier(
-            no.nav.veilarbperson.domain.person.Matrikkeladresse matrikkeladresse,
+            no.nav.veilarbperson.client.person.domain.Matrikkeladresse matrikkeladresse,
             String forventetEiendomsnavn,
             String forventetGardsnummer,
             String forventetBruksnummer,

@@ -1,7 +1,6 @@
 package no.nav.veilarbperson.utils;
 
-import no.nav.veilarbperson.domain.person.Familiemedlem;
-import no.nav.veilarbperson.utils.FodselsnummerHjelper;
+import no.nav.veilarbperson.client.person.domain.Familiemedlem;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.List;
