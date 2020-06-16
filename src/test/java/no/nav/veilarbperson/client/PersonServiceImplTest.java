@@ -67,20 +67,6 @@ public class PersonServiceImplTest {
         assertThat(informasjonsBehov.contains(Informasjonsbehov.ADRESSE), is(true));
     }
 
-    @Test(expected = HentPersonPersonIkkeFunnet.class)
-    public void hentPersonSomIkkeFinnesKasterFeil() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
-        when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonPersonIkkeFunnet("",new PersonIkkeFunnet()));
-
-        personClient.hentPersonData(IDENT);
-    }
-
-    @Test(expected = HentPersonSikkerhetsbegrensning.class)
-    public void hentPersonIkkeTilgangKasterFeil() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
-        when(personV3.hentPerson(any(HentPersonRequest.class))).thenThrow(new HentPersonSikkerhetsbegrensning("",new Sikkerhetsbegrensning()));
-
-        personClient.hentPersonData(IDENT);
-    }
-
     @Test
     public void hentSikkerhetstiltakHenterSikkerhetstiltak() throws HentSikkerhetstiltakPersonIkkeFunnet {
         Sikkerhetstiltak wsSikkerhetstiltak = new Sikkerhetstiltak().withSikkerhetstiltaksbeskrivelse(SIKKHERHETSTILTAK);

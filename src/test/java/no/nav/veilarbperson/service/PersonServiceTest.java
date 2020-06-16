@@ -81,20 +81,6 @@ public class PersonServiceTest {
         assertThat(returnertPersonData.getSivilstand().getSivilstand(), is(kodeverksverdi));
     }
 
-    @Test(expected = HentPersonPersonIkkeFunnet.class)
-    public void hentPersonForIkkeEksisterendePersonSkalKasteFeil() {
-        when(personClient.hentPersonData(anyString())).thenThrow(new HentPersonPersonIkkeFunnet("", new PersonIkkeFunnet()));
-        String fnr = TestUtil.fodselsnummerForDato("1988-02-17");
-        personService.hentPerson(fnr);
-    }
-
-    @Test(expected = HentPersonSikkerhetsbegrensning.class)
-    public void hentPersonNarSaksbehandlerIkkeHarTilgangSkalKasteFeil() {
-        when(personClient.hentPersonData(anyString())).thenThrow(new HentPersonSikkerhetsbegrensning("", new Sikkerhetsbegrensning()));
-        String fnr = TestUtil.fodselsnummerForDato("1988-02-17");
-        personService.hentPerson(fnr);
-    }
-
     private PersonData lagPersonData() {
         final PersonData personData = new PersonData();
         personData.setSivilstand(new Sivilstand());
