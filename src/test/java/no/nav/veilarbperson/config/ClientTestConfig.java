@@ -1,12 +1,9 @@
 package no.nav.veilarbperson.config;
 
 import no.nav.common.client.aktorregister.AktorregisterClient;
-import no.nav.common.client.aktorregister.AktorregisterHttpClient;
-import no.nav.common.client.aktorregister.CachedAktorregisterClient;
 import no.nav.common.client.aktorregister.IdentOppslag;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.health.HealthCheckResult;
-import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
@@ -20,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static no.nav.veilarbperson.utils.TestData.TEST_AKTOR_ID;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
@@ -117,18 +115,8 @@ public class ClientTestConfig {
     public KodeverkClient kodeverkClient() {
         return new KodeverkClient() {
             @Override
-            public String getBeskrivelseForLandkode(String kode) {
-                return "NORGE";
-            }
-
-            @Override
-            public String getBeskrivelseForSivilstand(String kode) {
-                return "GIFT";
-            }
-
-            @Override
-            public String getPoststed(String postnummer) {
-                return "OSLO";
+            public Map<String, String> hentKodeverkBeskrivelser(String kodeverksnavn) {
+                return Collections.emptyMap();
             }
 
             @Override

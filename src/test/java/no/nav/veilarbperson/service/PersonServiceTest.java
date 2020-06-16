@@ -5,11 +5,10 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
-import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.client.person.domain.PersonData;
 import no.nav.veilarbperson.client.person.domain.Sivilstand;
+import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,7 +29,7 @@ public class PersonServiceTest {
 
     private EgenAnsattClient egenAnsattClient = mock(EgenAnsattClient.class);
 
-    private KodeverkClient kodeverkClient = mock(KodeverkClient.class);
+    private KodeverkService kodeverkService = mock(KodeverkService.class);
 
     private VeilarbportefoljeClient veilarbportefoljeClient = mock(VeilarbportefoljeClient.class);
 
@@ -44,7 +43,7 @@ public class PersonServiceTest {
         when(personClient.hentSikkerhetstiltak(anyString())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(anyString())).thenReturn(true);
 
-        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkClient, veilarbportefoljeClient);
+        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient);
     }
 
     @Test
@@ -71,7 +70,7 @@ public class PersonServiceTest {
         final String kodeverksverdi = "GIFT";
         forventetPersonData.setSivilstand(new Sivilstand().withSivilstand(kodeverksverdi));
         when(personClient.hentPersonData(anyString())).thenReturn(forventetPersonData);
-        when(kodeverkClient.getBeskrivelseForSivilstand(anyString())).thenReturn(kodeverksverdi);
+        when(kodeverkService.getBeskrivelseForSivilstand(anyString())).thenReturn(kodeverksverdi);
 
         final PersonData returnertPersonData = personService.hentPerson("");
 

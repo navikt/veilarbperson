@@ -5,11 +5,10 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
-import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
-import no.nav.veilarbperson.client.person.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.client.person.domain.*;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
+import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.GeografiskTilknytning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,19 +23,19 @@ public class PersonService {
     private final PersonClient personClient;
     private final EgenAnsattClient egenAnsattClient;
     private final DkifClient dkifClient;
-    private final KodeverkClient kodeverkClient;
+    private final KodeverkService kodeverkService;
     private final VeilarbportefoljeClient veilarbportefoljeClient;
 
     @Autowired
     public PersonService(
             Norg2Client norg2Client, PersonClient personClient, EgenAnsattClient egenAnsattClient,
-            DkifClient dkifClient, KodeverkClient kodeverkClient, VeilarbportefoljeClient veilarbportefoljeClient
+            DkifClient dkifClient, KodeverkService kodeverkService, VeilarbportefoljeClient veilarbportefoljeClient
     ) {
         this.norg2Client = norg2Client;
         this.personClient = personClient;
         this.egenAnsattClient = egenAnsattClient;
         this.dkifClient = dkifClient;
-        this.kodeverkClient = kodeverkClient;
+        this.kodeverkService = kodeverkService;
         this.veilarbportefoljeClient = veilarbportefoljeClient;
     }
 
@@ -81,12 +80,12 @@ public class PersonService {
     }
 
     private void flettKodeverk(PersonData personData) {
-        personData.setStatsborgerskap(kodeverkClient.getBeskrivelseForLandkode(personData.getStatsborgerskap()));
+        personData.setStatsborgerskap(kodeverkService.getBeskrivelseForLandkode(personData.getStatsborgerskap()));
 
         if (personData.getSivilstand() != null) {
             String sivilstandKode = personData.getSivilstand().getSivilstand();
             Sivilstand sivilstand = personData.getSivilstand()
-                    .withSivilstand(kodeverkClient.getBeskrivelseForSivilstand(sivilstandKode));
+                    .withSivilstand(kodeverkService.getBeskrivelseForSivilstand(sivilstandKode));
             personData.setSivilstand(sivilstand);
         }
         kanskjePoststedBostedsadresse(personData);
@@ -97,24 +96,24 @@ public class PersonService {
 
     private void kanskjePoststedBostedsadresse(PersonData personData) {
         personData.getPostnummerForBostedsadresse()
-                .map(kodeverkClient::getPoststed)
+                .map(kodeverkService::getPoststed)
                 .ifPresent(personData::setPoststedForBostedsadresse);
     }
 
     private void kanskjePoststedMidlertidigAdresseNorge(PersonData personData) {
         personData.getPostnummerForMidlertidigAdresseNorge()
-                .map(kodeverkClient::getPoststed)
+                .map(kodeverkService::getPoststed)
                 .ifPresent(personData::setPoststedForMidlertidigAdresseNorge);
     }
 
     private UstrukturertAdresse withLandForUstrukturertAdresse(UstrukturertAdresse ustrukturertAdresse) {
         String landkode = ustrukturertAdresse.getLandkode();
-        return ustrukturertAdresse.withLandkode(kodeverkClient.getBeskrivelseForLandkode(landkode));
+        return ustrukturertAdresse.withLandkode(kodeverkService.getBeskrivelseForLandkode(landkode));
     }
 
     private StrukturertAdresse withLandForStrukturertAdresse(StrukturertAdresse strukturertAdresse) {
         String landkode = strukturertAdresse.getLandkode();
-        return strukturertAdresse.withLandkode(kodeverkClient.getBeskrivelseForLandkode(landkode));
+        return strukturertAdresse.withLandkode(kodeverkService.getBeskrivelseForLandkode(landkode));
     }
 
     private void hentLandForAdresser(PersonData personData) {

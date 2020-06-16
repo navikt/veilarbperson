@@ -6,8 +6,10 @@ import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.Map;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static no.nav.veilarbperson.service.KodeverkService.*;
 import static org.junit.Assert.assertEquals;
 
 public class KodeverkClientImplTest {
@@ -27,7 +29,8 @@ public class KodeverkClientImplTest {
                         .withBody(kodeverkJson))
         );
 
-        assertEquals("Registrert partner", kodeverkClient.getBeskrivelseForSivilstand("REPA"));
+        Map<String, String> kodeverkBeskrivelser = kodeverkClient.hentKodeverkBeskrivelser(KODEVERK_SIVILSTANDER);
+        assertEquals("Registrert partner", kodeverkBeskrivelser.get("REPA"));
     }
 
     @Test
@@ -42,7 +45,8 @@ public class KodeverkClientImplTest {
                         .withBody(kodeverkJson))
         );
 
-        assertEquals("BULGARIA", kodeverkClient.getBeskrivelseForLandkode("BGR"));
+        Map<String, String> kodeverkBeskrivelser = kodeverkClient.hentKodeverkBeskrivelser(KODEVERK_LANDKODER);
+        assertEquals("BULGARIA", kodeverkBeskrivelser.get("BGR"));
     }
 
     @Test
@@ -57,7 +61,8 @@ public class KodeverkClientImplTest {
                         .withBody(kodeverkJson))
         );
 
-        assertEquals("SUNDEBRU", kodeverkClient.getPoststed("4971"));
+        Map<String, String> kodeverkBeskrivelser = kodeverkClient.hentKodeverkBeskrivelser(KODEVERK_POSTNUMMER);
+        assertEquals("SUNDEBRU", kodeverkBeskrivelser.get("4971"));
     }
 
 }

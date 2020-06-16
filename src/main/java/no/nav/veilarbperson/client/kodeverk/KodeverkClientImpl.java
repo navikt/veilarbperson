@@ -24,10 +24,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class KodeverkClientImpl implements KodeverkClient {
 
-    private final static String KODEVERK_LANDKODER = "Landkoder";
-    private final static String KODEVERK_SIVILSTANDER = "Sivilstander";
-    private final static String KODEVERK_POSTNUMMER = "Postnummer";
-
     private final String kodeverkUrl;
 
     private final OkHttpClient client;
@@ -35,26 +31,6 @@ public class KodeverkClientImpl implements KodeverkClient {
     public KodeverkClientImpl(String kodeverkUrl) {
         this.kodeverkUrl = kodeverkUrl;
         this.client = RestClient.baseClient();
-    }
-
-    @Override
-    public String getBeskrivelseForLandkode(String kode) {
-        return finnBeskrivelse(KODEVERK_LANDKODER, kode);
-    }
-
-    @Override
-    public String getBeskrivelseForSivilstand(String kode) {
-        return finnBeskrivelse(KODEVERK_SIVILSTANDER, kode);
-    }
-
-    @Override
-    public String getPoststed(String postnummer) {
-        return finnBeskrivelse(KODEVERK_POSTNUMMER, postnummer);
-    }
-
-    @Override
-    public HealthCheckResult checkHealth() {
-        return HealthCheckUtils.pingUrl(joinPaths(kodeverkUrl, "/internal/isAlive"), client);
     }
 
     @Cacheable(CacheConfig.KODEVERK_BETYDNING_CACHE_NAME)
@@ -77,15 +53,9 @@ public class KodeverkClientImpl implements KodeverkClient {
         }
     }
 
-    private String finnBeskrivelse(String kodeverksnavn, String kode) {
-        Map<String, String> betydninger = hentKodeverkBeskrivelser(kodeverksnavn);
-        String betydning = betydninger.get(kode);
-
-        if (betydning == null) {
-            throw new IllegalStateException(format("Fant ikke kode %s i kodeverk %s", kode, kodeverksnavn));
-        }
-
-        return betydning;
+    @Override
+    public HealthCheckResult checkHealth() {
+        return HealthCheckUtils.pingUrl(joinPaths(kodeverkUrl, "/internal/isAlive"), client);
     }
 
     @SneakyThrows
