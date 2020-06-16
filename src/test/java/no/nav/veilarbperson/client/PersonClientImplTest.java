@@ -18,7 +18,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 
-import no.nav.veilarbperson.utils.TestUtil;
+import no.nav.veilarbperson.utils.TestUtils;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -26,10 +26,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PersonServiceImplTest {
+public class PersonClientImplTest {
 
     private static final String SIKKHERHETSTILTAK = "FARLIG";
-    private static String IDENT = TestUtil.fodselsnummerForDato("1980-01-01");
+    private static String IDENT = TestUtils.fodselsnummerForDato("1980-01-01");
 
     private PersonV3 personV3 = mock(PersonV3.class);
     private PersonClient personClient;

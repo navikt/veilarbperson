@@ -22,7 +22,7 @@ import static no.nav.common.utils.UrlUtils.joinPaths;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class KodeverkImpl implements KodeverkClient {
+public class KodeverkClientImpl implements KodeverkClient {
 
     private final static String KODEVERK_LANDKODER = "Landkoder";
     private final static String KODEVERK_SIVILSTANDER = "Sivilstander";
@@ -32,29 +32,34 @@ public class KodeverkImpl implements KodeverkClient {
 
     private final OkHttpClient client;
 
-    public KodeverkImpl(String kodeverkUrl) {
+    public KodeverkClientImpl(String kodeverkUrl) {
         this.kodeverkUrl = kodeverkUrl;
         this.client = RestClient.baseClient();
     }
 
     @Override
     public String getBeskrivelseForLandkode(String kode) {
-        return finnBetydningForKodeverk(KODEVERK_LANDKODER, kode);
+        return finnBeskrivelse(KODEVERK_LANDKODER, kode);
     }
 
     @Override
     public String getBeskrivelseForSivilstand(String kode) {
-        return finnBetydningForKodeverk(KODEVERK_SIVILSTANDER, kode);
+        return finnBeskrivelse(KODEVERK_SIVILSTANDER, kode);
     }
 
     @Override
     public String getPoststed(String postnummer) {
-        return finnBetydningForKodeverk(KODEVERK_POSTNUMMER, postnummer);
+        return finnBeskrivelse(KODEVERK_POSTNUMMER, postnummer);
+    }
+
+    @Override
+    public HealthCheckResult checkHealth() {
+        return HealthCheckUtils.pingUrl(joinPaths(kodeverkUrl, "/internal/isAlive"), client);
     }
 
     @Cacheable(CacheConfig.KODEVERK_BETYDNING_CACHE_NAME)
     @SneakyThrows
-    public Map<String, KodeverkBetydning> hentKodeverkBetydninger(String kodeverksnavn) {
+    public Map<String, String> hentKodeverkBeskrivelser(String kodeverksnavn) {
         Request request = new Request.Builder()
                 .url(joinPaths(kodeverkUrl, format("/api/v1/kodeverk/%s/koder/betydninger?ekskluderUgyldige=true&spraak=nb", kodeverksnavn)))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
@@ -72,48 +77,35 @@ public class KodeverkImpl implements KodeverkClient {
         }
     }
 
-    private String finnBetydningForKodeverk(String kodeverksnavn, String kode) {
-        Map<String, KodeverkBetydning> betydninger = hentKodeverkBetydninger(kodeverksnavn);
-        KodeverkBetydning betydning = betydninger.get(kode);
+    private String finnBeskrivelse(String kodeverksnavn, String kode) {
+        Map<String, String> betydninger = hentKodeverkBeskrivelser(kodeverksnavn);
+        String betydning = betydninger.get(kode);
 
         if (betydning == null) {
             throw new IllegalStateException(format("Fant ikke kode %s i kodeverk %s", kode, kodeverksnavn));
         }
 
-        return betydning.getBeskrivelseNb();
+        return betydning;
     }
 
     @SneakyThrows
-    private Map<String, KodeverkBetydning> parseKodeverkBetydningJson(String responseJson) {
-        Map<String, KodeverkBetydning> betydningerMap = new HashMap<>();
+    private Map<String, String> parseKodeverkBetydningJson(String responseJson) {
+        Map<String, String> betydningerMap = new HashMap<>();
 
         JsonNode rootNode = JsonUtils.getMapper().readTree(responseJson);
         JsonNode betydninger = rootNode.get("betydninger");
 
         betydninger.fieldNames().forEachRemaining((betydningName) -> {
-            JsonNode betydningNode = betydninger.get(betydningName);
+            JsonNode betydningNode = betydninger.get(betydningName).get(0);
 
             JsonNode betydningBeskrivelserNode = betydningNode.get("beskrivelser");
             JsonNode beskrivelseNbNode = betydningBeskrivelserNode.get("nb");
-
-            String gyldigFra = betydningNode.get("gyldigFra").asText();
-            String gyldigTil = betydningNode.get("gyldigTil").asText();
             String beskrivelseNb = beskrivelseNbNode.get("tekst").asText();
 
-            KodeverkBetydning betydning = new KodeverkBetydning()
-                    .setGyldigFra(gyldigFra)
-                    .setGyldigTil(gyldigTil)
-                    .setBeskrivelseNb(beskrivelseNb);
-
-            betydningerMap.put(betydningName, betydning);
+            betydningerMap.put(betydningName, beskrivelseNb);
         });
 
         return betydningerMap;
-    }
-
-    @Override
-    public HealthCheckResult checkHealth() {
-        return HealthCheckUtils.pingUrl(joinPaths(kodeverkUrl, "/internal/isAlive"), client);
     }
 
 }

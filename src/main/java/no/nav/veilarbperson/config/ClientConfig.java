@@ -12,7 +12,7 @@ import no.nav.veilarbperson.client.dkif.DkifClientImpl;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
-import no.nav.veilarbperson.client.kodeverk.KodeverkImpl;
+import no.nav.veilarbperson.client.kodeverk.KodeverkClientImpl;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.PersonClientImpl;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
@@ -61,7 +61,7 @@ public class ClientConfig {
 
     @Bean
     public KodeverkClient kodeverkClient() {
-        return new KodeverkImpl("http://kodeverk.default.svc.nais.local");
+        return new KodeverkClientImpl("http://kodeverk.default.svc.nais.local");
     }
 
 }

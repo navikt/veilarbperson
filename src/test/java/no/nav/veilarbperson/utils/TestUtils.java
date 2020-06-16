@@ -1,15 +1,21 @@
 package no.nav.veilarbperson.utils;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.bekk.bekkopen.person.FodselsnummerCalculator;
 
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
 @Slf4j
-public class TestUtil {
+public class TestUtils {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
@@ -28,29 +34,19 @@ public class TestUtil {
         return fodselsnummer;
     }
 
-    public static String lagFodselsnummer(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMYY");
-        String fnrFodselsdato = dateFormat.format(date);
-        return fnrFodselsdato + randomNumbers(5);
-    }
-
-    public static String randomNumbers(int length) {
-        Random rand = new Random();
-        StringBuffer buffer = new StringBuffer();
-
-        for (int i = 0; i < length; i++) {
-            buffer.append(rand.nextInt(10));
-        }
-
-        return buffer.toString();
-    }
-
     public static String calculateDNummer(String fnr) {
         return incrementDigit(fnr, 0, 4);
     }
 
     public static String calculateHNumber(String fnr) {
         return incrementDigit(fnr, 2, 4);
+    }
+
+    @SneakyThrows
+    public static String readTestResourceFile(String fileName) {
+        URL fileUrl = TestUtils.class.getClassLoader().getResource(fileName);
+        Path resPath = Paths.get(fileUrl.toURI());
+        return new String(Files.readAllBytes(resPath), StandardCharsets.UTF_8);
     }
 
     private static String incrementDigit(String fnr, int index, int increment) {

@@ -75,11 +75,6 @@
             <artifactId>okhttp</artifactId>
             <version>3.14.7</version>
         </dependency>
-        <dependency>
-            <groupId>no.bekk.bekkopen</groupId>
-            <artifactId>nocommons</artifactId>
-            <version>0.9.0</version>
-        </dependency>
 
         <!-- Consumer  -->
         <dependency>
@@ -119,11 +114,6 @@
         <dependency>
             <groupId>no.nav.common</groupId>
             <artifactId>util</artifactId>
-            <version>${common.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.common</groupId>
-            <artifactId>types</artifactId>
             <version>${common.version}</version>
         </dependency>
         <dependency>
@@ -185,6 +175,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>no.bekk.bekkopen</groupId>
+            <artifactId>nocommons</artifactId>
+            <version>0.9.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

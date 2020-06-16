@@ -16,29 +16,29 @@ public class FodselsnummerHjelperTest {
     private static final String FODSELSDATO_1940 = "1940-08-15";
     private static final String FODSELSDATO_1854 = "1854-12-31";
 
-    private static final String FODSELSNUMMER_2039 = TestUtil.fodselsnummerForDato(FODSELSDATO_2039);
-    private static final String FODSELSNUMMER_2013 = TestUtil.fodselsnummerForDato(FODSELSDATO_2013);
-    private static final String FODSELSNUMMER_2000 = TestUtil.fodselsnummerForDato(FODSELSDATO_2000);
-    private static final String FODSELSNUMMER_1999 = TestUtil.fodselsnummerForDato(FODSELSDATO_1999);
-    private static final String FODSELSNUMMER_1930 = TestUtil.fodselsnummerForDato(FODSELSDATO_1930);
-    private static final String FODSELSNUMMER_1940 = TestUtil.fodselsnummerForDato(FODSELSDATO_1940);
-    private static final String FODSELSNUMMER_1854 = TestUtil.fodselsnummerForDato(FODSELSDATO_1854);
+    private static final String FODSELSNUMMER_2039 = TestUtils.fodselsnummerForDato(FODSELSDATO_2039);
+    private static final String FODSELSNUMMER_2013 = TestUtils.fodselsnummerForDato(FODSELSDATO_2013);
+    private static final String FODSELSNUMMER_2000 = TestUtils.fodselsnummerForDato(FODSELSDATO_2000);
+    private static final String FODSELSNUMMER_1999 = TestUtils.fodselsnummerForDato(FODSELSDATO_1999);
+    private static final String FODSELSNUMMER_1930 = TestUtils.fodselsnummerForDato(FODSELSDATO_1930);
+    private static final String FODSELSNUMMER_1940 = TestUtils.fodselsnummerForDato(FODSELSDATO_1940);
+    private static final String FODSELSNUMMER_1854 = TestUtils.fodselsnummerForDato(FODSELSDATO_1854);
 
-    private static final String D_NUMMER_2039 = TestUtil.calculateDNummer(FODSELSNUMMER_2039);
-    private static final String D_NUMMER_2013 = TestUtil.calculateDNummer(FODSELSNUMMER_2013);
-    private static final String D_NUMMER_2000 = TestUtil.calculateDNummer(FODSELSNUMMER_2000);
-    private static final String D_NUMMER_1999 = TestUtil.calculateDNummer(FODSELSNUMMER_1999);
-    private static final String D_NUMMER_1930 = TestUtil.calculateDNummer(FODSELSNUMMER_1930);
-    private static final String D_NUMMER_1940 = TestUtil.calculateDNummer(FODSELSNUMMER_1940);
-    private static final String D_NUMMER_1854 = TestUtil.calculateDNummer(FODSELSNUMMER_1854);
+    private static final String D_NUMMER_2039 = TestUtils.calculateDNummer(FODSELSNUMMER_2039);
+    private static final String D_NUMMER_2013 = TestUtils.calculateDNummer(FODSELSNUMMER_2013);
+    private static final String D_NUMMER_2000 = TestUtils.calculateDNummer(FODSELSNUMMER_2000);
+    private static final String D_NUMMER_1999 = TestUtils.calculateDNummer(FODSELSNUMMER_1999);
+    private static final String D_NUMMER_1930 = TestUtils.calculateDNummer(FODSELSNUMMER_1930);
+    private static final String D_NUMMER_1940 = TestUtils.calculateDNummer(FODSELSNUMMER_1940);
+    private static final String D_NUMMER_1854 = TestUtils.calculateDNummer(FODSELSNUMMER_1854);
 
-    private static final String H_NUMMER_2039 = TestUtil.calculateHNumber(FODSELSNUMMER_2039);
-    private static final String H_NUMMER_2013 = TestUtil.calculateHNumber(FODSELSNUMMER_2013);
-    private static final String H_NUMMER_2000 = TestUtil.calculateHNumber(FODSELSNUMMER_2000);
-    private static final String H_NUMMER_1999 = TestUtil.calculateHNumber(FODSELSNUMMER_1999);
-    private static final String H_NUMMER_1930 = TestUtil.calculateHNumber(FODSELSNUMMER_1930);
-    private static final String H_NUMMER_1940 = TestUtil.calculateHNumber(FODSELSNUMMER_1940);
-    private static final String H_NUMMER_1854 = TestUtil.calculateHNumber(FODSELSNUMMER_1854);
+    private static final String H_NUMMER_2039 = TestUtils.calculateHNumber(FODSELSNUMMER_2039);
+    private static final String H_NUMMER_2013 = TestUtils.calculateHNumber(FODSELSNUMMER_2013);
+    private static final String H_NUMMER_2000 = TestUtils.calculateHNumber(FODSELSNUMMER_2000);
+    private static final String H_NUMMER_1999 = TestUtils.calculateHNumber(FODSELSNUMMER_1999);
+    private static final String H_NUMMER_1930 = TestUtils.calculateHNumber(FODSELSNUMMER_1930);
+    private static final String H_NUMMER_1940 = TestUtils.calculateHNumber(FODSELSNUMMER_1940);
+    private static final String H_NUMMER_1854 = TestUtils.calculateHNumber(FODSELSNUMMER_1854);
 
     private static final String UGYLDIG_FODSELSNUMMER_1 = "010250750XX";
     private static final String UGYLDIG_FODSELSNUMMER_2 = "010140550XX";
@@ -99,14 +99,14 @@ public class FodselsnummerHjelperTest {
     }
 
     @Test
-    public void fodselsnummerTilKjoennSkalOversetteMannRiktig() throws Exception {
+    public void fodselsnummerTilKjoennSkalOversetteMannRiktig() {
         final String kjonn = FodselsnummerHjelper.fodselsnummerTilKjonn("XXXXXXXX3XX");
 
         assertThat(kjonn, is("M"));
     }
 
     @Test
-    public void fodselsnummerTilKjoennSkalOversetteKvinneRiktig() throws Exception {
+    public void fodselsnummerTilKjoennSkalOversetteKvinneRiktig() {
         final String kjonn = FodselsnummerHjelper.fodselsnummerTilKjonn("XXXXXXXX4XX");
 
         assertThat(kjonn, is("K"));
