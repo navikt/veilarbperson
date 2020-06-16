@@ -98,6 +98,11 @@ public class KodeverkClientImpl implements KodeverkClient {
         betydninger.fieldNames().forEachRemaining((betydningName) -> {
             JsonNode betydningNode = betydninger.get(betydningName).get(0);
 
+            // Noen koder mangler informasjon
+            if (betydningNode == null) {
+                return;
+            }
+
             JsonNode betydningBeskrivelserNode = betydningNode.get("beskrivelser");
             JsonNode beskrivelseNbNode = betydningBeskrivelserNode.get("nb");
             String beskrivelseNb = beskrivelseNbNode.get("tekst").asText();

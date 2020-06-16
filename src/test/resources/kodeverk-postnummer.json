@@ -1,0 +1,52 @@
+{
+  "betydninger": {
+    "4971": [
+      {
+        "gyldigFra": "1999-03-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "SUNDEBRU",
+            "tekst": "SUNDEBRU"
+          }
+        }
+      }
+    ],
+    "2306": [
+      {
+        "gyldigFra": "1999-03-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "HAMAR",
+            "tekst": "HAMAR"
+          }
+        }
+      }
+    ],
+    "2305": [
+      {
+        "gyldigFra": "1999-03-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "HAMAR",
+            "tekst": "HAMAR"
+          }
+        }
+      }
+    ],
+    "2304": [
+      {
+        "gyldigFra": "1999-03-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "HAMAR",
+            "tekst": "HAMAR"
+          }
+        }
+      }
+    ]
+  }
+}
