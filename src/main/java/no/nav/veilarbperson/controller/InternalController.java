@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.controller;
 
 import no.nav.common.abac.Pep;
+import no.nav.common.client.aktorregister.AktorregisterClient;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.health.selftest.SelfTestCheck;
 import no.nav.common.health.selftest.SelfTestUtils;
@@ -31,6 +32,7 @@ public class InternalController {
 
     @Autowired
     public InternalController(
+            AktorregisterClient aktorregisterClient,
             Pep veilarbPep,
             DkifClient dkifClient,
             EgenAnsattClient egenAnsattClient,
@@ -40,6 +42,7 @@ public class InternalController {
             Norg2Client norg2Client
     ) {
         this.selftestChecks = Arrays.asList(
+                new SelfTestCheck("Aktorregister", true, aktorregisterClient),
                 new SelfTestCheck("ABAC", true, veilarbPep.getAbacClient()),
                 new SelfTestCheck("Digitalkontakinformasjon (DKIF)", false, dkifClient),
                 new SelfTestCheck("EgenAnsatt_v1 (SOAP) ", false, egenAnsattClient),

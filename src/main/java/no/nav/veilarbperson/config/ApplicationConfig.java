@@ -41,14 +41,6 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public AktorregisterClient aktorregisterClient(EnvironmentProperties properties, SystemUserTokenProvider tokenProvider) {
-        AktorregisterClient aktorregisterClient = new AktorregisterHttpClient(
-                properties.getAktorregisterUrl(), APPLICATION_NAME, tokenProvider::getSystemUserToken
-        );
-        return new CachedAktorregisterClient(aktorregisterClient);
-    }
-
-    @Bean
     public Pep veilarbPep(EnvironmentProperties properties) {
         Credentials serviceUserCredentials = NaisUtils.getCredentials("service_user");
         return new VeilarbPep(
@@ -56,6 +48,5 @@ public class ApplicationConfig {
                 serviceUserCredentials.password, new SpringAuditRequestInfoSupplier()
         );
     }
-
 
 }
