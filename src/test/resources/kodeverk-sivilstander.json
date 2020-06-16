@@ -1,0 +1,148 @@
+{
+  "betydninger": {
+    "GIFT": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Gift",
+            "tekst": "Gift"
+          }
+        }
+      }
+    ],
+    "REPA": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Registrert partner",
+            "tekst": "Registrert partner"
+          }
+        }
+      }
+    ],
+    "SEPR": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Separert",
+            "tekst": "Separert"
+          }
+        }
+      }
+    ],
+    "NULL": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Uoppgitt",
+            "tekst": "Uoppgitt"
+          }
+        }
+      }
+    ],
+    "ENKE": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Enke/-mann",
+            "tekst": "Enke/-mann"
+          }
+        }
+      }
+    ],
+    "SAMB": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Samboer",
+            "tekst": "Samboer"
+          }
+        }
+      }
+    ],
+    "SEPA": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Separert partner",
+            "tekst": "Separert partner"
+          }
+        }
+      }
+    ],
+    "GJPA": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Gjenlevende partner",
+            "tekst": "Gjenlevende partner"
+          }
+        }
+      }
+    ],
+    "UGIF": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Ugift",
+            "tekst": "Ugift"
+          }
+        }
+      }
+    ],
+    "GLAD": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Gift, lever adskilt",
+            "tekst": "Gift, lever adskilt"
+          }
+        }
+      }
+    ],
+    "SKIL": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Skilt",
+            "tekst": "Skilt"
+          }
+        }
+      }
+    ],
+    "SKPA": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "Skilt partner",
+            "tekst": "Skilt partner"
+          }
+        }
+      }
+    ]
+  }
+}
