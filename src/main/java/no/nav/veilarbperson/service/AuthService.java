@@ -49,7 +49,7 @@ public class AuthService {
 
     public boolean harLesetilgang(String fnr) {
         String aktorId = aktorregisterClient.hentAktorId(fnr);
-        return veilarbPep.harVeilederTilgangTilPerson(getInnloggetBrukerToken(), ActionId.READ, AbacPersonId.aktorId(aktorId));
+        return veilarbPep.harTilgangTilPerson(getInnloggetBrukerToken(), ActionId.READ, AbacPersonId.aktorId(aktorId));
     }
 
     public String getAktorId(String fnr) {
