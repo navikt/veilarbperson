@@ -9,7 +9,7 @@ import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.person.domain.PersonData;
+import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import org.springframework.context.annotation.Bean;
@@ -130,8 +130,8 @@ public class ClientTestConfig {
     public PersonClient personClient() {
         return new PersonClient() {
             @Override
-            public PersonData hentPersonData(String ident) {
-                return (PersonData) new PersonData()
+            public TpsPerson hentPerson(String ident) {
+                return new TpsPerson()
                         .setFornavn("Test")
                         .setEtternavn("Testersen")
                         .setSammensattNavn("Test Testersen")

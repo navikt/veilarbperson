@@ -1,11 +1,11 @@
 package no.nav.veilarbperson.client.person;
 
 import no.nav.common.health.HealthCheck;
-import no.nav.veilarbperson.client.person.domain.PersonData;
+import no.nav.veilarbperson.client.person.domain.TpsPerson;
 
 public interface PersonClient extends HealthCheck {
 
-    PersonData hentPersonData(String ident);
+    TpsPerson hentPerson(String ident);
 
     String hentSikkerhetstiltak(String ident);
 

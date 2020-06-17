@@ -1,10 +1,9 @@
-package no.nav.veilarbperson.client.person.domain;
+package no.nav.veilarbperson.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import no.nav.veilarbperson.client.person.domain.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,27 +12,34 @@ import static java.util.Optional.ofNullable;
 
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-public class PersonData extends Person {
+public class PersonData {
+    String fornavn;
+    String mellomnavn;
+    String etternavn;
+    String sammensattNavn;
+    String fodselsnummer;
+    String fodselsdato;
 
-    private List<Familiemedlem> barn;
-    private String diskresjonskode;
-    private String kontonummer;
-    private String geografiskTilknytning;
-    private Enhet geografiskEnhet;
-    private String telefon;
-    private String epost;
-    private String statsborgerskap;
-    private String sikkerhetstiltak;
-    private Sivilstand sivilstand;
-    private Familiemedlem partner;
-    private Bostedsadresse bostedsadresse;
-    private MidlertidigAdresseNorge midlertidigAdresseNorge;
-    private MidlertidigAdresseUtland midlertidigAdresseUtland;
-    private PostAdresse postAdresse;
-    private boolean egenAnsatt;
-    private String malform;
+    String kjonn;
+    String dodsdato;
+    
+    List<Familiemedlem> barn;
+    String diskresjonskode;
+    String kontonummer;
+    String geografiskTilknytning;
+    Enhet geografiskEnhet;
+    String telefon;
+    String epost;
+    String statsborgerskap;
+    String sikkerhetstiltak;
+    Sivilstand sivilstand;
+    Familiemedlem partner;
+    Bostedsadresse bostedsadresse;
+    MidlertidigAdresseNorge midlertidigAdresseNorge;
+    MidlertidigAdresseUtland midlertidigAdresseUtland;
+    PostAdresse postAdresse;
+    boolean egenAnsatt;
+    String malform;
 
     @JsonIgnore
     public Optional<String> getPostnummerForBostedsadresse() {

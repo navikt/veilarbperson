@@ -12,7 +12,7 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentSikkerhetstiltakRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentSikkerhetstiltakResponse;
-import no.nav.veilarbperson.client.person.domain.PersonData;
+import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.config.CacheConfig;
 import no.nav.veilarbperson.utils.MapExceptionUtil;
 import no.nav.veilarbperson.utils.PersonDataMapper;
@@ -48,10 +48,10 @@ public class PersonClientImpl implements PersonClient {
 
     @Cacheable(CacheConfig.TPS_PERSON_CACHE_NAME)
     @Override
-    public PersonData hentPersonData(String ident) {
+    public TpsPerson hentPerson(String ident) {
         try {
             HentPersonResponse response = personV3.hentPerson(lagHentPersonRequest(ident));
-            return PersonDataMapper.tilPersonData(response.getPerson());
+            return PersonDataMapper.tilTpsPerson(response.getPerson());
         } catch (Exception e) {
             log.error("Henting av person feilet", e);
             throw MapExceptionUtil.map(e);

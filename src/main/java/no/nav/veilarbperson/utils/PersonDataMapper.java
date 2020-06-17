@@ -1,9 +1,10 @@
 package no.nav.veilarbperson.utils;
 
-import no.nav.veilarbperson.client.person.domain.*;
-import no.nav.veilarbperson.client.person.domain.Sivilstand;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
+import no.nav.veilarbperson.client.person.domain.Sivilstand;
+import no.nav.veilarbperson.client.person.domain.*;
+import no.nav.veilarbperson.domain.PersonData;
+import no.nav.veilarbperson.domain.PersonNavn;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
@@ -15,8 +16,32 @@ import static java.util.Optional.ofNullable;
 
 public class PersonDataMapper {
 
-    public static PersonData tilPersonData(Person person) {
-        return (PersonData) new PersonData()
+    public static PersonData tilPersonData(TpsPerson person) {
+        return new PersonData()
+                .setBarn(person.getBarn())
+                .setDiskresjonskode(person.getDiskresjonskode())
+                .setKontonummer(person.getKontonummer())
+                .setGeografiskTilknytning(person.getGeografiskTilknytning())
+                .setStatsborgerskap(person.getStatsborgerskap())
+                .setSivilstand(person.getSivilstand())
+                .setPartner(person.getPartner())
+                .setBostedsadresse(person.getBostedsadresse())
+                .setMidlertidigAdresseUtland(person.getMidlertidigAdresseUtland())
+                .setMidlertidigAdresseNorge(person.getMidlertidigAdresseNorge())
+                .setPostAdresse(person.getPostAdresse())
+                .setMalform(person.getMalform())
+                .setFornavn(person.getFornavn())
+                .setMellomnavn(person.getMellomnavn())
+                .setEtternavn(person.getEtternavn())
+                .setSammensattNavn(person.getSammensattNavn())
+                .setFodselsnummer(person.getFodselsnummer())
+                .setFodselsdato(person.getFodselsdato())
+                .setKjonn(person.getKjonn())
+                .setDodsdato(person.getDodsdato());
+    }
+
+    public static TpsPerson tilTpsPerson(Person person) {
+        return new TpsPerson()
                 .setBarn(Mappers.familierelasjonerTilBarn(person.getHarFraRolleI()))
                 .setDiskresjonskode(kanskjeDiskresjonskode(person))
                 .setKontonummer(kanskjeKontonummer(person))
@@ -53,7 +78,7 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private static String kanskjeFodselsnummer(Person person) {
+    public static String kanskjeFodselsnummer(Person person) {
         Aktoer aktoer = person.getAktoer();
         if (aktoer instanceof PersonIdent) {
             return kanskjeNorskIdent((PersonIdent) aktoer);
@@ -65,6 +90,14 @@ public class PersonDataMapper {
         return ofNullable(aktoer.getIdent())
                 .map(NorskIdent::getIdent)
                 .orElse(null);
+    }
+
+    public static PersonNavn hentNavn(TpsPerson person) {
+        return new PersonNavn()
+                .setFornavn(person.getFornavn())
+                .setMellomnavn(person.getMellomnavn())
+                .setEtternavn(person.getEtternavn())
+                .setSammensattNavn(person.getSammensattNavn());
     }
 
     private static String kanskjeSammensattnavn(Person person) {
@@ -85,7 +118,7 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private static String kanskjeMellomnavn(Person person) {
+    public static String kanskjeMellomnavn(Person person) {
         return ofNullable(person.getPersonnavn())
                 .map(Personnavn::getMellomnavn)
                 .orElse(null);
@@ -297,7 +330,7 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private static String kanskjeMalform(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
+    public static String kanskjeMalform(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
         if (person instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) {
             return of(person)
                     .map(wsPerson -> (no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker) wsPerson)

@@ -1,8 +1,5 @@
 package no.nav.veilarbperson.client;
 
-import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.person.PersonClientImpl;
-import no.nav.veilarbperson.client.person.domain.PersonData;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentSikkerhetstiltakPersonIkkeFunnet;
@@ -12,13 +9,15 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentSikkerhetstiltakRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentSikkerhetstiltakResponse;
+import no.nav.veilarbperson.client.person.PersonClient;
+import no.nav.veilarbperson.client.person.PersonClientImpl;
+import no.nav.veilarbperson.client.person.domain.TpsPerson;
+import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.util.List;
-
-import no.nav.veilarbperson.utils.TestUtils;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -45,9 +44,9 @@ public class PersonClientImplTest {
                 .withPerson(new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(IDENT))));
         when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(hentPersonResponse);
 
-        PersonData personData = personClient.hentPersonData(IDENT);
+        TpsPerson person = personClient.hentPerson(IDENT);
 
-        assertThat(personData.getFodselsnummer(), is(equalTo(IDENT)));
+        assertThat(person.getFodselsnummer(), is(equalTo(IDENT)));
     }
 
     @Test
@@ -57,7 +56,7 @@ public class PersonClientImplTest {
         ArgumentCaptor<HentPersonRequest> argumentCaptor = ArgumentCaptor.forClass(HentPersonRequest.class);
         when(personV3.hentPerson(argumentCaptor.capture())).thenReturn(hentPersonResponse);
 
-        personClient.hentPersonData(IDENT);
+        personClient.hentPerson(IDENT);
 
         List<Informasjonsbehov> informasjonsBehov = argumentCaptor.getValue().getInformasjonsbehov();
         assertThat(informasjonsBehov.contains(Informasjonsbehov.ADRESSE), is(true));

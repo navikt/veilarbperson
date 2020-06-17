@@ -10,6 +10,8 @@ import no.nav.veilarbperson.client.person.domain.*;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.GeografiskTilknytning;
+import no.nav.veilarbperson.domain.PersonData;
+import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,9 +41,12 @@ public class PersonService {
         this.veilarbportefoljeClient = veilarbportefoljeClient;
     }
 
+    public TpsPerson hentPerson(String fodselsnummer){
+        return personClient.hentPerson(fodselsnummer);
+    }
 
-    public PersonData hentPerson(String fodselsnummer) {
-        PersonData personData = personClient.hentPersonData(fodselsnummer);
+    public PersonData hentFlettetPerson(String fodselsnummer) {
+        PersonData personData = PersonDataMapper.tilPersonData(personClient.hentPerson(fodselsnummer));
 
         try {
             flettPersoninfoFraPortefolje(personData, fodselsnummer);
@@ -58,7 +63,7 @@ public class PersonService {
     }
 
     public GeografiskTilknytning hentGeografisktilknytning(String fodselsnummer) {
-        String geografiskTilknytning = personClient.hentPersonData(fodselsnummer).getGeografiskTilknytning();
+        String geografiskTilknytning = personClient.hentPerson(fodselsnummer).getGeografiskTilknytning();
         return new GeografiskTilknytning(geografiskTilknytning);
     }
 
