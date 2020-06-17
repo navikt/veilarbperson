@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.client.person.domain;
+package no.nav.veilarbperson.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -69,7 +69,7 @@ public class PersonServiceTest {
     public void personSkalInneholdeSivilstandDersomDetEksisterer() {
         final TpsPerson forventetPerson = lagPerson();
         final String kodeverksverdi = "GIFT";
-        forventetPerson.setSivilstand(new Sivilstand().withSivilstand(kodeverksverdi));
+        forventetPerson.setSivilstand(new Sivilstand().setSivilstand(kodeverksverdi));
         when(personClient.hentPerson(anyString())).thenReturn(forventetPerson);
         when(kodeverkService.getBeskrivelseForSivilstand(anyString())).thenReturn(kodeverksverdi);
 

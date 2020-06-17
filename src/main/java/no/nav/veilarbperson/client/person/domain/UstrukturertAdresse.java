@@ -1,7 +1,6 @@
 package no.nav.veilarbperson.client.person.domain;
 
 public class UstrukturertAdresse {
-
     private String adresselinje1;
     private String adresselinje2;
     private String adresselinje3;
@@ -41,5 +40,14 @@ public class UstrukturertAdresse {
     public UstrukturertAdresse withLandkode(String landkode) {
         this.landkode = landkode;
         return this;
+    }
+
+    public UstrukturertAdresse copy() {
+        return new UstrukturertAdresse()
+                .withAdresselinje1(adresselinje1)
+                .withAdresselinje2(adresselinje2)
+                .withAdresselinje3(adresselinje3)
+                .withAdresselinje4(adresselinje4)
+                .withLandkode(landkode);
     }
 }

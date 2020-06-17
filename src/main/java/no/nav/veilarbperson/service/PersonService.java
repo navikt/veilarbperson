@@ -6,9 +6,12 @@ import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.person.domain.*;
+import no.nav.veilarbperson.client.person.domain.StrukturertAdresse;
+import no.nav.veilarbperson.client.person.domain.TpsPerson;
+import no.nav.veilarbperson.client.person.domain.UstrukturertAdresse;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.GeografiskTilknytning;
 import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.utils.PersonDataMapper;
@@ -89,10 +92,9 @@ public class PersonService {
 
         if (personData.getSivilstand() != null) {
             String sivilstandKode = personData.getSivilstand().getSivilstand();
-            Sivilstand sivilstand = personData.getSivilstand()
-                    .withSivilstand(kodeverkService.getBeskrivelseForSivilstand(sivilstandKode));
-            personData.setSivilstand(sivilstand);
+            personData.getSivilstand().setSivilstand(kodeverkService.getBeskrivelseForSivilstand(sivilstandKode));
         }
+
         kanskjePoststedBostedsadresse(personData);
         kanskjePoststedMidlertidigAdresseNorge(personData);
 

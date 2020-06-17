@@ -16,6 +16,7 @@ public class TpsPerson  {
     String fodselsdato;
     String kjonn;
     String dodsdato;
+
     List<Familiemedlem> barn;
     String diskresjonskode;
     String kontonummer;

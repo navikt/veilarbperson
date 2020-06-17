@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.utils;
 
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
+import no.nav.veilarbperson.client.person.domain.Bostedsadresse;
 import no.nav.veilarbperson.client.person.domain.Sivilstand;
 import no.nav.veilarbperson.client.person.domain.*;
 import no.nav.veilarbperson.domain.PersonData;
@@ -8,8 +9,11 @@ import no.nav.veilarbperson.domain.PersonNavn;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
@@ -17,18 +21,48 @@ import static java.util.Optional.ofNullable;
 public class PersonDataMapper {
 
     public static PersonData tilPersonData(TpsPerson person) {
+        // Deep copy felter slik at de ikke blir endret under fletting av annen informasjon
+
+        List<Familiemedlem> barnCopy = person.getBarn() != null
+                ? person.getBarn().stream().map(Familiemedlem::copy).collect(Collectors.toList())
+                : Collections.emptyList();
+
+        Sivilstand sivilstandCopy = person.getSivilstand() != null
+                ? person.getSivilstand().copy()
+                : null;
+
+        Familiemedlem partnerCopy = person.getPartner() != null
+                ? person.getPartner().copy()
+                : null;
+
+        Bostedsadresse bostedsadresseCopy = person.getBostedsadresse() != null
+                ? person.getBostedsadresse().copy()
+                : null;
+
+        MidlertidigAdresseUtland midlertidigAdresseUtlandCopy = person.getMidlertidigAdresseUtland() != null
+                ? person.getMidlertidigAdresseUtland().copy()
+                : null;
+
+        MidlertidigAdresseNorge midlertidigAdresseNorgeCopy = person.getMidlertidigAdresseNorge() != null
+                ? person.getMidlertidigAdresseNorge().copy()
+                : null;
+
+        PostAdresse postAdresseCopy = person.getPostAdresse() != null
+                ? person.getPostAdresse().copy()
+                : null;
+
         return new PersonData()
-                .setBarn(person.getBarn())
+                .setBarn(barnCopy)
                 .setDiskresjonskode(person.getDiskresjonskode())
                 .setKontonummer(person.getKontonummer())
                 .setGeografiskTilknytning(person.getGeografiskTilknytning())
                 .setStatsborgerskap(person.getStatsborgerskap())
-                .setSivilstand(person.getSivilstand())
-                .setPartner(person.getPartner())
-                .setBostedsadresse(person.getBostedsadresse())
-                .setMidlertidigAdresseUtland(person.getMidlertidigAdresseUtland())
-                .setMidlertidigAdresseNorge(person.getMidlertidigAdresseNorge())
-                .setPostAdresse(person.getPostAdresse())
+                .setSivilstand(sivilstandCopy)
+                .setPartner(partnerCopy)
+                .setBostedsadresse(bostedsadresseCopy)
+                .setMidlertidigAdresseUtland(midlertidigAdresseUtlandCopy)
+                .setMidlertidigAdresseNorge(midlertidigAdresseNorgeCopy)
+                .setPostAdresse(postAdresseCopy)
                 .setMalform(person.getMalform())
                 .setFornavn(person.getFornavn())
                 .setMellomnavn(person.getMellomnavn())
@@ -314,9 +348,10 @@ public class PersonDataMapper {
 
     private static Sivilstand kanskjeSivilstand(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
         return ofNullable(person.getSivilstand())
-                .map(wsSivilstand -> new Sivilstand()
-                        .withSivilstand(wsSivilstand.getSivilstand().getValue())
-                        .withFraDato(datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar())))
+                .map(wsSivilstand -> new Sivilstand(
+                        wsSivilstand.getSivilstand().getValue(),
+                        datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()))
+                )
                 .orElse(null);
     }
 

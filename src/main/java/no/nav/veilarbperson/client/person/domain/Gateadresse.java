@@ -3,7 +3,7 @@ package no.nav.veilarbperson.client.person.domain;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Gateadresse")
-public class Gateadresse extends StrukturertAdresse{
+public class Gateadresse extends StrukturertAdresse {
 
     private String poststed;
     private String postnummer;
@@ -83,5 +83,19 @@ public class Gateadresse extends StrukturertAdresse{
         return this;
     }
 
-
+    @Override
+    public Gateadresse copy() {
+        return (Gateadresse) new Gateadresse()
+                .withPoststed(poststed)
+                .withPostnummer(postnummer)
+                .withHusnummer(husnummer)
+                .withHusbokstav(husbokstav)
+                .withKommunenummer(kommunenummer)
+                .withGatenavn(gatenavn)
+                .withGatenummer(gatenummer)
+                .withLandkode(getLandkode())
+                .withTilleggsadresse(getTilleggsadresse())
+                .withPostnummer(getPostnummer())
+                .withPoststed(getPoststed());
+    }
 }

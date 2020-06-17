@@ -13,4 +13,7 @@ public class Bostedsadresse {
         return this;
     }
 
+    public Bostedsadresse copy() {
+        return new Bostedsadresse().withStrukturertAdresse(strukturertAdresse.copy());
+    }
 }

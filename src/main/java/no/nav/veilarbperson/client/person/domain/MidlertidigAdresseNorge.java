@@ -12,4 +12,7 @@ public class MidlertidigAdresseNorge {
         return this;
     }
 
+    public MidlertidigAdresseNorge copy() {
+        return new MidlertidigAdresseNorge().withStrukturertAdresse(strukturertAdresse.copy());
+    }
 }

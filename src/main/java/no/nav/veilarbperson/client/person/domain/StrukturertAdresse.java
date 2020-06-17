@@ -1,6 +1,5 @@
 package no.nav.veilarbperson.client.person.domain;
 
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -9,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(name="Gateadresse", value=Gateadresse.class)
 })
 public class StrukturertAdresse  {
-
 
     private String landkode;
     private String tilleggsadresse;
@@ -50,6 +48,12 @@ public class StrukturertAdresse  {
         return this;
     }
 
-
+    public StrukturertAdresse copy() {
+        return new StrukturertAdresse()
+                .withLandkode(landkode)
+                .withTilleggsadresse(tilleggsadresse)
+                .withPoststed(poststed)
+                .withPostnummer(postnummer);
+    }
 
 }

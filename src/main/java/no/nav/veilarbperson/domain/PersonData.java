@@ -19,7 +19,6 @@ public class PersonData {
     String sammensattNavn;
     String fodselsnummer;
     String fodselsdato;
-
     String kjonn;
     String dodsdato;
     

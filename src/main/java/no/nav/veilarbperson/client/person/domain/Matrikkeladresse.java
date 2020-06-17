@@ -1,6 +1,6 @@
 package no.nav.veilarbperson.client.person.domain;
 
-public class Matrikkeladresse extends StrukturertAdresse{
+public class Matrikkeladresse extends StrukturertAdresse {
 
     private String kommunenummer;
     private String gardsnummer;
@@ -71,5 +71,21 @@ public class Matrikkeladresse extends StrukturertAdresse{
     public Matrikkeladresse withEiendomsnavn(String eiendomsnavn) {
         this.eiendomsnavn = eiendomsnavn;
         return this;
+    }
+
+    @Override
+    public Matrikkeladresse copy() {
+        return (Matrikkeladresse) new Matrikkeladresse()
+                .withKommunenummer(kommunenummer)
+                .withGardsnummer(gardsnummer)
+                .withBruksnummer(bruksnummer)
+                .withFestenummer(festenummer)
+                .withSeksjonsnummer(seksjonsnummer)
+                .withUndernummer(undernummer)
+                .withEiendomsnavn(eiendomsnavn)
+                .withLandkode(getLandkode())
+                .withTilleggsadresse(getTilleggsadresse())
+                .withPostnummer(getPostnummer())
+                .withPoststed(getPoststed());
     }
 }

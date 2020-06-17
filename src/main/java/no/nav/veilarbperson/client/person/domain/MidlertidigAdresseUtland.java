@@ -11,4 +11,8 @@ public class MidlertidigAdresseUtland {
         this.ustrukturertAdresse = ustrukturertAdresse;
         return this;
     }
+
+    public MidlertidigAdresseUtland copy() {
+        return new MidlertidigAdresseUtland().withUstrukturertAdresse(ustrukturertAdresse.copy());
+    }
 }

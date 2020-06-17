@@ -1,8 +1,8 @@
 package no.nav.veilarbperson.utils;
 
 import no.nav.veilarbperson.client.person.domain.Diskresjonskoder;
-import no.nav.veilarbperson.client.person.domain.Enhet;
 import no.nav.veilarbperson.client.person.domain.Familiemedlem;
+import no.nav.veilarbperson.domain.Enhet;
 
 import java.util.List;
 import java.util.stream.Collectors;

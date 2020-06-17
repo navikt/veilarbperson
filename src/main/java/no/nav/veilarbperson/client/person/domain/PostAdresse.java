@@ -11,4 +11,8 @@ public class PostAdresse {
         this.ustrukturertAdresse = ustrukturertAdresse;
         return this;
     }
+
+    public PostAdresse copy() {
+        return new PostAdresse().withUstrukturertAdresse(ustrukturertAdresse.copy());
+    }
 }
