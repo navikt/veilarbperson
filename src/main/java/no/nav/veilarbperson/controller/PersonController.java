@@ -1,10 +1,10 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
+import no.nav.veilarbperson.client.person.domain.PersonData;
 import no.nav.veilarbperson.domain.AktoerId;
 import no.nav.veilarbperson.domain.GeografiskTilknytning;
 import no.nav.veilarbperson.domain.Malform;
-import no.nav.veilarbperson.client.person.domain.PersonData;
 import no.nav.veilarbperson.domain.PersonNavn;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonService;
@@ -32,7 +32,7 @@ public class PersonController {
     public PersonData person(@PathVariable("fodselsnummer") String fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personService.hentPerson(fnr);
+        return personService.hentFlettetPerson(fnr);
     }
 
     @GetMapping("/aktorid")

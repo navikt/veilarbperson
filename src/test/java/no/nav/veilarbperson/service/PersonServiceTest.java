@@ -48,7 +48,7 @@ public class PersonServiceTest {
 
     @Test
     public void hentPersonSkalReturnereEnPerson() {
-        final PersonData personData = personService.hentPerson("");
+        final PersonData personData = personService.hentFlettetPerson("");
         assertThat(personData, notNullValue());
     }
 
@@ -59,7 +59,7 @@ public class PersonServiceTest {
         forventetPersonData.setGeografiskTilknytning(geografiskTilknytning);
         when(personClient.hentPersonData(anyString())).thenReturn(forventetPersonData);
 
-        final PersonData returnertPersonData = personService.hentPerson("");
+        final PersonData returnertPersonData = personService.hentFlettetPerson("");
 
         assertThat(returnertPersonData.getGeografiskTilknytning(), is(geografiskTilknytning));
     }
@@ -72,7 +72,7 @@ public class PersonServiceTest {
         when(personClient.hentPersonData(anyString())).thenReturn(forventetPersonData);
         when(kodeverkService.getBeskrivelseForSivilstand(anyString())).thenReturn(kodeverksverdi);
 
-        final PersonData returnertPersonData = personService.hentPerson("");
+        final PersonData returnertPersonData = personService.hentFlettetPerson("");
 
         assertThat(returnertPersonData.getSivilstand(), notNullValue());
         assertThat(returnertPersonData.getSivilstand().getSivilstand(), is(kodeverksverdi));

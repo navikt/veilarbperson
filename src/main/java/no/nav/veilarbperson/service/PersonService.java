@@ -39,8 +39,11 @@ public class PersonService {
         this.veilarbportefoljeClient = veilarbportefoljeClient;
     }
 
+    public PersonData hentPerson(String fodselsnummer){
+        return personClient.hentPersonData(fodselsnummer);
+    }
 
-    public PersonData hentPerson(String fodselsnummer) {
+    public PersonData hentFlettetPerson(String fodselsnummer) {
         PersonData personData = personClient.hentPersonData(fodselsnummer);
 
         try {
