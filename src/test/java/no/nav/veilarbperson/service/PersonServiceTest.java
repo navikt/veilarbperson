@@ -6,9 +6,10 @@ import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.person.domain.PersonData;
 import no.nav.veilarbperson.client.person.domain.Sivilstand;
+import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.domain.PersonData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public class PersonServiceTest {
     public void setup() {
         when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(anyString())).thenReturn(new DkifKontaktinfo());
-        when(personClient.hentPersonData(anyString())).thenReturn(lagPersonData());
+        when(personClient.hentPerson(anyString())).thenReturn(lagPerson());
         when(personClient.hentSikkerhetstiltak(anyString())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(anyString())).thenReturn(true);
 
@@ -54,10 +55,10 @@ public class PersonServiceTest {
 
     @Test
     public void personSkalInneholdeGeografiskTilknytningDersomDetEksisterer() {
-        final PersonData forventetPersonData = lagPersonData();
+        final TpsPerson forventetPerson = lagPerson();
         final String geografiskTilknytning = "1234";
-        forventetPersonData.setGeografiskTilknytning(geografiskTilknytning);
-        when(personClient.hentPersonData(anyString())).thenReturn(forventetPersonData);
+        forventetPerson.setGeografiskTilknytning(geografiskTilknytning);
+        when(personClient.hentPerson(anyString())).thenReturn(forventetPerson);
 
         final PersonData returnertPersonData = personService.hentFlettetPerson("");
 
@@ -66,10 +67,10 @@ public class PersonServiceTest {
 
     @Test
     public void personSkalInneholdeSivilstandDersomDetEksisterer() {
-        final PersonData forventetPersonData = lagPersonData();
+        final TpsPerson forventetPerson = lagPerson();
         final String kodeverksverdi = "GIFT";
-        forventetPersonData.setSivilstand(new Sivilstand().withSivilstand(kodeverksverdi));
-        when(personClient.hentPersonData(anyString())).thenReturn(forventetPersonData);
+        forventetPerson.setSivilstand(new Sivilstand().withSivilstand(kodeverksverdi));
+        when(personClient.hentPerson(anyString())).thenReturn(forventetPerson);
         when(kodeverkService.getBeskrivelseForSivilstand(anyString())).thenReturn(kodeverksverdi);
 
         final PersonData returnertPersonData = personService.hentFlettetPerson("");
@@ -78,10 +79,10 @@ public class PersonServiceTest {
         assertThat(returnertPersonData.getSivilstand().getSivilstand(), is(kodeverksverdi));
     }
 
-    private PersonData lagPersonData() {
-        final PersonData personData = new PersonData();
-        personData.setSivilstand(new Sivilstand());
-        personData.setGeografiskTilknytning("");
-        return personData;
+    private TpsPerson lagPerson() {
+        final TpsPerson person = new TpsPerson();
+        person.setSivilstand(new Sivilstand());
+        person.setGeografiskTilknytning("");
+        return person;
     }
 }

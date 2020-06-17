@@ -12,20 +12,18 @@ public class FamiliemedlemMapper {
     private static final String EKTEFELLE = "EKTE";
 
     public static Familiemedlem familierelasjonTilFamiliemedlem(no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon familierelasjon) {
-
         no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person = familierelasjon.getTilPerson();
         final String fodselsnummer = kanskjeFodselsnummer(person);
 
-        return Familiemedlem.builder()
-                .fornavn(kanskjeFornavn(person))
-                .etternavn(kanskjeEtternavn(person))
-                .sammensattnavn(kanskjeSammensattNavn(person))
-                .harSammeBosted(familierelasjon.isHarSammeBosted())
-                .fodselsnummer(fodselsnummer)
-                .fodselsdato(kanskjeFodselsdato(fodselsnummer))
-                .kjonn(kanskjekjonn(fodselsnummer))
-                .dodsdato(kanskjeDoedsdato(person))
-                .build();
+        return new Familiemedlem()
+                .setFornavn(kanskjeFornavn(person))
+                .setEtternavn(kanskjeEtternavn(person))
+                .setSammensattNavn(kanskjeSammensattNavn(person))
+                .setHarSammeBosted(familierelasjon.isHarSammeBosted())
+                .setFodselsnummer(fodselsnummer)
+                .setFodselsdato(kanskjeFodselsdato(fodselsnummer))
+                .setKjonn(kanskjekjonn(fodselsnummer))
+                .setDodsdato(kanskjeDoedsdato(person));
     }
 
     public static Familiemedlem partner(List<no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon> familierelasjoner) {

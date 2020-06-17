@@ -1,28 +1,20 @@
 package no.nav.veilarbperson.client.person.domain;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Builder;
+import lombok.experimental.Accessors;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class Familiemedlem extends Person{
+@Accessors(chain = true)
+public class Familiemedlem {
+    String fornavn;
+    String mellomnavn;
+    String etternavn;
+    String sammensattNavn;
+    String fodselsnummer;
+    String fodselsdato;
 
-    private Boolean harSammeBosted;
+    String kjonn;
+    String dodsdato;
 
-    @Builder
-    private Familiemedlem(String fornavn,
-                          String mellomnavn,
-                          String etternavn,
-                          String sammensattnavn,
-                          String fodselsnummer,
-                          String fodselsdato,
-                          String kjonn,
-                          String dodsdato,
-                          Boolean harSammeBosted){
-        super(fornavn, mellomnavn, etternavn, sammensattnavn, fodselsnummer, fodselsdato, kjonn, dodsdato);
-
-        this.harSammeBosted = harSammeBosted;
-    }
-
+    Boolean harSammeBosted;
 }

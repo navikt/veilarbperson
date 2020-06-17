@@ -1,13 +1,11 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
-import no.nav.veilarbperson.client.person.domain.PersonData;
-import no.nav.veilarbperson.domain.AktoerId;
-import no.nav.veilarbperson.domain.GeografiskTilknytning;
-import no.nav.veilarbperson.domain.Malform;
-import no.nav.veilarbperson.domain.PersonNavn;
+import no.nav.veilarbperson.client.person.domain.TpsPerson;
+import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonService;
+import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,7 +50,8 @@ public class PersonController {
 
         authService.sjekkLesetilgang(fnr);
 
-        return PersonNavn.fraPerson(personService.hentPerson(fodselsnummer));
+        TpsPerson person = personService.hentPerson(fodselsnummer);
+        return PersonDataMapper.hentNavn(person);
     }
 
     @GetMapping("/{fodselsnummer}/malform")
@@ -61,8 +60,8 @@ public class PersonController {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
 
-        PersonData personData = personService.hentPerson(fnr);
-        return new Malform(personData.getMalform());
+        TpsPerson person = personService.hentPerson(fnr);
+        return new Malform(person.getMalform());
     }
 
     @GetMapping("/{fodselsnummer}/tilgangTilBruker")

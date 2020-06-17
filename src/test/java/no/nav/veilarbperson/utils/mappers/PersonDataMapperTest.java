@@ -1,11 +1,7 @@
 package no.nav.veilarbperson.utils.mappers;
 
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Diskresjonskoder;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Sivilstand;
-import no.nav.veilarbperson.client.person.domain.PersonData;
+import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.hamcrest.CustomMatcher;
 import org.hamcrest.Matcher;
@@ -24,156 +20,145 @@ import static org.junit.Assert.assertThat;
  */
 
 public class PersonDataMapperTest {
-
-    private PersonDataMapper personDataMapper = new PersonDataMapper();
-
+    
     @Test
-    public void fornavnMappesDersomDetEksisterer() throws Exception {
+    public void fornavnMappesDersomDetEksisterer() {
         final String forventetVerdi = "fornavn";
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withFornavn(forventetVerdi));
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        final PersonData personData = tilPersonData(wsPerson);
-
-        assertThat(personData.getFornavn(), is(forventetVerdi));
+        assertThat(tpsPerson.getFornavn(), is(forventetVerdi));
     }
 
     @Test
-    public void fornavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
+    public void fornavnMappesTilNullDersomWSPersonnavnErNull() {
         final Person wsPerson = new Person().withPersonnavn(null);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        final PersonData personData = tilPersonData(wsPerson);
-
-        assertThat(personData.getFornavn(), nullValue());
+        assertThat(tpsPerson.getFornavn(), nullValue());
     }
 
     @Test
-    public void fornavnMappesTilNullDersomPersonnavnErNull() throws Exception {
+    public void fornavnMappesTilNullDersomPersonnavnErNull() {
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withFornavn(null));
-
-        final PersonData personData = tilPersonData(wsPerson);
-
-        assertThat(personData.getFornavn(), nullValue());
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
+        
+        assertThat(tpsPerson.getFornavn(), nullValue());
     }
 
     @Test
-    public void etternavnMappesDersomDetEksisterer() throws Exception {
+    public void etternavnMappesDersomDetEksisterer() {
         final String forventetVerdi = "etternavn";
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withEtternavn(forventetVerdi));
-
-        final PersonData personData = tilPersonData(wsPerson);
-
-        assertThat(personData.getEtternavn(), is(forventetVerdi));
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
+        
+        assertThat(tpsPerson.getEtternavn(), is(forventetVerdi));
     }
 
     @Test
-    public void etternavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
+    public void etternavnMappesTilNullDersomWSPersonnavnErNull() {
         final Person wsPerson = new Person().withPersonnavn(null);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        final PersonData personData = tilPersonData(wsPerson);
-
-        assertThat(personData.getEtternavn(), nullValue());
+        assertThat(tpsPerson.getEtternavn(), nullValue());
     }
 
     @Test
-    public void etternavnMappesTilNullDersomEtternavnErNull() throws Exception {
+    public void etternavnMappesTilNullDersomEtternavnErNull() {
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withEtternavn(null));
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        final PersonData personData = tilPersonData(wsPerson);
-
-        assertThat(personData.getEtternavn(), nullValue());
+        assertThat(tpsPerson.getEtternavn(), nullValue());
     }
 
     @Test
-    public void mellomnavnMappesDersomDetEksisterer() throws Exception {
+    public void mellomnavnMappesDersomDetEksisterer() {
         final String forventetVerdi = "mellomnavn";
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withMellomnavn(forventetVerdi));
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        final PersonData personData = tilPersonData(wsPerson);
-
-        assertThat(personData.getMellomnavn(), is(forventetVerdi));
+        assertThat(tpsPerson.getMellomnavn(), is(forventetVerdi));
     }
 
     @Test
-    public void mellomnavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
+    public void mellomnavnMappesTilNullDersomWSPersonnavnErNull() {
         final Person wsPerson = new Person().withPersonnavn(null);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        final PersonData personData = tilPersonData(wsPerson);
-
-        assertThat(personData.getMellomnavn(), nullValue());
+        assertThat(tpsPerson.getMellomnavn(), nullValue());
     }
 
     @Test
-    public void mellomnavnMappesTilNullDersomMellomnavnErNull() throws Exception {
+    public void mellomnavnMappesTilNullDersomMellomnavnErNull() {
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withMellomnavn(null));
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        final PersonData personData = tilPersonData(wsPerson);
-
-        assertThat(personData.getMellomnavn(), nullValue());
+        assertThat(tpsPerson.getMellomnavn(), nullValue());
     }
 
     @Test
-    public void sammensattNavnMappesDersomDetEksisterer() throws Exception {
+    public void sammensattNavnMappesDersomDetEksisterer() {
         final String forventetVerdi = "sammensattNavn";
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withSammensattNavn(forventetVerdi));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getSammensattNavn(), is(forventetVerdi));
+        assertThat(tpsPerson.getSammensattNavn(), is(forventetVerdi));
     }
 
     @Test
-    public void sammensattNavnMappesTilNullDersomWSPersonnavnErNull() throws Exception {
+    public void sammensattNavnMappesTilNullDersomWSPersonnavnErNull() {
         final Person wsPerson = new Person().withPersonnavn(null);
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getSammensattNavn(), nullValue());
+        assertThat(tpsPerson.getSammensattNavn(), nullValue());
     }
 
     @Test
-    public void sammensattNavnMappesTilNullDersomMellomnavnErNull() throws Exception {
+    public void sammensattNavnMappesTilNullDersomMellomnavnErNull() {
         final Person wsPerson = new Person().withPersonnavn(new Personnavn().withSammensattNavn(null));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getSammensattNavn(), nullValue());
+        assertThat(tpsPerson.getSammensattNavn(), nullValue());
     }
 
     @Test
-    public void fodselsnummerMappesDersomDetEksisterer() throws Exception {
+    public void fodselsnummerMappesDersomDetEksisterer() {
         final String forventetVerdi = "fodseslnummer";
         final Person wsPerson = new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(forventetVerdi)));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getFodselsnummer(), is(forventetVerdi));
+        assertThat(tpsPerson.getFodselsnummer(), is(forventetVerdi));
     }
 
     @Test
-    public void fodselsnummerMappesTilNullDersomWSAktoerErNull() throws Exception {
+    public void fodselsnummerMappesTilNullDersomWSAktoerErNull() {
         final Person wsPerson = new Person();
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getFodselsnummer(), nullValue());
+        assertThat(tpsPerson.getFodselsnummer(), nullValue());
     }
 
     @Test
-    public void fodselsnummerMappesTilNullDersomWSNorskIdentErNull() throws Exception {
+    public void fodselsnummerMappesTilNullDersomWSNorskIdentErNull() {
         final Person wsPerson = new Person().withAktoer(new PersonIdent());
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getFodselsnummer(), nullValue());
+        assertThat(tpsPerson.getFodselsnummer(), nullValue());
     }
 
     @Test
     public void fodselsnummerMappesTilNullDersomIdentErNull() throws Exception {
         final Person wsPerson = new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(null)));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getFodselsnummer(), nullValue());
+        assertThat(tpsPerson.getFodselsnummer(), nullValue());
     }
 
     @Test
@@ -184,285 +169,285 @@ public class PersonDataMapperTest {
         final XMLGregorianCalendar foedselsdato = MapperTestUtils.lagDato(forventetAr, forventetManed, forventetDag);
         final Person wsPerson = new Person().withFoedselsdato(new Foedselsdato().withFoedselsdato(foedselsdato));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getFodselsdato(), erDato(forventetAr, forventetManed, forventetDag));
+        assertThat(tpsPerson.getFodselsdato(), erDato(forventetAr, forventetManed, forventetDag));
     }
 
     @Test
-    public void fodselsdatoMappesTilNullDersomWSFoedselsdatoErNull() throws Exception {
+    public void fodselsdatoMappesTilNullDersomWSFoedselsdatoErNull() {
         final Person wsPerson = new Person().withFoedselsdato(null);
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getFodselsdato(), nullValue());
+        assertThat(tpsPerson.getFodselsdato(), nullValue());
     }
 
     @Test
-    public void fodselsdatoMappesTilNullDersomFoedselsdatoErNull() throws Exception {
+    public void fodselsdatoMappesTilNullDersomFoedselsdatoErNull() {
         final Person wsPerson = new Person().withFoedselsdato(null);
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getFodselsdato(), nullValue());
+        assertThat(tpsPerson.getFodselsdato(), nullValue());
     }
 
     @Test
-    public void kjonnMappesDersomDetEksisterer() throws Exception {
+    public void kjonnMappesDersomDetEksisterer() {
         final String forventetVerdi = "K";
         final Person wsPerson = new Person().withKjoenn(new Kjoenn().withKjoenn(new Kjoennstyper().withValue(forventetVerdi)));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getKjonn(), is(forventetVerdi));
+        assertThat(tpsPerson.getKjonn(), is(forventetVerdi));
     }
 
     @Test
-    public void kjonnMappesTilNullDersomWSKjoennErNull() throws Exception {
+    public void kjonnMappesTilNullDersomWSKjoennErNull() {
         final Person wsPerson = new Person().withKjoenn(null);
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getKjonn(), nullValue());
+        assertThat(tpsPerson.getKjonn(), nullValue());
     }
 
     @Test
-    public void kjonnMappesTilNullDersomWSKjoennstyperErNull() throws Exception {
+    public void kjonnMappesTilNullDersomWSKjoennstyperErNull() {
         final Person wsPerson = new Person().withKjoenn(new Kjoenn().withKjoenn(null));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getKjonn(), nullValue());
+        assertThat(tpsPerson.getKjonn(), nullValue());
     }
 
     @Test
-    public void kjonnMappesTilNullDersomValueErNull() throws Exception {
+    public void kjonnMappesTilNullDersomValueErNull() {
         final Person wsPerson = new Person().withKjoenn(new Kjoenn().withKjoenn(new Kjoennstyper().withValue(null)));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getKjonn(), nullValue());
+        assertThat(tpsPerson.getKjonn(), nullValue());
     }
 
     @Test
-    public void kode6MappesDersomDetEksisterer() throws Exception {
+    public void kode6MappesDersomDetEksisterer() {
         final String forventetVerdi = "6";
         final Person wsPerson = new Person().withDiskresjonskode(new Diskresjonskoder()
                 .withValue(no.nav.veilarbperson.client.person.domain.Diskresjonskoder.STRENGT_FORTROLIG_ADRESSE.kodeverkVerdi));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getDiskresjonskode(), is(forventetVerdi));
+        assertThat(tpsPerson.getDiskresjonskode(), is(forventetVerdi));
     }
 
     @Test
-    public void kode7MappesDersomDetEksisterer() throws Exception {
+    public void kode7MappesDersomDetEksisterer() {
         final String forventetVerdi = "7";
         final Person wsPerson = new Person().withDiskresjonskode(new Diskresjonskoder()
                 .withValue(no.nav.veilarbperson.client.person.domain.Diskresjonskoder.FORTROLIG_ADRESSE.kodeverkVerdi));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getDiskresjonskode(), is(forventetVerdi));
+        assertThat(tpsPerson.getDiskresjonskode(), is(forventetVerdi));
     }
 
     @Test
-    public void diskresjonskodeMappesTilNullDersomWSDiskresjonskoderErNull() throws Exception {
+    public void diskresjonskodeMappesTilNullDersomWSDiskresjonskoderErNull() {
         final Person wsPerson = new Person().withDiskresjonskode(null);
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getDiskresjonskode(), nullValue());
+        assertThat(tpsPerson.getDiskresjonskode(), nullValue());
     }
 
     @Test
-    public void diskresjonskodeMappesTilNullDersomValueErNull() throws Exception {
+    public void diskresjonskodeMappesTilNullDersomValueErNull() {
         final Person wsPerson = new Person().withDiskresjonskode(new Diskresjonskoder().withValue(null));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getDiskresjonskode(), nullValue());
+        assertThat(tpsPerson.getDiskresjonskode(), nullValue());
     }
 
     @Test
-    public void kontonummerMappesDersomBankkontoErNorge() throws Exception {
+    public void kontonummerMappesDersomBankkontoErNorge() {
         final String forventetVerdi = "123456789";
 
         final Person wsPerson = new Bruker().withBankkonto(
                 new BankkontoNorge().withBankkonto(new Bankkontonummer().withBankkontonummer(forventetVerdi))
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getKontonummer(), is(forventetVerdi));
+        assertThat(tpsPerson.getKontonummer(), is(forventetVerdi));
     }
 
     @Test
-    public void kontonummerMappesDersomBankkontoErUtland() throws Exception {
+    public void kontonummerMappesDersomBankkontoErUtland() {
         final String forventetVerdi = "987654321";
         final Person wsPerson = new Bruker().withBankkonto(
                 new BankkontoUtland().withBankkontoUtland(new BankkontonummerUtland().withBankkontonummer(forventetVerdi))
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getKontonummer(), is(forventetVerdi));
+        assertThat(tpsPerson.getKontonummer(), is(forventetVerdi));
     }
 
     @Test
-    public void kontonummerMappesTilNullDersomWSBankkontoErNull() throws Exception {
+    public void kontonummerMappesTilNullDersomWSBankkontoErNull() {
         final Person wsPerson = new Bruker().withBankkonto(null);
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getKontonummer(), nullValue());
+        assertThat(tpsPerson.getKontonummer(), nullValue());
     }
 
     @Test
-    public void kontonummerMappesTilNullDersomWSBankkontonummerErNull() throws Exception {
+    public void kontonummerMappesTilNullDersomWSBankkontonummerErNull() {
         final Person wsPerson = new Bruker().withBankkonto(
                 new BankkontoNorge().withBankkonto(null)
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getKontonummer(), nullValue());
+        assertThat(tpsPerson.getKontonummer(), nullValue());
     }
 
     @Test
-    public void kontonummerMappesTilNullDersomWSBankkontonummerVerdiErNull() throws Exception {
+    public void kontonummerMappesTilNullDersomWSBankkontonummerVerdiErNull() {
         final Person wsPerson = new Bruker().withBankkonto(
                 new BankkontoNorge().withBankkonto(new Bankkontonummer().withBankkontonummer(null))
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getKontonummer(), nullValue());
+        assertThat(tpsPerson.getKontonummer(), nullValue());
     }
 
     @Test
-    public void kontonummerMappesTilNullDersomWSBankkontonummerUtlandErNull() throws Exception {
+    public void kontonummerMappesTilNullDersomWSBankkontonummerUtlandErNull() {
         final Person wsPerson = new Bruker().withBankkonto(
                 new BankkontoUtland().withBankkontoUtland(null)
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getKontonummer(), nullValue());
+        assertThat(tpsPerson.getKontonummer(), nullValue());
     }
 
     @Test
-    public void kontonummerMappesTilNullDersomWSBankkontonummerUtlandVerdiErNull() throws Exception {
+    public void kontonummerMappesTilNullDersomWSBankkontonummerUtlandVerdiErNull() {
         final Person wsPerson = new Bruker().withBankkonto(
                 new BankkontoUtland().withBankkontoUtland(new BankkontonummerUtland().withBankkontonummer(null))
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getKontonummer(), nullValue());
+        assertThat(tpsPerson.getKontonummer(), nullValue());
     }
 
     @Test
-    public void geografiskTilknytningKommuneMappesDersomDetEksisterer() throws Exception {
+    public void geografiskTilknytningKommuneMappesDersomDetEksisterer() {
         final String forventetVerdi = "2890";
         final Person wsPerson = new Bruker().withGeografiskTilknytning(
                 new Kommune().withGeografiskTilknytning(forventetVerdi));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getGeografiskTilknytning(), is(forventetVerdi));
+        assertThat(tpsPerson.getGeografiskTilknytning(), is(forventetVerdi));
     }
 
     @Test
-    public void geografiskTilknytningLandMappesDersomDetEksisterer() throws Exception {
+    public void geografiskTilknytningLandMappesDersomDetEksisterer() {
         final String forventetVerdi = "SWE";
         final Person wsPerson = new Bruker().withGeografiskTilknytning(
                 new Land().withGeografiskTilknytning(forventetVerdi));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getGeografiskTilknytning(), is(forventetVerdi));
+        assertThat(tpsPerson.getGeografiskTilknytning(), is(forventetVerdi));
     }
 
     @Test
-    public void geografiskTilknytningBydelMappesDersomDetEksisterer() throws Exception {
+    public void geografiskTilknytningBydelMappesDersomDetEksisterer() {
         final String forventetVerdi = "289033";
         final Person wsPerson = new Bruker().withGeografiskTilknytning(
                 new Bydel().withGeografiskTilknytning(forventetVerdi));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getGeografiskTilknytning(), is(forventetVerdi));
+        assertThat(tpsPerson.getGeografiskTilknytning(), is(forventetVerdi));
     }
 
     @Test
-    public void geografiskTilknytningMappesTilNullDersomInputIkkeErWSBruker() throws Exception {
+    public void geografiskTilknytningMappesTilNullDersomInputIkkeErWSBruker() {
         final Person wsPerson = new Person();
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getGeografiskTilknytning(), nullValue());
+        assertThat(tpsPerson.getGeografiskTilknytning(), nullValue());
     }
 
     @Test
-    public void geografiskTilknytningMappesTilNullDersomWSAnsvarligEnhetErNull() throws Exception {
+    public void geografiskTilknytningMappesTilNullDersomWSAnsvarligEnhetErNull() {
         final Person wsPerson = new Bruker().withGeografiskTilknytning(null);
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getGeografiskTilknytning(), nullValue());
+        assertThat(tpsPerson.getGeografiskTilknytning(), nullValue());
     }
 
     @Test
-    public void geografiskTilknytningMappesTilNullDersomGeografiskTilknytning() throws Exception {
+    public void geografiskTilknytningMappesTilNullDersomGeografiskTilknytning() {
         final Person wsPerson = new Bruker().withGeografiskTilknytning(new Bydel().withGeografiskTilknytning(null));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getGeografiskTilknytning(), nullValue());
+        assertThat(tpsPerson.getGeografiskTilknytning(), nullValue());
     }
 
     @Test
-    public void statsborgerskapMappesDersomDetEksisterer() throws Exception {
+    public void statsborgerskapMappesDersomDetEksisterer() {
         final String forventetVerdi = "NORGE";
         final Person wsPerson = new Person().withStatsborgerskap(
                 new Statsborgerskap().withLand(new Landkoder().withValue(forventetVerdi))
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getStatsborgerskap(), is(forventetVerdi));
+        assertThat(tpsPerson.getStatsborgerskap(), is(forventetVerdi));
     }
 
     @Test
-    public void statsborgerskapMappesTilNullDersomWSStatsborgerskapErNull() throws Exception {
+    public void statsborgerskapMappesTilNullDersomWSStatsborgerskapErNull() {
         final Person wsPerson = new Person().withStatsborgerskap(null);
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getStatsborgerskap(), nullValue());
+        assertThat(tpsPerson.getStatsborgerskap(), nullValue());
     }
 
     @Test
-    public void statsborgerskapMappesTilNullDersomLandErNull() throws Exception {
+    public void statsborgerskapMappesTilNullDersomLandErNull() {
         final Person wsPerson = new Person().withStatsborgerskap(
                 new Statsborgerskap().withLand(null)
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getStatsborgerskap(), nullValue());
+        assertThat(tpsPerson.getStatsborgerskap(), nullValue());
     }
 
     @Test
-    public void statsborgerskapMappesTilNullDersomValueErNull() throws Exception {
+    public void statsborgerskapMappesTilNullDersomValueErNull() {
         final Person wsPerson = new Person().withStatsborgerskap(
                 new Statsborgerskap().withLand(new Landkoder().withValue(null))
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getStatsborgerskap(), nullValue());
+        assertThat(tpsPerson.getStatsborgerskap(), nullValue());
     }
 
     @Test
@@ -476,20 +461,20 @@ public class PersonDataMapperTest {
                         .withSivilstand(new Sivilstander().withValue(forventetSiviltilstand))
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getSivilstand(), notNullValue());
-        assertThat(personData.getSivilstand().getSivilstand(), is(forventetSiviltilstand));
-        assertThat(personData.getSivilstand().getFraDato(), erDato(forventetAr, forventetManed, forventetDag));
+        assertThat(tpsPerson.getSivilstand(), notNullValue());
+        assertThat(tpsPerson.getSivilstand().getSivilstand(), is(forventetSiviltilstand));
+        assertThat(tpsPerson.getSivilstand().getFraDato(), erDato(forventetAr, forventetManed, forventetDag));
     }
 
     @Test
-    public void siviltilstandMappesTilNullDersomWSSivilstandErNull() throws Exception {
+    public void siviltilstandMappesTilNullDersomWSSivilstandErNull() {
         final Person wsPerson = new Person().withSivilstand(null);
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getSivilstand(), nullValue());
+        assertThat(tpsPerson.getSivilstand(), nullValue());
     }
 
     @Test
@@ -501,31 +486,31 @@ public class PersonDataMapperTest {
                 new Doedsdato().withDoedsdato(MapperTestUtils.lagDato(forventetAr, forventetManed, forventetDag))
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getDodsdato(), erDato(forventetAr, forventetManed, forventetDag));
+        assertThat(tpsPerson.getDodsdato(), erDato(forventetAr, forventetManed, forventetDag));
     }
 
     @Test
-    public void dodsdatoMappesTilNullDersomWSDoedsdatoErNull() throws Exception {
+    public void dodsdatoMappesTilNullDersomWSDoedsdatoErNull() {
         final Person wsPerson = new Person().withDoedsdato(null);
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getDodsdato(), nullValue());
+        assertThat(tpsPerson.getDodsdato(), nullValue());
     }
 
     @Test
-    public void dodsdatoMappesTilNullDersomDoedsdatoErNull() throws Exception {
+    public void dodsdatoMappesTilNullDersomDoedsdatoErNull() {
         final Person wsPerson = new Person().withDoedsdato(new Doedsdato().withDoedsdato(null));
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getDodsdato(), nullValue());
+        assertThat(tpsPerson.getDodsdato(), nullValue());
     }
 
     @Test
-    public void verdierIWSGateadresseMappesDersomDeEksisterer() throws Exception {
+    public void verdierIWSGateadresseMappesDersomDeEksisterer() {
         final String forventetGatenavn = "gatenavn";
         final String forventetPostnummer = "0000";
         final int forventetHusnummer = 12;
@@ -538,12 +523,12 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getBostedsadresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
-        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(tpsPerson.getBostedsadresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
+        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) tpsPerson.getBostedsadresse().getStrukturertAdresse();
 
         sjekkAtGateadresseHarForventaVerdier(
                 gateadresse,
@@ -557,19 +542,19 @@ public class PersonDataMapperTest {
     }
 
     @Test
-    public void verdierIWSGateadresseMappesTilNullDersomDeErNull() throws Exception {
+    public void verdierIWSGateadresseMappesTilNullDersomDeErNull() {
         final Person wsPerson = new Person().withBostedsadresse(
                 new Bostedsadresse().withStrukturertAdresse(
                         lagGateadresse(null, 0, 0, null, null, new Postnummer())
                 )
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getBostedsadresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
-        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(tpsPerson.getBostedsadresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
+        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) tpsPerson.getBostedsadresse().getStrukturertAdresse();
 
         sjekkAtGateadresseHarForventaVerdier(
                 gateadresse,
@@ -582,7 +567,7 @@ public class PersonDataMapperTest {
     }
 
     @Test
-    public void verdierIWSMatrikkeladresseMappesDersomDeEksisterer() throws Exception {
+    public void verdierIWSMatrikkeladresseMappesDersomDeEksisterer() {
         final String forventetPostnummer = "0000";
         final String forventetGardsnummer = "gaardsnummer";
         final String forventetBruksnummer = "bruksnummer";
@@ -603,12 +588,12 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getBostedsadresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Matrikkeladresse.class));
-        final no.nav.veilarbperson.client.person.domain.Matrikkeladresse matrikkeladresse = (no.nav.veilarbperson.client.person.domain.Matrikkeladresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(tpsPerson.getBostedsadresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Matrikkeladresse.class));
+        final no.nav.veilarbperson.client.person.domain.Matrikkeladresse matrikkeladresse = (no.nav.veilarbperson.client.person.domain.Matrikkeladresse) tpsPerson.getBostedsadresse().getStrukturertAdresse();
 
         sjekkAtMatrikkeladresseHarForventaVerdier(
                 matrikkeladresse,
@@ -623,24 +608,24 @@ public class PersonDataMapperTest {
     }
 
     @Test
-    public void verdierIWSMatrikkeladresseMappesTilNullDersomDeErNull() throws Exception {
+    public void verdierIWSMatrikkeladresseMappesTilNullDersomDeErNull() {
         final Person wsPerson = new Person().withBostedsadresse(
                 new Bostedsadresse().withStrukturertAdresse(
                         lagMatrikkeladresse(null, null, null, null, null, null, null)
                 )
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getBostedsadresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Matrikkeladresse.class));
-        final no.nav.veilarbperson.client.person.domain.Matrikkeladresse matrikkeladresse = (no.nav.veilarbperson.client.person.domain.Matrikkeladresse) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(tpsPerson.getBostedsadresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Matrikkeladresse.class));
+        final no.nav.veilarbperson.client.person.domain.Matrikkeladresse matrikkeladresse = (no.nav.veilarbperson.client.person.domain.Matrikkeladresse) tpsPerson.getBostedsadresse().getStrukturertAdresse();
         sjekkAtMatrikkeladresseHarForventaVerdier(matrikkeladresse, null, null, null, null, null, null, null);
     }
 
     @Test
-    public void verdierIWSPostadresseNorskMappesDersomDeEksisterer() throws Exception {
+    public void verdierIWSPostadresseNorskMappesDersomDeEksisterer() {
         final String forventetPostboksanlegg = "postboksanlegg";
         final String forventetPostboksnummer = "postboksnummer";
         final String forventetPostnummer = "0000";
@@ -652,19 +637,19 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getBostedsadresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk.class));
-        final no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk postboksadresseNorsk = (no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(tpsPerson.getBostedsadresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk.class));
+        final no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk postboksadresseNorsk = (no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk) tpsPerson.getBostedsadresse().getStrukturertAdresse();
         assertThat(postboksadresseNorsk.getPostboksanlegg(), is(forventetPostboksanlegg));
         assertThat(postboksadresseNorsk.getPostboksnummer(), is(forventetPostboksnummer));
         assertThat(postboksadresseNorsk.getPostnummer(), is(forventetPostnummer));
     }
 
     @Test
-    public void verdierIWSPostadresseNorskTilNullDersomDeErNull() throws Exception {
+    public void verdierIWSPostadresseNorskTilNullDersomDeErNull() {
         final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
                 new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
                         .withPostboksanlegg(null)
@@ -673,19 +658,19 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getBostedsadresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk.class));
-        final no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk postboksadresseNorsk = (no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk) personData.getBostedsadresse().getStrukturertAdresse();
+        assertThat(tpsPerson.getBostedsadresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk.class));
+        final no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk postboksadresseNorsk = (no.nav.veilarbperson.client.person.domain.PostboksadresseNorsk) tpsPerson.getBostedsadresse().getStrukturertAdresse();
         assertThat(postboksadresseNorsk.getPostboksanlegg(), nullValue());
         assertThat(postboksadresseNorsk.getPostboksnummer(), nullValue());
         assertThat(postboksadresseNorsk.getPostnummer(), nullValue());
     }
 
     @Test
-    public void wsStrukturertAdresseLandkodeMappesDersomDenEksisterer() throws Exception {
+    public void wsStrukturertAdresseLandkodeMappesDersomDenEksisterer() {
         final String forventetLandkode = "NO";
         final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
                 new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
@@ -693,40 +678,40 @@ public class PersonDataMapperTest {
                         .withLandkode(new Landkoder().withValue(forventetLandkode)))
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getBostedsadresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getLandkode(), is(forventetLandkode));
+        assertThat(tpsPerson.getBostedsadresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse().getLandkode(), is(forventetLandkode));
     }
 
     @Test
-    public void wsStrukturertAdresseLandkodeMappesTilNullDersomDenErNull() throws Exception {
+    public void wsStrukturertAdresseLandkodeMappesTilNullDersomDenErNull() {
         final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
                 new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
                         .withPoststed(new Postnummer())
                         .withLandkode(null))
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getBostedsadresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getLandkode(), nullValue());
+        assertThat(tpsPerson.getBostedsadresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse().getLandkode(), nullValue());
     }
 
     @Test
-    public void wsStrukturertAdresseTilleggsadresseMappesDersomDenEksisterer() throws Exception {
+    public void wsStrukturertAdresseTilleggsadresseMappesDersomDenEksisterer() {
         final String forventetTilleggsadresse = "C/O tilleggsadresse";
         final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
                 new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
                         .withPoststed(new Postnummer())
                         .withTilleggsadresse(forventetTilleggsadresse)));
 
-        final PersonData personData = tilPersonData(wsPerson);
-        assertThat(personData.getBostedsadresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getTilleggsadresse(), is(forventetTilleggsadresse));
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
+        assertThat(tpsPerson.getBostedsadresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse().getTilleggsadresse(), is(forventetTilleggsadresse));
     }
 
     @Test
@@ -736,29 +721,29 @@ public class PersonDataMapperTest {
                         .withPoststed(new Postnummer())
                         .withTilleggsadresse(null)));
 
-        final PersonData personData = tilPersonData(wsPerson);
-        assertThat(personData.getBostedsadresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getTilleggsadresse(), nullValue());
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
+        assertThat(tpsPerson.getBostedsadresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse().getTilleggsadresse(), nullValue());
     }
 
     @Test
-    public void wsStrukturertAdresseLandkodeMappesTilNullDersomValueDenErNull() throws Exception {
+    public void wsStrukturertAdresseLandkodeMappesTilNullDersomValueDenErNull() {
         final Person wsPerson = new Person().withBostedsadresse(new Bostedsadresse().withStrukturertAdresse(
                 new no.nav.tjeneste.virksomhet.person.v3.informasjon.PostboksadresseNorsk()
                         .withPoststed(new Postnummer())
                         .withLandkode(new Landkoder().withValue(null)))
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getBostedsadresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getBostedsadresse().getStrukturertAdresse().getLandkode(), nullValue());
+        assertThat(tpsPerson.getBostedsadresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getBostedsadresse().getStrukturertAdresse().getLandkode(), nullValue());
     }
 
     @Test
-    public void wsMidlertidigPostadresseNorgeMappesDersomDenEksisterer() throws Exception {
+    public void wsMidlertidigPostadresseNorgeMappesDersomDenEksisterer() {
         final String forventetGatenavn = "gatenavn";
         final String forventetPostnummer = "0000";
         final int forventetHusnummer = 12;
@@ -771,12 +756,12 @@ public class PersonDataMapperTest {
                 )
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getMidlertidigAdresseNorge(), notNullValue());
-        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
-        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) personData.getMidlertidigAdresseNorge().getStrukturertAdresse();
+        assertThat(tpsPerson.getMidlertidigAdresseNorge(), notNullValue());
+        assertThat(tpsPerson.getMidlertidigAdresseNorge().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getMidlertidigAdresseNorge().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
+        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) tpsPerson.getMidlertidigAdresseNorge().getStrukturertAdresse();
         sjekkAtGateadresseHarForventaVerdier(
                 gateadresse,
                 forventetGatenavn,
@@ -789,36 +774,36 @@ public class PersonDataMapperTest {
     }
 
     @Test
-    public void wsMidlertidigPostadresseNorgeMappesTilNullDersomDenErNull() throws Exception {
+    public void wsMidlertidigPostadresseNorgeMappesTilNullDersomDenErNull() {
         final Person wsPerson = new Bruker().withMidlertidigPostadresse(
                 new MidlertidigPostadresseNorge().withStrukturertAdresse(
                         lagGateadresse(null, 0, 0, null, null, new Postnummer())
                 )
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        assertThat(personData.getMidlertidigAdresseNorge(), notNullValue());
-        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), notNullValue());
-        assertThat(personData.getMidlertidigAdresseNorge().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
-        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) personData.getMidlertidigAdresseNorge().getStrukturertAdresse();
+        assertThat(tpsPerson.getMidlertidigAdresseNorge(), notNullValue());
+        assertThat(tpsPerson.getMidlertidigAdresseNorge().getStrukturertAdresse(), notNullValue());
+        assertThat(tpsPerson.getMidlertidigAdresseNorge().getStrukturertAdresse(), instanceOf(no.nav.veilarbperson.client.person.domain.Gateadresse.class));
+        final no.nav.veilarbperson.client.person.domain.Gateadresse gateadresse = (no.nav.veilarbperson.client.person.domain.Gateadresse) tpsPerson.getMidlertidigAdresseNorge().getStrukturertAdresse();
         sjekkAtGateadresseHarForventaVerdier(gateadresse, null, 0, 0, null, null, null);
     }
 
     @Test
-    public void wsMidlertidigPostadresseNorgeMappesTilNullDersomPersonIkkeErBruker() throws Exception {
+    public void wsMidlertidigPostadresseNorgeMappesTilNullDersomPersonIkkeErBruker() {
         final Person wsPerson = new Person().withBostedsadresse(
                 new Bostedsadresse().withStrukturertAdresse(
                         lagGateadresse("gatenavn", 0, 0, "Husbokstav", "Kommunenummer", new Postnummer().withValue("Poststed"))
                 )
         );
 
-        final PersonData personData = tilPersonData(wsPerson);
-        assertThat(personData.getMidlertidigAdresseNorge(), nullValue());
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
+        assertThat(tpsPerson.getMidlertidigAdresseNorge(), nullValue());
     }
 
     @Test
-    public void wsMidlertidigPostadresseUtlandMappesDersomDenEksisterer() throws Exception {
+    public void wsMidlertidigPostadresseUtlandMappesDersomDenEksisterer() {
         String forventetAdresselinje1 = "Adresselinje1";
         String forventetAdresselinje2 = "Adresselinje2";
         String forventetAdresselinje3 = "Adresselinje3";
@@ -829,37 +814,37 @@ public class PersonDataMapperTest {
                         lagUstrukturertAdresse(forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode)
                 ));
 
-        final PersonData personData = tilPersonData(wsPerson);
-        assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
-        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
+        assertThat(tpsPerson.getMidlertidigAdresseUtland(), notNullValue());
+        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = tpsPerson.getMidlertidigAdresseUtland().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode);
     }
 
     @Test
-    public void wsMidlertidigPostadresseUtlandMappesTilNullDersomDenErNull()throws Exception {
+    public void wsMidlertidigPostadresseUtlandMappesTilNullDersomDenErNull(){
         final Person wsPerson = new Bruker().withMidlertidigPostadresse(
                 new MidlertidigPostadresseUtland().withUstrukturertAdresse(
                         lagUstrukturertAdresse(null, null, null, null, null)
                 ));
 
-        final PersonData personData = tilPersonData(wsPerson);
-        assertThat(personData.getMidlertidigAdresseUtland(), notNullValue());
-        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = personData.getMidlertidigAdresseUtland().getUstrukturertAdresse();
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
+        assertThat(tpsPerson.getMidlertidigAdresseUtland(), notNullValue());
+        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = tpsPerson.getMidlertidigAdresseUtland().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null, null);
     }
     @Test
-    public void wsMidlertidigPostadresseUtlandetMappesTilNullDersomPersonIkkeErBruker() throws Exception {
+    public void wsMidlertidigPostadresseUtlandetMappesTilNullDersomPersonIkkeErBruker() {
         final Person wsPerson = new Person().withBostedsadresse(
                 new Bostedsadresse().withStrukturertAdresse(
                         lagGateadresse(null, 0, 0, null, null, new Postnummer().withValue(null))
                 ));
 
-        final PersonData personData = tilPersonData(wsPerson);
-        assertThat(personData.getMidlertidigAdresseUtland(), nullValue());
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
+        assertThat(tpsPerson.getMidlertidigAdresseUtland(), nullValue());
     }
 
     @Test
-    public void wsPostadressSkalMappesDersomDenEksisterer() throws Exception {
+    public void wsPostadressSkalMappesDersomDenEksisterer() {
         String forventetAdresselinje1 = "Adresselinje1";
         String forventetAdresselinje2 = "Adresselinje2";
         String forventetAdresselinje3 = "Adresselinje3";
@@ -871,52 +856,45 @@ public class PersonDataMapperTest {
                 ));
 
 
-        final PersonData personData = tilPersonData(wsPerson);
-        assertThat(personData.getPostAdresse(), notNullValue());
-        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
+        assertThat(tpsPerson.getPostAdresse(), notNullValue());
+        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = tpsPerson.getPostAdresse().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, forventetAdresselinje1, forventetAdresselinje2, forventetAdresselinje3, forventetAdresselinje4, forventetLandkode);
     }
 
     @Test
-    public void wsPostadresseSkalMappesTilNullDersomDenErNull() throws Exception {
+    public void wsPostadresseSkalMappesTilNullDersomDenErNull() {
         final Person wsPerson = new Person().withPostadresse(
                 new Postadresse().withUstrukturertAdresse(lagUstrukturertAdresse(null, null, null, null, null)));
 
-        final PersonData personData = tilPersonData(wsPerson);
-        assertThat(personData.getPostAdresse(), notNullValue());
-        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = personData.getPostAdresse().getUstrukturertAdresse();
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
+        assertThat(tpsPerson.getPostAdresse(), notNullValue());
+        no.nav.veilarbperson.client.person.domain.UstrukturertAdresse ustrukturertAdresse = tpsPerson.getPostAdresse().getUstrukturertAdresse();
         sjekkAtUstrukturertAdresseHarForventaVerdier(ustrukturertAdresse, null, null, null, null, null);
     }
 
     @Test
     public void malformMappesDersomDetEksisterer() {
         final Person wsPerson = new Bruker().withMaalform(new Spraak().withValue("NB"));
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
-
-        assertThat(personData.getMalform(), is("NB"));
+        assertThat(tpsPerson.getMalform(), is("NB"));
     }
 
     @Test
     public void malformMappesTilNullDersommalformErNull() {
         final Person wsPerson = new Bruker().withMaalform(null);
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
-
-        assertThat(personData.getMalform(), nullValue());
+        assertThat(tpsPerson.getMalform(), nullValue());
     }
 
     @Test
     public void malformMappesTilNullDersommalformVerdiErNull() {
         final Person wsPerson = new Bruker().withMaalform(new Spraak().withValue(null));
+        final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 
-        final PersonData personData = personDataMapper.tilPersonData(wsPerson);
-
-        assertThat(personData.getMalform(), nullValue());
-    }
-
-    private PersonData tilPersonData(Person person) {
-        return personDataMapper.tilPersonData(person);
+        assertThat(tpsPerson.getMalform(), nullValue());
     }
 
     private no.nav.tjeneste.virksomhet.person.v3.informasjon.UstrukturertAdresse lagUstrukturertAdresse(String adresselinje1, String adresselinje2, String adresselinje3, String adresselinje4, String landkode) {
