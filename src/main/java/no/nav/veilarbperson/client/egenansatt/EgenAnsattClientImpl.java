@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.client.egenansatt;
 
 import no.nav.common.cxf.CXFClient;
+import no.nav.common.cxf.StsConfig;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1;
 import no.nav.tjeneste.pip.egen.ansatt.v1.WSHentErEgenAnsattEllerIFamilieMedEgenAnsattRequest;
@@ -15,17 +16,17 @@ public class EgenAnsattClientImpl implements EgenAnsattClient {
 
     private final EgenAnsattV1 egenAnsattV1Ping;
 
-    public EgenAnsattClientImpl(String egenAnsattV1Endepoint) {
+    public EgenAnsattClientImpl(String egenAnsattV1Endepoint, StsConfig stsConfig) {
         egenAnsattV1 = new CXFClient<>(EgenAnsattV1.class)
                 .address(egenAnsattV1Endepoint)
                 .withOutInterceptor(new LoggingOutInterceptor())
-                .configureStsForSubject()
+                .configureStsForSubject(stsConfig)
                 .build();
 
 
         egenAnsattV1Ping = new CXFClient<>(EgenAnsattV1.class)
                 .address(egenAnsattV1Endepoint)
-                .configureStsForSystemUser()
+                .configureStsForSystemUser(stsConfig)
                 .build();
     }
 

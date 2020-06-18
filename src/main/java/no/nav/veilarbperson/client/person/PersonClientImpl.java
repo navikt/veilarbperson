@@ -2,6 +2,7 @@ package no.nav.veilarbperson.client.person;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.cxf.CXFClient;
+import no.nav.common.cxf.StsConfig;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov;
@@ -28,16 +29,16 @@ public class PersonClientImpl implements PersonClient {
 
     private final PersonV3 personV3Ping;
 
-    public PersonClientImpl(String personV3Endpoint) {
+    public PersonClientImpl(String personV3Endpoint, StsConfig stsConfig) {
         personV3 = new CXFClient<>(PersonV3.class)
                 .address(personV3Endpoint)
                 .withOutInterceptor(new LoggingOutInterceptor())
-                .configureStsForSubject()
+                .configureStsForSubject(stsConfig)
                 .build();
 
         personV3Ping = new CXFClient<>(PersonV3.class)
                 .address(personV3Endpoint)
-                .configureStsForSystemUser()
+                .configureStsForSystemUser(stsConfig)
                 .build();
     }
 

@@ -34,5 +34,7 @@ public class EnvironmentProperties {
     private String egenAnsattV1Endepoint;
 
     private String personV3Endpoint;
-    
+
+    private String soapStsUrl;
+
 }

@@ -4,12 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.common.abac.Pep;
 import no.nav.common.abac.VeilarbPep;
 import no.nav.common.abac.audit.SpringAuditRequestInfoSupplier;
-import no.nav.common.client.aktorregister.AktorregisterClient;
-import no.nav.common.client.aktorregister.AktorregisterHttpClient;
-import no.nav.common.client.aktorregister.CachedAktorregisterClient;
-import no.nav.common.client.norg2.CachedNorg2Client;
-import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.client.norg2.NorgHttp2Client;
+import no.nav.common.cxf.StsConfig;
 import no.nav.common.sts.NaisSystemUserTokenProvider;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.utils.Credentials;
@@ -29,6 +24,16 @@ import static no.nav.common.utils.NaisUtils.getCredentials;
 public class ApplicationConfig {
 
     public final static String APPLICATION_NAME = "veilarbperson";
+
+    @Bean
+    public StsConfig stsConfig(EnvironmentProperties properties) {
+        Credentials serviceUser = NaisUtils.getCredentials("service_user");
+        return StsConfig.builder()
+                .url(properties.getSoapStsUrl())
+                .username(serviceUser.username)
+                .password(serviceUser.password)
+                .build();
+    }
 
     @Bean
     public Credentials serviceUserCredentials() {

@@ -6,6 +6,7 @@ import no.nav.common.client.aktorregister.CachedAktorregisterClient;
 import no.nav.common.client.norg2.CachedNorg2Client;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
+import no.nav.common.cxf.StsConfig;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifClientImpl;
@@ -50,13 +51,13 @@ public class ClientConfig {
     }
 
     @Bean
-    public EgenAnsattClient egenAnsattClient(EnvironmentProperties properties) {
-        return new EgenAnsattClientImpl(properties.getEgenAnsattV1Endepoint());
+    public EgenAnsattClient egenAnsattClient(EnvironmentProperties properties, StsConfig stsConfig) {
+        return new EgenAnsattClientImpl(properties.getEgenAnsattV1Endepoint(), stsConfig);
     }
 
     @Bean
-    public PersonClient personClient(EnvironmentProperties properties) {
-        return new PersonClientImpl(properties.getPersonV3Endpoint());
+    public PersonClient personClient(EnvironmentProperties properties, StsConfig stsConfig) {
+        return new PersonClientImpl(properties.getPersonV3Endpoint(), stsConfig);
     }
 
     @Bean
