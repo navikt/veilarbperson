@@ -10,6 +10,7 @@ import no.nav.common.health.HealthCheckUtils;
 import no.nav.common.json.JsonUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
+import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.RestClientUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -38,12 +39,12 @@ public class PdlClientImpl implements PdlClient {
         this.pdlUrl = pdlUrl;
         this.client = RestClient.baseClient();
         this.systemUserTokenSupplier = systemUserTokenSupplier;
-        this.hentPersonQuery = "hentPersonQuery";
+        this.hentPersonQuery = FileUtils.getResourceFileAsString("gql/hentPerson.gql");
     }
 
     @Override
     public HentPersonData.PdlPerson hentPerson(String personIdent, String userToken) {
-        GqlRequest request = new GqlRequest(hentPersonQuery, new HentPersonVariables(personIdent));
+        GqlRequest request = new GqlRequest<>(hentPersonQuery, new HentPersonVariables(personIdent));
         return graphqlRequest(request, userToken, HentPersonData.class).hentPerson;
     }
 

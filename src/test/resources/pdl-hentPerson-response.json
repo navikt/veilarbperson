@@ -1,0 +1,25 @@
+{
+  "data": {
+    "hentPerson": {
+      "navn": [
+        {
+          "fornavn": "NATURLIG",
+          "mellomnavn": "GLITRENDE",
+          "etternavn": "STAFFELI"
+        }
+      ],
+      "foedsel": [
+        {
+          "foedselsdato": "1981-12-13"
+        }
+      ],
+      "doedsfall": [],
+      "sivilstand": [
+        {
+          "type": "GIFT",
+          "gyldigFraOgMed": "2020-06-01"
+        }
+      ]
+    }
+  }
+}
