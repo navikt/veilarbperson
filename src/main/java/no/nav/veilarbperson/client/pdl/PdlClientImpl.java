@@ -55,7 +55,6 @@ public class PdlClientImpl implements PdlClient {
 
     @SneakyThrows
     private <T> T graphqlRequest(GqlRequest gqlRequest, String userToken, Class<T> gqlResponseDataClass) {
-        String gqlRequestJson = JsonUtils.toJson(gqlRequest);
         Request request = new Request.Builder()
                 .url(joinPaths(pdlUrl, "/graphql"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
@@ -63,7 +62,7 @@ public class PdlClientImpl implements PdlClient {
                 .header(AUTHORIZATION, RestClientUtils.createBearerToken(userToken))
                 .header("Nav-Consumer-Token", RestClientUtils.createBearerToken(systemUserTokenSupplier.get()))
                 .header("Tema", "GEN")
-                .post(RestUtils.toJsonRequestBody(gqlRequestJson))
+                .post(RestUtils.toJsonRequestBody(gqlRequest))
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
