@@ -8,6 +8,7 @@ import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
+import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
@@ -156,6 +157,21 @@ public class ClientTestConfig {
             @Override
             public Personinfo hentPersonInfo(String fodselsnummer) {
                 return new Personinfo();
+            }
+
+            @Override
+            public HealthCheckResult checkHealth() {
+                return HealthCheckResult.healthy();
+            }
+        };
+    }
+
+    @Bean
+    public PdlClient pdlClient() {
+        return new PdlClient() {
+            @Override
+            public <T> T graphqlRequest(String gqlRequestJson, String userToken, Class<T> responseDataClass) {
+                return null;
             }
 
             @Override
