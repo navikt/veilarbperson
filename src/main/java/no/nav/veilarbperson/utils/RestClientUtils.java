@@ -8,7 +8,14 @@ import no.nav.common.auth.subject.SubjectHandler;
 public class RestClientUtils {
 
     public static String authHeaderMedInnloggetBruker() {
-        return "Bearer " + SubjectHandler.getSsoToken().map(SsoToken::getToken).orElseThrow(() -> new RuntimeException("Fant ikke token til innlogget bruker"));
+        return SubjectHandler.getSsoToken()
+                .map(SsoToken::getToken)
+                .map(RestClientUtils::createBearerToken)
+                .orElseThrow(() -> new RuntimeException("Fant ikke token til innlogget bruker"));
+    }
+
+    public static String createBearerToken(String token) {
+        return "Bearer " + token;
     }
 
 }

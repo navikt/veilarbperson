@@ -14,6 +14,8 @@ import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClientImpl;
+import no.nav.veilarbperson.client.pdl.PdlClient;
+import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.PersonClientImpl;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
@@ -63,6 +65,11 @@ public class ClientConfig {
     @Bean
     public KodeverkClient kodeverkClient() {
         return new KodeverkClientImpl("http://kodeverk.default.svc.nais.local");
+    }
+
+    @Bean
+    public PdlClient pdlClient(SystemUserTokenProvider tokenProvider) {
+        return new PdlClientImpl("http://pdl-api.default.svc.nais.local", tokenProvider::getSystemUserToken);
     }
 
 }

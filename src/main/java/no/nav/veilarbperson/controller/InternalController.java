@@ -10,6 +10,7 @@ import no.nav.common.health.selftest.SelftestHtmlGenerator;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
+import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,8 @@ public class InternalController {
             KodeverkClient kodeverkClient,
             PersonClient personClient,
             VeilarbportefoljeClient veilarbportefoljeClient,
-            Norg2Client norg2Client
+            Norg2Client norg2Client,
+            PdlClient pdlClient
     ) {
         this.selftestChecks = Arrays.asList(
                 new SelfTestCheck("Aktorregister", true, aktorregisterClient),
@@ -49,7 +51,8 @@ public class InternalController {
                 new SelfTestCheck("Felles kodeverk", false, kodeverkClient),
                 new SelfTestCheck("Person_v3 (SOAP)", true, personClient),
                 new SelfTestCheck("Veilarbportefolje", false, veilarbportefoljeClient),
-                new SelfTestCheck("Norg2", false, norg2Client)
+                new SelfTestCheck("Norg2", false, norg2Client),
+                new SelfTestCheck("PDL", false, pdlClient)
         );
     }
 
