@@ -42,13 +42,10 @@ public class PersonController {
 
     @GetMapping("/navn")
     @ApiOperation(value = "Henter navnet til en person")
-    public PersonNavn navn(@RequestParam("fnr") String fnr) {
-        // Fnr fra query param kan kun brukes av interne brukere, eksterne må bruke token
-        final String fodselsnummer = (fnr != null && authService.erInternBruker())
-                ? fnr
-                : authService.getInnloggerBrukerIdent();
+    public PersonNavn navn(@RequestParam(value = "fnr", required = false) String fnr) {
+        String fodselsnummer = hentIdentForEksternEllerIntern(fnr);
 
-        authService.sjekkLesetilgang(fnr);
+        authService.sjekkLesetilgang(fodselsnummer);
 
         TpsPerson person = personService.hentPerson(fodselsnummer);
         return PersonDataMapper.hentNavn(person);
@@ -70,19 +67,31 @@ public class PersonController {
     }
 
     @GetMapping("/geografisktilknytning")
-    public GeografiskTilknytning geografisktilknytning(@RequestParam("fnr") String fodselsnummer) {
+    public GeografiskTilknytning geografisktilknytning(@RequestParam(value = "fnr", required = false) String fnr) {
+        String fodselsnummer = hentIdentForEksternEllerIntern(fnr);
+        authService.sjekkLesetilgang(fodselsnummer);
+        return personService.hentGeografisktilknytning(fodselsnummer);
+    }
+
+    // TODO: Det er hårete å måtte skille på ekstern og intern
+    //  Lag istedenfor en egen controller for interne operasjoner og en annen for eksterne
+    private String hentIdentForEksternEllerIntern(String queryParamFnr) {
         String fnr;
 
-        if (authService.erEksternBruker()) {
+        if (authService.erInternBruker()) {
+            fnr = queryParamFnr;
+        } else if (authService.erEksternBruker()) {
             fnr = authService.getInnloggerBrukerIdent();
-        } else if (authService.erInternBruker()) {
-            fnr = fodselsnummer;
         } else {
+            // Systembruker har ikke tilgang
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
-        authService.sjekkLesetilgang(fnr);
-        return personService.hentGeografisktilknytning(fnr);
+        if (fnr == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler fnr");
+        }
+
+        return fnr;
     }
 
 }
