@@ -22,4 +22,8 @@ public class PdlService {
         return pdlClient.hentPerson(personIdent, authService.getInnloggetBrukerToken());
     }
 
+    public String executeGqlRequest(String gqlRequest) {
+        return pdlClient.rawRequest(gqlRequest, authService.getInnloggetBrukerToken());
+    }
+
 }

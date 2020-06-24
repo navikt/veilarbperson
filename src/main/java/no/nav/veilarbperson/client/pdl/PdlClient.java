@@ -6,4 +6,6 @@ public interface PdlClient extends HealthCheck {
 
     HentPersonData.PdlPerson hentPerson(String personIdent, String userToken);
 
+    String rawRequest(String gqlRequest, String userToken);
+
 }

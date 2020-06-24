@@ -14,12 +14,14 @@ import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.RestClientUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.function.Supplier;
 
+import static no.nav.common.rest.client.RestUtils.MEDIA_TYPE_JSON;
 import static no.nav.common.utils.UrlUtils.joinPaths;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -48,13 +50,9 @@ public class PdlClientImpl implements PdlClient {
         return graphqlRequest(request, userToken, HentPersonData.class).hentPerson;
     }
 
-    @Override
-    public HealthCheckResult checkHealth() {
-        return HealthCheckUtils.pingUrl(joinPaths(pdlUrl, "/internal/isAlive"), client);
-    }
-
     @SneakyThrows
-    private <T> T graphqlRequest(GqlRequest gqlRequest, String userToken, Class<T> gqlResponseDataClass) {
+    @Override
+    public String rawRequest(String gqlRequest, String userToken) {
         Request request = new Request.Builder()
                 .url(joinPaths(pdlUrl, "/graphql"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
@@ -62,15 +60,38 @@ public class PdlClientImpl implements PdlClient {
                 .header(AUTHORIZATION, RestClientUtils.createBearerToken(userToken))
                 .header("Nav-Consumer-Token", RestClientUtils.createBearerToken(systemUserTokenSupplier.get()))
                 .header("Tema", "GEN")
-                .post(RestUtils.toJsonRequestBody(gqlRequest))
+                .post(RequestBody.create(MEDIA_TYPE_JSON, gqlRequest))
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            RestUtils.throwIfNotSuccessful(response);
-            String jsonBody = RestUtils.getBodyStr(response)
-                    .orElseThrow(() -> new IllegalStateException("Body is missing"));
+            if (response.code() >= 300) {
+                HttpStatus status = HttpStatus.resolve(response.code());
+                status = status != null
+                        ? status
+                        : HttpStatus.INTERNAL_SERVER_ERROR;
 
-            return parseGqlJsonResponse(jsonBody, gqlResponseDataClass);
+                String body = RestUtils.getBodyStr(response).orElse("");
+                throw new ResponseStatusException(status, body);
+            }
+
+            RestUtils.throwIfNotSuccessful(response);
+            return RestUtils.getBodyStr(response)
+                    .orElseThrow(() -> new IllegalStateException("Body is missing"));
+        }
+    }
+
+    @Override
+    public HealthCheckResult checkHealth() {
+        return HealthCheckUtils.pingUrl(joinPaths(pdlUrl, "/internal/isAlive"), client);
+    }
+
+    private <T> T graphqlRequest(GqlRequest gqlRequest, String userToken, Class<T> gqlResponseDataClass) {
+        try {
+            String gqlResponse = rawRequest(JsonUtils.toJson(gqlRequest), userToken);
+            return parseGqlJsonResponse(gqlResponse, gqlResponseDataClass);
+        } catch (Exception e) {
+            log.error("Graphql request feilet", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

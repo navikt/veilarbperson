@@ -1,8 +1,12 @@
 package no.nav.veilarbperson.client;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import no.nav.common.json.JsonUtils;
+import no.nav.veilarbperson.client.pdl.GqlRequest;
 import no.nav.veilarbperson.client.pdl.HentPersonData;
+import no.nav.veilarbperson.client.pdl.HentPersonVariables;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
+import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -80,6 +84,27 @@ public class PdlClientImplTest {
         assertThrows(ResponseStatusException.class, () -> {
             pdlClient.hentPerson("IDENT", "USER_TOKEN");
         });
+    }
+
+    @Test
+    public void rawRequest_skal_sende_raw_request_og_returnere_raw_response() {
+        String hentPersonResponseJson = TestUtils.readTestResourceFile("pdl-hentPerson-response.json");
+        String hentPersonRequest = FileUtils.getResourceFileAsString("gql/hentPerson.gql");
+        String apiUrl = "http://localhost:" + wireMockRule.port();
+
+        String jsonRequest = JsonUtils.toJson(new GqlRequest<>(hentPersonRequest, new HentPersonVariables("TEST_IDENT")));
+
+        givenThat(post(urlEqualTo("/graphql"))
+                .withRequestBody(equalToJson(jsonRequest))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody(hentPersonResponseJson))
+        );
+
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+
+        String response = pdlClient.rawRequest(jsonRequest, "USER_TOKEN");
+        assertEquals(hentPersonResponseJson, response);
     }
 
 }

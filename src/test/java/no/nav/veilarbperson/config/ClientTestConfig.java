@@ -14,6 +14,7 @@ import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.utils.TestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -170,10 +171,14 @@ public class ClientTestConfig {
     @Bean
     public PdlClient pdlClient() {
         return new PdlClient() {
-
             @Override
             public HentPersonData.PdlPerson hentPerson(String personIdent, String userToken) {
                 return null;
+            }
+
+            @Override
+            public String rawRequest(String gqlRequest, String userToken) {
+                return TestUtils.readTestResourceFile("pdl-hentPerson-response.json");
             }
 
             @Override
