@@ -1,0 +1,29 @@
+{
+  "betydninger": {
+    "YUG": [],
+    "BGR": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "BULGARIA",
+            "tekst": "BULGARIA"
+          }
+        }
+      }
+    ],
+    "SYR": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nb": {
+            "term": "SYRIA",
+            "tekst": "SYRIA"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,10 +1,6 @@
-target/
-.classpath
-.settings
-*.iml
-*.orig
 .idea/*
-!.idea/runConfigurations
-*.bak
-*.properties
-SERVICE_CALLS_HOME_IS_UNDEFINED/*.log
+!.idea/runConfigurations/
+*.iml
+
+target/
+bash.exe.stackdump
