@@ -81,9 +81,16 @@ public class PersonService {
     }
 
     private void flettGeografiskEnhet(PersonData personData) {
-        if (personData.getGeografiskTilknytning() != null) {
-            Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(personData.getGeografiskTilknytning()));
-            personData.setGeografiskEnhet(enhet);
+        String geografiskTilknytning = personData.getGeografiskTilknytning();
+
+        // Sjekk at geografiskTilknytning er satt og at det er en ISO 3166 kode (for utenlandske brukere så blir landskode brukt istedenfor)
+        if (geografiskTilknytning != null && geografiskTilknytning.matches("\\d+")) {
+            try {
+                Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning));
+                personData.setGeografiskEnhet(enhet);
+            } catch (Exception e) {
+                log.error("Klarte ikke å flette inn geografisk enhet", e);
+            }
         }
     }
 
