@@ -66,6 +66,13 @@ public class PersonController {
         return authService.harLesetilgang(fodselsnummer);
     }
 
+    @GetMapping("/{fodselsnummer}/harNivaa4")
+    public boolean harNivaa4(@PathVariable("fodselsnummer") String fodselsnummer) {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(fodselsnummer);
+        return personService.hentHarNivaa4(fodselsnummer);
+    }
+
     @GetMapping("/geografisktilknytning")
     public GeografiskTilknytning geografisktilknytning(@RequestParam(value = "fnr", required = false) String fnr) {
         String fodselsnummer = hentIdentForEksternEllerIntern(fnr);

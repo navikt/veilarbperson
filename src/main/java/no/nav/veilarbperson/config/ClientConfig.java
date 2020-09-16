@@ -8,6 +8,9 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.sts.SystemUserTokenProvider;
+import no.nav.common.utils.Credentials;
+import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifClientImpl;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
@@ -70,6 +73,11 @@ public class ClientConfig {
     @Bean
     public PdlClient pdlClient(SystemUserTokenProvider tokenProvider) {
         return new PdlClientImpl("http://pdl-api.default.svc.nais.local", tokenProvider::getSystemUserToken);
+    }
+
+    @Bean
+    public DifiCient difiCient(Credentials serviceUserCredentials) {
+        return new DifiClientImpl(serviceUserCredentials, DifiCient.getDifiUrl());
     }
 
 }
