@@ -79,7 +79,10 @@ public class PersonController {
     private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {
         Fnr fnr;
 
-        if (authService.erInternBruker() && queryParamFnr != null) {
+        if (authService.erInternBruker()) {
+            if (queryParamFnr == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler fnr");
+            }
             fnr = queryParamFnr;
         } else if (authService.erEksternBruker()) {
             fnr = Fnr.of(authService.getInnloggerBrukerSubject());
