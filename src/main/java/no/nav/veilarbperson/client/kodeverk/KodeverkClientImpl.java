@@ -45,7 +45,7 @@ public class KodeverkClientImpl implements KodeverkClient {
             RestUtils.throwIfNotSuccessful(response);
             Optional<String> maybeJsonResponse = RestUtils.getBodyStr(response);
 
-            if (!maybeJsonResponse.isPresent()) {
+            if (maybeJsonResponse.isEmpty()) {
                 throw new IllegalStateException("JSON is missing from body");
             }
 

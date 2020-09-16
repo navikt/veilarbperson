@@ -1,10 +1,13 @@
 package no.nav.veilarbperson.config;
 
+import no.nav.common.auth.context.UserRole;
+import no.nav.common.test.auth.TestAuthContextFilter;
 import no.nav.veilarbperson.utils.PingFilter;
-import no.nav.veilarbperson.utils.TestSubjectFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import static no.nav.veilarbperson.utils.TestData.TEST_VEILEDER_IDENT;
 
 @Configuration
 public class FilterTestConfig {
@@ -23,8 +26,8 @@ public class FilterTestConfig {
 
     @Bean
     public FilterRegistrationBean testSubjectFilterRegistrationBean() {
-        FilterRegistrationBean<TestSubjectFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new TestSubjectFilter());
+        FilterRegistrationBean<TestAuthContextFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new TestAuthContextFilter(UserRole.INTERN, TEST_VEILEDER_IDENT.get()));
         registration.setOrder(2);
         registration.addUrlPatterns("/api/*");
         return registration;

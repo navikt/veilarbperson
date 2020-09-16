@@ -1,12 +1,11 @@
 package no.nav.veilarbperson.service;
 
 import no.nav.common.abac.Pep;
-import no.nav.common.abac.domain.AbacPersonId;
 import no.nav.common.abac.domain.request.ActionId;
-import no.nav.common.auth.subject.IdentType;
-import no.nav.common.auth.subject.SsoToken;
-import no.nav.common.auth.subject.SubjectHandler;
+import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktorregister.AktorregisterClient;
+import no.nav.common.types.identer.AktorId;
+import no.nav.common.types.identer.Fnr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -32,41 +31,36 @@ public class AuthService {
     }
 
     public boolean erEksternBruker() {
-        IdentType identType = SubjectHandler.getIdentType().orElse(null);
-        return IdentType.EksternBruker.equals(identType);
+        return AuthContextHolder.erEksternBruker();
     }
 
     public boolean erInternBruker() {
-        IdentType identType = SubjectHandler.getIdentType().orElse(null);
-        return IdentType.InternBruker.equals(identType);
+        return AuthContextHolder.erInternBruker();
     }
 
-    public void sjekkLesetilgang(String fnr) {
+    public void sjekkLesetilgang(Fnr fnr) {
         if (!harLesetilgang(fnr)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 
-    public boolean harLesetilgang(String fnr) {
-        String aktorId = aktorregisterClient.hentAktorId(fnr);
-        return veilarbPep.harTilgangTilPerson(getInnloggetBrukerToken(), ActionId.READ, AbacPersonId.aktorId(aktorId));
+    public boolean harLesetilgang(Fnr fnr) {
+        AktorId aktorId = aktorregisterClient.hentAktorId(fnr);
+        return veilarbPep.harTilgangTilPerson(getInnloggetBrukerToken(), ActionId.READ, aktorId);
     }
 
-    public String getAktorId(String fnr) {
+    public AktorId getAktorId(Fnr fnr) {
         return aktorregisterClient.hentAktorId(fnr);
     }
 
     public String getInnloggetBrukerToken() {
-        return SubjectHandler
-                .getSsoToken()
-                .map(SsoToken::getToken)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token is missing"));
+        return AuthContextHolder.getIdTokenString()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is missing"));
     }
 
-    public String getInnloggerBrukerIdent() {
-        return SubjectHandler
-                .getIdent()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Subject is missing ident"));
+    public String getInnloggerBrukerSubject() {
+        return AuthContextHolder.getSubject()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Subject is missing"));
     }
 
 }

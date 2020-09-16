@@ -8,6 +8,7 @@ import no.nav.common.health.HealthCheckUtils;
 import no.nav.common.json.JsonUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
+import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.config.CacheConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -36,26 +37,26 @@ public class DkifClientImpl implements DkifClient {
     @Cacheable(CacheConfig.DKIF_KONTAKTINFO_CACHE_NAME)
     @SneakyThrows
     @Override
-    public DkifKontaktinfo hentKontaktInfo(String fnr) {
+    public DkifKontaktinfo hentKontaktInfo(Fnr fnr) {
         Request request = new Request.Builder()
                 .url(joinPaths(dkifUrl, "/api/v1/personer/kontaktinformasjon?inkluderSikkerDigitalPost=false"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, authHeaderMedInnloggetBruker())
-                .header("Nav-Personidenter", fnr)
+                .header("Nav-Personidenter", fnr.get())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
             RestUtils.throwIfNotSuccessful(response);
             Optional<String> json = RestUtils.getBodyStr(response);
 
-            if (!json.isPresent()) {
+            if (json.isEmpty()) {
                 throw new IllegalStateException("Dkif body is missing");
             }
 
             ObjectMapper mapper = JsonUtils.getMapper();
             JsonNode node = mapper.readTree(json.get());
 
-            return mapper.treeToValue(node.get("kontaktinfo").get(fnr), DkifKontaktinfo.class);
+            return mapper.treeToValue(node.get("kontaktinfo").get(fnr.get()), DkifKontaktinfo.class);
         }
     }
 

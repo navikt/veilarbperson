@@ -2,6 +2,7 @@ package no.nav.veilarbperson.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
+import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
@@ -44,11 +45,11 @@ public class PersonService {
         this.veilarbportefoljeClient = veilarbportefoljeClient;
     }
 
-    public TpsPerson hentPerson(String fodselsnummer){
+    public TpsPerson hentPerson(Fnr fodselsnummer){
         return personClient.hentPerson(fodselsnummer);
     }
 
-    public PersonData hentFlettetPerson(String fodselsnummer) {
+    public PersonData hentFlettetPerson(Fnr fodselsnummer) {
         PersonData personData = PersonDataMapper.tilPersonData(personClient.hentPerson(fodselsnummer));
 
         try {
@@ -65,18 +66,18 @@ public class PersonService {
         return personData;
     }
 
-    public GeografiskTilknytning hentGeografisktilknytning(String fodselsnummer) {
+    public GeografiskTilknytning hentGeografisktilknytning(Fnr fodselsnummer) {
         String geografiskTilknytning = personClient.hentPerson(fodselsnummer).getGeografiskTilknytning();
         return new GeografiskTilknytning(geografiskTilknytning);
     }
 
-    private void flettPersoninfoFraPortefolje(PersonData personData, String fodselsnummer) {
+    private void flettPersoninfoFraPortefolje(PersonData personData, Fnr fodselsnummer) {
         Personinfo personinfo = veilarbportefoljeClient.hentPersonInfo(fodselsnummer);
         personData.setSikkerhetstiltak(personinfo.sikkerhetstiltak);
         personData.setEgenAnsatt(personinfo.egenAnsatt);
     }
 
-    private void flettEgenAnsatt(String fodselsnummer, PersonData personData) {
+    private void flettEgenAnsatt(Fnr fodselsnummer, PersonData personData) {
         personData.setEgenAnsatt(egenAnsattClient.erEgenAnsatt(fodselsnummer));
     }
 
@@ -152,7 +153,7 @@ public class PersonService {
         }
     }
 
-    private void flettDigitalKontaktinformasjon(String fnr, PersonData personData) {
+    private void flettDigitalKontaktinformasjon(Fnr fnr, PersonData personData) {
         try {
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);
             personData.setTelefon(kontaktinfo.getMobiltelefonnummer());
@@ -162,7 +163,7 @@ public class PersonService {
         }
     }
 
-    private void flettSikkerhetstiltak(String fnr, PersonData personData) {
+    private void flettSikkerhetstiltak(Fnr fnr, PersonData personData) {
         try {
             String sikkerhetstiltak = personClient.hentSikkerhetstiltak(fnr);
             personData.setSikkerhetstiltak(sikkerhetstiltak);
