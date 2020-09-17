@@ -48,8 +48,8 @@ public class ClientConfig {
     }
 
     @Bean
-    public DkifClient dkifClient() {
-        return new DkifClientImpl("http://dkif.default.svc.nais.local");
+    public DkifClient dkifClient(SystemUserTokenProvider systemUserTokenProvider) {
+        return new DkifClientImpl("http://dkif.default.svc.nais.local", systemUserTokenProvider);
     }
 
     @Bean

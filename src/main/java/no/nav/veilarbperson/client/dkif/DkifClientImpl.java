@@ -8,6 +8,7 @@ import no.nav.common.health.HealthCheckUtils;
 import no.nav.common.json.JsonUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
+import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.config.CacheConfig;
 import okhttp3.OkHttpClient;
@@ -18,7 +19,6 @@ import org.springframework.cache.annotation.Cacheable;
 import java.util.Optional;
 
 import static no.nav.common.utils.UrlUtils.joinPaths;
-import static no.nav.veilarbperson.utils.RestClientUtils.authHeaderMedInnloggetBruker;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -27,10 +27,13 @@ public class DkifClientImpl implements DkifClient {
 
     private final String dkifUrl;
 
+    private final SystemUserTokenProvider systemUserTokenProvider;
+
     private final OkHttpClient client;
 
-    public DkifClientImpl(String dkifUrl) {
+    public DkifClientImpl(String dkifUrl, SystemUserTokenProvider systemUserTokenProvider) {
         this.dkifUrl = dkifUrl;
+        this.systemUserTokenProvider = systemUserTokenProvider;
         this.client = RestClient.baseClient();
     }
 
@@ -41,7 +44,7 @@ public class DkifClientImpl implements DkifClient {
         Request request = new Request.Builder()
                 .url(joinPaths(dkifUrl, "/api/v1/personer/kontaktinformasjon?inkluderSikkerDigitalPost=false"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
-                .header(AUTHORIZATION, authHeaderMedInnloggetBruker())
+                .header(AUTHORIZATION, "Bearer " + systemUserTokenProvider.getSystemUserToken())
                 .header("Nav-Personidenter", fnr.get())
                 .build();
 
@@ -62,7 +65,7 @@ public class DkifClientImpl implements DkifClient {
 
     @Override
     public HealthCheckResult checkHealth() {
-        return HealthCheckUtils.pingUrl(joinPaths(dkifUrl, "/internal/isAlive"), client);
+        return HealthCheckUtils.pingUrl(joinPaths(dkifUrl, "/api/ping"), client);
     }
 
 }
