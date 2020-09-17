@@ -61,25 +61,7 @@ public class DifiClientImpl implements  DifiCient {
 
         try (Response response = client.newCall(request).execute()) {
             RestUtils.throwIfNotSuccessful(response);
-            Optional<String> json = RestUtils.getBodyStr(response);
-
-            if (json.isEmpty()) {
-                throw new IllegalStateException("DIFI body is missing");
-            }
-
-            ObjectMapper mapper = JsonUtils.getMapper();
-            JsonNode node = mapper.readTree(json.get());
-            HarLoggetInnRespons harLoggetInnRespons = mapper.treeToValue(node, HarLoggetInnRespons.class);
-            if(harLoggetInnRespons == null) {
-                throw new IllegalStateException("Mangler verdi for login respons");
-            }
-
-            return  harLoggetInnRespons;
+            return RestUtils.parseJsonResponseOrThrow(response, HarLoggetInnRespons.class);
         }
-    }
-
-    @Override
-    public HealthCheckResult checkHealth() {
-        return HealthCheckResult.healthy();
     }
 }

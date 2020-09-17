@@ -111,11 +111,6 @@ public class ClientTestConfig {
                 harLoggetInnRespons.setPersonidentifikator(fnr);
                 return harLoggetInnRespons;
             }
-
-            @Override
-            public HealthCheckResult checkHealth() {
-                return HealthCheckResult.healthy();
-            }
         };
     }
 

@@ -1,6 +1,9 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
+import no.finn.unleash.UnleashContext;
+import no.nav.common.featuretoggle.UnleashService;
+import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.service.AuthService;
@@ -18,7 +21,10 @@ public class PersonController {
 
     private final AuthService authService;
 
-    public PersonController(PersonService personService, AuthService authService) {
+    private final UnleashService unleashService;
+
+    public PersonController(PersonService personService, AuthService authService, UnleashService unleashService) {
+        this.unleashService = unleashService;
         this.personService = personService;
         this.authService = authService;
     }
@@ -67,10 +73,20 @@ public class PersonController {
     }
 
     @GetMapping("/{fodselsnummer}/harNivaa4")
-    public boolean harNivaa4(@PathVariable("fodselsnummer") String fodselsnummer) {
+    public HarLoggetInnRespons harNivaa4(@PathVariable("fodselsnummer") String fodselsnummer) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fodselsnummer);
-        return personService.hentHarNivaa4(fodselsnummer);
+
+
+
+        if(unleashService.isEnabled("veilarb.sjekk.nivaa4")) {
+            return personService.hentHarNivaa4(fodselsnummer);
+        }
+
+        HarLoggetInnRespons harLoggetInnRespons = new HarLoggetInnRespons();
+        harLoggetInnRespons.setPersonidentifikator(fodselsnummer);
+        harLoggetInnRespons.setHarbruktnivaa4(true);
+        return harLoggetInnRespons;
     }
 
     @GetMapping("/geografisktilknytning")

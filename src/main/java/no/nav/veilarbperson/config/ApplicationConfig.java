@@ -5,6 +5,8 @@ import no.nav.common.abac.Pep;
 import no.nav.common.abac.VeilarbPep;
 import no.nav.common.abac.audit.SpringAuditRequestInfoSupplier;
 import no.nav.common.cxf.StsConfig;
+import no.nav.common.featuretoggle.UnleashService;
+import no.nav.common.featuretoggle.UnleashServiceConfig;
 import no.nav.common.sts.NaisSystemUserTokenProvider;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.utils.Credentials;
@@ -53,5 +55,11 @@ public class ApplicationConfig {
                 serviceUserCredentials.password, new SpringAuditRequestInfoSupplier()
         );
     }
+
+    @Bean
+    public UnleashService unleashService() {
+        return new UnleashService(UnleashServiceConfig.resolveFromEnvironment());
+    }
+
 
 }

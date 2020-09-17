@@ -77,7 +77,7 @@ public class ClientConfig {
 
     @Bean
     public DifiCient difiCient(Credentials serviceUserCredentials) {
-        return new DifiClientImpl(serviceUserCredentials, DifiCient.getDifiUrl());
+        return new DifiClientImpl(serviceUserCredentials, DifiClientImpl.getDifiUrl());
     }
 
 }

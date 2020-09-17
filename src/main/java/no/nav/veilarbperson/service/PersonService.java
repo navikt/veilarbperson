@@ -78,8 +78,8 @@ public class PersonService {
         return new GeografiskTilknytning(geografiskTilknytning);
     }
 
-    public boolean hentHarNivaa4(String fodselsnummer) {
-        return difiCient.harLoggetInnSiste18mnd(fodselsnummer).isHarbruktnivaa4();
+    public HarLoggetInnRespons hentHarNivaa4(String fodselsnummer) {
+        return difiCient.harLoggetInnSiste18mnd(fodselsnummer);
 
     }
 
