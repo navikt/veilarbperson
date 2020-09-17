@@ -17,5 +17,4 @@ public class RestClientUtils {
     public static String createBearerToken(String token) {
         return "Bearer " + token;
     }
-
 }

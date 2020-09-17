@@ -2,6 +2,8 @@ package no.nav.veilarbperson.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
+import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
@@ -30,21 +32,27 @@ public class PersonService {
     private final DkifClient dkifClient;
     private final KodeverkService kodeverkService;
     private final VeilarbportefoljeClient veilarbportefoljeClient;
+    private final DifiCient difiCient;
 
     @Autowired
     public PersonService(
-            Norg2Client norg2Client, PersonClient personClient, EgenAnsattClient egenAnsattClient,
-            DkifClient dkifClient, KodeverkService kodeverkService, VeilarbportefoljeClient veilarbportefoljeClient
-    ) {
+            Norg2Client norg2Client,
+            PersonClient personClient,
+            EgenAnsattClient egenAnsattClient,
+            DkifClient dkifClient,
+            KodeverkService kodeverkService,
+            VeilarbportefoljeClient veilarbportefoljeClient,
+            DifiCient difiCient) {
         this.norg2Client = norg2Client;
         this.personClient = personClient;
         this.egenAnsattClient = egenAnsattClient;
         this.dkifClient = dkifClient;
         this.kodeverkService = kodeverkService;
         this.veilarbportefoljeClient = veilarbportefoljeClient;
+        this.difiCient = difiCient;
     }
 
-    public TpsPerson hentPerson(String fodselsnummer){
+    public TpsPerson hentPerson(String fodselsnummer) {
         return personClient.hentPerson(fodselsnummer);
     }
 
@@ -68,6 +76,11 @@ public class PersonService {
     public GeografiskTilknytning hentGeografisktilknytning(String fodselsnummer) {
         String geografiskTilknytning = personClient.hentPerson(fodselsnummer).getGeografiskTilknytning();
         return new GeografiskTilknytning(geografiskTilknytning);
+    }
+
+    public HarLoggetInnRespons hentHarNivaa4(String fodselsnummer) {
+        return difiCient.harLoggetInnSiste18mnd(fodselsnummer);
+
     }
 
     private void flettPersoninfoFraPortefolje(PersonData personData, String fodselsnummer) {
