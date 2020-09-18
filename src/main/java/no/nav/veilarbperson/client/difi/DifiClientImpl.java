@@ -38,7 +38,7 @@ public class DifiClientImpl implements  DifiCient {
         Optional<String> namespace = getNamespace();
         String name = namespace.orElse("defult");
         String urlpart = name.equals("defult") ? "" : "-" + name;
-        return "https://api-gw"+ urlpart + ".adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa;";
+        return "https://api-gw"+ urlpart + ".adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa";
     }
 
 
@@ -52,7 +52,6 @@ public class DifiClientImpl implements  DifiCient {
                 .header(AUTHORIZATION, okhttp3.Credentials.basic(serviceUserCredentials.username, serviceUserCredentials.password))
                 .post(RestUtils.toJsonRequestBody(new Personidentifikator(fnr)))
                 .build();
-
         try (Response response = client.newCall(request).execute()) {
             RestUtils.throwIfNotSuccessful(response);
             return RestUtils.parseJsonResponseOrThrow(response, HarLoggetInnRespons.class);
