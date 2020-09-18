@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.client;
 
+import no.nav.common.types.identer.Fnr;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentSikkerhetstiltakPersonIkkeFunnet;
@@ -28,35 +29,35 @@ import static org.mockito.Mockito.when;
 public class PersonClientImplTest {
 
     private static final String SIKKHERHETSTILTAK = "FARLIG";
-    private static String IDENT = TestUtils.fodselsnummerForDato("1980-01-01");
+    private static Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
 
     private PersonV3 personV3 = mock(PersonV3.class);
     private PersonClient personClient;
 
     @Before
     public void before() {
-        personClient = new PersonClientImpl(personV3, null);
+        personClient = new PersonClientImpl(personV3);
     }
 
     @Test
     public void hentPersonHenterPerson() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
         HentPersonResponse hentPersonResponse = new HentPersonResponse()
-                .withPerson(new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(IDENT))));
+                .withPerson(new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(FNR.get()))));
         when(personV3.hentPerson(any(HentPersonRequest.class))).thenReturn(hentPersonResponse);
 
-        TpsPerson person = personClient.hentPerson(IDENT);
+        TpsPerson person = personClient.hentPerson(FNR);
 
-        assertThat(person.getFodselsnummer(), is(equalTo(IDENT)));
+        assertThat(person.getFodselsnummer(), is(equalTo(FNR)));
     }
 
     @Test
     public void hentPersonBerOmRelevantInformasjonFraTjenesten() throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
         HentPersonResponse hentPersonResponse = new HentPersonResponse()
-                .withPerson(new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(IDENT))));
+                .withPerson(new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(FNR.get()))));
         ArgumentCaptor<HentPersonRequest> argumentCaptor = ArgumentCaptor.forClass(HentPersonRequest.class);
         when(personV3.hentPerson(argumentCaptor.capture())).thenReturn(hentPersonResponse);
 
-        personClient.hentPerson(IDENT);
+        personClient.hentPerson(FNR);
 
         List<Informasjonsbehov> informasjonsBehov = argumentCaptor.getValue().getInformasjonsbehov();
         assertThat(informasjonsBehov.contains(Informasjonsbehov.ADRESSE), is(true));
@@ -72,7 +73,7 @@ public class PersonClientImplTest {
         HentSikkerhetstiltakResponse response = new HentSikkerhetstiltakResponse().withSikkerhetstiltak(wsSikkerhetstiltak);
         when(personV3.hentSikkerhetstiltak(any(HentSikkerhetstiltakRequest.class))).thenReturn(response);
 
-        String sikkerhetstiltak = personClient.hentSikkerhetstiltak(IDENT);
+        String sikkerhetstiltak = personClient.hentSikkerhetstiltak(FNR);
 
         assertThat(sikkerhetstiltak, is(equalTo(SIKKHERHETSTILTAK)));
     }
@@ -82,7 +83,7 @@ public class PersonClientImplTest {
         HentSikkerhetstiltakResponse response = new HentSikkerhetstiltakResponse();
         when(personV3.hentSikkerhetstiltak(any(HentSikkerhetstiltakRequest.class))).thenReturn(response);
 
-        String sikkerhetstiltak = personClient.hentSikkerhetstiltak(IDENT);
+        String sikkerhetstiltak = personClient.hentSikkerhetstiltak(FNR);
 
         assertThat(sikkerhetstiltak, is(nullValue()));
     }

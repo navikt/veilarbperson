@@ -1,21 +1,19 @@
 package no.nav.veilarbperson.client.difi;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import no.nav.common.health.HealthCheckResult;
-import no.nav.common.json.JsonUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
+import no.nav.common.types.identer.Fnr;
 import no.nav.common.utils.Credentials;
 import no.nav.veilarbperson.config.CacheConfig;
 import okhttp3.*;
-import org.json.JSONObject;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Optional;
 
-import static no.nav.common.rest.client.RestUtils.MEDIA_TYPE_JSON;
 import static no.nav.common.utils.EnvironmentUtils.getNamespace;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -47,16 +45,12 @@ public class DifiClientImpl implements  DifiCient {
     @Cacheable(CacheConfig.DIFI_HAR_NIVA_4_CACHE_NAME)
     @SneakyThrows
     @Override
-    public HarLoggetInnRespons harLoggetInnSiste18mnd(String fnr) {
-
-        JSONObject jo = new JSONObject();
-        String body = jo.put("personidentifikator", fnr).toString();
-
+    public HarLoggetInnRespons harLoggetInnSiste18mnd(Fnr fnr) {
         Request request = new Request.Builder()
                 .url(difiUrl)
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, okhttp3.Credentials.basic(serviceUserCredentials.username, serviceUserCredentials.password))
-                .post(RequestBody.create(MEDIA_TYPE_JSON, body))
+                .post(RestUtils.toJsonRequestBody(new Personidentifikator(fnr)))
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -64,4 +58,10 @@ public class DifiClientImpl implements  DifiCient {
             return RestUtils.parseJsonResponseOrThrow(response, HarLoggetInnRespons.class);
         }
     }
+
+    @AllArgsConstructor
+    private static class Personidentifikator {
+        Fnr personidentifikator;
+    }
+
 }

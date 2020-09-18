@@ -19,7 +19,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <common.version>2.2020.07.06_09.20-8a4d5aa1696a</common.version>
+        <common.version>2.2020.09.18_09.04-36b7925810ee</common.version>
         <springfox.version>2.9.2</springfox.version>
         <tjenestespesifikasjoner.version>1.2019.09.25-00.21-49b69f0625e0</tjenestespesifikasjoner.version>
     </properties>
@@ -158,6 +158,12 @@
         </dependency>
 
         <!-- test -->
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>test</artifactId>
+            <version>${common.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

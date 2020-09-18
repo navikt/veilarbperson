@@ -5,6 +5,7 @@ import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.HealthCheckUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
+import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.config.CacheConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -31,9 +32,9 @@ public class VeilarbportefoljeClientImpl implements VeilarbportefoljeClient {
     @Cacheable(CacheConfig.VEILARBPORTEFOLJE_PERSONINFO_CACHE_NAME)
     @SneakyThrows
     @Override
-    public Personinfo hentPersonInfo(String fodselsnummer) {
+    public Personinfo hentPersonInfo(Fnr fodselsnummer) {
         Request request = new Request.Builder()
-                .url(joinPaths(veilarbportefoljeUrl, "/api/personinfo/", fodselsnummer))
+                .url(joinPaths(veilarbportefoljeUrl, "/api/personinfo/", fodselsnummer.get()))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, authHeaderMedInnloggetBruker())
                 .build();

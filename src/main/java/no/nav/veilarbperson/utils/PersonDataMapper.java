@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.utils;
 
+import no.nav.common.types.identer.Fnr;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.veilarbperson.client.person.domain.Bostedsadresse;
 import no.nav.veilarbperson.client.person.domain.Sivilstand;
@@ -112,11 +113,14 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    public static String kanskjeFodselsnummer(Person person) {
+    public static Fnr kanskjeFodselsnummer(Person person) {
         Aktoer aktoer = person.getAktoer();
+
         if (aktoer instanceof PersonIdent) {
-            return kanskjeNorskIdent((PersonIdent) aktoer);
+            String norskIdent = kanskjeNorskIdent((PersonIdent) aktoer);
+            return norskIdent == null ? null : Fnr.of(norskIdent);
         }
+
         return null;
     }
 

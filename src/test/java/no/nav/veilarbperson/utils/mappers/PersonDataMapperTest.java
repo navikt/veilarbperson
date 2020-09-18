@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.utils.mappers;
 
+import no.nav.common.types.identer.Fnr;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.utils.PersonDataMapper;
@@ -126,8 +127,8 @@ public class PersonDataMapperTest {
 
     @Test
     public void fodselsnummerMappesDersomDetEksisterer() {
-        final String forventetVerdi = "fodseslnummer";
-        final Person wsPerson = new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(forventetVerdi)));
+        final Fnr forventetVerdi = Fnr.of("fodseslnummer");
+        final Person wsPerson = new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(forventetVerdi.get())));
 
         final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
 

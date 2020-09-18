@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.common.cxf.CXFClient;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.health.HealthCheckResult;
+import no.nav.common.types.identer.Fnr;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent;
@@ -27,29 +28,21 @@ public class PersonClientImpl implements PersonClient {
 
     private final PersonV3 personV3;
 
-    private final PersonV3 personV3Ping;
-
     public PersonClientImpl(String personV3Endpoint, StsConfig stsConfig) {
         personV3 = new CXFClient<>(PersonV3.class)
                 .address(personV3Endpoint)
                 .withOutInterceptor(new LoggingOutInterceptor())
-                .configureStsForSubject(stsConfig)
-                .build();
-
-        personV3Ping = new CXFClient<>(PersonV3.class)
-                .address(personV3Endpoint)
                 .configureStsForSystemUser(stsConfig)
                 .build();
     }
 
-    public PersonClientImpl(PersonV3 personV3, PersonV3 personV3Ping) {
+    public PersonClientImpl(PersonV3 personV3) {
         this.personV3 = personV3;
-        this.personV3Ping = personV3Ping;
     }
 
     @Cacheable(CacheConfig.TPS_PERSON_CACHE_NAME)
     @Override
-    public TpsPerson hentPerson(String ident) {
+    public TpsPerson hentPerson(Fnr ident) {
         try {
             HentPersonResponse response = personV3.hentPerson(lagHentPersonRequest(ident));
             return PersonDataMapper.tilTpsPerson(response.getPerson());
@@ -61,9 +54,9 @@ public class PersonClientImpl implements PersonClient {
 
     @Cacheable(CacheConfig.SIKKERHETSTILTAK_CACHE_NAME)
     @Override
-    public String hentSikkerhetstiltak(String ident) {
+    public String hentSikkerhetstiltak(Fnr fnr) {
         try {
-            HentSikkerhetstiltakResponse wsSikkerhetstiltak = personV3.hentSikkerhetstiltak(lagHentSikkerhetstiltakRequest(ident));
+            HentSikkerhetstiltakResponse wsSikkerhetstiltak = personV3.hentSikkerhetstiltak(lagHentSikkerhetstiltakRequest(fnr));
             return Optional.ofNullable(wsSikkerhetstiltak.getSikkerhetstiltak())
                     .map(no.nav.tjeneste.virksomhet.person.v3.informasjon.Sikkerhetstiltak::getSikkerhetstiltaksbeskrivelse)
                     .orElse(null);
@@ -76,27 +69,27 @@ public class PersonClientImpl implements PersonClient {
     @Override
     public HealthCheckResult checkHealth() {
         try {
-            personV3Ping.ping();
+            personV3.ping();
             return HealthCheckResult.healthy();
         } catch (Exception e) {
             return HealthCheckResult.unhealthy("Failed to ping personV3", e);
         }
     }
 
-    private HentPersonRequest lagHentPersonRequest(String ident) {
+    private HentPersonRequest lagHentPersonRequest(Fnr fnr) {
         return new HentPersonRequest()
-                .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(ident)))
+                .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(fnr.get())))
                 .withInformasjonsbehov(
                         Informasjonsbehov.ADRESSE, Informasjonsbehov.BANKKONTO,
                         Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.KOMMUNIKASJON
                 );
     }
 
-    private HentSikkerhetstiltakRequest lagHentSikkerhetstiltakRequest(String ident) {
+    private HentSikkerhetstiltakRequest lagHentSikkerhetstiltakRequest(Fnr fnr) {
         PersonIdent personIdent = new PersonIdent();
         personIdent.setIdent(
                 new NorskIdent()
-                        .withIdent(ident)
+                        .withIdent(fnr.get())
                         .withType(new Personidenter()
                                 .withValue("fnr")));
         return new HentSikkerhetstiltakRequest().withAktoer(personIdent);
