@@ -6,6 +6,8 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
@@ -102,6 +104,19 @@ public class ClientTestConfig {
             @Override
             public HealthCheckResult checkHealth() {
                 return HealthCheckResult.healthy();
+            }
+        };
+    }
+
+    @Bean
+    public DifiCient difiCient() {
+        return new DifiCient() {
+            @Override
+            public HarLoggetInnRespons harLoggetInnSiste18mnd(Fnr fnr) {
+                HarLoggetInnRespons harLoggetInnRespons = new HarLoggetInnRespons();
+                harLoggetInnRespons.setHarbruktnivaa4(true);
+//                harLoggetInnRespons.setPersonidentifikator(fnr);
+                return harLoggetInnRespons;
             }
         };
     }

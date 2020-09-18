@@ -3,6 +3,8 @@ package no.nav.veilarbperson.service;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
@@ -36,6 +38,8 @@ public class PersonServiceTest {
 
     private VeilarbportefoljeClient veilarbportefoljeClient = mock(VeilarbportefoljeClient.class);
 
+    private DifiCient difiCient = mock(DifiClientImpl.class);
+
     private PersonService personService;
 
     @Before
@@ -46,7 +50,7 @@ public class PersonServiceTest {
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
 
-        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient);
+        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient, difiCient);
     }
 
     @Test
