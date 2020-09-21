@@ -50,7 +50,7 @@ public class DifiClientImpl implements  DifiCient {
                 .url(difiUrl)
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, okhttp3.Credentials.basic(serviceUserCredentials.username, serviceUserCredentials.password))
-                .post(RestUtils.toJsonRequestBody(new Personidentifikator(fnr)))
+                .post(RestUtils.toJsonRequestBody(new Personidentifikator(fnr, null)))
                 .build();
         try (Response response = client.newCall(request).execute()) {
             RestUtils.throwIfNotSuccessful(response);
@@ -61,6 +61,7 @@ public class DifiClientImpl implements  DifiCient {
     @AllArgsConstructor
     private static class Personidentifikator {
         Fnr personidentifikator;
+        String fraDato;
     }
 
 }
