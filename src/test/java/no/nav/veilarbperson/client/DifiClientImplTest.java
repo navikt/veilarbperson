@@ -31,7 +31,7 @@ public class DifiClientImplTest {
         );
 
         givenThat(post(anyUrl())
-                .withRequestBody(new EqualToJsonPattern("{ \"personidentifikator\": \"12345678900\"}", true, false))
+                .withRequestBody(new EqualToJsonPattern("{ \"personidentifikator\": \"12345678900\", \"fraDato\" : null}", true, false))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(jsonBody))
