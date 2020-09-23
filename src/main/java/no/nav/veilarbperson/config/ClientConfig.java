@@ -17,12 +17,15 @@ import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClientImpl;
+import no.nav.veilarbperson.client.pam.PamClient;
+import no.nav.veilarbperson.client.pam.PamClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.PersonClientImpl;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClientImpl;
+import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -53,6 +56,11 @@ public class ClientConfig {
     @Bean
     public DkifClient dkifClient(SystemUserTokenProvider systemUserTokenProvider) {
         return new DkifClientImpl("http://dkif.default.svc.nais.local", systemUserTokenProvider);
+    }
+
+    @Bean
+    public PamClient pamClient(AuthService authService) {
+        return new PamClientImpl(clusterUrlForApplication("pam-cv-api", true), authService::getInnloggetBrukerToken);
     }
 
     @Bean
