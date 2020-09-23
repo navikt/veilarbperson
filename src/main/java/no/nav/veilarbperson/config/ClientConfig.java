@@ -9,6 +9,7 @@ import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.utils.Credentials;
+import no.nav.common.utils.EnvironmentUtils;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.dkif.DkifClient;
@@ -60,7 +61,9 @@ public class ClientConfig {
 
     @Bean
     public PamClient pamClient(AuthService authService) {
-        return new PamClientImpl(clusterUrlForApplication("pam-cv-api", true), authService::getInnloggetBrukerToken);
+        String adeoPrefix = EnvironmentUtils.isDevelopment().orElse(false) ? "dev" : "nais";
+        String pamCvUrl = String.format("https://pam-cv-api.%s.adeo.no/pam-cv-api", adeoPrefix);
+        return new PamClientImpl(pamCvUrl, authService::getInnloggetBrukerToken);
     }
 
     @Bean
