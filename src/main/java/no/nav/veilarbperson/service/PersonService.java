@@ -8,6 +8,7 @@ import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
+import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.domain.StrukturertAdresse;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
@@ -34,6 +35,7 @@ public class PersonService {
     private final KodeverkService kodeverkService;
     private final VeilarbportefoljeClient veilarbportefoljeClient;
     private final DifiCient difiCient;
+    private final PamClient pamClient;
 
     @Autowired
     public PersonService(
@@ -43,7 +45,9 @@ public class PersonService {
             DkifClient dkifClient,
             KodeverkService kodeverkService,
             VeilarbportefoljeClient veilarbportefoljeClient,
-            DifiCient difiCient) {
+            DifiCient difiCient,
+            PamClient pamClient
+    ) {
         this.norg2Client = norg2Client;
         this.personClient = personClient;
         this.egenAnsattClient = egenAnsattClient;
@@ -51,6 +55,7 @@ public class PersonService {
         this.kodeverkService = kodeverkService;
         this.veilarbportefoljeClient = veilarbportefoljeClient;
         this.difiCient = difiCient;
+        this.pamClient = pamClient;
     }
 
     public TpsPerson hentPerson(Fnr fodselsnummer){
@@ -81,6 +86,10 @@ public class PersonService {
 
     public HarLoggetInnRespons hentHarNivaa4(Fnr fodselsnummer) {
         return difiCient.harLoggetInnSiste18mnd(fodselsnummer);
+    }
+
+    public String hentCvJobbprofilJson(Fnr fnr) {
+        return pamClient.hentCvOgJobbprofilJson(fnr);
     }
 
     private void flettPersoninfoFraPortefolje(PersonData personData, Fnr fodselsnummer) {

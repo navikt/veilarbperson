@@ -1,8 +1,8 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
-import no.nav.common.types.identer.Fnr;
 import no.nav.common.featuretoggle.UnleashService;
+import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.domain.*;
@@ -92,6 +92,19 @@ public class PersonController {
         Fnr fodselsnummer = hentIdentForEksternEllerIntern(fnr);
         authService.sjekkLesetilgang(fodselsnummer);
         return personService.hentGeografisktilknytning(fodselsnummer);
+    }
+
+    @GetMapping("/cv_jobbprofil")
+    public String cvOgJobbprofil(@RequestParam(value = "fnr", required = false) Fnr fnr) {
+        Fnr fodselsnummer = hentIdentForEksternEllerIntern(fnr);
+
+        if (!authService.erInternBruker()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        authService.sjekkLesetilgang(fodselsnummer);
+
+        return personService.hentCvJobbprofilJson(fnr);
     }
 
     // TODO: Det er hårete å måtte skille på ekstern og intern
