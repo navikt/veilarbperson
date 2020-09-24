@@ -3,6 +3,7 @@ package no.nav.veilarbperson.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.person.domain.*;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class PersonData {
     String mellomnavn;
     String etternavn;
     String sammensattNavn;
-    String fodselsnummer;
+    Fnr fodselsnummer;
     String fodselsdato;
     String kjonn;
     String dodsdato;

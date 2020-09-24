@@ -2,6 +2,9 @@ package no.nav.veilarbperson.service;
 
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
+import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
@@ -16,6 +19,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,22 +38,24 @@ public class PersonServiceTest {
 
     private VeilarbportefoljeClient veilarbportefoljeClient = mock(VeilarbportefoljeClient.class);
 
+    private DifiCient difiCient = mock(DifiClientImpl.class);
+
     private PersonService personService;
 
     @Before
     public void setup() {
         when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
-        when(dkifClient.hentKontaktInfo(anyString())).thenReturn(new DkifKontaktinfo());
-        when(personClient.hentPerson(anyString())).thenReturn(lagPerson());
-        when(personClient.hentSikkerhetstiltak(anyString())).thenReturn(null);
-        when(egenAnsattClient.erEgenAnsatt(anyString())).thenReturn(true);
+        when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
+        when(personClient.hentPerson(any())).thenReturn(lagPerson());
+        when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
+        when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
 
-        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient);
+        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient, difiCient, null);
     }
 
     @Test
     public void hentPersonSkalReturnereEnPerson() {
-        final PersonData personData = personService.hentFlettetPerson("");
+        final PersonData personData = personService.hentFlettetPerson(Fnr.of(""));
         assertThat(personData, notNullValue());
     }
 
@@ -58,9 +64,9 @@ public class PersonServiceTest {
         final TpsPerson forventetPerson = lagPerson();
         final String geografiskTilknytning = "1234";
         forventetPerson.setGeografiskTilknytning(geografiskTilknytning);
-        when(personClient.hentPerson(anyString())).thenReturn(forventetPerson);
+        when(personClient.hentPerson(any())).thenReturn(forventetPerson);
 
-        final PersonData returnertPersonData = personService.hentFlettetPerson("");
+        final PersonData returnertPersonData = personService.hentFlettetPerson(Fnr.of(""));
 
         assertThat(returnertPersonData.getGeografiskTilknytning(), is(geografiskTilknytning));
     }
@@ -70,10 +76,10 @@ public class PersonServiceTest {
         final TpsPerson forventetPerson = lagPerson();
         final String kodeverksverdi = "GIFT";
         forventetPerson.setSivilstand(new Sivilstand().setSivilstand(kodeverksverdi));
-        when(personClient.hentPerson(anyString())).thenReturn(forventetPerson);
+        when(personClient.hentPerson(any())).thenReturn(forventetPerson);
         when(kodeverkService.getBeskrivelseForSivilstand(anyString())).thenReturn(kodeverksverdi);
 
-        final PersonData returnertPersonData = personService.hentFlettetPerson("");
+        final PersonData returnertPersonData = personService.hentFlettetPerson(Fnr.of(""));
 
         assertThat(returnertPersonData.getSivilstand(), notNullValue());
         assertThat(returnertPersonData.getSivilstand().getSivilstand(), is(kodeverksverdi));

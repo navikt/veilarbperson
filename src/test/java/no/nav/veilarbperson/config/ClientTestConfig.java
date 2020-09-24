@@ -4,6 +4,10 @@ import no.nav.common.client.aktorregister.AktorregisterClient;
 import no.nav.common.client.aktorregister.IdentOppslag;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.health.HealthCheckResult;
+import no.nav.common.types.identer.AktorId;
+import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
@@ -33,28 +37,33 @@ public class ClientTestConfig {
     public AktorregisterClient aktorregisterClient() {
         return new AktorregisterClient() {
             @Override
-            public String hentFnr(String s) {
+            public HealthCheckResult checkHealth() {
+                return HealthCheckResult.healthy();
+            }
+
+            @Override
+            public Fnr hentFnr(AktorId aktorId) {
                 return TEST_FNR;
             }
 
             @Override
-            public String hentAktorId(String s) {
+            public AktorId hentAktorId(Fnr fnr) {
                 return TEST_AKTOR_ID;
             }
 
             @Override
-            public List<IdentOppslag> hentFnr(List<String> list) {
-                return Collections.singletonList(new IdentOppslag(TEST_AKTOR_ID, TEST_FNR));
+            public List<IdentOppslag> hentFnr(List<AktorId> aktorIdListe) {
+                return null;
             }
 
             @Override
-            public List<IdentOppslag> hentAktorId(List<String> list) {
-                return Collections.singletonList(new IdentOppslag(TEST_FNR, TEST_AKTOR_ID));
+            public List<IdentOppslag> hentAktorId(List<Fnr> fnrListe) {
+                return null;
             }
 
             @Override
-            public HealthCheckResult checkHealth() {
-                return HealthCheckResult.healthy();
+            public List<AktorId> hentAktorIder(Fnr fnr) {
+                return null;
             }
         };
     }
@@ -88,7 +97,7 @@ public class ClientTestConfig {
     public DkifClient dkifClient() {
         return new DkifClient() {
             @Override
-            public DkifKontaktinfo hentKontaktInfo(String fnr) {
+            public DkifKontaktinfo hentKontaktInfo(Fnr fnr) {
                 return new DkifKontaktinfo();
             }
 
@@ -100,10 +109,23 @@ public class ClientTestConfig {
     }
 
     @Bean
+    public DifiCient difiCient() {
+        return new DifiCient() {
+            @Override
+            public HarLoggetInnRespons harLoggetInnSiste18mnd(Fnr fnr) {
+                HarLoggetInnRespons harLoggetInnRespons = new HarLoggetInnRespons();
+                harLoggetInnRespons.setHarbruktnivaa4(true);
+//                harLoggetInnRespons.setPersonidentifikator(fnr);
+                return harLoggetInnRespons;
+            }
+        };
+    }
+
+    @Bean
     public EgenAnsattClient egenAnsattClient() {
         return new EgenAnsattClient() {
             @Override
-            public boolean erEgenAnsatt(String ident) {
+            public boolean erEgenAnsatt(Fnr ident) {
                 return false;
             }
 
@@ -133,7 +155,7 @@ public class ClientTestConfig {
     public PersonClient personClient() {
         return new PersonClient() {
             @Override
-            public TpsPerson hentPerson(String ident) {
+            public TpsPerson hentPerson(Fnr ident) {
                 return new TpsPerson()
                         .setFornavn("Test")
                         .setEtternavn("Testersen")
@@ -142,7 +164,7 @@ public class ClientTestConfig {
             }
 
             @Override
-            public String hentSikkerhetstiltak(String ident) {
+            public String hentSikkerhetstiltak(Fnr ident) {
                 return "sikkerhetstiltak";
             }
 
@@ -157,7 +179,7 @@ public class ClientTestConfig {
     public VeilarbportefoljeClient veilarbportefoljeClient() {
         return new VeilarbportefoljeClient() {
             @Override
-            public Personinfo hentPersonInfo(String fodselsnummer) {
+            public Personinfo hentPersonInfo(Fnr fodselsnummer) {
                 return new Personinfo();
             }
 

@@ -8,18 +8,25 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.sts.SystemUserTokenProvider;
+import no.nav.common.utils.Credentials;
+import no.nav.common.utils.EnvironmentUtils;
+import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifClientImpl;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClientImpl;
+import no.nav.veilarbperson.client.pam.PamClient;
+import no.nav.veilarbperson.client.pam.PamClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.PersonClientImpl;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClientImpl;
+import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -48,8 +55,15 @@ public class ClientConfig {
     }
 
     @Bean
-    public DkifClient dkifClient() {
-        return new DkifClientImpl("http://dkif.default.svc.nais.local");
+    public DkifClient dkifClient(SystemUserTokenProvider systemUserTokenProvider) {
+        return new DkifClientImpl("http://dkif.default.svc.nais.local", systemUserTokenProvider);
+    }
+
+    @Bean
+    public PamClient pamClient(AuthService authService) {
+        String adeoPrefix = EnvironmentUtils.isDevelopment().orElse(false) ? "dev" : "nais";
+        String pamCvUrl = String.format("https://pam-cv-api.%s.adeo.no/pam-cv-api", adeoPrefix);
+        return new PamClientImpl(pamCvUrl, authService::getInnloggetBrukerToken);
     }
 
     @Bean
@@ -70,6 +84,11 @@ public class ClientConfig {
     @Bean
     public PdlClient pdlClient(SystemUserTokenProvider tokenProvider) {
         return new PdlClientImpl("http://pdl-api.default.svc.nais.local", tokenProvider::getSystemUserToken);
+    }
+
+    @Bean
+    public DifiCient difiCient(Credentials serviceUserCredentials) {
+        return new DifiClientImpl(serviceUserCredentials, DifiClientImpl.getDifiUrl());
     }
 
 }

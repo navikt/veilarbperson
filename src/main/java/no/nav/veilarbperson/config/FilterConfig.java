@@ -1,8 +1,8 @@
 package no.nav.veilarbperson.config;
 
+import no.nav.common.auth.context.UserRole;
 import no.nav.common.auth.oidc.filter.OidcAuthenticationFilter;
 import no.nav.common.auth.oidc.filter.OidcAuthenticatorConfig;
-import no.nav.common.auth.subject.IdentType;
 import no.nav.common.log.LogFilter;
 import no.nav.common.rest.filter.SetStandardHttpHeadersFilter;
 import no.nav.veilarbperson.utils.PingFilter;
@@ -21,19 +21,19 @@ public class FilterConfig {
     private OidcAuthenticatorConfig openAmAuthConfig(EnvironmentProperties properties) {
         return new OidcAuthenticatorConfig()
                 .withDiscoveryUrl(properties.getOpenAmDiscoveryUrl())
-                .withClientId(properties.getOpenAmClientId())
+                .withClientId(properties.getVeilarbloginOpenAmClientId())
                 .withIdTokenCookieName(OPEN_AM_ID_TOKEN_COOKIE_NAME)
                 .withRefreshTokenCookieName(REFRESH_TOKEN_COOKIE_NAME)
                 .withRefreshUrl(properties.getOpenAmRefreshUrl())
-                .withIdentType(IdentType.InternBruker);
+                .withUserRole(UserRole.INTERN);
     }
 
     private OidcAuthenticatorConfig azureAdAuthConfig(EnvironmentProperties properties) {
         return new OidcAuthenticatorConfig()
                 .withDiscoveryUrl(properties.getAadDiscoveryUrl())
-                .withClientId(properties.getAadClientId())
+                .withClientId(properties.getVeilarbloginAadClientId())
                 .withIdTokenCookieName(AZURE_AD_ID_TOKEN_COOKIE_NAME)
-                .withIdentType(IdentType.InternBruker);
+                .withUserRole(UserRole.INTERN);
     }
 
     private OidcAuthenticatorConfig azureAdB2CAuthConfig(EnvironmentProperties properties) {
@@ -41,7 +41,7 @@ public class FilterConfig {
                 .withDiscoveryUrl(properties.getAadB2cDiscoveryUrl())
                 .withClientId(properties.getAadB2cClientId())
                 .withIdTokenCookieName(AZURE_AD_B2C_ID_TOKEN_COOKIE_NAME)
-                .withIdentType(IdentType.EksternBruker);
+                .withUserRole(UserRole.EKSTERN);
     }
 
     @Bean
@@ -57,6 +57,15 @@ public class FilterConfig {
     }
 
     @Bean
+    public FilterRegistrationBean logFilterRegistrationBean() {
+        FilterRegistrationBean<LogFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new LogFilter(requireApplicationName(), isDevelopment().orElse(false)));
+        registration.setOrder(2);
+        registration.addUrlPatterns("/*");
+        return registration;
+    }
+
+    @Bean
     public FilterRegistrationBean authenticationFilterRegistrationBean(EnvironmentProperties properties) {
         FilterRegistrationBean<OidcAuthenticationFilter> registration = new FilterRegistrationBean<>();
         OidcAuthenticationFilter authenticationFilter = new OidcAuthenticationFilter(
@@ -64,17 +73,8 @@ public class FilterConfig {
         );
 
         registration.setFilter(authenticationFilter);
-        registration.setOrder(2);
-        registration.addUrlPatterns("/api/*");
-        return registration;
-    }
-
-    @Bean
-    public FilterRegistrationBean logFilterRegistrationBean() {
-        FilterRegistrationBean<LogFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new LogFilter(requireApplicationName(), isDevelopment().orElse(false)));
         registration.setOrder(3);
-        registration.addUrlPatterns("/*");
+        registration.addUrlPatterns("/api/*");
         return registration;
     }
 

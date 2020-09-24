@@ -2,6 +2,7 @@ package no.nav.veilarbperson.client.person.domain;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import no.nav.common.types.identer.Fnr;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class TpsPerson  {
     String mellomnavn;
     String etternavn;
     String sammensattNavn;
-    String fodselsnummer;
+    Fnr fodselsnummer;
     String fodselsdato;
     String kjonn;
     String dodsdato;

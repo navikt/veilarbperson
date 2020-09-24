@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.utils;
 
+import no.nav.common.types.identer.Fnr;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -16,13 +17,13 @@ public class FodselsnummerHjelperTest {
     private static final String FODSELSDATO_1940 = "1940-08-15";
     private static final String FODSELSDATO_1854 = "1854-12-31";
 
-    private static final String FODSELSNUMMER_2039 = TestUtils.fodselsnummerForDato(FODSELSDATO_2039);
-    private static final String FODSELSNUMMER_2013 = TestUtils.fodselsnummerForDato(FODSELSDATO_2013);
-    private static final String FODSELSNUMMER_2000 = TestUtils.fodselsnummerForDato(FODSELSDATO_2000);
-    private static final String FODSELSNUMMER_1999 = TestUtils.fodselsnummerForDato(FODSELSDATO_1999);
-    private static final String FODSELSNUMMER_1930 = TestUtils.fodselsnummerForDato(FODSELSDATO_1930);
-    private static final String FODSELSNUMMER_1940 = TestUtils.fodselsnummerForDato(FODSELSDATO_1940);
-    private static final String FODSELSNUMMER_1854 = TestUtils.fodselsnummerForDato(FODSELSDATO_1854);
+    private static final Fnr FODSELSNUMMER_2039 = TestUtils.fodselsnummerForDato(FODSELSDATO_2039);
+    private static final Fnr FODSELSNUMMER_2013 = TestUtils.fodselsnummerForDato(FODSELSDATO_2013);
+    private static final Fnr FODSELSNUMMER_2000 = TestUtils.fodselsnummerForDato(FODSELSDATO_2000);
+    private static final Fnr FODSELSNUMMER_1999 = TestUtils.fodselsnummerForDato(FODSELSDATO_1999);
+    private static final Fnr FODSELSNUMMER_1930 = TestUtils.fodselsnummerForDato(FODSELSDATO_1930);
+    private static final Fnr FODSELSNUMMER_1940 = TestUtils.fodselsnummerForDato(FODSELSDATO_1940);
+    private static final Fnr FODSELSNUMMER_1854 = TestUtils.fodselsnummerForDato(FODSELSDATO_1854);
 
     private static final String D_NUMMER_2039 = TestUtils.calculateDNummer(FODSELSNUMMER_2039);
     private static final String D_NUMMER_2013 = TestUtils.calculateDNummer(FODSELSNUMMER_2013);

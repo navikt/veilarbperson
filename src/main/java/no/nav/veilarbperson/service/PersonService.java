@@ -2,9 +2,13 @@ package no.nav.veilarbperson.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
+import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
+import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.domain.StrukturertAdresse;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
@@ -30,11 +34,19 @@ public class PersonService {
     private final DkifClient dkifClient;
     private final KodeverkService kodeverkService;
     private final VeilarbportefoljeClient veilarbportefoljeClient;
+    private final DifiCient difiCient;
+    private final PamClient pamClient;
 
     @Autowired
     public PersonService(
-            Norg2Client norg2Client, PersonClient personClient, EgenAnsattClient egenAnsattClient,
-            DkifClient dkifClient, KodeverkService kodeverkService, VeilarbportefoljeClient veilarbportefoljeClient
+            Norg2Client norg2Client,
+            PersonClient personClient,
+            EgenAnsattClient egenAnsattClient,
+            DkifClient dkifClient,
+            KodeverkService kodeverkService,
+            VeilarbportefoljeClient veilarbportefoljeClient,
+            DifiCient difiCient,
+            PamClient pamClient
     ) {
         this.norg2Client = norg2Client;
         this.personClient = personClient;
@@ -42,13 +54,15 @@ public class PersonService {
         this.dkifClient = dkifClient;
         this.kodeverkService = kodeverkService;
         this.veilarbportefoljeClient = veilarbportefoljeClient;
+        this.difiCient = difiCient;
+        this.pamClient = pamClient;
     }
 
-    public TpsPerson hentPerson(String fodselsnummer){
+    public TpsPerson hentPerson(Fnr fodselsnummer){
         return personClient.hentPerson(fodselsnummer);
     }
 
-    public PersonData hentFlettetPerson(String fodselsnummer) {
+    public PersonData hentFlettetPerson(Fnr fodselsnummer) {
         PersonData personData = PersonDataMapper.tilPersonData(personClient.hentPerson(fodselsnummer));
 
         try {
@@ -65,18 +79,26 @@ public class PersonService {
         return personData;
     }
 
-    public GeografiskTilknytning hentGeografisktilknytning(String fodselsnummer) {
+    public GeografiskTilknytning hentGeografisktilknytning(Fnr fodselsnummer) {
         String geografiskTilknytning = personClient.hentPerson(fodselsnummer).getGeografiskTilknytning();
         return new GeografiskTilknytning(geografiskTilknytning);
     }
 
-    private void flettPersoninfoFraPortefolje(PersonData personData, String fodselsnummer) {
+    public HarLoggetInnRespons hentHarNivaa4(Fnr fodselsnummer) {
+        return difiCient.harLoggetInnSiste18mnd(fodselsnummer);
+    }
+
+    public String hentCvJobbprofilJson(Fnr fnr) {
+        return pamClient.hentCvOgJobbprofilJson(fnr);
+    }
+
+    private void flettPersoninfoFraPortefolje(PersonData personData, Fnr fodselsnummer) {
         Personinfo personinfo = veilarbportefoljeClient.hentPersonInfo(fodselsnummer);
         personData.setSikkerhetstiltak(personinfo.sikkerhetstiltak);
         personData.setEgenAnsatt(personinfo.egenAnsatt);
     }
 
-    private void flettEgenAnsatt(String fodselsnummer, PersonData personData) {
+    private void flettEgenAnsatt(Fnr fodselsnummer, PersonData personData) {
         personData.setEgenAnsatt(egenAnsattClient.erEgenAnsatt(fodselsnummer));
     }
 
@@ -152,7 +174,7 @@ public class PersonService {
         }
     }
 
-    private void flettDigitalKontaktinformasjon(String fnr, PersonData personData) {
+    private void flettDigitalKontaktinformasjon(Fnr fnr, PersonData personData) {
         try {
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);
             personData.setTelefon(kontaktinfo.getMobiltelefonnummer());
@@ -162,7 +184,7 @@ public class PersonService {
         }
     }
 
-    private void flettSikkerhetstiltak(String fnr, PersonData personData) {
+    private void flettSikkerhetstiltak(Fnr fnr, PersonData personData) {
         try {
             String sikkerhetstiltak = personClient.hentSikkerhetstiltak(fnr);
             personData.setSikkerhetstiltak(sikkerhetstiltak);
