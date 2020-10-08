@@ -3,7 +3,9 @@ package no.nav.veilarbperson.config;
 import no.nav.common.client.aktorregister.AktorregisterClient;
 import no.nav.common.client.aktorregister.IdentOppslag;
 import no.nav.common.client.norg2.Norg2Client;
+import no.nav.common.featuretoggle.UnleashService;
 import no.nav.common.health.HealthCheckResult;
+import no.nav.common.health.selftest.SelfTestChecks;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
@@ -12,6 +14,7 @@ import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
+import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPersonData;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.person.PersonClient;
@@ -19,6 +22,7 @@ import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.utils.TestUtils;
+import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -209,5 +213,31 @@ public class ClientTestConfig {
             }
         };
     }
+
+    @Bean
+    public PamClient pamClient() {
+        return new PamClient() {
+            @Override
+            public String hentCvOgJobbprofilJson(Fnr fnr) {
+                return null;
+            }
+
+            @Override
+            public HealthCheckResult checkHealth() {
+                return HealthCheckResult.healthy();
+            }
+        };
+    }
+
+    @Bean
+    public UnleashService unleashService() {
+        return Mockito.mock(UnleashService.class);
+    }
+
+    @Bean
+    public SelfTestChecks selfTestChecks() {
+        return Mockito.mock(SelfTestChecks.class);
+    }
+
 
 }

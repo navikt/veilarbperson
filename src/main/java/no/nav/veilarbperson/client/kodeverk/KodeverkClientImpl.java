@@ -37,7 +37,7 @@ public class KodeverkClientImpl implements KodeverkClient {
     @SneakyThrows
     public Map<String, String> hentKodeverkBeskrivelser(String kodeverksnavn) {
         Request request = new Request.Builder()
-                .url(joinPaths(kodeverkUrl, format("/api/v1/kodeverk/%s/koder/betydninger?ekskluderUgyldige=true&spraak=nb", kodeverksnavn)))
+                .url(joinPaths(kodeverkUrl, format("/api/v1/kodeverk/%s/koder/betydninger?ekskluderUgyldige=false&spraak=nb", kodeverksnavn)))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .build();
 
