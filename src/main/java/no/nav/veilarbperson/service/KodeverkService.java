@@ -5,10 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
 import static java.lang.String.format;
 
 @Service
+@Slf4j
 public class KodeverkService {
 
     public final static String KODEVERK_LANDKODER = "Landkoder";
@@ -39,7 +40,8 @@ public class KodeverkService {
         String betydning = betydninger.get(kode);
 
         if (betydning == null) {
-            throw new IllegalStateException(format("Fant ikke kode %s i kodeverk %s", kode, kodeverksnavn));
+            log.error(format("Fant ikke kode %s i kodeverk %s", kode, kodeverksnavn));
+            return "Ikke tilgjengelig";
         }
 
         return betydning;
