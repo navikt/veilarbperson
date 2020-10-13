@@ -64,4 +64,9 @@ public class PepMock implements Pep {
     public AbacClient getAbacClient() {
         return abacClient;
     }
+
+    @Override
+    public boolean harTilgangTilEnhetMedSperre(String s, EnhetId enhetId) {
+        return false;
+    }
 }
