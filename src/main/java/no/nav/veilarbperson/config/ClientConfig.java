@@ -30,7 +30,7 @@ import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static no.nav.common.utils.UrlUtils.clusterUrlForApplication;
+import static no.nav.common.utils.UrlUtils.*;
 import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
 
 @Configuration
@@ -51,19 +51,25 @@ public class ClientConfig {
 
     @Bean
     public VeilarbportefoljeClient veilarbportefoljeClient() {
-        return new VeilarbportefoljeClientImpl(clusterUrlForApplication("veilarbportefolje", true));
+        String url = isProduction()
+                ? createNaisAdeoIngressUrl("veilarbportefolje", true)
+                : createNaisPreprodIngressUrl("veilarbportefolje", "q1", true);
+
+        return new VeilarbportefoljeClientImpl(url);
     }
 
     @Bean
     public DkifClient dkifClient(SystemUserTokenProvider systemUserTokenProvider) {
-        return new DkifClientImpl("http://dkif.default.svc.nais.local", systemUserTokenProvider);
+        return new DkifClientImpl(createServiceUrl("dkif", "default", false), systemUserTokenProvider);
     }
 
     @Bean
     public PamClient pamClient(AuthService authService) {
-        String adeoPrefix = EnvironmentUtils.isDevelopment().orElse(false) ? "dev" : "nais";
-        String pamCvUrl = String.format("https://pam-cv-api.%s.adeo.no/pam-cv-api", adeoPrefix);
-        return new PamClientImpl(pamCvUrl, authService::getInnloggetBrukerToken);
+        String url = isProduction()
+                ? createNaisAdeoIngressUrl("pam-cv-api", true)
+                : createDevAdeoIngressUrl("pam-cv-api", true);
+
+        return new PamClientImpl(url, authService::getInnloggetBrukerToken);
     }
 
     @Bean
@@ -78,17 +84,21 @@ public class ClientConfig {
 
     @Bean
     public KodeverkClient kodeverkClient() {
-        return new KodeverkClientImpl("http://kodeverk.default.svc.nais.local");
+        return new KodeverkClientImpl(createServiceUrl("kodeverk", "default", false));
     }
 
     @Bean
     public PdlClient pdlClient(SystemUserTokenProvider tokenProvider) {
-        return new PdlClientImpl("http://pdl-api.default.svc.nais.local", tokenProvider::getSystemUserToken);
+        return new PdlClientImpl(createServiceUrl("pdl-api", "default", false), tokenProvider::getSystemUserToken);
     }
 
     @Bean
     public DifiCient difiCient(Credentials serviceUserCredentials) {
         return new DifiClientImpl(serviceUserCredentials, DifiClientImpl.getDifiUrl());
+    }
+
+    private static boolean isProduction() {
+        return EnvironmentUtils.isProduction().orElseThrow();
     }
 
 }

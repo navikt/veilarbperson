@@ -2,8 +2,7 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: veilarbperson
-  namespace: {{namespace}}
-  cluster: dev-fss
+  namespace: pto
   labels:
     team: pto
 spec:
@@ -11,8 +10,8 @@ spec:
   port: 8080
   webproxy: true
   ingresses:
-    - https://veilarbperson-{{namespace}}.nais.preprod.local
-    - https://app-{{namespace}}.adeo.no/veilarbperson
+    - https://veilarbperson.nais.adeo.no
+    - https://app.adeo.no/veilarbperson
   liveness:
     path: veilarbperson/internal/isAlive
     initialDelay: 30
@@ -30,15 +29,15 @@ spec:
       cpu: 200m
       memory: 1024Mi
   replicas:
-    min: 1
-    max: 1
+    min: 2
+    max: 4
     cpuThresholdPercentage: 75
   vault:
     enabled: true
     paths:
-      - kvPath: /serviceuser/data/dev/srvveilarbperson
+      - kvPath: /serviceuser/data/prod/srvveilarbperson
         mountPath: /var/run/secrets/nais.io/service_user
-      - kvPath: /kv/preprod/fss/veilarbperson/{{namespace}}
+      - kvPath: /kv/prod/fss/veilarbperson/default
         mountPath: /var/run/secrets/nais.io/vault
   envFrom:
     - configmap: pto-config
