@@ -94,7 +94,9 @@ public class ClientConfig {
 
     @Bean
     public DifiCient difiCient(Credentials serviceUserCredentials) {
-        return new DifiClientImpl(serviceUserCredentials, DifiClientImpl.getDifiUrl());
+        String gwSuffix = EnvironmentUtils.isProduction().orElseThrow() ? "" : "-q1";
+        String url = "https://api-gw"+ gwSuffix + ".adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa";
+        return new DifiClientImpl(serviceUserCredentials, url);
     }
 
     private static boolean isProduction() {
