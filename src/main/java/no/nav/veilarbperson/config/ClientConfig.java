@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.config;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.aktorregister.AktorregisterClient;
 import no.nav.common.client.aktorregister.AktorregisterHttpClient;
 import no.nav.common.client.aktorregister.CachedAktorregisterClient;
@@ -10,8 +11,11 @@ import no.nav.common.cxf.StsConfig;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.utils.Credentials;
 import no.nav.common.utils.EnvironmentUtils;
+import no.nav.common.utils.NaisUtils;
+import no.nav.veilarbperson.client.difi.AccessTokenRepository;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.DifiClientImpl;
+import no.nav.veilarbperson.client.difi.SbsServiceUser;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifClientImpl;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
@@ -30,9 +34,11 @@ import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static no.nav.common.utils.EnvironmentUtils.getOptionalProperty;
 import static no.nav.common.utils.UrlUtils.clusterUrlForApplication;
 import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
 
+@Slf4j
 @Configuration
 public class ClientConfig {
 
@@ -58,6 +64,7 @@ public class ClientConfig {
     public DkifClient dkifClient(SystemUserTokenProvider systemUserTokenProvider) {
         return new DkifClientImpl("http://dkif.default.svc.nais.local", systemUserTokenProvider);
     }
+
 
     @Bean
     public PamClient pamClient(AuthService authService) {
@@ -87,8 +94,38 @@ public class ClientConfig {
     }
 
     @Bean
-    public DifiCient difiCient(Credentials serviceUserCredentials) {
-        return new DifiClientImpl(serviceUserCredentials, DifiClientImpl.getDifiUrl());
+    public AccessTokenRepository accessTokenRepository(SbsServiceUser sbsServiceUser) {
+        return new AccessTokenRepository(sbsServiceUser, AccessTokenRepository.getTokenUrl());
+    }
+
+    @Bean
+    public DifiCient difiCient(String xNavApikey, AccessTokenRepository accessTokenRepository) {
+        return new DifiClientImpl(accessTokenRepository, xNavApikey, DifiClientImpl.getNivaa4Url());
+    }
+
+    @Bean
+    public String xNavApikey() {
+        // TODO: 22/10/2020 fjern feilhåndtering når klar for prod
+        try {
+            return NaisUtils.getFileContent("/var/run/secrets/nais.io/authlevel/x-nav-apiKey");
+        } catch (IllegalStateException e) {
+            log.error("fant ikke x-nav-apiKey",e);
+            return null;
+        }
+    }
+
+    @Bean
+    public SbsServiceUser sbsServiceUser() {
+        // TODO: 22/10/2020 bytt til requered prop når klart for prod
+        String sbs_user = getOptionalProperty("SBS_USER").orElse("");
+        String sps_password = getOptionalProperty("SPS_PASSWORD").orElse("");
+        if (sps_password.equals("")) {
+            log.error("fant ikke sps_passord");
+        }
+        if (sbs_user.equals("")) {
+            log.error("fant ikke sbs_user");
+        }
+        return new SbsServiceUser(sbs_user, sps_password);
     }
 
 }
