@@ -11,7 +11,7 @@ import no.nav.common.cxf.StsConfig;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.utils.EnvironmentUtils;
 import no.nav.common.utils.NaisUtils;
-import no.nav.veilarbperson.client.difi.DifiAccessTokenProvider;
+import no.nav.veilarbperson.client.difi.DifiAccessTokenProviderImpl;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.difi.SbsServiceUser;
@@ -93,12 +93,12 @@ public class ClientConfig {
     }
 
     @Bean
-    public DifiAccessTokenProvider accessTokenRepository(SbsServiceUser sbsServiceUser) {
-        return new DifiAccessTokenProvider(sbsServiceUser, DifiAccessTokenProvider.getTokenUrl());
+    public DifiAccessTokenProviderImpl accessTokenRepository(SbsServiceUser sbsServiceUser) {
+        return new DifiAccessTokenProviderImpl(sbsServiceUser, DifiAccessTokenProviderImpl.getTokenUrl());
     }
 
     @Bean
-    public DifiCient difiCient(String xNavApikey, DifiAccessTokenProvider difiAccessTokenProvider) {
+    public DifiCient difiCient(String xNavApikey, DifiAccessTokenProviderImpl difiAccessTokenProvider) {
         return new DifiClientImpl(difiAccessTokenProvider, xNavApikey, DifiClientImpl.getNivaa4Url());
     }
 
