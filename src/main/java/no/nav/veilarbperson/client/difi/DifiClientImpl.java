@@ -1,13 +1,10 @@
 package no.nav.veilarbperson.client.difi;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
 import no.nav.common.types.identer.Fnr;
-import no.nav.common.utils.Credentials;
 import no.nav.veilarbperson.config.CacheConfig;
 import okhttp3.*;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,20 +18,20 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class DifiClientImpl implements  DifiCient {
 
-
-    private final Credentials serviceUserCredentials;
+    private final DifiAccessTokenProvider difiAccessTokenProvider;
     private final OkHttpClient client;
-
     private final String difiUrl;
+    private final String xNavApikey;
 
 
-    public DifiClientImpl(Credentials serviceUserCredentials, String difiUrl) {
+    public DifiClientImpl(DifiAccessTokenProvider difiAccessTokenProvider, String xNavApikey, String difiUrl) {
+        this.difiAccessTokenProvider = difiAccessTokenProvider;
         this.difiUrl = difiUrl;
-        this.serviceUserCredentials = serviceUserCredentials;
+        this.xNavApikey = xNavApikey;
         this.client = RestClient.baseClient();
     }
 
-    public static String getDifiUrl() {
+    public static String getNivaa4Url() {
         Optional<String> namespace = getNamespace();
         String name = namespace.orElse("defult");
         String urlpart = name.equals("defult") ? "" : "-" + name;
@@ -46,11 +43,13 @@ public class DifiClientImpl implements  DifiCient {
     @SneakyThrows
     @Override
     public HarLoggetInnRespons harLoggetInnSiste18mnd(Fnr fnr) {
+        String token = difiAccessTokenProvider.getAccessToken();
         Request request = new Request.Builder()
                 .url(difiUrl)
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
-                .header(AUTHORIZATION, okhttp3.Credentials.basic(serviceUserCredentials.username, serviceUserCredentials.password))
-                .post(RestUtils.toJsonRequestBody(new Personidentifikator(fnr, null)))
+                .header(AUTHORIZATION, "Bearer " + token)
+                .header("x-nav-apiKey", xNavApikey)
+                .post(RestUtils.toJsonRequestBody(new Personidentifikator(fnr)))
                 .build();
         try (Response response = client.newCall(request).execute()) {
             RestUtils.throwIfNotSuccessful(response);
@@ -61,7 +60,6 @@ public class DifiClientImpl implements  DifiCient {
     @AllArgsConstructor
     private static class Personidentifikator {
         Fnr personidentifikator;
-        String fraDato;
     }
 
 }

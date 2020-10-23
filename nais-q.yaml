@@ -40,5 +40,7 @@ spec:
         mountPath: /var/run/secrets/nais.io/service_user
       - kvPath: /kv/preprod/fss/veilarbperson/{{namespace}}
         mountPath: /var/run/secrets/nais.io/vault
+      - kvPath: /apikey/apigw/dev/eksternapp.difi.idporten.authlevel/veilarbperson_{{namespace}}
+        mountPath: /var/run/secrets/nais.io/authlevel
   envFrom:
     - configmap: pto-config
