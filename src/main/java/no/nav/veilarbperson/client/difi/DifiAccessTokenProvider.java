@@ -1,6 +1,8 @@
 package no.nav.veilarbperson.client.difi;
 
+import com.nimbusds.jwt.JWTParser;
 import lombok.SneakyThrows;
+import no.nav.common.auth.utils.TokenUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
 import okhttp3.*;
@@ -10,13 +12,13 @@ import java.util.Optional;
 import static no.nav.common.utils.EnvironmentUtils.getNamespace;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-public class AccessTokenRepository {
+public class DifiAccessTokenProvider {
     private static String token;
     private final SbsServiceUser sbsServiceUser;
     private final OkHttpClient client;
     private final String url;
 
-    public AccessTokenRepository(SbsServiceUser sbsServiceUser, String url) {
+    public DifiAccessTokenProvider(SbsServiceUser sbsServiceUser, String url) {
         this.url = url;
         this.sbsServiceUser = sbsServiceUser;
         this.client = RestClient.baseClient();
@@ -29,15 +31,16 @@ public class AccessTokenRepository {
         return "https://api-gw"+ urlpart + ".adeo.no/ekstern/difi/idporten-oidc-provider/token";
     }
 
+    @SneakyThrows
     public String getAccessToken() {
-        if(token == null) {
+        if(token == null || TokenUtils.expiresWithin(JWTParser.parse(token), 30*1000)) {
             return refreshAccessToken();
         }
         return token;
     }
 
     @SneakyThrows
-    public String refreshAccessToken() {
+    private String refreshAccessToken() {
         String oToken = token;
         synchronized (this) {
             //hvis toknet er refreseht i annen tråd

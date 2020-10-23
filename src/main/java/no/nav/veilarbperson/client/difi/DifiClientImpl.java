@@ -18,21 +18,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class DifiClientImpl implements  DifiCient {
 
-    private final AccessTokenRepository accessTokenRepository;
+    private final DifiAccessTokenProvider difiAccessTokenProvider;
     private final OkHttpClient client;
     private final String difiUrl;
     private final String xNavApikey;
 
 
-    public DifiClientImpl(AccessTokenRepository accessTokenRepository, String xNavApikey, String difiUrl) {
-        this.accessTokenRepository = accessTokenRepository;
+    public DifiClientImpl(DifiAccessTokenProvider difiAccessTokenProvider, String xNavApikey, String difiUrl) {
+        this.difiAccessTokenProvider = difiAccessTokenProvider;
         this.difiUrl = difiUrl;
         this.xNavApikey = xNavApikey;
-        this.client = RestClient
-                .baseClientBuilder()
-                .authenticator(new AccessTokenAuthenticator(this.accessTokenRepository))
-                .build();
-
+        this.client = RestClient.baseClient();
     }
 
     public static String getNivaa4Url() {
@@ -47,7 +43,7 @@ public class DifiClientImpl implements  DifiCient {
     @SneakyThrows
     @Override
     public HarLoggetInnRespons harLoggetInnSiste18mnd(Fnr fnr) {
-        String token = accessTokenRepository.getAccessToken();
+        String token = difiAccessTokenProvider.getAccessToken();
         Request request = new Request.Builder()
                 .url(difiUrl)
                 .header(ACCEPT, APPLICATION_JSON_VALUE)

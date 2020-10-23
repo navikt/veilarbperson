@@ -9,10 +9,9 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.sts.SystemUserTokenProvider;
-import no.nav.common.utils.Credentials;
 import no.nav.common.utils.EnvironmentUtils;
 import no.nav.common.utils.NaisUtils;
-import no.nav.veilarbperson.client.difi.AccessTokenRepository;
+import no.nav.veilarbperson.client.difi.DifiAccessTokenProvider;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.difi.SbsServiceUser;
@@ -94,13 +93,13 @@ public class ClientConfig {
     }
 
     @Bean
-    public AccessTokenRepository accessTokenRepository(SbsServiceUser sbsServiceUser) {
-        return new AccessTokenRepository(sbsServiceUser, AccessTokenRepository.getTokenUrl());
+    public DifiAccessTokenProvider accessTokenRepository(SbsServiceUser sbsServiceUser) {
+        return new DifiAccessTokenProvider(sbsServiceUser, DifiAccessTokenProvider.getTokenUrl());
     }
 
     @Bean
-    public DifiCient difiCient(String xNavApikey, AccessTokenRepository accessTokenRepository) {
-        return new DifiClientImpl(accessTokenRepository, xNavApikey, DifiClientImpl.getNivaa4Url());
+    public DifiCient difiCient(String xNavApikey, DifiAccessTokenProvider difiAccessTokenProvider) {
+        return new DifiClientImpl(difiAccessTokenProvider, xNavApikey, DifiClientImpl.getNivaa4Url());
     }
 
     @Bean

@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.matching.EqualToJsonPattern;
 import no.nav.common.json.JsonUtils;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.difi.AccessTokenRepository;
+import no.nav.veilarbperson.client.difi.DifiAccessTokenProvider;
 import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.difi.SbsServiceUser;
@@ -48,8 +48,8 @@ public class DifiClientImplTest {
                         .withBody(jsonBody))
         );
 
-        AccessTokenRepository accessTokenRepository = new AccessTokenRepository(credentials, tokenUrl);
-        DifiClientImpl difiClient = new DifiClientImpl(accessTokenRepository, "apigw-key", nivaa4Url);
+        DifiAccessTokenProvider difiAccessTokenProvider = new DifiAccessTokenProvider(credentials, tokenUrl);
+        DifiClientImpl difiClient = new DifiClientImpl(difiAccessTokenProvider, "apigw-key", nivaa4Url);
         HarLoggetInnRespons harLoggetInnRespons = difiClient.harLoggetInnSiste18mnd(fnr);
         assertTrue(harLoggetInnRespons.isHarbruktnivaa4());
     }
