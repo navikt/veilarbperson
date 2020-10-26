@@ -9,6 +9,7 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.sts.SystemUserTokenProvider;
+import no.nav.common.utils.Credentials;
 import no.nav.common.utils.EnvironmentUtils;
 import no.nav.common.utils.NaisUtils;
 import no.nav.veilarbperson.client.difi.DifiAccessTokenProviderImpl;
@@ -34,6 +35,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static no.nav.common.utils.EnvironmentUtils.getOptionalProperty;
+import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.clusterUrlForApplication;
 import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
 
@@ -104,27 +106,13 @@ public class ClientConfig {
 
     @Bean
     public String xNavApikey() {
-        // TODO: 22/10/2020 fjern feilhåndtering når klar for prod
-        try {
-            return NaisUtils.getFileContent("/var/run/secrets/nais.io/authlevel/x-nav-apiKey");
-        } catch (IllegalStateException e) {
-            log.error("fant ikke x-nav-apiKey",e);
-            return null;
-        }
+        return NaisUtils.getFileContent("/var/run/secrets/nais.io/authlevel/x-nav-apiKey");
     }
 
     @Bean
     public SbsServiceUser sbsServiceUser() {
-        // TODO: 22/10/2020 bytt til requered prop når klart for prod
-        String sbs_user = getOptionalProperty("SBS_USER").orElse("");
-        String sps_password = getOptionalProperty("SPS_PASSWORD").orElse("");
-        if (sps_password.equals("")) {
-            log.error("fant ikke sps_passord");
-        }
-        if (sbs_user.equals("")) {
-            log.error("fant ikke sbs_user");
-        }
-        return new SbsServiceUser(sbs_user, sps_password);
+        Credentials service_user_sbs = getCredentials("service_user_sbs");
+        return new SbsServiceUser(service_user_sbs.username, service_user_sbs.password);
     }
 
 }
