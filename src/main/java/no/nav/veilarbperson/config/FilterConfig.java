@@ -36,10 +36,10 @@ public class FilterConfig {
                 .withUserRole(UserRole.INTERN);
     }
 
-    private OidcAuthenticatorConfig azureAdB2CAuthConfig(EnvironmentProperties properties) {
+    private OidcAuthenticatorConfig loginserviceIdportenConfig(EnvironmentProperties properties) {
         return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(properties.getAadB2cDiscoveryUrl())
-                .withClientId(properties.getAadB2cClientId())
+                .withDiscoveryUrl(properties.getLoginserviceIdportenDiscoveryUrl())
+                .withClientId(properties.getLoginserviceIdportenAudience())
                 .withIdTokenCookieName(AZURE_AD_B2C_ID_TOKEN_COOKIE_NAME)
                 .withUserRole(UserRole.EKSTERN);
     }
@@ -69,7 +69,11 @@ public class FilterConfig {
     public FilterRegistrationBean authenticationFilterRegistrationBean(EnvironmentProperties properties) {
         FilterRegistrationBean<OidcAuthenticationFilter> registration = new FilterRegistrationBean<>();
         OidcAuthenticationFilter authenticationFilter = new OidcAuthenticationFilter(
-                fromConfigs(openAmAuthConfig(properties), azureAdAuthConfig(properties), azureAdB2CAuthConfig(properties))
+                fromConfigs(
+                        openAmAuthConfig(properties),
+                        azureAdAuthConfig(properties),
+                        loginserviceIdportenConfig(properties)
+                )
         );
 
         registration.setFilter(authenticationFilter);
