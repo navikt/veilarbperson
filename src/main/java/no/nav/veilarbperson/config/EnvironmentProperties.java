@@ -19,9 +19,9 @@ public class EnvironmentProperties {
 
     private String veilarbloginAadClientId;
 
-    private String aadB2cDiscoveryUrl;
+    private String loginserviceIdportenAudience;
 
-    private String aadB2cClientId;
+    private String loginserviceIdportenDiscoveryUrl;
 
     private String stsDiscoveryUrl;
 
