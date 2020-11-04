@@ -33,8 +33,8 @@ public class DifiClientImpl implements  DifiCient {
 
     public static String getNivaa4Url() {
         Optional<String> namespace = getNamespace();
-        String name = namespace.orElse("defult");
-        String urlpart = name.equals("defult") ? "" : "-" + name;
+        String name = namespace.orElse("default");
+        String urlpart = name.equalsIgnoreCase("default") ? "" : "-" + name;
         return "https://api-gw"+ urlpart + ".adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa";
     }
 
