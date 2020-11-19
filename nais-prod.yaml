@@ -37,7 +37,12 @@ spec:
     paths:
       - kvPath: /serviceuser/data/prod/srvveilarbperson
         mountPath: /var/run/secrets/nais.io/service_user
+      - kvPath: /serviceuser/data/prod/srvveilarbpersonsbs-sbs
+        mountPath: /var/run/secrets/nais.io/service_user_sbs
       - kvPath: /kv/prod/fss/veilarbperson/default
         mountPath: /var/run/secrets/nais.io/vault
+      - kvPath: /apikey/apigw/prod/eksternapp.difi.idporten.authlevel/veilarbperson
+        mountPath: /var/run/secrets/nais.io/authlevel
   envFrom:
     - configmap: pto-config
+    - configmap: loginservice-idporten

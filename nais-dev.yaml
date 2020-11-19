@@ -11,6 +11,8 @@ spec:
   webproxy: true
   ingresses:
     - https://veilarbperson-q1.nais.preprod.local
+    - https://app-q1.dev.adeo.no/veilarbperson
+    - https://app.dev.adeo.no/veilarbperson
     - https://app-q1.adeo.no/veilarbperson
   liveness:
     path: veilarbperson/internal/isAlive
@@ -37,7 +39,12 @@ spec:
     paths:
       - kvPath: /serviceuser/data/dev/srvveilarbperson
         mountPath: /var/run/secrets/nais.io/service_user
+      - kvPath: /serviceuser/data/dev/srvveilarbpersonsbs-sbs
+        mountPath: /var/run/secrets/nais.io/service_user_sbs
       - kvPath: /kv/preprod/fss/veilarbperson/q1
         mountPath: /var/run/secrets/nais.io/vault
+      - kvPath: /apikey/apigw/dev/eksternapp.difi.idporten.authlevel/veilarbperson_q1
+        mountPath: /var/run/secrets/nais.io/authlevel
   envFrom:
     - configmap: pto-config
+    - configmap: loginservice-idporten
