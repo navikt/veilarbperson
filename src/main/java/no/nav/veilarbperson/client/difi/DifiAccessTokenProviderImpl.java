@@ -24,13 +24,6 @@ public class DifiAccessTokenProviderImpl implements DifiAccessTokenProvider {
         this.client = RestClient.baseClient();
     }
 
-    public static String getTokenUrl() {
-        Optional<String> namespace = getNamespace();
-        String name = namespace.orElse("default");
-        String urlpart = name.equalsIgnoreCase("default") ? "" : "-" + name;
-        return "https://api-gw" + urlpart + ".adeo.no/ekstern/difi/idporten-oidc-provider/token";
-    }
-
     @SneakyThrows
     public synchronized String getAccessToken() {
         if (token == null || TokenUtils.expiresWithin(JWTParser.parse(token), 30*1000)) {
