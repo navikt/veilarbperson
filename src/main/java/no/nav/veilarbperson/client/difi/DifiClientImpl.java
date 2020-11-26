@@ -46,6 +46,12 @@ public class DifiClientImpl implements  DifiCient {
                 .post(RestUtils.toJsonRequestBody(new Personidentifikator(fnr)))
                 .build();
         try (Response response = client.newCall(request).execute()) {
+            if(response.code() == 404) {
+                //brukere som ikke er registret som idporten brukere returnerer 404
+                return new HarLoggetInnRespons()
+                        .setHarbruktnivaa4(false)
+                        .setPersonidentifikator(fnr);
+            }
             RestUtils.throwIfNotSuccessful(response);
             return RestUtils.parseJsonResponseOrThrow(response, HarLoggetInnRespons.class);
         }
