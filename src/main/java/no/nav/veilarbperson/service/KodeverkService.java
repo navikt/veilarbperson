@@ -31,7 +31,7 @@ public class KodeverkService {
         return finnBeskrivelse(KODEVERK_SIVILSTANDER, kode);
     }
 
-    public String getPoststed(String postnummer) {
+    public String getPoststedForPostnummer(String postnummer) {
         return finnBeskrivelse(KODEVERK_POSTNUMMER, postnummer);
     }
 

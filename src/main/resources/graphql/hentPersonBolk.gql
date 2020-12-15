@@ -1,0 +1,28 @@
+query($identer: ID!, $historikk: Boolean!) {
+    hentPersonBolk(identer: $identer) {
+        ident,
+        person {
+            navn(historikk: $historikk) {
+                fornavn
+                mellomnavn
+                etternavn
+                forkortetNavn
+            }
+            foedsel {
+                foedselsdato
+            }
+            kjoenn{
+                kjoenn
+            }
+            folkeregisteridentifikator(historikk: $historikk) {
+                identifikasjonsnummer
+                status
+                type
+            }
+            doedsfall {
+                doedsdato
+            }
+         },
+        code
+    }
+}

@@ -9,4 +9,5 @@ public class DkifKontaktinfo {
     boolean reservert;
     String epostadresse;
     String mobiltelefonnummer;
+    String spraak;
 }

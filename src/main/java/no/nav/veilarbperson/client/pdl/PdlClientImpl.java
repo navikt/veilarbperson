@@ -19,6 +19,7 @@ import okhttp3.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import static no.nav.common.rest.client.RestUtils.MEDIA_TYPE_JSON;
@@ -37,22 +38,39 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentPersonQuery;
 
+    private final String hentPersonBolkQuery;
+
+
     public PdlClientImpl(String pdlUrl, Supplier<String> systemUserTokenSupplier) {
         this.pdlUrl = pdlUrl;
         this.client = RestClient.baseClient();
         this.systemUserTokenSupplier = systemUserTokenSupplier;
-        this.hentPersonQuery = FileUtils.getResourceFileAsString("gql/hentPerson.gql");
+        this.hentPersonQuery = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
+        this.hentPersonBolkQuery = FileUtils.getResourceFileAsString("graphql/hentPersonBolk.gql");
     }
 
     @Override
-    public HentPersonData.PdlPerson hentPerson(String personIdent, String userToken) {
-        GqlRequest request = new GqlRequest<>(hentPersonQuery, new HentPersonVariables(personIdent));
-        return graphqlRequest(request, userToken, HentPersonData.class).hentPerson;
+    public HentPdlPerson.PdlPerson hentPerson(String personIdent, String userToken) {
+        GqlRequest request = new GqlRequest<>(hentPersonQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
+        return graphqlRequest(request, userToken, HentPdlPerson.class).pdlPerson;
+    }
+
+    @Override
+    public HentPdlPerson.PersonsFamiliemedlem hentPartnerOpplysninger(String personIdent, String userToken) {
+        GqlRequest request = new GqlRequest<>(hentPersonQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
+        return graphqlRequest(request, userToken, HentPdlPerson.class).personsPartner;
+    }
+
+    @Override
+    public List<HentPdlPerson.PdlPersonBolk> hentPersonBolk(String[] personIdent) {
+        GqlRequest request = new GqlRequest<>(hentPersonBolkQuery, new PdlPersonVariables.HentPersonBolkVariables(personIdent, false));
+        return graphqlRequest(request, systemUserTokenSupplier.get(), HentPdlPerson.class).pdlPersonBolk;
     }
 
     @SneakyThrows
     @Override
     public String rawRequest(String gqlRequest, String userToken) {
+
         Request request = new Request.Builder()
                 .url(joinPaths(pdlUrl, "/graphql"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
