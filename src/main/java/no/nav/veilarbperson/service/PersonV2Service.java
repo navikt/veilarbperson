@@ -9,14 +9,14 @@ import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
-import no.nav.veilarbperson.client.pdl.PdlPersonData;
+import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.Familiemedlem;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.PersonData;
-import no.nav.veilarbperson.utils.PdlPersonDataMappper;
+import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
 
 @Slf4j
 @Service
-public class PdlService {
+public class PersonV2Service {
 
     private final PdlClient pdlClient;
     private final AuthService authService;
@@ -43,8 +43,8 @@ public class PdlService {
     private final KodeverkService kodeverkService;
 
     @Autowired
-    public PdlService(PdlClient pdlClient, AuthService authService, DkifClient dkifClient, Norg2Client norg2Client, PersonClient personClient,
-                      PamClient pamClient, EgenAnsattClient egenAnsattClient, VeilarbportefoljeClient veilarbportefoljeClient, KodeverkService kodeverkService) {
+    public PersonV2Service(PdlClient pdlClient, AuthService authService, DkifClient dkifClient, Norg2Client norg2Client, PersonClient personClient,
+                           PamClient pamClient, EgenAnsattClient egenAnsattClient, VeilarbportefoljeClient veilarbportefoljeClient, KodeverkService kodeverkService) {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.dkifClient = dkifClient;
@@ -64,26 +64,26 @@ public class PdlService {
         return PersonDataMapper.tilPersonData(personClient.hentPerson(Fnr.of(personIdent)));
     }
 
-    public PdlPersonData hentFlettetPerson(String fodselsnummer, String userToken) throws Exception {
+    public PersonV2Data hentFlettetPerson(String fodselsnummer, String userToken) throws Exception {
         PersonData personDataFraTps = hentPersonDataFraTps(fodselsnummer);
         HentPdlPerson.PdlPerson personDataFraPdl = Optional.of(pdlClient.hentPerson(fodselsnummer, userToken)).orElseThrow(() -> new Exception("Fant ikke person i hentPerson operasjonen i PDL"));
-        PdlPersonData pdlPersonData = PdlPersonDataMappper.toPdlPersonData(personDataFraPdl, personDataFraTps);
+        PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl, personDataFraTps);
 
         try {
-            flettPersoninfoFraPortefolje(pdlPersonData, fodselsnummer);
+            flettPersoninfoFraPortefolje(personV2Data, fodselsnummer);
         } catch (Exception e) {
             log.warn("Bruker fallbackløsning for egenAnsatt-sjekk", e);
-            flettEgenAnsatt(fodselsnummer, pdlPersonData);
-            flettSikkerhetstiltak(fodselsnummer, pdlPersonData);
+            flettEgenAnsatt(fodselsnummer, personV2Data);
+            flettSikkerhetstiltak(fodselsnummer, personV2Data);
         }
 
-        flettBarnInformasjon(personDataFraPdl.getFamilierelasjoner(), pdlPersonData);
-        flettPartnerInformasjon(personDataFraPdl.getSivilstand(), pdlPersonData, userToken);
-        flettDigitalKontaktinformasjon(fodselsnummer, pdlPersonData);
-        flettGeografiskEnhet(pdlPersonData);
-        flettKodeverk(pdlPersonData);
+        flettBarnInformasjon(personDataFraPdl.getFamilierelasjoner(), personV2Data);
+        flettPartnerInformasjon(personDataFraPdl.getSivilstand(), personV2Data, userToken);
+        flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
+        flettGeografiskEnhet(personV2Data);
+        flettKodeverk(personV2Data);
 
-        return pdlPersonData;
+        return personV2Data;
     }
 
     public List<Familiemedlem> hentOpplysningerTilBarna(String[] barnasFnrs) {
@@ -92,7 +92,7 @@ public class PdlService {
         return barnasaInformasjon.stream()
                 .filter(barn -> barn.getCode().equals("ok"))
                 .map(HentPdlPerson.PdlPersonBolk::getPerson)
-                .map(PdlPersonDataMappper::familiemedlemMapper)
+                .map(PersonV2DataMapper::familiemedlemMapper)
                 .collect(Collectors.toList());
     }
 
@@ -106,71 +106,67 @@ public class PdlService {
                 .toArray(String[]::new);
     }
 
-    private void flettBarnInformasjon(List<HentPdlPerson.Familierelasjoner> familierelasjoner, PdlPersonData pdlPersonData) {
+    private void flettBarnInformasjon(List<HentPdlPerson.Familierelasjoner> familierelasjoner, PersonV2Data personV2Data) {
         String[] barnasFnrListe = hentFnrTilBarna(familierelasjoner);
         List<Familiemedlem> barnasInformasjon = hentOpplysningerTilBarna(barnasFnrListe);
-        pdlPersonData.setBarn(barnasInformasjon);
+        personV2Data.setBarn(barnasInformasjon);
     }
 
     public String hentFnrTilPartner(List<HentPdlPerson.Sivilstand> personsSivilstand){
-        return Optional.ofNullable(PdlPersonDataMappper.getFirstElement(personsSivilstand))
+        return Optional.ofNullable(PersonV2DataMapper.getFirstElement(personsSivilstand))
                 .map(HentPdlPerson.Sivilstand::getRelatertVedSivilstand)
                 .orElse(null);
     }
 
-    public void flettPartnerInformasjon(List<HentPdlPerson.Sivilstand> personsSivilstand, PdlPersonData pdlPersonData, String userToken) {
+    public void flettPartnerInformasjon(List<HentPdlPerson.Sivilstand> personsSivilstand, PersonV2Data personV2Data, String userToken) {
         String fnrTilPartner = hentFnrTilPartner(personsSivilstand);
         HentPdlPerson.PersonsFamiliemedlem partnerInformasjon =  pdlClient.hentPartnerOpplysninger(fnrTilPartner, userToken);
-        pdlPersonData.setPartner(PdlPersonDataMappper.familiemedlemMapper(partnerInformasjon));
+        personV2Data.setPartner(PersonV2DataMapper.familiemedlemMapper(partnerInformasjon));
     }
 
-    public String executeGqlRequest(String gqlRequest) {
-        return pdlClient.rawRequest(gqlRequest, authService.getInnloggetBrukerToken());
-    }
-
-    private void flettPersoninfoFraPortefolje(PdlPersonData personData, String fodselsnummer) {
+    private void flettPersoninfoFraPortefolje(PersonV2Data personData, String fodselsnummer) {
         Personinfo personinfo = veilarbportefoljeClient.hentPersonInfo(Fnr.of(fodselsnummer));
         personData.setSikkerhetstiltak(personinfo.sikkerhetstiltak);
         personData.setEgenAnsatt(personinfo.egenAnsatt);
     }
 
-    private void flettEgenAnsatt(String fnr, PdlPersonData pdlPersonData) {
-        pdlPersonData.setEgenAnsatt(egenAnsattClient.erEgenAnsatt(Fnr.of(fnr)));
+    private void flettEgenAnsatt(String fnr, PersonV2Data personV2Data) {
+        personV2Data.setEgenAnsatt(egenAnsattClient.erEgenAnsatt(Fnr.of(fnr)));
     }
 
-    private void flettSikkerhetstiltak(String fnr, PdlPersonData pdlPersonData) {
+    private void flettSikkerhetstiltak(String fnr, PersonV2Data personV2Data) {
         try {
             String sikkerhetstiltak = personClient.hentSikkerhetstiltak(Fnr.of(fnr));
-            pdlPersonData.setSikkerhetstiltak(sikkerhetstiltak);
+            personV2Data.setSikkerhetstiltak(sikkerhetstiltak);
         } catch (Exception e) {
             log.warn("Kunne ikke flette Sikkerhetstiltak", e);
         }
     }
 
-    private void flettGeografiskEnhet(PdlPersonData pdlPersonData) {
-        String geografiskTilknytning = pdlPersonData.getGeografiskTilknytning();
+    private void flettGeografiskEnhet(PersonV2Data personV2Data) {
+        String geografiskTilknytning = personV2Data.getGeografiskTilknytning();
 
         if (geografiskTilknytning != null && geografiskTilknytning.matches("\\d+")) {
             try {
                 Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning));
-                pdlPersonData.setGeografiskEnhet(enhet);
+                personV2Data.setGeografiskEnhet(enhet);
             } catch (Exception e) {
                 log.error("Klarte ikke å flette inn geografisk enhet", e);
             }
         }
     }
 
-    private void flettKodeverk(PdlPersonData pdlPersonData) {
-        pdlPersonData.setStatsborgerskap(kodeverkService.getBeskrivelseForLandkode(pdlPersonData.getStatsborgerskap()));
-        pdlPersonData.setPoststedUnderBostedsAdresse(kodeverkService.getPoststedForPostnummer(pdlPersonData.getPostnummerFraBostedsadresse()));
-        pdlPersonData.setBeskrivelseForLandkodeIKontaktadresse(kodeverkService.getBeskrivelseForLandkode(pdlPersonData.getLandKodeFraKontaktadresse()));
+    private void flettKodeverk(PersonV2Data personV2Data) {
+        personV2Data.setStatsborgerskap(kodeverkService.getBeskrivelseForLandkode(personV2Data.getStatsborgerskap()));
+        personV2Data.setPoststedUnderBostedsAdresse(kodeverkService.getPoststedForPostnummer(personV2Data.getPostnummerFraBostedsadresse()));
+        personV2Data.setBeskrivelseForLandkodeIKontaktadresse(kodeverkService.getBeskrivelseForLandkode(personV2Data.getLandKodeFraKontaktadresse()));
     }
 
-    private void flettDigitalKontaktinformasjon(String fnr, PdlPersonData pdlPersonData) {
+    private void flettDigitalKontaktinformasjon(String fnr, PersonV2Data personV2Data) {
         try {
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(Fnr.of(fnr));
-            pdlPersonData.setEpost(kontaktinfo.getEpostadresse());
-            pdlPersonData.setMalform(kontaktinfo.getSpraak());
+            personV2Data.setEpost(kontaktinfo.getEpostadresse());
+            personV2Data.setMalform(kontaktinfo.getSpraak());
         } catch (Exception e) {
             log.warn("Kunne ikke flette digitalkontaktinfo fra KRR", e);
         }

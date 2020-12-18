@@ -34,9 +34,6 @@ import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Optional;
-
-import static no.nav.common.utils.EnvironmentUtils.getNamespace;
 import static no.nav.common.utils.UrlUtils.*;
 import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;

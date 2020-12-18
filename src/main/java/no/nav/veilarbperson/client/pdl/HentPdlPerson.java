@@ -10,9 +10,9 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 public class HentPdlPerson {
-    PdlPerson pdlPerson;
-    List<PdlPersonBolk> pdlPersonBolk;
-    PersonsFamiliemedlem personsPartner;
+    public PdlPerson pdlPerson;
+    public List<PdlPersonBolk> pdlPersonBolk;
+    public PersonsFamiliemedlem personsPartner;
 
     @Data
     public static class PdlPerson {

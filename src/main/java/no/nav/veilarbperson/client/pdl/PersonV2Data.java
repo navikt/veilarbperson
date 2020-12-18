@@ -11,7 +11,7 @@ import static java.util.Optional.ofNullable;
 
 @Data
 @Accessors(chain = true)
-public class PdlPersonData {
+public class PersonV2Data {
     String fornavn;
     String mellomnavn;
     String etternavn;

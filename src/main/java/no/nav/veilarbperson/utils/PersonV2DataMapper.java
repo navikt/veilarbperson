@@ -2,17 +2,17 @@ package no.nav.veilarbperson.utils;
 
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
-import no.nav.veilarbperson.client.pdl.PdlPersonData;
+import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.PersonData;
 import java.util.List;
 import static java.util.Optional.ofNullable;
 
-public class PdlPersonDataMappper {
+public class PersonV2DataMapper {
 
-    public static PdlPersonData toPdlPersonData(HentPdlPerson.PdlPerson pdlPerson, PersonData personDataFraTps) {
+    public static PersonV2Data toPersonV2Data(HentPdlPerson.PdlPerson pdlPerson, PersonData personDataFraTps) {
 
-        return new PdlPersonData()
+        return new PersonV2Data()
                 .setFornavn(ofNullable(getFirstElement(pdlPerson.getNavn())).map(HentPdlPerson.Navn::getFornavn).orElse(null))
                 .setMellomnavn(ofNullable(getFirstElement(pdlPerson.getNavn())).map(HentPdlPerson.Navn::getMellomnavn).orElse(null))
                 .setEtternavn(ofNullable(getFirstElement(pdlPerson.getNavn())).map(HentPdlPerson.Navn::getEtternavn).orElse(null))
@@ -36,8 +36,8 @@ public class PdlPersonDataMappper {
                 .setPostAdresse(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(KontaktAdresse::getPostadresseIFrittFormat).orElse(null));
     }
 
-    public static <T> T getFirstElement(List<T> OpplysningType) {
-        return OpplysningType.stream().findFirst().orElse(null);
+    public static <T> T getFirstElement(List<T> list) {
+        return list.stream().findFirst().orElse(null);
     }
 
     public static HentPdlPerson.Navn hentNavn(List<HentPdlPerson.Navn> personNavn) {
@@ -53,18 +53,15 @@ public class PdlPersonDataMappper {
     public static Familiemedlem familiemedlemMapper(HentPdlPerson.PersonsFamiliemedlem familiemedlem) {
         HentPdlPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
 
-        if(familiemedlem != null) {
-            return new Familiemedlem()
-                    .setFornavn(ofNullable(navn).map(HentPdlPerson.Navn::getFornavn).orElse(null))
-                    .setMellomnavn(ofNullable(navn).map(HentPdlPerson.Navn::getMellomnavn).orElse(null))
-                    .setEtternavn(ofNullable(navn).map(HentPdlPerson.Navn::getEtternavn).orElse(null))
-                    .setForkortetnavn(ofNullable(navn).map(HentPdlPerson.Navn::getForkortetnavn).orElse(null))
-                    .setFodselsdato(ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPdlPerson.Foedsel::getFoedselsdato).orElse(null))
-                    .setFodselsnummer(ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
-                            .map(HentPdlPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).orElse(null))
-                    .setKjonn(ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPdlPerson.Kjoenn::getKjoenn).orElse(null))
-                    .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPdlPerson.Doedsfall::getDoedsdato).orElse(null));
-        }
-        return null;
+        return new Familiemedlem()
+                .setFornavn(ofNullable(navn).map(HentPdlPerson.Navn::getFornavn).orElse(null))
+                .setMellomnavn(ofNullable(navn).map(HentPdlPerson.Navn::getMellomnavn).orElse(null))
+                .setEtternavn(ofNullable(navn).map(HentPdlPerson.Navn::getEtternavn).orElse(null))
+                .setForkortetnavn(ofNullable(navn).map(HentPdlPerson.Navn::getForkortetnavn).orElse(null))
+                .setFodselsdato(ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPdlPerson.Foedsel::getFoedselsdato).orElse(null))
+                .setFodselsnummer(ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
+                        .map(HentPdlPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).orElse(null))
+                .setKjonn(ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPdlPerson.Kjoenn::getKjoenn).orElse(null))
+                .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPdlPerson.Doedsfall::getDoedsdato).orElse(null));
     }
 }

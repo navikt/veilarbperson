@@ -16,7 +16,7 @@ import no.nav.veilarbperson.client.pdl.domain.Diskresjonskoder;
 import no.nav.veilarbperson.client.pdl.domain.Familiemedlem;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
-import no.nav.veilarbperson.utils.PdlPersonDataMappper;
+import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,7 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PdlServiceTest {
+public class PersonV2ServiceTest {
     private Norg2Client norg2Client = mock(Norg2Client.class);
     private DkifClient dkifClient = mock(DkifClient.class);
     private PersonClient personClient = mock(PersonClient.class);
@@ -45,7 +45,7 @@ public class PdlServiceTest {
     private AuthService authService = mock(AuthService.class);
     private PamClient pamClient = mock(PamClient.class);
     private PersonService personService;
-    private PdlService pdlService;
+    private PersonV2Service personV2Service;
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
@@ -60,7 +60,7 @@ public class PdlServiceTest {
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
         personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient, difiCient, null);
-        pdlService = new PdlService(pdlClient, authService, dkifClient, norg2Client, personClient, pamClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
+        personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, pamClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
     }
 
     public String configurApiResponse(String responseFilename) {
@@ -116,7 +116,7 @@ public class PdlServiceTest {
     public void hentFnrTilBarnaTest() {
         HentPdlPerson.PdlPerson pdlPerson = hentPerson("0123456789");
         List<HentPdlPerson.Familierelasjoner> familierelasjoner = pdlPerson.getFamilierelasjoner();
-        String[] fnrListe = pdlService.hentFnrTilBarna(familierelasjoner);
+        String[] fnrListe = personV2Service.hentFnrTilBarna(familierelasjoner);
 
         assertEquals(3, fnrListe.length);
 
@@ -142,7 +142,7 @@ public class PdlServiceTest {
     public void hentDiskresjonsKodeTilAdressebeskyttetPersonTest() {
         HentPdlPerson.PdlPerson pdlPerson = hentPerson("0123456789");
 
-        HentPdlPerson.Adressebeskyttelse adressebeskyttelse = PdlPersonDataMappper.getFirstElement(pdlPerson.getAdressebeskyttelse());
+        HentPdlPerson.Adressebeskyttelse adressebeskyttelse = PersonV2DataMapper.getFirstElement(pdlPerson.getAdressebeskyttelse());
         String gradering = adressebeskyttelse.getGradering();
         String diskresjonskode = Diskresjonskoder.mapTilTallkode(gradering);
 
@@ -159,7 +159,7 @@ public class PdlServiceTest {
     @Test
     public void hentNavnTest() {
         HentPdlPerson.PdlPerson pdlPerson = hentPerson("0123456789");
-        HentPdlPerson.Navn navn = PdlPersonDataMappper.getFirstElement(pdlPerson.getNavn());
+        HentPdlPerson.Navn navn = PersonV2DataMapper.getFirstElement(pdlPerson.getNavn());
 
         assertEquals("NATURLIG", navn.getFornavn());
         assertEquals("GLITRENDE", navn.getMellomnavn());
@@ -170,7 +170,7 @@ public class PdlServiceTest {
     @Test
     public void unngoArrayIndexOutOfBoundExceptionNorListeErTomIPdlTest() {
         HentPdlPerson.PdlPerson pdlPerson = hentPerson("0123456789");
-        String doedsfall = Optional.ofNullable(PdlPersonDataMappper.getFirstElement(pdlPerson.getDoedsfall())).map(HentPdlPerson.Doedsfall::getDoedsdato).orElse(null);
+        String doedsfall = Optional.ofNullable(PersonV2DataMapper.getFirstElement(pdlPerson.getDoedsfall())).map(HentPdlPerson.Doedsfall::getDoedsdato).orElse(null);
 
         assertNull(doedsfall);
     }
@@ -178,12 +178,12 @@ public class PdlServiceTest {
     @Test
     public void hentPartnerInformasjonTest() {
         HentPdlPerson.PdlPerson pdlPerson = hentPerson("0123456789");
-        String fnrTilPartner = pdlService.hentFnrTilPartner(pdlPerson.getSivilstand());
+        String fnrTilPartner = personV2Service.hentFnrTilPartner(pdlPerson.getSivilstand());
 
         assertEquals("2134567890", fnrTilPartner);
 
         HentPdlPerson.PersonsFamiliemedlem partnerInformasjon = hentPartnerOpplysninger(fnrTilPartner);
-        Familiemedlem partner = PdlPersonDataMappper.familiemedlemMapper(partnerInformasjon);
+        Familiemedlem partner = PersonV2DataMapper.familiemedlemMapper(partnerInformasjon);
 
         assertEquals("TYKKMAGET GASELLE", partner.getForkortetnavn());
 
