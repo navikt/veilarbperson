@@ -213,11 +213,6 @@ public class ClientTestConfig {
             }
 
             @Override
-            public String rawRequest(String gqlRequest, String userToken) {
-                return TestUtils.readTestResourceFile("pdl-hentPerson-response.json");
-            }
-
-            @Override
             public HealthCheckResult checkHealth() {
                 return HealthCheckResult.healthy();
             }

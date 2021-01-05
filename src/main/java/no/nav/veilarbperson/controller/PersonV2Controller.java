@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/pdl")
+@RequestMapping("/api/v2/person")
 public class PersonV2Controller {
 
     private final PersonV2Service personV2Service;

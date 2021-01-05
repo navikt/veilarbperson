@@ -68,9 +68,7 @@ public class PdlClientImpl implements PdlClient {
     }
 
     @SneakyThrows
-    @Override
     public String rawRequest(String gqlRequest, String userToken) {
-
         Request request = new Request.Builder()
                 .url(joinPaths(pdlUrl, "/graphql"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)

@@ -15,18 +15,19 @@ public class Familiemedlem {
     String kjonn;
     String dodsdato;
 
-    Boolean harSammeBosted;
+    boolean harSammeBosted;
 
-    public no.nav.veilarbperson.client.person.domain.Familiemedlem copy() {
-        return new no.nav.veilarbperson.client.person.domain.Familiemedlem()
+    public Familiemedlem copy() {
+        return new Familiemedlem()
                 .setFornavn(fornavn)
                 .setMellomnavn(mellomnavn)
                 .setEtternavn(etternavn)
-                .setSammensattNavn(forkortetnavn)
+                .setForkortetnavn(forkortetnavn)
                 .setFodselsnummer(fodselsnummer)
                 .setFodselsdato(fodselsdato)
                 .setKjonn(kjonn)
                 .setDodsdato(dodsdato)
                 .setHarSammeBosted(harSammeBosted);
     }
+
 }
