@@ -15,7 +15,7 @@ public class PersonV2Data {
     String fornavn;
     String mellomnavn;
     String etternavn;
-    String forkortetnavn;
+    String sammensattNavn;
     Fnr fodselsnummer;
     String fodselsdato;
     String kjonn;
@@ -32,7 +32,7 @@ public class PersonV2Data {
     String sikkerhetstiltak;
 
     List<Familiemedlem> barn;
-    HentPdlPerson.Sivilstand sivilstand;
+    Sivilstand sivilstand;
     Familiemedlem partner;
     Bostedsadresse bostedsadresse;
     KontaktAdresse.UtenlandskAdresseIFrittFormat midlertidigAdresseUtland;

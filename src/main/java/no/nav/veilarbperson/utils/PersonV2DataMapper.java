@@ -16,7 +16,7 @@ public class PersonV2DataMapper {
                 .setFornavn(ofNullable(getFirstElement(pdlPerson.getNavn())).map(HentPdlPerson.Navn::getFornavn).orElse(null))
                 .setMellomnavn(ofNullable(getFirstElement(pdlPerson.getNavn())).map(HentPdlPerson.Navn::getMellomnavn).orElse(null))
                 .setEtternavn(ofNullable(getFirstElement(pdlPerson.getNavn())).map(HentPdlPerson.Navn::getEtternavn).orElse(null))
-                .setForkortetnavn(ofNullable(getFirstElement(pdlPerson.getNavn())).map(HentPdlPerson.Navn::getForkortetnavn).orElse(null))
+                .setSammensattNavn(ofNullable(getFirstElement(pdlPerson.getNavn())).map(HentPdlPerson.Navn::getForkortetnavn).orElse(null))
                 .setKjonn(ofNullable(getFirstElement(pdlPerson.getKjoenn())).map(HentPdlPerson.Kjoenn::getKjoenn).orElse(null))
                 .setFodselsdato(ofNullable(getFirstElement(pdlPerson.getFoedsel())).map(HentPdlPerson.Foedsel::getFoedselsdato).orElse(null))
                 .setStatsborgerskap(ofNullable(getFirstElement(pdlPerson.getStatsborgerskap())).map(HentPdlPerson.Statsborgerskap::getLand).orElse(null))
@@ -30,7 +30,7 @@ public class PersonV2DataMapper {
                 .setDiskresjonskode(ofNullable(getFirstElement(pdlPerson.getAdressebeskyttelse()))
                         .map(HentPdlPerson.Adressebeskyttelse::getGradering)
                         .map(Diskresjonskoder::mapTilTallkode).orElse(null))
-                .setSivilstand(ofNullable(getFirstElement(pdlPerson.getSivilstand())).orElse(null))
+                .setSivilstand(ofNullable(sivilstandMapper(pdlPerson.getSivilstand())).orElse(null))
                 .setBostedsadresse(ofNullable(getFirstElement(pdlPerson.getBostedsadresse())).orElse(null))
                 .setMidlertidigAdresseUtland(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(KontaktAdresse::getUtenlandskAdresseIFrittFormat).orElse(null))
                 .setPostAdresse(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(KontaktAdresse::getPostadresseIFrittFormat).orElse(null));
@@ -57,11 +57,19 @@ public class PersonV2DataMapper {
                 .setFornavn(ofNullable(navn).map(HentPdlPerson.Navn::getFornavn).orElse(null))
                 .setMellomnavn(ofNullable(navn).map(HentPdlPerson.Navn::getMellomnavn).orElse(null))
                 .setEtternavn(ofNullable(navn).map(HentPdlPerson.Navn::getEtternavn).orElse(null))
-                .setForkortetnavn(ofNullable(navn).map(HentPdlPerson.Navn::getForkortetnavn).orElse(null))
+                .setSammensattNavn(ofNullable(navn).map(HentPdlPerson.Navn::getForkortetnavn).orElse(null))
                 .setFodselsdato(ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPdlPerson.Foedsel::getFoedselsdato).orElse(null))
                 .setFodselsnummer(ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
                         .map(HentPdlPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).orElse(null))
                 .setKjonn(ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPdlPerson.Kjoenn::getKjoenn).orElse(null))
                 .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPdlPerson.Doedsfall::getDoedsdato).orElse(null));
+    }
+
+    public static Sivilstand sivilstandMapper(List<HentPdlPerson.Sivilstand> sivilstand) {
+             HentPdlPerson.Sivilstand pdlSivilstand = getFirstElement(sivilstand);
+
+             return new Sivilstand()
+                     .setSivilstand(ofNullable(pdlSivilstand).map(HentPdlPerson.Sivilstand::getType).orElse(null))
+                     .setFraDato(ofNullable(pdlSivilstand).map(HentPdlPerson.Sivilstand::getGyldigFraOgMed).orElse(null));
     }
 }
