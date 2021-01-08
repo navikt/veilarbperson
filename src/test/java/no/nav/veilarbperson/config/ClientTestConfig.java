@@ -15,7 +15,7 @@ import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.pam.PamClient;
-import no.nav.veilarbperson.client.pdl.HentPersonData;
+import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
@@ -198,13 +198,18 @@ public class ClientTestConfig {
     public PdlClient pdlClient() {
         return new PdlClient() {
             @Override
-            public HentPersonData.PdlPerson hentPerson(String personIdent, String userToken) {
+            public HentPdlPerson.PdlPerson hentPerson(String personIdent, String userToken) {
                 return null;
             }
 
             @Override
-            public String rawRequest(String gqlRequest, String userToken) {
-                return TestUtils.readTestResourceFile("pdl-hentPerson-response.json");
+            public HentPdlPerson.PersonsFamiliemedlem hentPartnerOpplysninger(String personIdent, String userToken) {
+                return null;
+            }
+
+            @Override
+            public List<HentPdlPerson.PdlPersonBolk> hentPersonBolk(String[] personIdent) {
+                return null;
             }
 
             @Override

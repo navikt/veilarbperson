@@ -3,9 +3,11 @@ package no.nav.veilarbperson.client;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.common.json.JsonUtils;
 import no.nav.veilarbperson.client.pdl.GqlRequest;
-import no.nav.veilarbperson.client.pdl.HentPersonData;
-import no.nav.veilarbperson.client.pdl.HentPersonVariables;
+import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
+import no.nav.veilarbperson.client.pdl.PdlPersonVariables;
+import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
+import no.nav.veilarbperson.client.pdl.domain.KontaktAdresse;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
@@ -51,21 +53,72 @@ public class PdlClientImplTest {
 
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
 
-        HentPersonData.PdlPerson person = pdlClient.hentPerson("IDENT", "USER_TOKEN");
+        HentPdlPerson.PdlPerson person = pdlClient.hentPerson("IDENT", "USER_TOKEN");
 
-        HentPersonData.Navn navn = person.getNavn().get(0);
+        HentPdlPerson.Navn navn = person.getNavn().get(0);
         assertEquals("NATURLIG", navn.getFornavn());
         assertEquals("GLITRENDE", navn.getMellomnavn());
         assertEquals("STAFFELI", navn.getEtternavn());
+        assertEquals("NATURLIG STAFFELI", navn.getForkortetnavn());
 
-        HentPersonData.Sivilstand sivilstand = person.getSivilstand().get(0);
+        HentPdlPerson.Folkeregisteridentifikator identifikator = person.getFolkeregisteridentifikator().get(0);
+        assertEquals("0123456789", identifikator.getIdentifikasjonsnummer());
+        assertEquals("I_BRUK", identifikator.getStatus());
+        assertEquals("FNR", identifikator.getType());
+
+        HentPdlPerson.Sivilstand sivilstand = person.getSivilstand().get(0);
         assertEquals("2020-06-01", sivilstand.getGyldigFraOgMed());
         assertEquals("GIFT", sivilstand.getType());
 
         assertTrue(person.getDoedsfall().isEmpty());
 
-        HentPersonData.Foedsel foedsel = person.getFoedsel().get(0);
+        HentPdlPerson.Foedsel foedsel = person.getFoedsel().get(0);
         assertEquals("1981-12-13", foedsel.getFoedselsdato());
+
+        HentPdlPerson.Familierelasjoner familierelasjoner = person.getFamilierelasjoner().get(0);
+        assertEquals("MOR", familierelasjoner.getMinRolleForPerson());
+        assertEquals("BARN", familierelasjoner.getRelatertPersonsRolle());
+        assertEquals("12345678910", familierelasjoner.getRelatertPersonsIdent());
+
+        HentPdlPerson.Statsborgerskap statsborgerskap = person.getStatsborgerskap().get(0);
+        assertEquals("NORGE", statsborgerskap.getLand());
+        assertEquals("1980-12-24", statsborgerskap.getGyldigFraOgMed());
+        assertEquals("2010-12-30", statsborgerskap.getGyldigTilOgMed());
+
+        Bostedsadresse bostedsadresse = person.getBostedsadresse().get(0);
+        Bostedsadresse.Vegadresse vegadresse = bostedsadresse.getVegadresse();
+        assertEquals("ARENDALSGATE", vegadresse.getAdressenavn());
+        assertEquals("A", vegadresse.getHusbokstav());
+        assertEquals("21", vegadresse.getHusnummer());
+        assertEquals("0560", vegadresse.getPostnummer());
+        assertEquals("0570", vegadresse.getKommunenummer());
+        assertEquals("ARENDAL", vegadresse.getTilleggsnavn());
+
+        HentPdlPerson.GeografiskTilknytning geografiskTilknytning = person.getGeografiskTilknytning();
+        assertEquals("0570", geografiskTilknytning.getGtKommune());
+        assertEquals("OSLO", geografiskTilknytning.getGtBydel());
+        assertEquals("NORGE", geografiskTilknytning.getGtLand());
+
+        HentPdlPerson.Telefonnummer telefonnummer = person.getTelefonnummer().get(0);
+        assertEquals("45364699", telefonnummer.getNummer());
+        assertEquals("47", telefonnummer.getLandkode());
+        assertEquals("1", telefonnummer.getPrioritet());
+
+        HentPdlPerson.Adressebeskyttelse adressebeskyttelse = person.getAdressebeskyttelse().get(0);
+        assertEquals("UGRADERT", adressebeskyttelse.getGradering().toString());
+
+        KontaktAdresse kontaktAdresse = person.getKontaktadresse().get(0);
+        KontaktAdresse.PostadresseIFrittFormat postadresse = kontaktAdresse.getPostadresseIFrittFormat();
+        assertEquals("SOT6", postadresse.getAdresselinje1());
+        assertEquals("POSTBOKS 2094 VIKA", postadresse.getAdresselinje2());
+        assertNull(postadresse.getAdresselinje3());
+        assertEquals("0125", postadresse.getPostnummer());
+
+        KontaktAdresse.UtenlandskAdresseIFrittFormat utenlandskAdresse = kontaktAdresse.getUtenlandskAdresseIFrittFormat();
+        assertEquals("Postboks 100", utenlandskAdresse.getAdresselinje1());
+        assertEquals("12345 Paris", utenlandskAdresse.getAdresselinje2());
+        assertNull(utenlandskAdresse.getAdresselinje3());
+        assertEquals("FRA", utenlandskAdresse.getLandkode());
     }
 
     @Test
@@ -89,10 +142,10 @@ public class PdlClientImplTest {
     @Test
     public void rawRequest_skal_sende_raw_request_og_returnere_raw_response() {
         String hentPersonResponseJson = TestUtils.readTestResourceFile("pdl-hentPerson-response.json");
-        String hentPersonRequest = FileUtils.getResourceFileAsString("gql/hentPerson.gql");
+        String hentPersonRequest = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
         String apiUrl = "http://localhost:" + wireMockRule.port();
 
-        String jsonRequest = JsonUtils.toJson(new GqlRequest<>(hentPersonRequest, new HentPersonVariables("TEST_IDENT")));
+        String jsonRequest = JsonUtils.toJson(new GqlRequest<>(hentPersonRequest, new PdlPersonVariables.HentPersonVariables("TEST_IDENT", false)));
 
         givenThat(post(urlEqualTo("/graphql"))
                 .withRequestBody(equalToJson(jsonRequest))
