@@ -6,7 +6,7 @@ import lombok.Data;
 public class Bostedsadresse extends Adresse {
 
     private Vegadresse vegadresse;
-    private Utenlandskadresse utenlandskAdresse;
+    private UtenlandskAdresse utenlandskAdresse;
     private Matrikkeladresse matrikkeladresse;
     private UkjentBosted ukjentBosted;
 

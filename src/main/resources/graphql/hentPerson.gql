@@ -55,7 +55,7 @@ query($ident: ID!, $historikk: Boolean!) {
                 kommunenummer
                 adressenavn
             }
-            utenlandskadresse {
+            utenlandskAdresse {
                 adressenavnNummer
                 bygningEtasjeLeilighet
                 postboksNummerNavn
@@ -84,7 +84,7 @@ query($ident: ID!, $historikk: Boolean!) {
                 adressenavn
                 kommunenummer
             }
-            utenlandskadresse {
+            utenlandskAdresse {
                 adressenavnNummer
                 bygningEtasjeLeilighet
                 postboksNummerNavn
@@ -98,7 +98,7 @@ query($ident: ID!, $historikk: Boolean!) {
                 adresselinje2
                 adresselinje3
                 postkode
-                byEllerStednavn
+                byEllerStedsnavn
                 landkode
             }
             postadresseIFrittFormat {

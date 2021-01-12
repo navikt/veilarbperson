@@ -24,7 +24,7 @@ public class Adresse {
     }
 
     @Data
-    public static class Utenlandskadresse {
+    public static class UtenlandskAdresse {
         private String adressenavnNummer;
         private String bygningEtasjeLeilighet;
         private String postboksNummerNavn;

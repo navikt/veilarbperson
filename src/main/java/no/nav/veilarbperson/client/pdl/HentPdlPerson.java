@@ -3,7 +3,7 @@ package no.nav.veilarbperson.client.pdl;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
-import no.nav.veilarbperson.client.pdl.domain.KontaktAdresse;
+import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class HentPdlPerson {
 
         List<Adressebeskyttelse> adressebeskyttelse;
         List<Bostedsadresse> bostedsadresse;
-        List<KontaktAdresse> kontaktadresse;
+        List<Kontaktadresse> kontaktadresse;
     }
 
     @Data

@@ -7,7 +7,7 @@ import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlPersonVariables;
 import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
-import no.nav.veilarbperson.client.pdl.domain.KontaktAdresse;
+import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
@@ -102,14 +102,14 @@ public class PdlClientImplTest {
         HentPdlPerson.Adressebeskyttelse adressebeskyttelse = person.getAdressebeskyttelse().get(0);
         assertEquals("UGRADERT", adressebeskyttelse.getGradering().toString());
 
-        KontaktAdresse kontaktAdresse = person.getKontaktadresse().get(0);
-        KontaktAdresse.PostadresseIFrittFormat postadresse = kontaktAdresse.getPostadresseIFrittFormat();
+        Kontaktadresse kontaktAdresse = person.getKontaktadresse().get(0);
+        Kontaktadresse.PostadresseIFrittFormat postadresse = kontaktAdresse.getPostadresseIFrittFormat();
         assertEquals("SOT6", postadresse.getAdresselinje1());
         assertEquals("POSTBOKS 2094 VIKA", postadresse.getAdresselinje2());
         assertNull(postadresse.getAdresselinje3());
         assertEquals("0125", postadresse.getPostnummer());
 
-        KontaktAdresse.UtenlandskAdresseIFrittFormat utenlandskAdresse = kontaktAdresse.getUtenlandskAdresseIFrittFormat();
+        Kontaktadresse.UtenlandskAdresseIFrittFormat utenlandskAdresse = kontaktAdresse.getUtenlandskAdresseIFrittFormat();
         assertEquals("Postboks 100", utenlandskAdresse.getAdresselinje1());
         assertEquals("12345 Paris", utenlandskAdresse.getAdresselinje2());
         assertNull(utenlandskAdresse.getAdresselinje3());

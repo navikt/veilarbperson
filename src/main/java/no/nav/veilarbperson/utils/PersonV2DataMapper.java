@@ -31,8 +31,8 @@ public class PersonV2DataMapper {
                         .map(Diskresjonskoder::mapTilTallkode).orElse(null))
                 .setSivilstand(ofNullable(sivilstandMapper(pdlPerson.getSivilstand())).orElse(null))
                 .setBostedsadresse(ofNullable(getFirstElement(pdlPerson.getBostedsadresse())).orElse(null))
-                .setMidlertidigAdresseUtland(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(KontaktAdresse::getUtenlandskAdresseIFrittFormat).orElse(null))
-                .setPostAdresse(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(KontaktAdresse::getPostadresseIFrittFormat).orElse(null));
+                .setMidlertidigAdresseUtland(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(Kontaktadresse::getUtenlandskAdresseIFrittFormat).orElse(null))
+                .setPostAdresse(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(Kontaktadresse::getPostadresseIFrittFormat).orElse(null));
     }
 
     public static <T> T getFirstElement(List<T> list) {

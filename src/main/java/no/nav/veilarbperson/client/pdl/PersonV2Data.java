@@ -35,8 +35,8 @@ public class PersonV2Data {
     Sivilstand sivilstand;
     Familiemedlem partner;
     Bostedsadresse bostedsadresse;
-    KontaktAdresse.UtenlandskAdresseIFrittFormat midlertidigAdresseUtland;
-    KontaktAdresse.PostadresseIFrittFormat postAdresse;
+    Kontaktadresse.UtenlandskAdresseIFrittFormat midlertidigAdresseUtland;
+    Kontaktadresse.PostadresseIFrittFormat postAdresse;
     String malform;
 
     @JsonIgnore
@@ -54,7 +54,7 @@ public class PersonV2Data {
 
     public String getLandKodeFraKontaktadresse() {
         return ofNullable(midlertidigAdresseUtland)
-                .map(KontaktAdresse.UtenlandskAdresseIFrittFormat::getLandkode).get();
+                .map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode).get();
     }
 
     public void setBeskrivelseForLandkodeIKontaktadresse(String landkode) {
