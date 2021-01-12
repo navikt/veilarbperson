@@ -94,11 +94,6 @@ public class PdlClientImplTest {
         assertEquals("0570", vegadresse.getKommunenummer());
         assertEquals("ARENDAL", vegadresse.getTilleggsnavn());
 
-        HentPdlPerson.GeografiskTilknytning geografiskTilknytning = person.getGeografiskTilknytning();
-        assertEquals("0570", geografiskTilknytning.getGtKommune());
-        assertEquals("OSLO", geografiskTilknytning.getGtBydel());
-        assertEquals("NORGE", geografiskTilknytning.getGtLand());
-
         HentPdlPerson.Telefonnummer telefonnummer = person.getTelefonnummer().get(0);
         assertEquals("45364699", telefonnummer.getNummer());
         assertEquals("47", telefonnummer.getLandkode());

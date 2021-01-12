@@ -19,4 +19,9 @@ public class PdlPersonVariables {
         private boolean historikk;
     }
 
+    @Data
+    @AllArgsConstructor
+    public static class HentGeografiskTilknytningVariables {
+        private String ident;
+    }
 }

@@ -40,6 +40,8 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentPersonBolkQuery;
 
+    private final String hentGeografiskTilknytningQuery;
+
 
     public PdlClientImpl(String pdlUrl, Supplier<String> systemUserTokenSupplier) {
         this.pdlUrl = pdlUrl;
@@ -47,6 +49,7 @@ public class PdlClientImpl implements PdlClient {
         this.systemUserTokenSupplier = systemUserTokenSupplier;
         this.hentPersonQuery = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
         this.hentPersonBolkQuery = FileUtils.getResourceFileAsString("graphql/hentPersonBolk.gql");
+        this.hentGeografiskTilknytningQuery = FileUtils.getResourceFileAsString("graphql/hentGeografiskTilknytning.gql");
     }
 
     @Override
@@ -65,6 +68,12 @@ public class PdlClientImpl implements PdlClient {
     public List<HentPdlPerson.PdlPersonBolk> hentPersonBolk(String[] personIdent) {
         GqlRequest request = new GqlRequest<>(hentPersonBolkQuery, new PdlPersonVariables.HentPersonBolkVariables(personIdent, false));
         return graphqlRequest(request, systemUserTokenSupplier.get(), HentPdlPerson.class).pdlPersonBolk;
+    }
+
+    @Override
+    public HentPdlPerson.GeografiskTilknytning hentGeografiskTilknytning(String personIdent, String userToken) {
+        GqlRequest request = new GqlRequest<>(hentGeografiskTilknytningQuery, new PdlPersonVariables.HentGeografiskTilknytningVariables(personIdent));
+        return graphqlRequest(request, userToken, HentPdlPerson.class).geografiskTilknytning;
     }
 
     @SneakyThrows
