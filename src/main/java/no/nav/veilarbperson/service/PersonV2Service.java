@@ -89,7 +89,9 @@ public class PersonV2Service {
     public List<Familiemedlem> hentOpplysningerTilBarna(String[] barnasFnrs) {
         List<HentPdlPerson.PdlPersonBolk> barnasaInformasjon = pdlClient.hentPersonBolk(barnasFnrs);
 
-        return barnasaInformasjon.stream()
+        return Optional.ofNullable(barnasaInformasjon)
+                .stream()
+                .flatMap(Collection::stream)
                 .filter(barn -> barn.getCode().equals("ok"))
                 .map(HentPdlPerson.PdlPersonBolk::getPerson)
                 .map(PersonV2DataMapper::familiemedlemMapper)

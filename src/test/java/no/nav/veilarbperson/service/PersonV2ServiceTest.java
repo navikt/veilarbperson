@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -138,7 +139,7 @@ public class PersonV2ServiceTest {
 
         assertEquals(3, pdlPersonBolk.size());
 
-        List<HentPdlPerson.PdlPersonBolk> filterPersonBolkMedOkStatus = pdlPersonBolk.stream()
+        List<HentPdlPerson.PdlPersonBolk> filterPersonBolkMedOkStatus = Optional.ofNullable(pdlPersonBolk).stream().flatMap(Collection::stream)
                                                                         .filter(status -> status.getCode().equals("ok"))
                                                                         .collect(Collectors.toList());
 
