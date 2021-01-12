@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
 
 @Slf4j
@@ -66,7 +67,7 @@ public class PersonV2Service {
 
     public PersonV2Data hentFlettetPerson(String fodselsnummer, String userToken) throws Exception {
         PersonData personDataFraTps = hentPersonDataFraTps(fodselsnummer);
-        HentPdlPerson.PdlPerson personDataFraPdl = Optional.of(pdlClient.hentPerson(fodselsnummer, userToken)).orElseThrow(() -> new Exception("Fant ikke person i hentPerson operasjonen i PDL"));
+        HentPdlPerson.PdlPerson personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer, userToken)).orElseThrow(() -> new Exception("Fant ikke person i hentPerson operasjonen i PDL"));
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl, personDataFraTps);
 
         try {
@@ -89,7 +90,7 @@ public class PersonV2Service {
     public List<Familiemedlem> hentOpplysningerTilBarna(String[] barnasFnrs) {
         List<HentPdlPerson.PdlPersonBolk> barnasaInformasjon = pdlClient.hentPersonBolk(barnasFnrs);
 
-        return Optional.ofNullable(barnasaInformasjon)
+        return ofNullable(barnasaInformasjon)
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(barn -> barn.getCode().equals("ok"))
@@ -100,7 +101,7 @@ public class PersonV2Service {
 
     public String[] hentFnrTilBarna(List<HentPdlPerson.Familierelasjoner> familierelasjoner) {
 
-        return Optional.ofNullable(familierelasjoner)
+        return ofNullable(familierelasjoner)
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
@@ -115,7 +116,7 @@ public class PersonV2Service {
     }
 
     public String hentFnrTilPartner(List<HentPdlPerson.Sivilstand> personsSivilstand){
-        return Optional.ofNullable(PersonV2DataMapper.getFirstElement(personsSivilstand))
+        return ofNullable(PersonV2DataMapper.getFirstElement(personsSivilstand))
                 .map(HentPdlPerson.Sivilstand::getRelatertVedSivilstand)
                 .orElse(null);
     }
@@ -146,7 +147,7 @@ public class PersonV2Service {
     }
 
     private void flettGeografiskEnhet(String fodselsnummer,  String userToken, PersonV2Data personV2Data) {
-        String geografiskTilknytning = Optional.ofNullable(pdlClient.hentGeografiskTilknytning(fodselsnummer, userToken))
+        String geografiskTilknytning = ofNullable(pdlClient.hentGeografiskTilknytning(fodselsnummer, userToken))
                                                .map(HentPdlPerson.GeografiskTilknytning::getGtKommune).orElse(null);
 
         personV2Data.setGeografiskTilknytning(geografiskTilknytning);
