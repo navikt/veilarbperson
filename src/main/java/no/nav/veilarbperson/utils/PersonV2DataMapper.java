@@ -25,7 +25,6 @@ public class PersonV2DataMapper {
                         .map(HentPdlPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer)
                         .map(Fnr::of).orElse(null))
                 .setTelefon(ofNullable(getFirstElement(pdlPerson.getTelefonnummer())).map(HentPdlPerson.Telefonnummer::getNummer).orElse(null))
-                .setGeografiskTilknytning(pdlPerson.getGeografiskTilknytning().getGtKommune())
                 .setKontonummer(personDataFraTps.getKontonummer())
                 .setDiskresjonskode(ofNullable(getFirstElement(pdlPerson.getAdressebeskyttelse()))
                         .map(HentPdlPerson.Adressebeskyttelse::getGradering)

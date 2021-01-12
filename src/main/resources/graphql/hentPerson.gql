@@ -47,11 +47,6 @@ query($ident: ID!, $historikk: Boolean!) {
         adressebeskyttelse(historikk:$historikk) {
             gradering
         }
-        geografiskTilknytning {
-            gtKommune
-            gtBydel
-            gtLand
-        }
         bostedsadresse(historikk:$historikk) {
             vegadresse {
                 postnummer

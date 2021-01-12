@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -50,6 +51,7 @@ public class PersonV2ServiceTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
 
+    static final String FNR = "0123456789";
     String[] testFnrsTilBarna = {"12345678910", "12345678911", "12345678912"};
 
     @Before
@@ -76,10 +78,13 @@ public class PersonV2ServiceTest {
         return apiUrl;
     }
 
-    public HentPdlPerson.PdlPerson hentPerson(String fnr) {
-        String apiUrl = configurApiResponse("pdl-hentPerson-response.json");
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+    public PdlClientImpl configurPdlClient(String responseFile) {
+        String apiUrl = configurApiResponse(responseFile);
+        return new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+    }
 
+    public HentPdlPerson.PdlPerson hentPerson(String fnr) {
+        PdlClientImpl pdlClient = configurPdlClient("pdl-hentPerson-response.json");
         return pdlClient.hentPerson(fnr, "USER_TOKEN");
     }
 
@@ -91,16 +96,18 @@ public class PersonV2ServiceTest {
     }
 
     public HentPdlPerson.PersonsFamiliemedlem hentPartnerOpplysninger(String fnr) {
-        String apiUrl = configurApiResponse("pdl-hentPersonsPartner-response.json");
-
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
-
+        PdlClientImpl pdlClient = configurPdlClient("pdl-hentPersonsPartner-response.json");
         return pdlClient.hentPartnerOpplysninger(fnr, "USER_TOKEN");
+    }
+
+    public HentPdlPerson.GeografiskTilknytning hentGeografisktilknytning(String fnr) {
+        PdlClientImpl pdlClient = configurPdlClient("pdl-hentGeografiskTilknytning-response.json");
+        return pdlClient.hentGeografiskTilknytning(fnr, "USER_TOKEN");
     }
 
     @Test
     public void hentFamilieRelasjonerSkalHenteForeldreOgBarnRelasjoner() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson("0123456789");
+        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
 
         assertEquals("12345678910", pdlPerson.getFamilierelasjoner().get(0).getRelatertPersonsIdent());
         assertEquals("BARN",pdlPerson.getFamilierelasjoner().get(0).getRelatertPersonsRolle());
@@ -114,7 +121,7 @@ public class PersonV2ServiceTest {
 
     @Test
     public void hentFnrTilBarnaTest() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson("0123456789");
+        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
         List<HentPdlPerson.Familierelasjoner> familierelasjoner = pdlPerson.getFamilierelasjoner();
         String[] fnrListe = personV2Service.hentFnrTilBarna(familierelasjoner);
 
@@ -140,7 +147,7 @@ public class PersonV2ServiceTest {
 
     @Test
     public void hentDiskresjonsKodeTilAdressebeskyttetPersonTest() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson("0123456789");
+        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
 
         HentPdlPerson.Adressebeskyttelse adressebeskyttelse = PersonV2DataMapper.getFirstElement(pdlPerson.getAdressebeskyttelse());
         String gradering = adressebeskyttelse.getGradering();
@@ -158,7 +165,7 @@ public class PersonV2ServiceTest {
 
     @Test
     public void hentNavnTest() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson("0123456789");
+        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
         HentPdlPerson.Navn navn = PersonV2DataMapper.getFirstElement(pdlPerson.getNavn());
 
         assertEquals("NATURLIG", navn.getFornavn());
@@ -169,7 +176,7 @@ public class PersonV2ServiceTest {
 
     @Test
     public void unngoArrayIndexOutOfBoundExceptionNorListeErTomIPdlTest() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson("0123456789");
+        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
         String doedsfall = Optional.ofNullable(PersonV2DataMapper.getFirstElement(pdlPerson.getDoedsfall())).map(HentPdlPerson.Doedsfall::getDoedsdato).orElse(null);
 
         assertNull(doedsfall);
@@ -177,7 +184,7 @@ public class PersonV2ServiceTest {
 
     @Test
     public void hentPartnerInformasjonTest() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson("0123456789");
+        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
         String fnrTilPartner = personV2Service.hentFnrTilPartner(pdlPerson.getSivilstand());
 
         assertEquals("2134567890", fnrTilPartner);
@@ -188,6 +195,15 @@ public class PersonV2ServiceTest {
         assertEquals("TYKKMAGET GASELLE", partner.getSammensattNavn());
 
         assertEquals("1981-12-13", partner.getFodselsdato());
+    }
+
+    @Test
+    public void hentGeografiskTilknytningTest() {
+        HentPdlPerson.GeografiskTilknytning geografiskTilknytning = hentGeografisktilknytning(FNR);
+
+        assertEquals("0570", geografiskTilknytning.getGtKommune());
+        assertEquals("OSLO", geografiskTilknytning.getGtBydel());
+        assertEquals("NORGE", geografiskTilknytning.getGtLand());
     }
 
 }

@@ -13,6 +13,7 @@ public class HentPdlPerson {
     public PdlPerson pdlPerson;
     public List<PdlPersonBolk> pdlPersonBolk;
     public PersonsFamiliemedlem personsPartner;
+    public GeografiskTilknytning geografiskTilknytning;
 
     @Data
     public static class PdlPerson {
@@ -29,7 +30,6 @@ public class HentPdlPerson {
         List<Sikkerhetstiltak> sikkerhetstiltak;
 
         List<Adressebeskyttelse> adressebeskyttelse;
-        GeografiskTilknytning geografiskTilknytning;
         List<Bostedsadresse> bostedsadresse;
         List<KontaktAdresse> kontaktadresse;
     }

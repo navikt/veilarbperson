@@ -12,4 +12,5 @@ public interface PdlClient extends HealthCheck {
 
     List<HentPdlPerson.PdlPersonBolk> hentPersonBolk(String[] personIdent);
 
+    HentPdlPerson.GeografiskTilknytning hentGeografiskTilknytning(String personIdent, String userToken);
 }

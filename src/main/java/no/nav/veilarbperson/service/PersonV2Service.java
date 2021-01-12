@@ -80,7 +80,7 @@ public class PersonV2Service {
         flettBarnInformasjon(personDataFraPdl.getFamilierelasjoner(), personV2Data);
         flettPartnerInformasjon(personDataFraPdl.getSivilstand(), personV2Data, userToken);
         flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
-        flettGeografiskEnhet(personV2Data);
+        flettGeografiskEnhet(fodselsnummer, userToken, personV2Data);
         flettKodeverk(personV2Data);
 
         return personV2Data;
@@ -143,8 +143,11 @@ public class PersonV2Service {
         }
     }
 
-    private void flettGeografiskEnhet(PersonV2Data personV2Data) {
-        String geografiskTilknytning = personV2Data.getGeografiskTilknytning();
+    private void flettGeografiskEnhet(String fodselsnummer,  String userToken, PersonV2Data personV2Data) {
+        String geografiskTilknytning = Optional.ofNullable(pdlClient.hentGeografiskTilknytning(fodselsnummer, userToken))
+                                               .map(HentPdlPerson.GeografiskTilknytning::getGtKommune).orElse(null);
+
+        personV2Data.setGeografiskTilknytning(geografiskTilknytning);
 
         if (geografiskTilknytning != null && geografiskTilknytning.matches("\\d+")) {
             try {
