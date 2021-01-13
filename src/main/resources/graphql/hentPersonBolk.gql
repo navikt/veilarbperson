@@ -1,4 +1,4 @@
-query($identer: ID!, $historikk: Boolean!) {
+query($identer: [ID!]!, $historikk: Boolean!) {
     hentPersonBolk(identer: $identer) {
         ident,
         person {
