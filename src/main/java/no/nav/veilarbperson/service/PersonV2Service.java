@@ -87,13 +87,13 @@ public class PersonV2Service {
     }
 
     public List<Familiemedlem> hentOpplysningerTilBarna(String[] barnasFnrs) {
-        List<HentPdlPerson.PdlPersonBolk> barnasaInformasjon = pdlClient.hentPersonBolk(barnasFnrs);
+        List<HentPdlPerson.Barn> barnasaInformasjon = pdlClient.hentPersonBolk(barnasFnrs);
 
         return ofNullable(barnasaInformasjon)
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(barn -> barn.getCode().equals("ok"))
-                .map(HentPdlPerson.PdlPersonBolk::getPerson)
+                .map(HentPdlPerson.Barn::getPerson)
                 .map(PersonV2DataMapper::familiemedlemMapper)
                 .collect(Collectors.toList());
     }
@@ -122,7 +122,7 @@ public class PersonV2Service {
 
     public void flettPartnerInformasjon(List<HentPdlPerson.Sivilstand> personsSivilstand, PersonV2Data personV2Data, String userToken) {
         String fnrTilPartner = hentFnrTilPartner(personsSivilstand);
-        HentPdlPerson.PersonsFamiliemedlem partnerInformasjon =  pdlClient.hentPartnerOpplysninger(fnrTilPartner, userToken);
+        HentPdlPerson.Familiemedlem partnerInformasjon =  pdlClient.hentPartner(fnrTilPartner, userToken);
         personV2Data.setPartner(PersonV2DataMapper.familiemedlemMapper(partnerInformasjon));
     }
 

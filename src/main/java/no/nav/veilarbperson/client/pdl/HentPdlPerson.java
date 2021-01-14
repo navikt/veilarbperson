@@ -10,10 +10,9 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 public class HentPdlPerson {
-    public PdlPerson pdlPerson;
-    public List<PdlPersonBolk> pdlPersonBolk;
-    public PersonsFamiliemedlem personsPartner;
-    public GeografiskTilknytning geografiskTilknytning;
+    public PdlPerson hentPerson;
+    public List<Barn> hentPersonBolk;
+    public GeografiskTilknytning hentGeografiskTilknytning;
 
     @Data
     public static class PdlPerson {
@@ -35,19 +34,24 @@ public class HentPdlPerson {
     }
 
     @Data
-    public static class PdlPersonBolk {
+    public static class Barn {
         String ident;
-        PersonsFamiliemedlem person;
+        Familiemedlem person;
         String code;
     }
 
     @Data
-    public static class PersonsFamiliemedlem {
+    public static class Familiemedlem {
         List<Navn> navn;
         List<Foedsel> foedsel;
         List<Kjoenn> kjoenn;
         List<Folkeregisteridentifikator> folkeregisteridentifikator;
         List<Doedsfall> doedsfall;
+    }
+
+    @Data
+    public static class Partner {
+        public Familiemedlem hentPerson;
     }
 
     @Data
