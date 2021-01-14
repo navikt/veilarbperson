@@ -55,25 +55,25 @@ public class PdlClientImpl implements PdlClient {
     @Override
     public HentPdlPerson.PdlPerson hentPerson(String personIdent, String userToken) {
         GqlRequest request = new GqlRequest<>(hentPersonQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
-        return graphqlRequest(request, userToken, HentPdlPerson.class).pdlPerson;
+        return graphqlRequest(request, userToken, HentPdlPerson.class).hentPerson;
     }
 
     @Override
-    public HentPdlPerson.PersonsFamiliemedlem hentPartnerOpplysninger(String personIdent, String userToken) {
+    public HentPdlPerson.Familiemedlem hentPartner(String personIdent, String userToken) {
         GqlRequest request = new GqlRequest<>(hentPersonQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
-        return graphqlRequest(request, userToken, HentPdlPerson.class).personsPartner;
+        return graphqlRequest(request, userToken, HentPdlPerson.Partner.class).hentPerson;
     }
 
     @Override
-    public List<HentPdlPerson.PdlPersonBolk> hentPersonBolk(String[] personIdent) {
+    public List<HentPdlPerson.Barn> hentPersonBolk(String[] personIdent) {
         GqlRequest request = new GqlRequest<>(hentPersonBolkQuery, new PdlPersonVariables.HentPersonBolkVariables(personIdent, false));
-        return graphqlRequest(request, systemUserTokenSupplier.get(), HentPdlPerson.class).pdlPersonBolk;
+        return graphqlRequest(request, systemUserTokenSupplier.get(), HentPdlPerson.class).hentPersonBolk;
     }
 
     @Override
     public HentPdlPerson.GeografiskTilknytning hentGeografiskTilknytning(String personIdent, String userToken) {
         GqlRequest request = new GqlRequest<>(hentGeografiskTilknytningQuery, new PdlPersonVariables.HentGeografiskTilknytningVariables(personIdent));
-        return graphqlRequest(request, userToken, HentPdlPerson.class).geografiskTilknytning;
+        return graphqlRequest(request, userToken, HentPdlPerson.class).hentGeografiskTilknytning;
     }
 
     @SneakyThrows

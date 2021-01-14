@@ -49,7 +49,7 @@ public class PersonV2DataMapper {
                 .setForkortetnavn(ofNullable(navn).map(HentPdlPerson.Navn::getForkortetnavn).orElse(null));
     }
 
-    public static Familiemedlem familiemedlemMapper(HentPdlPerson.PersonsFamiliemedlem familiemedlem) {
+    public static Familiemedlem familiemedlemMapper(HentPdlPerson.Familiemedlem familiemedlem) {
         HentPdlPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
 
         return new Familiemedlem()

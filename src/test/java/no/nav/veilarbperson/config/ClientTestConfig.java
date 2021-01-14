@@ -203,12 +203,12 @@ public class ClientTestConfig {
             }
 
             @Override
-            public HentPdlPerson.PersonsFamiliemedlem hentPartnerOpplysninger(String personIdent, String userToken) {
+            public HentPdlPerson.Familiemedlem hentPartner(String personIdent, String userToken) {
                 return null;
             }
 
             @Override
-            public List<HentPdlPerson.PdlPersonBolk> hentPersonBolk(String[] personIdent) {
+            public List<HentPdlPerson.Barn> hentPersonBolk(String[] personIdent) {
                 return null;
             }
 

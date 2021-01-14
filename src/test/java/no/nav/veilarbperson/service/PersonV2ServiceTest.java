@@ -89,16 +89,16 @@ public class PersonV2ServiceTest {
         return pdlClient.hentPerson(fnr, "USER_TOKEN");
     }
 
-    public List<HentPdlPerson.PdlPersonBolk> hentPersonBolk(String[] fnrs) {
+    public List<HentPdlPerson.Barn> hentPersonBolk(String[] fnrs) {
         String apiUrl = configurApiResponse("pdl-hentPersonBolk-response.json");
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
 
         return pdlClient.hentPersonBolk(fnrs);
     }
 
-    public HentPdlPerson.PersonsFamiliemedlem hentPartnerOpplysninger(String fnr) {
-        PdlClientImpl pdlClient = configurPdlClient("pdl-hentPersonsPartner-response.json");
-        return pdlClient.hentPartnerOpplysninger(fnr, "USER_TOKEN");
+    public HentPdlPerson.Familiemedlem hentPartner(String fnr) {
+        PdlClientImpl pdlClient = configurPdlClient("pdl-hentPartner-response.json");
+        return pdlClient.hentPartner(fnr, "USER_TOKEN");
     }
 
     public HentPdlPerson.GeografiskTilknytning hentGeografisktilknytning(String fnr) {
@@ -135,11 +135,11 @@ public class PersonV2ServiceTest {
 
     @Test
     public void hentOpplysningerTilBarnaMedKodeOkFraPdlTest() {
-        List<HentPdlPerson.PdlPersonBolk> pdlPersonBolk = hentPersonBolk(testFnrsTilBarna);
+        List<HentPdlPerson.Barn> hentPersonBolk = hentPersonBolk(testFnrsTilBarna);
 
-        assertEquals(3, pdlPersonBolk.size());
+        assertEquals(3, hentPersonBolk.size());
 
-        List<HentPdlPerson.PdlPersonBolk> filterPersonBolkMedOkStatus = Optional.ofNullable(pdlPersonBolk).stream().flatMap(Collection::stream)
+        List<HentPdlPerson.Barn> filterPersonBolkMedOkStatus = Optional.ofNullable(hentPersonBolk).stream().flatMap(Collection::stream)
                                                                         .filter(status -> status.getCode().equals("ok"))
                                                                         .collect(Collectors.toList());
 
@@ -190,7 +190,7 @@ public class PersonV2ServiceTest {
 
         assertEquals("2134567890", fnrTilPartner);
 
-        HentPdlPerson.PersonsFamiliemedlem partnerInformasjon = hentPartnerOpplysninger(fnrTilPartner);
+        HentPdlPerson.Familiemedlem partnerInformasjon = hentPartner(fnrTilPartner);
         Familiemedlem partner = PersonV2DataMapper.familiemedlemMapper(partnerInformasjon);
 
         assertEquals("TYKKMAGET GASELLE", partner.getSammensattNavn());
