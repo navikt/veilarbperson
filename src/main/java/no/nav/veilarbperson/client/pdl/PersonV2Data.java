@@ -7,6 +7,7 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.Enhet;
 import java.util.List;
+
 import static java.util.Optional.ofNullable;
 
 @Data
@@ -43,7 +44,7 @@ public class PersonV2Data {
     public String getPostnummerFraBostedsadresse() {
         return ofNullable(bostedsadresse)
                 .map(Bostedsadresse::getVegadresse)
-                .map(Adresse.Vegadresse::getPostnummer).get();
+                .map(Adresse.Vegadresse::getPostnummer).orElse(null);
     }
 
     public void setPoststedUnderBostedsAdresse(String poststed) {
@@ -54,7 +55,7 @@ public class PersonV2Data {
 
     public String getLandKodeFraKontaktadresse() {
         return ofNullable(midlertidigAdresseUtland)
-                .map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode).get();
+                .map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode).orElse(null);
     }
 
     public void setBeskrivelseForLandkodeIKontaktadresse(String landkode) {

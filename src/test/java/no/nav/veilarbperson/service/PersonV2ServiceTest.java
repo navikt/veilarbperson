@@ -12,8 +12,7 @@ import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
-import no.nav.veilarbperson.client.pdl.domain.Diskresjonskoder;
-import no.nav.veilarbperson.client.pdl.domain.Familiemedlem;
+import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
@@ -24,10 +23,10 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static java.util.Optional.ofNullable;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,6 +47,7 @@ public class PersonV2ServiceTest {
     private PamClient pamClient = mock(PamClient.class);
     private PersonService personService;
     private PersonV2Service personV2Service;
+    private HentPdlPerson.PdlPerson pdlPerson;
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
@@ -64,6 +64,7 @@ public class PersonV2ServiceTest {
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
         personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient, difiCient, null);
         personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, pamClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
+        pdlPerson = hentPerson(FNR);
     }
 
     public String configurApiResponse(String responseFilename) {
@@ -108,8 +109,6 @@ public class PersonV2ServiceTest {
 
     @Test
     public void hentFamilieRelasjonerSkalHenteForeldreOgBarnRelasjoner() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
-
         assertEquals("12345678910", pdlPerson.getFamilierelasjoner().get(0).getRelatertPersonsIdent());
         assertEquals("BARN",pdlPerson.getFamilierelasjoner().get(0).getRelatertPersonsRolle());
 
@@ -122,7 +121,6 @@ public class PersonV2ServiceTest {
 
     @Test
     public void hentFnrTilBarnaTest() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
         List<HentPdlPerson.Familierelasjoner> familierelasjoner = pdlPerson.getFamilierelasjoner();
         String[] fnrListe = personV2Service.hentFnrTilBarna(familierelasjoner);
 
@@ -139,7 +137,7 @@ public class PersonV2ServiceTest {
 
         assertEquals(3, hentPersonBolk.size());
 
-        List<HentPdlPerson.Barn> filterPersonBolkMedOkStatus = Optional.ofNullable(hentPersonBolk).stream().flatMap(Collection::stream)
+        List<HentPdlPerson.Barn> filterPersonBolkMedOkStatus = ofNullable(hentPersonBolk).stream().flatMap(Collection::stream)
                                                                         .filter(status -> status.getCode().equals("ok"))
                                                                         .collect(Collectors.toList());
 
@@ -148,8 +146,6 @@ public class PersonV2ServiceTest {
 
     @Test
     public void hentDiskresjonsKodeTilAdressebeskyttetPersonTest() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
-
         HentPdlPerson.Adressebeskyttelse adressebeskyttelse = PersonV2DataMapper.getFirstElement(pdlPerson.getAdressebeskyttelse());
         String gradering = adressebeskyttelse.getGradering();
         String diskresjonskode = Diskresjonskoder.mapTilTallkode(gradering);
@@ -166,7 +162,6 @@ public class PersonV2ServiceTest {
 
     @Test
     public void hentNavnTest() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
         HentPdlPerson.Navn navn = PersonV2DataMapper.getFirstElement(pdlPerson.getNavn());
 
         assertEquals("NATURLIG", navn.getFornavn());
@@ -177,15 +172,13 @@ public class PersonV2ServiceTest {
 
     @Test
     public void unngoArrayIndexOutOfBoundExceptionNorListeErTomIPdlTest() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
-        String doedsfall = Optional.ofNullable(PersonV2DataMapper.getFirstElement(pdlPerson.getDoedsfall())).map(HentPdlPerson.Doedsfall::getDoedsdato).orElse(null);
+        String doedsfall = ofNullable(PersonV2DataMapper.getFirstElement(pdlPerson.getDoedsfall())).map(HentPdlPerson.Doedsfall::getDoedsdato).orElse(null);
 
         assertNull(doedsfall);
     }
 
     @Test
     public void hentPartnerInformasjonTest() {
-        HentPdlPerson.PdlPerson pdlPerson = hentPerson(FNR);
         String fnrTilPartner = personV2Service.hentFnrTilPartner(pdlPerson.getSivilstand());
 
         assertEquals("2134567890", fnrTilPartner);
@@ -207,4 +200,29 @@ public class PersonV2ServiceTest {
         assertEquals("NORGE", geografiskTilknytning.getGtLand());
     }
 
+    @Test
+    public void getLandKodeFraKontaktadresseTest() {
+        Kontaktadresse.UtenlandskAdresseIFrittFormat midlertidigAdresseUtland = pdlPerson.getKontaktadresse().get(0).getUtenlandskAdresseIFrittFormat();
+        String landkode = ofNullable(midlertidigAdresseUtland).map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode).orElse(null);
+
+        assertEquals(landkode, "FRA");
+
+        Kontaktadresse.UtenlandskAdresseIFrittFormat nullMidlertidigAdresseUtland = null;
+        String nullLandkode = ofNullable(nullMidlertidigAdresseUtland).map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode).orElse(null);
+
+        assertEquals(nullLandkode, null);
+    }
+
+    @Test
+    public void getPostnummerFraBostedsadresseTest() {
+        Bostedsadresse bostedsadresse = pdlPerson.getBostedsadresse().get(0);
+        String postnummer = ofNullable(bostedsadresse).map(Bostedsadresse::getVegadresse).map(Adresse.Vegadresse::getPostnummer).orElse(null);
+
+        assertEquals(postnummer, "0560");
+
+        Bostedsadresse nullBostedsadresse = null;
+        String nullPostnummer = ofNullable(nullBostedsadresse).map(Bostedsadresse::getVegadresse).map(Adresse.Vegadresse::getPostnummer).orElse(null);
+
+        assertEquals(null, nullPostnummer);
+    }
 }

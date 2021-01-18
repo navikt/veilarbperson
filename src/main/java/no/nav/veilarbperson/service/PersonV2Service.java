@@ -87,9 +87,9 @@ public class PersonV2Service {
     }
 
     public List<Familiemedlem> hentOpplysningerTilBarna(String[] barnasFnrs) {
-        List<HentPdlPerson.Barn> barnasaInformasjon = pdlClient.hentPersonBolk(barnasFnrs);
+        List<HentPdlPerson.Barn> barnasInformasjon = pdlClient.hentPersonBolk(barnasFnrs);
 
-        return ofNullable(barnasaInformasjon)
+        return ofNullable(barnasInformasjon)
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(barn -> barn.getCode().equals("ok"))
@@ -100,18 +100,18 @@ public class PersonV2Service {
 
     public String[] hentFnrTilBarna(List<HentPdlPerson.Familierelasjoner> familierelasjoner) {
 
-        return ofNullable(familierelasjoner)
-                .stream()
-                .flatMap(Collection::stream)
+        return familierelasjoner.stream()
                 .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
                 .map(HentPdlPerson.Familierelasjoner::getRelatertPersonsIdent)
                 .toArray(String[]::new);
     }
 
     private void flettBarnInformasjon(List<HentPdlPerson.Familierelasjoner> familierelasjoner, PersonV2Data personV2Data) {
-        String[] barnasFnrListe = hentFnrTilBarna(familierelasjoner);
-        List<Familiemedlem> barnasInformasjon = hentOpplysningerTilBarna(barnasFnrListe);
-        personV2Data.setBarn(barnasInformasjon);
+        if (familierelasjoner != null) {
+            String[] barnasFnrListe = hentFnrTilBarna(familierelasjoner);
+            List<Familiemedlem> barnasInformasjon = hentOpplysningerTilBarna(barnasFnrListe);
+            personV2Data.setBarn(barnasInformasjon);
+        }
     }
 
     public String hentFnrTilPartner(List<HentPdlPerson.Sivilstand> personsSivilstand){

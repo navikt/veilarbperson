@@ -93,10 +93,10 @@
         },
         "utenlandskAdresseIFrittFormat": {
           "adresselinje1": "Postboks 100",
-          "adresselinje2": "12345 Paris",
+          "adresselinje2": "12345",
           "adresselinje3": null,
           "postkode": null,
-          "byEllerStedsnavn": null,
+          "byEllerStedsnavn": "Paris",
           "landkode": "FRA"
          }
         }
