@@ -71,7 +71,4 @@ public class PersonV2DataMapper {
                      .setSivilstand(ofNullable(pdlSivilstand).map(HentPdlPerson.Sivilstand::getType).orElse(null))
                      .setFraDato(ofNullable(pdlSivilstand).map(HentPdlPerson.Sivilstand::getGyldigFraOgMed).orElse(null));
     }
-
-    public static void toPersonV2Data(HentPdlPerson.PdlPerson pdlPerson) {
-    }
 }

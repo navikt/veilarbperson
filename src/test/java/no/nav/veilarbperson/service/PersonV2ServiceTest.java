@@ -210,7 +210,7 @@ public class PersonV2ServiceTest {
         Kontaktadresse.UtenlandskAdresseIFrittFormat nullMidlertidigAdresseUtland = null;
         String nullLandkode = ofNullable(nullMidlertidigAdresseUtland).map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode).orElse(null);
 
-        assertEquals(nullLandkode, null);
+        assertEquals(null, nullLandkode);
     }
 
     @Test

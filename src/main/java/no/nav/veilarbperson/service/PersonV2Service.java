@@ -106,8 +106,8 @@ public class PersonV2Service {
                 .toArray(String[]::new);
     }
 
-    private void flettBarnInformasjon(List<HentPdlPerson.Familierelasjoner> familierelasjoner, PersonV2Data personV2Data) {
-        if (familierelasjoner != null) {
+    public void flettBarnInformasjon(List<HentPdlPerson.Familierelasjoner> familierelasjoner, PersonV2Data personV2Data) {
+        if (!familierelasjoner.isEmpty()) {
             String[] barnasFnrListe = hentFnrTilBarna(familierelasjoner);
             List<Familiemedlem> barnasInformasjon = hentOpplysningerTilBarna(barnasFnrListe);
             personV2Data.setBarn(barnasInformasjon);
