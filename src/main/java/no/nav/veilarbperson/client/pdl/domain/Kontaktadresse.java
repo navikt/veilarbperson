@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.client.pdl.domain;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
 public class Kontaktadresse extends Adresse {
@@ -29,6 +30,7 @@ public class Kontaktadresse extends Adresse {
     }
 
     @Data
+    @Accessors(chain = true)
     public static class UtenlandskAdresseIFrittFormat {
         private String adresselinje1;
         private String adresselinje2;
