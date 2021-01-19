@@ -187,7 +187,6 @@ public class PersonV2ServiceTest {
         Familiemedlem partner = PersonV2DataMapper.familiemedlemMapper(partnerInformasjon);
 
         assertEquals("TYKKMAGET GASELLE", partner.getSammensattNavn());
-
         assertEquals("1981-12-13", partner.getFodselsdato());
     }
 
