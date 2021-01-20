@@ -40,7 +40,7 @@ public class PersonController {
     }
 
     @GetMapping("/aktorid")
-    public AktoerId aktorid(@RequestParam("fnr") Fnr fnr){
+    public AktoerId aktorid(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
         return new AktoerId(authService.getAktorId(fnr));
@@ -77,14 +77,7 @@ public class PersonController {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fodselsnummer);
 
-        if (unleashService.isEnabled("veilarb.sjekk.nivaa4")) {
-            return personService.hentHarNivaa4(fodselsnummer);
-        }
-
-        HarLoggetInnRespons harLoggetInnRespons = new HarLoggetInnRespons();
-        harLoggetInnRespons.setPersonidentifikator(fodselsnummer);
-        harLoggetInnRespons.setHarbruktnivaa4(true);
-        return harLoggetInnRespons;
+        return personService.hentHarNivaa4(fodselsnummer);
     }
 
     @GetMapping("/geografisktilknytning")
