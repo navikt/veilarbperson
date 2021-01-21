@@ -50,10 +50,16 @@ public class DifiClientImpl implements  DifiCient {
                 //brukere som ikke er registret som idporten brukere returnerer 404
                 return new HarLoggetInnRespons()
                         .setHarbruktnivaa4(false)
+                        .setErRegistrertIdPorten(false)
                         .setPersonidentifikator(fnr);
             }
+
             RestUtils.throwIfNotSuccessful(response);
-            return RestUtils.parseJsonResponseOrThrow(response, HarLoggetInnRespons.class);
+            HarLoggetInnRespons harLoggetInnRespons = RestUtils.parseJsonResponseOrThrow(response, HarLoggetInnRespons.class);
+
+            harLoggetInnRespons.setErRegistrertIdPorten(true);
+
+            return harLoggetInnRespons;
         }
     }
 
