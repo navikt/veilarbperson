@@ -1,0 +1,118 @@
+query($ident: ID!, $historikk: Boolean!) {
+    hentPerson(ident: $ident) {
+        navn(historikk: $historikk) {
+            fornavn
+            mellomnavn
+            etternavn
+            forkortetNavn
+        }
+        foedsel {
+            foedselsdato
+        }
+        kjoenn{
+            kjoenn
+        }
+        folkeregisteridentifikator(historikk: $historikk) {
+            identifikasjonsnummer
+            status
+            type
+        }
+        statsborgerskap(historikk: $historikk) {
+            land
+        }
+        doedsfall {
+            doedsdato
+        }
+        sivilstand(historikk:$historikk) {
+            type
+            gyldigFraOgMed
+            relatertVedSivilstand
+        }
+        familierelasjoner {
+            minRolleForPerson
+            relatertPersonsRolle
+            relatertPersonsIdent
+        }
+        telefonnummer {
+            landskode
+            nummer
+            prioritet
+        }
+        sikkerhetstiltak{
+            tiltakstype
+            beskrivelse
+            gyldigFraOgMed
+            gyldigTilOgMed
+        }
+        adressebeskyttelse(historikk:$historikk) {
+            gradering
+        }
+        bostedsadresse(historikk:$historikk) {
+            vegadresse {
+                postnummer
+                husnummer
+                husbokstav
+                kommunenummer
+                adressenavn
+            }
+            utenlandskAdresse {
+                adressenavnNummer
+                bygningEtasjeLeilighet
+                postboksNummerNavn
+                postkode
+                bySted
+                regionDistriktOmraade
+                landkode
+            }
+            matrikkeladresse {
+                matrikkelId
+                bruksenhetsnummer
+                tilleggsnavn
+                postnummer
+                kommunenummer
+            }
+            ukjentBosted {
+                bostedskommune
+            }
+        }
+        kontaktadresse(historikk:$historikk) {
+            type
+            vegadresse {
+                postnummer
+                husnummer
+                husbokstav
+                adressenavn
+                kommunenummer
+            }
+            utenlandskAdresse {
+                adressenavnNummer
+                bygningEtasjeLeilighet
+                postboksNummerNavn
+                postkode
+                bySted
+                regionDistriktOmraade
+                landkode
+            }
+            utenlandskAdresseIFrittFormat {
+                adresselinje1
+                adresselinje2
+                adresselinje3
+                postkode
+                byEllerStedsnavn
+                landkode
+            }
+            postadresseIFrittFormat {
+                adresselinje1
+                adresselinje2
+                adresselinje3
+                postnummer
+            }
+            postboksadresse {
+                postbokseier
+                postboks
+                postnummer
+            }
+        }
+    }
+}
+

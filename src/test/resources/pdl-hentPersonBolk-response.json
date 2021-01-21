@@ -1,0 +1,102 @@
+{
+  "data": {
+    "hentPersonBolk": [
+      {
+        "ident": "12345678910",
+        "person": {
+          "navn": [
+            {
+              "fornavn": "KREATIV",
+              "mellomnavn": "GLITRENDE",
+              "etternavn": "STAFFELI",
+              "forkortetnavn": "KREATIV STAFFELI"
+            }
+          ],
+          "foedsel": [
+            {
+              "foedselsdato": "1980-12-13"
+            }
+          ],
+          "kjoenn": [
+            {
+              "kjoenn": "KVINNE"
+            }
+          ],
+          "folkeregisteridentifikator": [
+            {
+              "identifikasjonsnummer": "12345678910",
+              "status": "I_BRUK",
+              "type": "FNR"
+            }
+          ],
+          "doedsfall": []
+        },
+        "code": "ok"
+      },
+      {
+        "ident": "12345678911",
+        "person": {
+          "navn": [
+            {
+              "fornavn": "FORFJAMSET",
+              "mellomnavn": "GLITRENDE",
+              "etternavn": "STAFFELI",
+              "forkortetnavn": "FORFJAMSET STAFFELI"
+            }
+          ],
+          "foedsel": [
+            {
+              "foedselsdato": "1982-12-14"
+            }
+          ],
+          "kjoenn": [
+            {
+              "kjoenn": "KVINNE"
+            }
+          ],
+          "folkeregisteridentifikator": [
+            {
+              "identifikasjonsnummer": "12345678911",
+              "status": "I_BRUK",
+              "type": "FNR"
+            }
+          ],
+          "doedsfall": []
+        },
+        "code": "not_found"
+      },
+      {
+        "ident": "12345678912",
+        "person": {
+          "navn": [
+            {
+              "fornavn": "STERK",
+              "mellomnavn": "GLITRENDE",
+              "etternavn": "STAFFELI",
+              "forkortetnavn": "STERK STAFFELI"
+            }
+          ],
+          "foedsel": [
+            {
+              "foedselsdato": "1984-12-15"
+            }
+          ],
+          "kjoenn": [
+            {
+              "kjoenn": "MANN"
+            }
+          ],
+          "folkeregisteridentifikator": [
+            {
+              "identifikasjonsnummer": "12345678912",
+              "status": "I_BRUK",
+              "type": "FNR"
+            }
+          ],
+          "doedsfall": []
+        },
+        "code": "bad_request"
+      }
+    ]
+  }
+}

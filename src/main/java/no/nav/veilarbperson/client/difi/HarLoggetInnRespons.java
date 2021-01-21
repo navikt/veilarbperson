@@ -9,5 +9,6 @@ import no.nav.common.types.identer.Fnr;
 @Accessors(chain = true)
 public class HarLoggetInnRespons {
     boolean harbruktnivaa4;
+    boolean erRegistrertIdPorten;
     Fnr personidentifikator;
 }

@@ -63,7 +63,7 @@ public class PersonService {
     }
 
     public PersonData hentFlettetPerson(Fnr fodselsnummer) {
-        PersonData personData = PersonDataMapper.tilPersonData(personClient.hentPerson(fodselsnummer));
+        PersonData personData = PersonDataMapper.tilPersonData(hentPerson(fodselsnummer));
 
         try {
             flettPersoninfoFraPortefolje(personData, fodselsnummer);
@@ -80,7 +80,7 @@ public class PersonService {
     }
 
     public GeografiskTilknytning hentGeografisktilknytning(Fnr fodselsnummer) {
-        String geografiskTilknytning = personClient.hentPerson(fodselsnummer).getGeografiskTilknytning();
+        String geografiskTilknytning = hentPerson(fodselsnummer).getGeografiskTilknytning();
         return new GeografiskTilknytning(geografiskTilknytning);
     }
 
@@ -132,13 +132,13 @@ public class PersonService {
 
     private void kanskjePoststedBostedsadresse(PersonData personData) {
         personData.getPostnummerForBostedsadresse()
-                .map(kodeverkService::getPoststed)
+                .map(kodeverkService::getPoststedForPostnummer)
                 .ifPresent(personData::setPoststedForBostedsadresse);
     }
 
     private void kanskjePoststedMidlertidigAdresseNorge(PersonData personData) {
         personData.getPostnummerForMidlertidigAdresseNorge()
-                .map(kodeverkService::getPoststed)
+                .map(kodeverkService::getPoststedForPostnummer)
                 .ifPresent(personData::setPoststedForMidlertidigAdresseNorge);
     }
 
