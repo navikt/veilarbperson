@@ -93,7 +93,7 @@ public class PersonV2Service {
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(barn -> barn.getCode().equals("ok"))
-                .map(HentPdlPerson.Barn::getBarn)
+                .map(HentPdlPerson.Barn::getPerson)
                 .map(PersonV2DataMapper::familiemedlemMapper)
                 .collect(Collectors.toList());
     }

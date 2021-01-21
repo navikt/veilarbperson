@@ -36,7 +36,7 @@ public class HentPdlPerson {
     @Data
     public static class Barn {
         String ident;
-        Familiemedlem barn;
+        Familiemedlem person;
         String code;
     }
 
