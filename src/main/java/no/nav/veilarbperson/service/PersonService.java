@@ -1,7 +1,9 @@
 package no.nav.veilarbperson.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
+import no.nav.common.featuretoggle.UnleashService;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
@@ -19,14 +21,16 @@ import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.GeografiskTilknytning;
 import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.utils.PersonDataMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
 
+@RequiredArgsConstructor
 @Slf4j
 @Service
 public class PersonService {
+
+    private static final String UNLEASH_NIVAA4_DISABLED = "veilarbperson.nivaa4.disabled";
 
     private final Norg2Client norg2Client;
     private final PersonClient personClient;
@@ -36,27 +40,7 @@ public class PersonService {
     private final VeilarbportefoljeClient veilarbportefoljeClient;
     private final DifiCient difiCient;
     private final PamClient pamClient;
-
-    @Autowired
-    public PersonService(
-            Norg2Client norg2Client,
-            PersonClient personClient,
-            EgenAnsattClient egenAnsattClient,
-            DkifClient dkifClient,
-            KodeverkService kodeverkService,
-            VeilarbportefoljeClient veilarbportefoljeClient,
-            DifiCient difiCient,
-            PamClient pamClient
-    ) {
-        this.norg2Client = norg2Client;
-        this.personClient = personClient;
-        this.egenAnsattClient = egenAnsattClient;
-        this.dkifClient = dkifClient;
-        this.kodeverkService = kodeverkService;
-        this.veilarbportefoljeClient = veilarbportefoljeClient;
-        this.difiCient = difiCient;
-        this.pamClient = pamClient;
-    }
+    private final UnleashService unleashService;
 
     public TpsPerson hentPerson(Fnr fodselsnummer){
         return personClient.hentPerson(fodselsnummer);
@@ -85,6 +69,12 @@ public class PersonService {
     }
 
     public HarLoggetInnRespons hentHarNivaa4(Fnr fodselsnummer) {
+        if (unleashService.isEnabled(UNLEASH_NIVAA4_DISABLED)) {
+            return new HarLoggetInnRespons()
+                    .setErRegistrertIdPorten(true)
+                    .setHarbruktnivaa4(true)
+                    .setPersonidentifikator(fodselsnummer);
+        }
         return difiCient.harLoggetInnSiste18mnd(fodselsnummer);
     }
 
