@@ -3,6 +3,7 @@ package no.nav.veilarbperson.service;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
+import no.nav.common.featuretoggle.UnleashService;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.dkif.DkifClient;
@@ -48,6 +49,7 @@ public class PersonV2ServiceTest {
     private PersonService personService;
     private PersonV2Service personV2Service;
     private HentPdlPerson.PdlPerson pdlPerson;
+    private final UnleashService unleashService = mock(UnleashService.class);
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
@@ -62,7 +64,7 @@ public class PersonV2ServiceTest {
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
-        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient, difiCient, null);
+        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient, difiCient, null, unleashService);
         personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, pamClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
         pdlPerson = hentPerson(FNR);
     }
