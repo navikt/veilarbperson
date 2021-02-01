@@ -1,0 +1,95 @@
+{
+  "data": {
+    "hentPerson": {
+      "navn": [
+        {
+          "fornavn": "NATURLIG",
+          "mellomnavn": "GLITRENDE",
+          "etternavn": "STAFFELI",
+          "forkortetNavn": "NATURLIG STAFFELI"
+        }
+      ],
+      "foedsel": [
+        {
+          "foedselsdato": "1981-12-13"
+        }
+      ],
+      "kjoenn": [
+        {
+          "kjoenn":"KVINNE"
+        }
+      ],
+      "folkeregisteridentifikator": [
+        {
+          "identifikasjonsnummer":"12345678910",
+          "status": "I_BRUK",
+          "type": "FNR"
+        }
+      ],
+      "doedsfall": [],
+      "sivilstand": null,
+      "familierelasjoner": [
+        {
+          "minRolleForPerson": "BARN",
+          "relatertPersonsRolle": "MOR",
+          "relatertPersonsIdent": "0123456789"
+        },
+        {
+          "minRolleForPerson": "BARN",
+          "relatertPersonsRolle": "FAR",
+          "relatertPersonsIdent": "2134567890"
+        }
+      ],
+      "statsborgerskap": [
+        {
+          "land": "NORGE",
+          "gyldigFraOgMed": "1980-12-24",
+          "gyldigTilOgMed": "2010-12-30"
+        }
+      ],
+      "bostedsadresse": [
+        {
+          "vegadresse": {
+            "postnummer": "0560",
+            "husnummer": "21",
+            "husbokstav": "A",
+            "kommunenummer": "0570",
+            "adressenavn": "ARENDALSGATE",
+            "tilleggsnavn": "ARENDAL",
+            "poststed": "OSLO"
+          }
+        }
+      ],
+      "telefonnummer": [
+        {
+          "nummer": "45364699",
+          "landkode": "+47",
+          "prioritet": "1"
+        }
+      ],
+      "adressebeskyttelse": [
+        {
+          "gradering": "UGRADERT"
+        }
+      ],
+      "kontaktadresse": [
+        {
+          "postadresseIFrittFormat": {
+            "adresselinje1": "SOT6",
+            "adresselinje2": "POSTBOKS 2094 VIKA",
+            "adresselinje3": null,
+            "postnummer": "0125"
+          },
+          "utenlandskAdresseIFrittFormat": {
+            "adresselinje1": "Postboks 100",
+            "adresselinje2": "12345",
+            "adresselinje3": null,
+            "postkode": null,
+            "byEllerStedsnavn": "Paris",
+            "landkode": "FRA"
+          }
+        }
+      ]
+    }
+  }
+}
