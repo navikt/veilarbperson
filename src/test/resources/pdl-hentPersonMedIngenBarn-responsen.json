@@ -3,10 +3,10 @@
     "hentPerson": {
       "navn": [
         {
-          "fornavn": "NATURLIG",
-          "mellomnavn": "GLITRENDE",
-          "etternavn": "STAFFELI",
-          "forkortetNavn": "NATURLIG STAFFELI"
+          "fornavn": "FORNAVN",
+          "mellomnavn": "MELLOMNAVN",
+          "etternavn": "ETTERNAVN",
+          "forkortetNavn": "FORNAVN ETTERNAVN"
         }
       ],
       "foedsel": [
@@ -16,7 +16,7 @@
       ],
       "kjoenn": [
         {
-          "kjoenn":"KVINNE"
+          "kjoenn":"MANN"
         }
       ],
       "folkeregisteridentifikator": [
@@ -62,7 +62,7 @@
       ],
       "telefonnummer": [
         {
-          "nummer": "45364699",
+          "nummer": "11111111",
           "landkode": "+47",
           "prioritet": "1"
         }

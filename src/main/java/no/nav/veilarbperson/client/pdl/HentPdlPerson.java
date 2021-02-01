@@ -47,6 +47,7 @@ public class HentPdlPerson {
         List<Kjoenn> kjoenn;
         List<Folkeregisteridentifikator> folkeregisteridentifikator;
         List<Doedsfall> doedsfall;
+        List<Bostedsadresse> bostedsadresse;
     }
 
     @Data
@@ -59,7 +60,7 @@ public class HentPdlPerson {
         String fornavn;
         String mellomnavn;
         String etternavn;
-        String forkortetnavn;
+        String forkortetNavn;
     }
 
     @Data
@@ -100,6 +101,7 @@ public class HentPdlPerson {
 
     @Data
     public static class GeografiskTilknytning {
+        private String gtType;
         private String gtKommune;
         private String gtBydel;
         private String gtLand;

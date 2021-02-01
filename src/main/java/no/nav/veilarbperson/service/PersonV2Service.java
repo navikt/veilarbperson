@@ -10,6 +10,7 @@ import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
+import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
 import no.nav.veilarbperson.client.pdl.domain.Familiemedlem;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
@@ -21,6 +22,7 @@ import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,7 +88,7 @@ public class PersonV2Service {
         return personV2Data;
     }
 
-    public List<Familiemedlem> hentOpplysningerTilBarna(String[] barnasFnrs) {
+    public List<Familiemedlem> hentOpplysningerTilBarna(String[] barnasFnrs, Bostedsadresse foreldresBostedsAdresse) {
         List<HentPdlPerson.Barn> barnasInformasjon = pdlClient.hentPersonBolk(barnasFnrs);
 
         return ofNullable(barnasInformasjon)
@@ -94,7 +96,7 @@ public class PersonV2Service {
                 .flatMap(Collection::stream)
                 .filter(barn -> barn.getCode().equals("ok"))
                 .map(HentPdlPerson.Barn::getPerson)
-                .map(PersonV2DataMapper::familiemedlemMapper)
+                .map(familemedlem -> PersonV2DataMapper.familiemedlemMapper(familemedlem, foreldresBostedsAdresse))
                 .collect(Collectors.toList());
     }
 
@@ -107,14 +109,19 @@ public class PersonV2Service {
     }
 
     public void flettBarnInformasjon(List<HentPdlPerson.Familierelasjoner> familierelasjoner, PersonV2Data personV2Data) {
-        if (!familierelasjoner.isEmpty()) {
+
+        if (familierelasjoner != null) {
             String[] barnasFnrListe = hentFnrTilBarna(familierelasjoner);
-            List<Familiemedlem> barnasInformasjon = hentOpplysningerTilBarna(barnasFnrListe);
-            personV2Data.setBarn(barnasInformasjon);
+
+            if (barnasFnrListe.length != 0) {
+                List<Familiemedlem> barnasInformasjon = hentOpplysningerTilBarna(barnasFnrListe, personV2Data.getBostedsadresse());
+                personV2Data.setBarn(barnasInformasjon);
+            }
         }
     }
 
-    public String hentFnrTilPartner(List<HentPdlPerson.Sivilstand> personsSivilstand){
+    public String hentFnrTilPartner(List<HentPdlPerson.Sivilstand> personsSivilstand) {
+
         return ofNullable(PersonV2DataMapper.getFirstElement(personsSivilstand))
                 .map(HentPdlPerson.Sivilstand::getRelatertVedSivilstand)
                 .orElse(null);
@@ -122,9 +129,13 @@ public class PersonV2Service {
 
     public void flettPartnerInformasjon(List<HentPdlPerson.Sivilstand> personsSivilstand, PersonV2Data personV2Data, String userToken) {
         String fnrTilPartner = hentFnrTilPartner(personsSivilstand);
+
         if(fnrTilPartner != null) {
             HentPdlPerson.Familiemedlem partnerInformasjon = pdlClient.hentPartner(fnrTilPartner, userToken);
-            personV2Data.setPartner(ofNullable(partnerInformasjon).map(PersonV2DataMapper::familiemedlemMapper).orElse(null));
+            personV2Data.setPartner(ofNullable(partnerInformasjon)
+                                    .map(partner -> PersonV2DataMapper.familiemedlemMapper(partner, personV2Data.getBostedsadresse()))
+                                    .orElse(null)
+            );
         }
     }
 
@@ -149,7 +160,7 @@ public class PersonV2Service {
 
     private void flettGeografiskEnhet(String fodselsnummer,  String userToken, PersonV2Data personV2Data) {
         String geografiskTilknytning = ofNullable(pdlClient.hentGeografiskTilknytning(fodselsnummer, userToken))
-                                               .map(HentPdlPerson.GeografiskTilknytning::getGtKommune).orElse(null);
+                .map(HentPdlPerson.GeografiskTilknytning::getGtKommune).orElse(null);
 
         personV2Data.setGeografiskTilknytning(geografiskTilknytning);
 
@@ -164,19 +175,34 @@ public class PersonV2Service {
     }
 
     private void flettKodeverk(PersonV2Data personV2Data) {
-        personV2Data.setStatsborgerskap(kodeverkService.getBeskrivelseForLandkode(personV2Data.getStatsborgerskap()));
-        personV2Data.setPoststedUnderBostedsAdresse(kodeverkService.getPoststedForPostnummer(personV2Data.getPostnummerFraBostedsadresse()));
-        personV2Data.setBeskrivelseForLandkodeIKontaktadresse(kodeverkService.getBeskrivelseForLandkode(personV2Data.getLandKodeFraKontaktadresse()));
+        ofNullable(personV2Data.getStatsborgerskap()).map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setStatsborgerskap);
+        personV2Data.getPostnummerFraBostedsadresse().map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedUnderBostedsAdresse);
+        personV2Data.getLandKodeFraKontaktadresse().map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setBeskrivelseForLandkodeIKontaktadresse);
     }
 
     private void flettDigitalKontaktinformasjon(String fnr, PersonV2Data personV2Data) {
         try {
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(Fnr.of(fnr));
+
+            personV2Data.setTelefon(leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), personV2Data.getTelefon()));
             personV2Data.setEpost(kontaktinfo.getEpostadresse());
             personV2Data.setMalform(kontaktinfo.getSpraak());
         } catch (Exception e) {
             log.warn("Kunne ikke flette digitalkontaktinfo fra KRR", e);
         }
+    }
+
+    // Legger telefonnummer fra PDL og KRR til en liste. Hvis de er like da kan liste inneholde kun en av dem.
+    public List<String> leggKrrTelefonNrIListe(String telefonNummerFraKrr, List<String> telefonNummerFraPdl) {
+        List<String> telefonList = telefonNummerFraPdl;
+
+        if(telefonNummerFraKrr != null) {
+            if(telefonList != null && !telefonList.get(0).equals(telefonNummerFraKrr)) telefonList.add(telefonNummerFraKrr);
+            telefonList = telefonList != null ?  telefonList : new ArrayList<>(List.of(telefonNummerFraKrr));
+            return telefonList;
+        }
+
+        return telefonList;
     }
 
     public String hentMalform(Fnr fnr) {

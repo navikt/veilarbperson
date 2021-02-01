@@ -21,9 +21,6 @@ public class DifiClientImplTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
 
-
-
-
     @Test
     public void skal_hente_har_niva4() {
         String baseUrl = "http://localhost:" + wireMockRule.port();

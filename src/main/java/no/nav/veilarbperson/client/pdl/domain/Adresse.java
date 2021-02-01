@@ -2,13 +2,16 @@ package no.nav.veilarbperson.client.pdl.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Data
 @NoArgsConstructor
 public class Adresse {
 
     @Data
+    @Accessors(chain = true)
     public static class Vegadresse {
+        private Long matrikkelId;
         private String postnummer;
         private String husnummer;
         private String husbokstav;

@@ -22,6 +22,35 @@ query($identer: [ID!]!, $historikk: Boolean!) {
             doedsfall {
                 doedsdato
             }
+            bostedsadresse(historikk:$historikk) {
+                vegadresse {
+                    matrikkelId
+                    postnummer
+                    husnummer
+                    husbokstav
+                    kommunenummer
+                    adressenavn
+                }
+                utenlandskAdresse {
+                    adressenavnNummer
+                    bygningEtasjeLeilighet
+                    postboksNummerNavn
+                    postkode
+                    bySted
+                    regionDistriktOmraade
+                    landkode
+                }
+                matrikkeladresse {
+                    matrikkelId
+                    bruksenhetsnummer
+                    tilleggsnavn
+                    postnummer
+                    kommunenummer
+                }
+                ukjentBosted {
+                    bostedskommune
+                }
+            }
          },
         code
     }
