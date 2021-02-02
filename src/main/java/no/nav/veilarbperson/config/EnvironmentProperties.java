@@ -31,7 +31,7 @@ public class EnvironmentProperties {
 
     private String aktorregisterUrl;
 
-    private String egenAnsattV1Endepoint;
+    private String egenAnsattV1Endpoint;
 
     private String personV3Endpoint;
 
