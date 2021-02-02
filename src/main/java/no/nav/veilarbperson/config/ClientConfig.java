@@ -34,8 +34,8 @@ import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static no.nav.common.utils.UrlUtils.*;
 import static no.nav.common.utils.NaisUtils.getCredentials;
+import static no.nav.common.utils.UrlUtils.*;
 import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
 
 @Slf4j
@@ -81,7 +81,7 @@ public class ClientConfig {
 
     @Bean
     public EgenAnsattClient egenAnsattClient(EnvironmentProperties properties, StsConfig stsConfig) {
-        return new EgenAnsattClientImpl(properties.getEgenAnsattV1Endepoint(), stsConfig);
+        return new EgenAnsattClientImpl(properties.getEgenAnsattV1Endpoint(), stsConfig);
     }
 
     @Bean
