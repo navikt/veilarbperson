@@ -6,7 +6,6 @@ import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.PersonData;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,11 +27,7 @@ public class PersonV2DataMapper {
                 .setFodselsnummer(ofNullable(getFirstElement(pdlPerson.getFolkeregisteridentifikator()))
                         .map(HentPdlPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer)
                         .map(Fnr::of).orElse(null))
-                .setTelefon(telefonNummerMapper(getFirstElement(pdlPerson.getTelefonnummer())))
                 .setKontonummer(personDataFraTps.getKontonummer())
-                .setDiskresjonskode(ofNullable(getFirstElement(pdlPerson.getAdressebeskyttelse()))
-                        .map(HentPdlPerson.Adressebeskyttelse::getGradering)
-                        .map(Diskresjonskoder::mapTilTallkode).orElse(null))
                 .setSivilstand(ofNullable(sivilstandMapper(getFirstElement(pdlPerson.getSivilstand()))).orElse(null))
                 .setBostedsadresse(ofNullable(getFirstElement(pdlPerson.getBostedsadresse())).orElse(null))
                 .setMidlertidigAdresseUtland(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(Kontaktadresse::getUtenlandskAdresseIFrittFormat).orElse(null))
@@ -94,10 +89,10 @@ public class PersonV2DataMapper {
     }
 
     /* Slår sammen landkode og nummer og så lager et telefonnummer */
-    public static List<String> telefonNummerMapper(HentPdlPerson.Telefonnummer telefonnummer) {
+    public static String telefonNummerMapper(HentPdlPerson.Telefonnummer telefonnummer) {
          String landkode = ofNullable(telefonnummer).map(HentPdlPerson.Telefonnummer::getLandkode).orElse(null);
          String nummer = ofNullable(telefonnummer).map(HentPdlPerson.Telefonnummer::getNummer).orElse(null);
 
-         return (landkode!=null && nummer!=null) ? new ArrayList<>(List.of(landkode + nummer)) : null;
+         return (landkode!=null && nummer!=null) ? (landkode + nummer) : null;
     }
 }

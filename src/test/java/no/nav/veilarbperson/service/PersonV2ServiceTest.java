@@ -257,7 +257,7 @@ public class PersonV2ServiceTest {
 
     @Test
     public void harFamiliamedlemSammeBostedSomPersonTest() {
-        Bostedsadresse personsBostedsAdresse = lagPersonV2Data().getBostedsadresse();
+        Bostedsadresse personsBostedsAdresse = pdlPerson.getBostedsadresse().get(0);
         Bostedsadresse familiemedlemsBostedsAdresse = new Bostedsadresse();
 
         Adresse.Vegadresse medlemsVegAdresse = new Adresse.Vegadresse()
@@ -278,34 +278,35 @@ public class PersonV2ServiceTest {
     @Test
     public void telfonNummerMapperTest() {
         HentPdlPerson.Telefonnummer telefonNrFraPdl = pdlPerson.getTelefonnummer().get(0);   //telefonNrFraPdl: landkode: +47 nummer: 33333333
-        List<String> telefonNummer = PersonV2DataMapper.telefonNummerMapper(telefonNrFraPdl);
-        assertEquals("+4733333333", telefonNummer.get(0));
+        String telefonNummer = PersonV2DataMapper.telefonNummerMapper(telefonNrFraPdl);
+        assertEquals("+4733333333", telefonNummer);
     }
 
     @Test
     public void leggKrrTelefonNrIListeTest() {
-        String krrTelefonNr = "+4622222222";
-        List<String> telefonListe = personV2Service.leggKrrTelefonNrIListe(krrTelefonNr, lagPersonV2Data().getTelefon());  // Legger telefonnummere fra PDL og KRR som er ulike til en liste
+        String telefonNrFraKrr = "+4622222222";
+        HentPdlPerson.Telefonnummer telefonNrFraPdl = pdlPerson.getTelefonnummer().get(0);
+        List<String> telefonListe = personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonNrFraPdl);  // Legger telefonnummere fra PDL og KRR som er ulike til en liste
 
         assertEquals(2, telefonListe.size());
         assertEquals("+4733333333", telefonListe.get(0));
         assertEquals("+4622222222", telefonListe.get(1));
 
-        krrTelefonNr = "+4733333333";
-        telefonListe = personV2Service.leggKrrTelefonNrIListe(krrTelefonNr, lagPersonV2Data().getTelefon()); // Legger telefonnummere fra PDL og KRR som er like til en liste
+        telefonNrFraKrr = "+4733333333";
+        telefonListe = personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonNrFraPdl); // Legger telefonnummere fra PDL og KRR som er like til en liste
 
         assertEquals(1, telefonListe.size());
         assertEquals("+4733333333", telefonListe.get(0));
 
-        krrTelefonNr = null;
-        telefonListe = personV2Service.leggKrrTelefonNrIListe(krrTelefonNr, lagPersonV2Data().getTelefon()); // Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra KRR er null
+        telefonNrFraKrr = null;
+        telefonListe = personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonNrFraPdl); // Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra KRR er null
 
         assertEquals(1, telefonListe.size());
         assertEquals("+4733333333", telefonListe.get(0));
 
-        PersonV2Data personV2Data = lagPersonV2Data().setTelefon(null);
-        krrTelefonNr = "+4733333333";
-        telefonListe = personV2Service.leggKrrTelefonNrIListe(krrTelefonNr, personV2Data.getTelefon()); // Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra PDL er null
+        telefonNrFraPdl = null;
+        telefonNrFraKrr = "+4733333333";
+        telefonListe = personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonNrFraPdl); // Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra PDL er null
 
         assertEquals(1, telefonListe.size());
         assertEquals("+4733333333", telefonListe.get(0));
