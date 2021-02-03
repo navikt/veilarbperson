@@ -6,7 +6,7 @@
           "fornavn": "NATURLIG",
           "mellomnavn": "GLITRENDE",
           "etternavn": "STAFFELI",
-          "forkortetnavn": "NATURLIG STAFFELI"
+          "forkortetNavn": "NATURLIG STAFFELI"
         }
       ],
       "foedsel": [
@@ -61,6 +61,7 @@
       "bostedsadresse": [
         {
           "vegadresse": {
+            "matrikkelId": null,
             "postnummer": "0560",
             "husnummer": "21",
             "husbokstav": "A",
@@ -73,8 +74,8 @@
       ],
       "telefonnummer": [
         {
-          "nummer": "45364699",
-          "landkode": "47",
+          "nummer": "33333333",
+          "landkode": "+47",
           "prioritet": "1"
         }
       ],

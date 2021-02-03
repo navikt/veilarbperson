@@ -49,6 +49,7 @@ query($ident: ID!, $historikk: Boolean!) {
         }
         bostedsadresse(historikk:$historikk) {
             vegadresse {
+                matrikkelId
                 postnummer
                 husnummer
                 husbokstav
@@ -78,6 +79,7 @@ query($ident: ID!, $historikk: Boolean!) {
         kontaktadresse(historikk:$historikk) {
             type
             vegadresse {
+                matrikkelId
                 postnummer
                 husnummer
                 husbokstav
