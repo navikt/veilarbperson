@@ -23,10 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -252,7 +249,7 @@ public class PersonV2ServiceTest {
 
         personV2Service.flettBarnInformasjon(pdlPerson.getFamilierelasjoner(), personV2Data); // Forsøker å flette person som har ingen barn
 
-        assertNull(personV2Data.getBarn());     // Ingen barn blir lagt i personV2Data
+        assertEquals(Collections.emptyList(), personV2Data.getBarn());     // Ingen barn blir lagt i personV2Data
     }
 
     @Test

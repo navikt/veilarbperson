@@ -98,13 +98,17 @@ public class PersonV2Service {
     }
 
     public void flettBarnInformasjon(List<HentPdlPerson.Familierelasjoner> familierelasjoner, PersonV2Data personV2Data) {
-        if (familierelasjoner != null) {
+        if (!familierelasjoner.isEmpty()) {
             String[] barnasFnrListe = hentFnrTilBarna(familierelasjoner);
 
             if (barnasFnrListe.length != 0) {
                 List<Familiemedlem> barnasInformasjon = hentOpplysningerTilBarna(barnasFnrListe, personV2Data.getBostedsadresse());
                 personV2Data.setBarn(barnasInformasjon);
+            } else {
+                personV2Data.setBarn(Collections.emptyList());
             }
+        } else {
+            personV2Data.setBarn(Collections.emptyList());
         }
     }
 
