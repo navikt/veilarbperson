@@ -6,6 +6,8 @@ import lombok.experimental.Accessors;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.Enhet;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +38,11 @@ public class PersonV2Data {
     Kontaktadresse.UtenlandskAdresseIFrittFormat midlertidigAdresseUtland;
     Kontaktadresse.PostadresseIFrittFormat postAdresse;
     String malform;
+
+    public PersonV2Data() {
+        telefon = new ArrayList<>();
+        barn = new ArrayList<>();
+    }
 
     @JsonIgnore
     public Optional<String> getPostnummerFraBostedsadresse() {

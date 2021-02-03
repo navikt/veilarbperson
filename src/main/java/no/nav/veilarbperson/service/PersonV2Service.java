@@ -104,11 +104,7 @@ public class PersonV2Service {
             if (barnasFnrListe.length != 0) {
                 List<Familiemedlem> barnasInformasjon = hentOpplysningerTilBarna(barnasFnrListe, personV2Data.getBostedsadresse());
                 personV2Data.setBarn(barnasInformasjon);
-            } else {
-                personV2Data.setBarn(Collections.emptyList());
             }
-        } else {
-            personV2Data.setBarn(Collections.emptyList());
         }
     }
 

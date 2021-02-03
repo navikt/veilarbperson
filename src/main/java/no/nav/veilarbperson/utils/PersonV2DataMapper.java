@@ -90,9 +90,9 @@ public class PersonV2DataMapper {
 
     /* Slår sammen landkode og nummer og så lager et telefonnummer */
     public static String telefonNummerMapper(HentPdlPerson.Telefonnummer telefonnummer) {
-         String landkode = ofNullable(telefonnummer).map(HentPdlPerson.Telefonnummer::getLandkode).orElse(null);
+         String landkode = ofNullable(telefonnummer).map(HentPdlPerson.Telefonnummer::getLandkode).orElse("");
          String nummer = ofNullable(telefonnummer).map(HentPdlPerson.Telefonnummer::getNummer).orElse(null);
 
-         return (landkode!=null && nummer!=null) ? (landkode + nummer) : null;
+         return (nummer!=null) ? (landkode + nummer) : null;
     }
 }

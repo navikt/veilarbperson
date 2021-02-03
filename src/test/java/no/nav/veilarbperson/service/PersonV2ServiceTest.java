@@ -238,7 +238,7 @@ public class PersonV2ServiceTest {
     public void flettBarnInformasjonTest() {
         PersonV2Data personV2Data = lagPersonV2Data();
 
-        assertNull(personV2Data.getBarn());
+        assertEquals(0, personV2Data.getBarn().size());
 
         personV2Service.flettBarnInformasjon(pdlPerson.getFamilierelasjoner(), personV2Data); // Forsøker å flette person med 3 barn hvor informasjonen til bare 1 barn er tilgjemgelig i PDL
 
