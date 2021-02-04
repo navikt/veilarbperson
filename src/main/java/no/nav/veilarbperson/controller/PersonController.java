@@ -1,12 +1,12 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
-import no.nav.common.featuretoggle.UnleashService;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.service.AuthService;
+import no.nav.veilarbperson.service.CvJobbprofilService;
 import no.nav.veilarbperson.service.PersonService;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.springframework.http.HttpStatus;
@@ -21,12 +21,12 @@ public class PersonController {
 
     private final AuthService authService;
 
-    private final UnleashService unleashService;
+    private final CvJobbprofilService cvJobbprofilService;
 
-    public PersonController(PersonService personService, AuthService authService, UnleashService unleashService) {
-        this.unleashService = unleashService;
+    public PersonController(PersonService personService, AuthService authService, CvJobbprofilService cvJobbprofilService) {
         this.personService = personService;
         this.authService = authService;
+        this.cvJobbprofilService = cvJobbprofilService;
     }
 
     @GetMapping("/{fodselsnummer}")
@@ -97,7 +97,7 @@ public class PersonController {
 
         authService.sjekkLesetilgang(fodselsnummer);
 
-        return personService.hentCvJobbprofilJson(fnr);
+        return cvJobbprofilService.hentCvJobbprofilJson(fnr);
     }
 
     // TODO: Det er hårete å måtte skille på ekstern og intern
