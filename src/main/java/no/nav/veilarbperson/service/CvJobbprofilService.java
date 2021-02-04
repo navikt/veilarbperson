@@ -10,6 +10,8 @@ import no.nav.common.utils.StringUtils;
 import no.nav.veilarbperson.client.pam.CvIkkeTilgang;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
+import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
+import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import okhttp3.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ public class CvJobbprofilService {
     private final AuthService authService;
 
     private final PersonService personService;
+
+    private final VeilarboppfolgingClient veilarboppfolgingClient;
 
     private final PamClient pamClient;
 
@@ -44,9 +48,11 @@ public class CvJobbprofilService {
             return ikkeTilgangResponse(CvIkkeTilgang.BRUKER_ER_DOED);
         }
 
-        // TODO: Sjekk at bruker er under oppfølging
-        // TODO: Sjekk at bruker er manuell (Gjør avklaring med PAM om hvordan sjekk på manuell skal gjøres)
-        //   Ikke tilgang hvis bruker ikke har satt hjemmel og ikke er manuell.
+        UnderOppfolging underOppfolging = veilarboppfolgingClient.hentUnderOppfolgingStatus(fnr);
+
+        if (!underOppfolging.isUnderOppfolging()) {
+            return ikkeTilgangResponse(CvIkkeTilgang.BRUKER_IKKE_UNDER_OPPFOLGING);
+        }
 
         Response cvJobbprofilResponse = pamClient.hentCvOgJobbprofilJsonV2(fnr);
 
@@ -55,6 +61,9 @@ public class CvJobbprofilService {
         } else if (cvJobbprofilResponse.code() == HttpStatus.NOT_ACCEPTABLE.value()) {
             return ikkeTilgangResponse(CvIkkeTilgang.BRUKER_IKKE_GODKJENT_SAMTYKKE);
         }
+
+        // TODO: Sjekk at bruker er manuell (Gjør avklaring med PAM om hvordan sjekk på manuell skal gjøres)
+        //   Ikke tilgang hvis bruker ikke har satt hjemmel og ikke er manuell.
 
         String cvJobbprofilJson = RestUtils.getBodyStr(cvJobbprofilResponse)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

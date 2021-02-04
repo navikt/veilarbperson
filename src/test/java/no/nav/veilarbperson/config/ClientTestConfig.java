@@ -19,6 +19,8 @@ import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
+import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
+import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import okhttp3.Response;
@@ -185,6 +187,21 @@ public class ClientTestConfig {
             @Override
             public Personinfo hentPersonInfo(Fnr fodselsnummer) {
                 return new Personinfo();
+            }
+
+            @Override
+            public HealthCheckResult checkHealth() {
+                return HealthCheckResult.healthy();
+            }
+        };
+    }
+
+    @Bean
+    public VeilarboppfolgingClient veilarboppfolgingClient() {
+        return new VeilarboppfolgingClient() {
+            @Override
+            public UnderOppfolging hentUnderOppfolgingStatus(Fnr fnr) {
+                return null;
             }
 
             @Override
