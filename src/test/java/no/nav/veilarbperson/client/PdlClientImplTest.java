@@ -59,7 +59,7 @@ public class PdlClientImplTest {
         assertEquals("NATURLIG", navn.getFornavn());
         assertEquals("GLITRENDE", navn.getMellomnavn());
         assertEquals("STAFFELI", navn.getEtternavn());
-        assertEquals("NATURLIG STAFFELI", navn.getForkortetnavn());
+        assertEquals("NATURLIG STAFFELI", navn.getForkortetNavn());
 
         HentPdlPerson.Folkeregisteridentifikator identifikator = person.getFolkeregisteridentifikator().get(0);
         assertEquals("0123456789", identifikator.getIdentifikasjonsnummer());
@@ -95,8 +95,8 @@ public class PdlClientImplTest {
         assertEquals("ARENDAL", vegadresse.getTilleggsnavn());
 
         HentPdlPerson.Telefonnummer telefonnummer = person.getTelefonnummer().get(0);
-        assertEquals("45364699", telefonnummer.getNummer());
-        assertEquals("47", telefonnummer.getLandkode());
+        assertEquals("33333333", telefonnummer.getNummer());
+        assertEquals("+47", telefonnummer.getLandkode());
         assertEquals("1", telefonnummer.getPrioritet());
 
         HentPdlPerson.Adressebeskyttelse adressebeskyttelse = person.getAdressebeskyttelse().get(0);
@@ -111,7 +111,7 @@ public class PdlClientImplTest {
 
         Kontaktadresse.UtenlandskAdresseIFrittFormat utenlandskAdresse = kontaktAdresse.getUtenlandskAdresseIFrittFormat();
         assertEquals("Postboks 100", utenlandskAdresse.getAdresselinje1());
-        assertEquals("12345 Paris", utenlandskAdresse.getAdresselinje2());
+        assertEquals("12345", utenlandskAdresse.getAdresselinje2());
         assertNull(utenlandskAdresse.getAdresselinje3());
         assertEquals("FRA", utenlandskAdresse.getLandkode());
     }

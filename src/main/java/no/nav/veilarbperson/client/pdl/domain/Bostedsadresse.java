@@ -10,6 +10,7 @@ public class Bostedsadresse extends Adresse {
     private Matrikkeladresse matrikkeladresse;
     private UkjentBosted ukjentBosted;
 
+    @Data
     public static class Matrikkeladresse {
         private Long matrikkelId;
         private String bruksenhetsnummer;
@@ -18,7 +19,9 @@ public class Bostedsadresse extends Adresse {
         private String kommunenummer;
     }
 
+    @Data
     public static class UkjentBosted {
         private String bostedskommune;
     }
+
 }

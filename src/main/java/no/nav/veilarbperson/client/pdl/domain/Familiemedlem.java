@@ -9,7 +9,7 @@ public class Familiemedlem {
     String fornavn;
     String mellomnavn;
     String etternavn;
-    String sammensattNavn;
+    String forkortetNavn;
     String fodselsnummer;
     String fodselsdato;
     String kjonn;

@@ -6,7 +6,7 @@
               "fornavn": "TYKKMAGET",
               "mellomnavn": null,
               "etternavn": "GASELLE",
-              "forkortetnavn": "TYKKMAGET GASELLE"
+              "forkortetNavn": "TYKKMAGET GASELLE"
             }
           ],
           "foedsel": [
@@ -26,7 +26,21 @@
               "type": "FNR"
             }
           ],
-          "doedsfall": []
+          "doedsfall": [],
+          "bostedsadresse": [
+            {
+              "vegadresse": {
+              "matrikkelId": null,
+              "postnummer": "0560",
+              "husnummer": "21",
+              "husbokstav": "A",
+              "kommunenummer": "0570",
+              "adressenavn": "ARENDALSGATE",
+              "tilleggsnavn": "ARENDAL",
+              "poststed": "OSLO"
+          }
+        }
+      ]
     }
   }
 }
