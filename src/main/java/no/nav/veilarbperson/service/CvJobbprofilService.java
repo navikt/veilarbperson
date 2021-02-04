@@ -82,7 +82,7 @@ public class CvJobbprofilService {
     }
 
     @Value
-    private static class CvIkkeTilgangResponse {
+    static class CvIkkeTilgangResponse {
         CvIkkeTilgang ikkeTilgangStatus;
     }
 
