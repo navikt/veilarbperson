@@ -28,9 +28,9 @@ public class DkifClientImplTest {
 
         givenThat(get(anyUrl())
                 .withHeader("Nav-Personidenter", equalTo(TEST_FNR.get()))
+                .withHeader("Authorization", equalTo("Bearer TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Authorization", "Bearer TOKEN")
                         .withBody(kodeverkJson))
         );
 

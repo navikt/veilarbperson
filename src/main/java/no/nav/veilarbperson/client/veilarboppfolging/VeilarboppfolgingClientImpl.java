@@ -12,8 +12,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.cache.annotation.Cacheable;
 
+import java.util.function.Supplier;
+
 import static no.nav.common.utils.UrlUtils.joinPaths;
-import static no.nav.veilarbperson.utils.RestClientUtils.authHeaderMedInnloggetBruker;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -22,10 +23,13 @@ public class VeilarboppfolgingClientImpl implements VeilarboppfolgingClient {
 
     private final String veilarboppfolgingUrl;
 
+    private final Supplier<String> userTokenProvider;
+
     private final OkHttpClient client;
 
-    public VeilarboppfolgingClientImpl(String veilarboppfolgingUrl) {
+    public VeilarboppfolgingClientImpl(String veilarboppfolgingUrl, Supplier<String> userTokenProvider) {
         this.veilarboppfolgingUrl = veilarboppfolgingUrl;
+        this.userTokenProvider = userTokenProvider;
         this.client = RestClient.baseClient();
     }
 
@@ -36,7 +40,7 @@ public class VeilarboppfolgingClientImpl implements VeilarboppfolgingClient {
         Request request = new Request.Builder()
                 .url(joinPaths(veilarboppfolgingUrl, "/api/underoppfolging?fnr=" + fnr.get()))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
-                .header(AUTHORIZATION, authHeaderMedInnloggetBruker())
+                .header(AUTHORIZATION, "Bearer " + userTokenProvider.get())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {

@@ -21,18 +21,34 @@ public class PamClientImplTest {
     public void skal_hente_cv_jobbprofil_json() {
         String pamCvJobbprofilJson = TestUtils.readTestResourceFile("pam-cv-jobbprofil.json");
         String apiUrl = "http://localhost:" + wireMockRule.port();
-        PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "USER_TOKEN", () -> "SYSTE_TOKEN");
+        PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "USER_TOKEN", () -> "SYSTEM_TOKEN");
 
         givenThat(get("/rest/v1/arbeidssoker/1234")
+                .withHeader("Authorization", equalTo("Bearer USER_TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Authorization", "Bearer USER_TOKEN")
                         .withBody(pamCvJobbprofilJson))
         );
 
         String jsonResponse = pamClient.hentCvOgJobbprofilJson(Fnr.of("1234"));
 
         assertEquals(pamCvJobbprofilJson, jsonResponse);
+    }
+
+    @Test
+    public void skal_hente_cv_jobbprofilv2() {
+        String pamCvJobbprofilJson = TestUtils.readTestResourceFile("pam-cv-jobbprofil.json");
+        String apiUrl = "http://localhost:" + wireMockRule.port();
+        PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "USER_TOKEN", () -> "SYSTEM_TOKEN");
+
+        givenThat(get("/rest/v2/arbeidssoker/1234")
+                .withHeader("Authorization", equalTo("Bearer SYSTEM_TOKEN"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody(pamCvJobbprofilJson))
+        );
+
+        pamClient.hentCvOgJobbprofilJsonV2(Fnr.of("1234"));
     }
 
     @Test

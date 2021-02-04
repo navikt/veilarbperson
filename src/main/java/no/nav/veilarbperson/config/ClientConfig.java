@@ -72,12 +72,12 @@ public class ClientConfig {
     }
 
     @Bean
-    public VeilarboppfolgingClient veilarboppfolgingClient() {
+    public VeilarboppfolgingClient veilarboppfolgingClient(AuthService authService) {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(VEILARBOPPFOLGING, true)
                 : createNaisPreprodIngressUrl(VEILARBOPPFOLGING, "q1", true);
 
-        return new VeilarboppfolgingClientImpl(url);
+        return new VeilarboppfolgingClientImpl(url, authService::getInnloggetBrukerToken);
     }
 
     @Bean
