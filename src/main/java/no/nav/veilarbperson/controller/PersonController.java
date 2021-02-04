@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
+import no.nav.common.featuretoggle.UnleashService;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
@@ -10,6 +11,7 @@ import no.nav.veilarbperson.service.CvJobbprofilService;
 import no.nav.veilarbperson.service.PersonService;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,10 +25,13 @@ public class PersonController {
 
     private final CvJobbprofilService cvJobbprofilService;
 
-    public PersonController(PersonService personService, AuthService authService, CvJobbprofilService cvJobbprofilService) {
+    private final UnleashService unleashService;
+
+    public PersonController(PersonService personService, AuthService authService, CvJobbprofilService cvJobbprofilService, UnleashService unleashService) {
         this.personService = personService;
         this.authService = authService;
         this.cvJobbprofilService = cvJobbprofilService;
+        this.unleashService = unleashService;
     }
 
     @GetMapping("/{fodselsnummer}")
@@ -88,16 +93,20 @@ public class PersonController {
     }
 
     @GetMapping("/cv_jobbprofil")
-    public String cvOgJobbprofil(@RequestParam(value = "fnr", required = false) Fnr fnr) {
+    public ResponseEntity<String> cvOgJobbprofil(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         Fnr fodselsnummer = hentIdentForEksternEllerIntern(fnr);
 
-        if (!authService.erInternBruker()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        if (unleashService.isEnabled("veilarbperson.cv_jobbprofil-v2")) {
+            return cvJobbprofilService.hentCvJobbprofilJsonV2(fnr);
+        } else {
+            if (!authService.erInternBruker()) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            }
+
+            authService.sjekkLesetilgang(fodselsnummer);
+
+            return ResponseEntity.ok(cvJobbprofilService.hentCvJobbprofilJson(fnr));
         }
-
-        authService.sjekkLesetilgang(fodselsnummer);
-
-        return cvJobbprofilService.hentCvJobbprofilJson(fnr);
     }
 
     // TODO: Det er hårete å måtte skille på ekstern og intern
