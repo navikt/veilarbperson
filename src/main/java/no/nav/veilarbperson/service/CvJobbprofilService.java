@@ -6,10 +6,8 @@ import lombok.Value;
 import no.nav.common.json.JsonUtils;
 import no.nav.common.rest.client.RestUtils;
 import no.nav.common.types.identer.Fnr;
-import no.nav.common.utils.StringUtils;
 import no.nav.veilarbperson.client.pam.CvIkkeTilgang;
 import no.nav.veilarbperson.client.pam.PamClient;
-import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import okhttp3.Response;
@@ -26,8 +24,6 @@ public class CvJobbprofilService {
 
     private final AuthService authService;
 
-    private final PersonService personService;
-
     private final VeilarboppfolgingClient veilarboppfolgingClient;
 
     private final PamClient pamClient;
@@ -42,28 +38,19 @@ public class CvJobbprofilService {
             return ikkeTilgangResponse(CvIkkeTilgang.IKKE_TILGANG_TIL_BRUKER);
         }
 
-        TpsPerson person = personService.hentPerson(fnr);
-
-        if (StringUtils.notNullOrEmpty(person.getDodsdato())) {
-            return ikkeTilgangResponse(CvIkkeTilgang.BRUKER_ER_DOED);
-        }
-
         UnderOppfolging underOppfolging = veilarboppfolgingClient.hentUnderOppfolgingStatus(fnr);
 
         if (!underOppfolging.isUnderOppfolging()) {
             return ikkeTilgangResponse(CvIkkeTilgang.BRUKER_IKKE_UNDER_OPPFOLGING);
         }
 
-        Response cvJobbprofilResponse = pamClient.hentCvOgJobbprofilJsonV2(fnr);
+        Response cvJobbprofilResponse = pamClient.hentCvOgJobbprofilJsonV2(fnr, underOppfolging.isErManuell());
 
         if (cvJobbprofilResponse.code() == HttpStatus.NOT_FOUND.value()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         } else if (cvJobbprofilResponse.code() == HttpStatus.NOT_ACCEPTABLE.value()) {
             return ikkeTilgangResponse(CvIkkeTilgang.BRUKER_IKKE_GODKJENT_SAMTYKKE);
         }
-
-        // TODO: Sjekk at bruker er manuell (Gjør avklaring med PAM om hvordan sjekk på manuell skal gjøres)
-        //   Ikke tilgang hvis bruker ikke har satt hjemmel og ikke er manuell.
 
         String cvJobbprofilJson = RestUtils.getBodyStr(cvJobbprofilResponse)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

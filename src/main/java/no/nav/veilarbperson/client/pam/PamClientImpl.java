@@ -61,9 +61,9 @@ public class PamClientImpl implements PamClient {
 
     @SneakyThrows
     @Override
-    public Response hentCvOgJobbprofilJsonV2(Fnr fnr) {
+    public Response hentCvOgJobbprofilJsonV2(Fnr fnr, boolean erBrukerManuell) {
         Request request = new Request.Builder()
-                .url(joinPaths(pamCvApiUrl, "/rest/v2/arbeidssoker", fnr.get()))
+                .url(joinPaths(pamCvApiUrl, "/rest/v2/arbeidssoker", fnr.get()) + "?erManuell=" + erBrukerManuell)
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, "Bearer " + systemTokenProvider.get())
                 .build();

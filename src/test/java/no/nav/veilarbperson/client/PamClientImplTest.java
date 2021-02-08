@@ -41,14 +41,14 @@ public class PamClientImplTest {
         String apiUrl = "http://localhost:" + wireMockRule.port();
         PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "USER_TOKEN", () -> "SYSTEM_TOKEN");
 
-        givenThat(get("/rest/v2/arbeidssoker/1234")
+        givenThat(get("/rest/v2/arbeidssoker/1234?erManuell=true")
                 .withHeader("Authorization", equalTo("Bearer SYSTEM_TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(pamCvJobbprofilJson))
         );
 
-        pamClient.hentCvOgJobbprofilJsonV2(Fnr.of("1234"));
+        pamClient.hentCvOgJobbprofilJsonV2(Fnr.of("1234"), true);
     }
 
     @Test

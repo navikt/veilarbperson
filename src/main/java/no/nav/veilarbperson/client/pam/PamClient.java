@@ -8,6 +8,6 @@ public interface PamClient extends HealthCheck {
 
     String hentCvOgJobbprofilJson(Fnr fnr);
 
-    Response hentCvOgJobbprofilJsonV2(Fnr fnr);
+    Response hentCvOgJobbprofilJsonV2(Fnr fnr, boolean erBrukerManuell);
 
 }

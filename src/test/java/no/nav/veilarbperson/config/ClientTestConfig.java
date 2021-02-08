@@ -250,7 +250,7 @@ public class ClientTestConfig {
             }
 
             @Override
-            public Response hentCvOgJobbprofilJsonV2(Fnr fnr) {
+            public Response hentCvOgJobbprofilJsonV2(Fnr fnr, boolean erBrukerManuell) {
                 return null;
             }
 
