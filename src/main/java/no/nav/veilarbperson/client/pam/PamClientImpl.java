@@ -28,11 +28,14 @@ public class PamClientImpl implements PamClient {
 
     private final Supplier<String> userTokenProvider;
 
+    private final Supplier<String> systemTokenProvider;
+
     private final OkHttpClient client;
 
-    public PamClientImpl(String pamCvApiUrl, Supplier<String> userTokenProvider) {
+    public PamClientImpl(String pamCvApiUrl, Supplier<String> userTokenProvider, Supplier<String> systemTokenProvider) {
         this.pamCvApiUrl = pamCvApiUrl;
         this.userTokenProvider = userTokenProvider;
+        this.systemTokenProvider = systemTokenProvider;
         this.client = RestClient.baseClient();
     }
 
@@ -54,6 +57,18 @@ public class PamClientImpl implements PamClient {
 
             return RestUtils.getBodyStr(response).orElseThrow(() -> new IllegalStateException("Body is missing from request to pam-cv-api"));
         }
+    }
+
+    @SneakyThrows
+    @Override
+    public Response hentCvOgJobbprofilJsonV2(Fnr fnr, boolean erBrukerManuell) {
+        Request request = new Request.Builder()
+                .url(joinPaths(pamCvApiUrl, "/rest/v2/arbeidssoker", fnr.get()) + "?erManuell=" + erBrukerManuell)
+                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + systemTokenProvider.get())
+                .build();
+
+        return client.newCall(request).execute();
     }
 
     @Override

@@ -3,7 +3,6 @@ package no.nav.veilarbperson.service;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashService;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.dkif.DkifClient;
@@ -30,7 +29,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.util.Optional.ofNullable;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,10 +45,8 @@ public class PersonV2ServiceTest {
     private DifiCient difiCient = mock(DifiClientImpl.class);
     private AuthService authService = mock(AuthService.class);
     private PamClient pamClient = mock(PamClient.class);
-    private PersonService personService;
     private PersonV2Service personV2Service;
     private HentPdlPerson.PdlPerson pdlPerson;
-    private final UnleashService unleashService = mock(UnleashService.class);
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
@@ -58,13 +56,12 @@ public class PersonV2ServiceTest {
 
     @Before
     public void setup() {
-
         when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
         when(pdlClient.hentPersonBolk(any())).thenReturn(hentPersonBolk(testFnrsTilBarna));
-        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient, difiCient, null, unleashService);
+
         personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, pamClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
         pdlPerson = hentPerson(FNR);
     }
