@@ -128,7 +128,7 @@ public class CvJobbprofilServiceTest {
     }
 
     @Test
-    public void should_return_error_if_cv_status_is_406() {
+    public void should_return_error_if_cv_status_is_403() {
         when(authService.erInternBruker()).thenReturn(true);
         when(authService.harLesetilgang(any())).thenReturn(true);
         when(veilarboppfolgingClient.hentUnderOppfolgingStatus(any())).thenReturn(new UnderOppfolging().setUnderOppfolging(true));
@@ -137,7 +137,7 @@ public class CvJobbprofilServiceTest {
                         .request(new Request.Builder().url("http://local.test").build())
                         .protocol(Protocol.HTTP_1_1)
                         .message("")
-                        .code(406)
+                        .code(403)
                         .build()
         );
 
