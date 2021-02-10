@@ -48,7 +48,7 @@ public class CvJobbprofilService {
 
         if (cvJobbprofilResponse.code() == HttpStatus.NOT_FOUND.value()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        } else if (cvJobbprofilResponse.code() == HttpStatus.NOT_ACCEPTABLE.value()) {
+        } else if (cvJobbprofilResponse.code() == HttpStatus.FORBIDDEN.value()) {
             return ikkeTilgangResponse(CvIkkeTilgang.BRUKER_IKKE_GODKJENT_SAMTYKKE);
         }
 
