@@ -13,6 +13,7 @@ import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
 import no.nav.veilarbperson.client.pdl.domain.Familiemedlem;
 import no.nav.veilarbperson.client.person.PersonClient;
+import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.PersonData;
@@ -68,6 +69,14 @@ public class PersonV2Service {
         PersonData personDataFraTps = hentPersonDataFraTps(fodselsnummer);
         HentPdlPerson.PdlPerson personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer, userToken)).orElseThrow(() -> new Exception("Fant ikke person i hentPerson operasjonen i PDL"));
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl, personDataFraTps);
+
+        try {
+            flettPersoninfoFraPortefolje(personV2Data, fodselsnummer);
+        } catch (Exception e) {
+            log.warn("Bruker fallbackløsning for egenAnsatt-sjekk", e);
+            personV2Data.setEgenAnsatt(egenAnsattClient.erEgenAnsatt(Fnr.of(fodselsnummer)));
+            personV2Data.setSikkerhetstiltak(ofNullable(getFirstElement(personDataFraPdl.getSikkerhetstiltak())).map(HentPdlPerson.Sikkerhetstiltak::getBeskrivelse).orElse(null));
+        }
 
         flettBarnInformasjon(personDataFraPdl.getFamilierelasjoner(), personV2Data);
         flettPartnerInformasjon(personDataFraPdl.getSivilstand(), personV2Data, userToken);
@@ -125,9 +134,17 @@ public class PersonV2Service {
         }
     }
 
+    private void flettPersoninfoFraPortefolje(PersonV2Data personV2Data, String fodselsnummer) {
+        Personinfo personinfo = veilarbportefoljeClient.hentPersonInfo(Fnr.of(fodselsnummer));
+        personV2Data.setEgenAnsatt(personinfo.egenAnsatt);
+        personV2Data.setSikkerhetstiltak(personinfo.sikkerhetstiltak);
+    }
+
     private void flettGeografiskEnhet(String fodselsnummer,  String userToken, PersonV2Data personV2Data) {
         String geografiskTilknytning = ofNullable(pdlClient.hentGeografiskTilknytning(fodselsnummer, userToken))
                 .map(HentPdlPerson.GeografiskTilknytning::getGtKommune).orElse(null);
+
+        personV2Data.setGeografiskTilknytning(geografiskTilknytning);
 
         if (geografiskTilknytning != null && geografiskTilknytning.matches("\\d+")) {
             try {

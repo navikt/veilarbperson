@@ -25,11 +25,15 @@ public class PersonV2Data {
     String kjonn;
     String dodsdato;
 
+    String diskresjonskode;
+    boolean egenAnsatt;
     String kontonummer;
+    String geografiskTilknytning;
     Enhet geografiskEnhet;
     List<String> telefon;
     String epost;
     String statsborgerskap;
+    String sikkerhetstiltak;
 
     List<Familiemedlem> barn;
     Sivilstand sivilstand;
