@@ -28,6 +28,8 @@ import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.PersonClientImpl;
+import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
+import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClientImpl;
 import no.nav.veilarbperson.service.AuthService;
@@ -41,6 +43,11 @@ import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
 @Slf4j
 @Configuration
 public class ClientConfig {
+
+    private static final String VEILARBPORTEFOLJE = "veilarbportefolje";
+    private static final String VEILARBOPPFOLGING = "veilarboppfolging";
+    private static final String PAM_CV_API = "pam-cv-api";
+
 
     @Bean
     public AktorregisterClient aktorregisterClient(EnvironmentProperties properties, SystemUserTokenProvider tokenProvider) {
@@ -58,10 +65,19 @@ public class ClientConfig {
     @Bean
     public VeilarbportefoljeClient veilarbportefoljeClient() {
         String url = isProduction()
-                ? createNaisAdeoIngressUrl("veilarbportefolje", true)
-                : createNaisPreprodIngressUrl("veilarbportefolje", "q1", true);
+                ? createNaisAdeoIngressUrl(VEILARBPORTEFOLJE, true)
+                : createNaisPreprodIngressUrl(VEILARBPORTEFOLJE, "q1", true);
 
         return new VeilarbportefoljeClientImpl(url);
+    }
+
+    @Bean
+    public VeilarboppfolgingClient veilarboppfolgingClient(AuthService authService) {
+        String url = isProduction()
+                ? createNaisAdeoIngressUrl(VEILARBOPPFOLGING, true)
+                : createNaisPreprodIngressUrl(VEILARBOPPFOLGING, "q1", true);
+
+        return new VeilarboppfolgingClientImpl(url, authService::getInnloggetBrukerToken);
     }
 
     @Bean
@@ -71,12 +87,12 @@ public class ClientConfig {
 
 
     @Bean
-    public PamClient pamClient(AuthService authService) {
+    public PamClient pamClient(AuthService authService, SystemUserTokenProvider systemUserTokenProvider) {
         String url = isProduction()
-                ? createNaisAdeoIngressUrl("pam-cv-api", true)
-                : createDevAdeoIngressUrl("pam-cv-api", true);
+                ? createNaisAdeoIngressUrl(PAM_CV_API, true)
+                : createDevAdeoIngressUrl(PAM_CV_API, true);
 
-        return new PamClientImpl(url, authService::getInnloggetBrukerToken);
+        return new PamClientImpl(url, authService::getInnloggetBrukerToken, systemUserTokenProvider::getSystemUserToken);
     }
 
     @Bean

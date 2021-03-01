@@ -21,12 +21,12 @@ public class PamClientImplTest {
     public void skal_hente_cv_jobbprofil_json() {
         String pamCvJobbprofilJson = TestUtils.readTestResourceFile("pam-cv-jobbprofil.json");
         String apiUrl = "http://localhost:" + wireMockRule.port();
-        PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "TOKEN");
+        PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "USER_TOKEN", () -> "SYSTEM_TOKEN");
 
         givenThat(get("/rest/v1/arbeidssoker/1234")
+                .withHeader("Authorization", equalTo("Bearer USER_TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Authorization", "Bearer TOKEN")
                         .withBody(pamCvJobbprofilJson))
         );
 
@@ -36,9 +36,25 @@ public class PamClientImplTest {
     }
 
     @Test
+    public void skal_hente_cv_jobbprofilv2() {
+        String pamCvJobbprofilJson = TestUtils.readTestResourceFile("pam-cv-jobbprofil.json");
+        String apiUrl = "http://localhost:" + wireMockRule.port();
+        PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "USER_TOKEN", () -> "SYSTEM_TOKEN");
+
+        givenThat(get("/rest/v2/arbeidssoker/1234?erManuell=true")
+                .withHeader("Authorization", equalTo("Bearer SYSTEM_TOKEN"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody(pamCvJobbprofilJson))
+        );
+
+        pamClient.hentCvOgJobbprofilJsonV2(Fnr.of("1234"), true);
+    }
+
+    @Test
     public void skal_kaste_status_for_diverse_koder() {
         String apiUrl = "http://localhost:" + wireMockRule.port();
-        PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "TOKEN");
+        PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "USER_TOKEN", () -> "SYSTEM_TOKEN");
 
         try {
             givenThat(get("/rest/v1/arbeidssoker/1234").willReturn(aResponse().withStatus(401)));
@@ -72,7 +88,7 @@ public class PamClientImplTest {
     @Test
     public void skal_sjekke_helse() {
         String apiUrl = "http://localhost:" + wireMockRule.port();
-        PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "TOKEN");
+        PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "USER_TOKEN", () -> "SYSTEM_TOKEN");
 
         givenThat(get("/rest/internal/isAlive").willReturn(aResponse().withStatus(200)));
 
