@@ -17,6 +17,7 @@ import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.PersonData;
+import no.nav.veilarbperson.domain.Telefon;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +81,7 @@ public class PersonV2Service {
 
         flettBarnInformasjon(personDataFraPdl.getFamilierelasjoner(), personV2Data);
         flettPartnerInformasjon(personDataFraPdl.getSivilstand(), personV2Data, userToken);
-        flettDigitalKontaktinformasjon(fodselsnummer, getFirstElement(personDataFraPdl.getTelefonnummer()), personV2Data);
+        flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
         flettGeografiskEnhet(fodselsnummer, userToken, personV2Data);
         flettKodeverk(personV2Data);
 
@@ -162,11 +163,11 @@ public class PersonV2Service {
         personV2Data.getLandKodeFraKontaktadresse().map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setBeskrivelseForLandkodeIKontaktadresse);
     }
 
-    private void flettDigitalKontaktinformasjon(String fnr, HentPdlPerson.Telefonnummer telefonnummerFraPdl, PersonV2Data personV2Data) {
+    private void flettDigitalKontaktinformasjon(String fnr, PersonV2Data personV2Data) {
         try {
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(Fnr.of(fnr));
 
-            personV2Data.setTelefon(leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), telefonnummerFraPdl));
+            personV2Data.setTelefon(leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), personV2Data.getTelefon()));
             personV2Data.setEpost(kontaktinfo.getEpostadresse());
             personV2Data.setMalform(kontaktinfo.getSpraak());
         } catch (Exception e) {
@@ -175,18 +176,15 @@ public class PersonV2Service {
     }
 
     /* Legger telefonnummer fra PDL og KRR til en liste. Hvis de er like da kan liste inneholde kun en av dem */
-    public List<String> leggKrrTelefonNrIListe(String telefonNummerFraKrr, HentPdlPerson.Telefonnummer telefonNummerFraPdl) {
-        String telefonNrFraPdl = PersonV2DataMapper.telefonNummerMapper(telefonNummerFraPdl);
-        List<String> telefonList = new ArrayList<>();
+    public List<Telefon> leggKrrTelefonNrIListe(String telefonNummerFraKrr, List<Telefon> telefonListe) {
+        List<String> telefonNrListeFraPdl = telefonListe.stream().map(Telefon::getTelefonNr).collect(Collectors.toList());
 
-        if (telefonNrFraPdl != null) {
-            telefonList.add(telefonNrFraPdl);
-        }
-        if (telefonNummerFraKrr != null && !telefonNummerFraKrr.equals(telefonNrFraPdl)) {
-            telefonList.add(telefonNummerFraKrr);
+        if (telefonNummerFraKrr != null && !telefonNrListeFraPdl.contains(telefonNummerFraKrr)) {
+            Telefon telefonNrFraKrr = new Telefon().setPrioritet(telefonListe.size()+1+"").setTelefonNr(telefonNummerFraKrr).setMaster("KRR");
+            telefonListe.add(telefonNrFraKrr);
         }
 
-        return telefonList;
+        return telefonListe;
     }
 
     public String hentMalform(Fnr fnr) {

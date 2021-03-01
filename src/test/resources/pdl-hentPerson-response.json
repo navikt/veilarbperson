@@ -75,8 +75,11 @@
       "telefonnummer": [
         {
           "nummer": "33333333",
-          "landkode": "+47",
-          "prioritet": "1"
+          "landskode": "+47",
+          "prioritet": "1",
+          "metadata": {
+            "master": "PDL"
+          }
         }
       ],
       "adressebeskyttelse": [

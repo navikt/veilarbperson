@@ -96,7 +96,7 @@ public class PdlClientImplTest {
 
         HentPdlPerson.Telefonnummer telefonnummer = person.getTelefonnummer().get(0);
         assertEquals("33333333", telefonnummer.getNummer());
-        assertEquals("+47", telefonnummer.getLandkode());
+        assertEquals("+47", telefonnummer.getLandskode());
         assertEquals("1", telefonnummer.getPrioritet());
 
         HentPdlPerson.Adressebeskyttelse adressebeskyttelse = person.getAdressebeskyttelse().get(0);

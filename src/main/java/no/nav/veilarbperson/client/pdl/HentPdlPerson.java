@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
 import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
+import no.nav.veilarbperson.client.pdl.domain.Metadata;
 
 import java.util.List;
 
@@ -65,9 +66,10 @@ public class HentPdlPerson {
 
     @Data
     public static class Telefonnummer {
-        private String landkode;
+        private String landskode;
         private String nummer;
         private String prioritet;
+        private Metadata metadata;
     }
 
     @Data

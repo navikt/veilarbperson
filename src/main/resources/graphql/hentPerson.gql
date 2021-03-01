@@ -37,6 +37,9 @@ query($ident: ID!, $historikk: Boolean!) {
             landskode
             nummer
             prioritet
+            metadata {
+                master
+            }
         }
         sikkerhetstiltak {
             tiltakstype

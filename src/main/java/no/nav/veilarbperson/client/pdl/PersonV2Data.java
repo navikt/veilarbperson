@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.Enhet;
+import no.nav.veilarbperson.domain.Telefon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class PersonV2Data {
     String kontonummer;
     String geografiskTilknytning;
     Enhet geografiskEnhet;
-    List<String> telefon;
+    List<Telefon> telefon;
     String epost;
     String statsborgerskap;
     String sikkerhetstiltak;
