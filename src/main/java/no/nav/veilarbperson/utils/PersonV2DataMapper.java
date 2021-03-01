@@ -35,8 +35,8 @@ public class PersonV2DataMapper {
                 .setTelefon(mapTelefonNrFraPdl(pdlPerson.getTelefonnummer()))
                 .setSivilstand(ofNullable(sivilstandMapper(getFirstElement(pdlPerson.getSivilstand()))).orElse(null))
                 .setBostedsadresse(ofNullable(getFirstElement(pdlPerson.getBostedsadresse())).orElse(null))
-                .setMidlertidigAdresseUtland(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(Kontaktadresse::getUtenlandskAdresseIFrittFormat).orElse(null))
-                .setPostAdresse(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(Kontaktadresse::getPostadresseIFrittFormat).orElse(null));
+                .setOppholdsadresse(ofNullable(getFirstElement(pdlPerson.getOppholdsadresse())).orElse(null))
+                .setKontaktadresse(ofNullable(pdlPerson.getKontaktadresse()).orElse(null));
     }
 
     public static <T> T getFirstElement(List<T> list) {

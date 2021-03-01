@@ -132,5 +132,4 @@ public class PdlClientImpl implements PdlClient {
 
         return mapper.treeToValue(gqlResponseNode.get("data"), gqlDataClass);
     }
-
 }

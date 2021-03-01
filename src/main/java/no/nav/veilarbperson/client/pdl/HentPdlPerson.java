@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
 import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
 import no.nav.veilarbperson.client.pdl.domain.Metadata;
+import no.nav.veilarbperson.client.pdl.domain.Oppholdsadresse;
 
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class HentPdlPerson {
 
         List<Adressebeskyttelse> adressebeskyttelse;
         List<Bostedsadresse> bostedsadresse;
+        List<Oppholdsadresse> oppholdsadresse;
         List<Kontaktadresse> kontaktadresse;
     }
 

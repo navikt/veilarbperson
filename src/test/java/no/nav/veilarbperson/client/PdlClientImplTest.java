@@ -8,6 +8,7 @@ import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlPersonVariables;
 import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
 import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
+import no.nav.veilarbperson.client.pdl.domain.Oppholdsadresse;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
@@ -98,22 +99,55 @@ public class PdlClientImplTest {
         assertEquals("33333333", telefonnummer.getNummer());
         assertEquals("+47", telefonnummer.getLandskode());
         assertEquals("1", telefonnummer.getPrioritet());
+        assertEquals("PDL", telefonnummer.getMetadata().getMaster());
 
         HentPdlPerson.Adressebeskyttelse adressebeskyttelse = person.getAdressebeskyttelse().get(0);
-        assertEquals("UGRADERT", adressebeskyttelse.getGradering().toString());
+        assertEquals("UGRADERT", adressebeskyttelse.getGradering());
+
+        Oppholdsadresse oppholdsadresse = person.getOppholdsadresse().get(0);
+        Oppholdsadresse.Matrikkeladresse matrikkeladresse = oppholdsadresse.getMatrikkeladresse();
+        assertEquals(123456789L, matrikkeladresse.getMatrikkelId());
+        assertEquals("kommunenummer", matrikkeladresse.getKommunenummer());
+        assertEquals("postnummer", matrikkeladresse.getPostnummer());
+        assertEquals("bruksenhetsnummer", matrikkeladresse.getBruksenhetsnummer());
+        assertEquals("tilleggsnavn", matrikkeladresse.getTilleggsnavn());
 
         Kontaktadresse kontaktAdresse = person.getKontaktadresse().get(0);
+
+        Kontaktadresse.Vegadresse kontaktsVegadresse = kontaktAdresse.getVegadresse();
+        assertEquals(123456789L, kontaktsVegadresse.getMatrikkelId());
+        assertEquals("postnummer", kontaktsVegadresse.getPostnummer());
+        assertEquals("adressenavn", kontaktsVegadresse.getAdressenavn());
+        assertEquals("husbokstav", kontaktsVegadresse.getHusbokstav());
+        assertEquals("husnummer", kontaktsVegadresse.getHusnummer());
+        assertEquals("kommunenummer", kontaktsVegadresse.getKommunenummer());
+        assertEquals("tilleggsnavn", kontaktsVegadresse.getTilleggsnavn());
+
+        Kontaktadresse.Postboksadresse kontaktsPostboksadresse = kontaktAdresse.getPostboksadresse();
+        assertEquals("postnummer", kontaktsPostboksadresse.getPostnummer());
+        assertEquals("postboks", kontaktsPostboksadresse.getPostboks());
+        assertEquals("postbokseier", kontaktsPostboksadresse.getPostbokseier());
+
+        Kontaktadresse.Utenlandskadresse utenlandskAdresse = kontaktAdresse.getUtenlandskAdresse();
+        assertEquals("adressenavnNummer", utenlandskAdresse.getAdressenavnNummer());
+        assertEquals("bygningEtasjeLeilighet", utenlandskAdresse.getBygningEtasjeLeilighet());
+        assertEquals("postboksNummerNavn", utenlandskAdresse.getPostboksNummerNavn());
+        assertEquals("postkode", utenlandskAdresse.getPostkode());
+        assertEquals("bySted", utenlandskAdresse.getBySted());
+        assertEquals("regionDistriktOmraade", utenlandskAdresse.getRegionDistriktOmraade());
+        assertEquals("landkode", utenlandskAdresse.getLandkode());
+
         Kontaktadresse.PostadresseIFrittFormat postadresse = kontaktAdresse.getPostadresseIFrittFormat();
         assertEquals("SOT6", postadresse.getAdresselinje1());
         assertEquals("POSTBOKS 2094 VIKA", postadresse.getAdresselinje2());
         assertNull(postadresse.getAdresselinje3());
         assertEquals("0125", postadresse.getPostnummer());
 
-        Kontaktadresse.UtenlandskAdresseIFrittFormat utenlandskAdresse = kontaktAdresse.getUtenlandskAdresseIFrittFormat();
-        assertEquals("Postboks 100", utenlandskAdresse.getAdresselinje1());
-        assertEquals("12345", utenlandskAdresse.getAdresselinje2());
-        assertNull(utenlandskAdresse.getAdresselinje3());
-        assertEquals("FRA", utenlandskAdresse.getLandkode());
+        Kontaktadresse.UtenlandskAdresseIFrittFormat utenlandskAdresseIFrittFormat = kontaktAdresse.getUtenlandskAdresseIFrittFormat();
+        assertEquals("Postboks 100", utenlandskAdresseIFrittFormat.getAdresselinje1());
+        assertEquals("12345", utenlandskAdresseIFrittFormat.getAdresselinje2());
+        assertNull(utenlandskAdresseIFrittFormat.getAdresselinje3());
+        assertEquals("FRA", utenlandskAdresseIFrittFormat.getLandkode());
     }
 
     @Test

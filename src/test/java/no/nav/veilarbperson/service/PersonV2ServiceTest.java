@@ -255,7 +255,7 @@ public class PersonV2ServiceTest {
         Bostedsadresse personsBostedsAdresse = pdlPerson.getBostedsadresse().get(0);
         Bostedsadresse familiemedlemsBostedsAdresse = new Bostedsadresse();
 
-        Adresse.Vegadresse medlemsVegAdresse = new Adresse.Vegadresse()
+        Bostedsadresse.Vegadresse medlemsVegAdresse = new Bostedsadresse.Vegadresse()
                 .setMatrikkelId(123L).setAdressenavn("ARENDALSGATE").setHusbokstav("A").setHusnummer("21").setKommunenummer("0570").setPostnummer("0560").setPoststed("OSLO").setTilleggsnavn("ARENDAL");
         familiemedlemsBostedsAdresse.setVegadresse(medlemsVegAdresse);
 
@@ -264,7 +264,6 @@ public class PersonV2ServiceTest {
         assertFalse(harSammeBbosted);
 
         familiemedlemsBostedsAdresse = hentFamiliemedlem("12345678910").getBostedsadresse().get(0);
-
         harSammeBbosted = PersonV2DataMapper.harFamiliamedlemSammeBostedSomPerson(familiemedlemsBostedsAdresse, personsBostedsAdresse);  // Sammeligner to like bostedsadresser
 
         assertTrue(harSammeBbosted);

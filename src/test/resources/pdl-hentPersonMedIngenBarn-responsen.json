@@ -50,6 +50,7 @@
       "bostedsadresse": [
         {
           "vegadresse": {
+            "matrikkelId": "123456789",
             "postnummer": "0560",
             "husnummer": "21",
             "husbokstav": "A",

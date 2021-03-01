@@ -16,12 +16,12 @@
       ],
       "kjoenn": [
         {
-          "kjoenn":"KVINNE"
+          "kjoenn": "KVINNE"
         }
       ],
       "folkeregisteridentifikator": [
         {
-          "identifikasjonsnummer":"0123456789",
+          "identifikasjonsnummer": "0123456789",
           "status": "I_BRUK",
           "type": "FNR"
         }
@@ -61,7 +61,7 @@
       "bostedsadresse": [
         {
           "vegadresse": {
-            "matrikkelId": null,
+            "matrikkelId": "123456789",
             "postnummer": "0560",
             "husnummer": "21",
             "husbokstav": "A",
@@ -69,6 +69,25 @@
             "adressenavn": "ARENDALSGATE",
             "tilleggsnavn": "ARENDAL",
             "poststed": "OSLO"
+          },
+          "matrikkeladresse": {
+            "matrikkelId": "123456789",
+            "bruksenhetsnummer": "bruksenhetsnummer",
+            "tilleggsnavn": "tilleggsnavn",
+            "postnummer": "postnummer",
+            "kommunenummer": "kommunenummer"
+          },
+          "utenlandskAdresse": {
+            "adressenavnNummer": "adressenavnNummer",
+            "bygningEtasjeLeilighet": "bygningEtasjeLeilighet",
+            "postboksNummerNavn": "postboksNummerNavn",
+            "postkode": "postkode",
+            "bySted": "bySted",
+            "regionDistriktOmraade": "regionDistriktOmraade",
+            "landkode": "landkode"
+          },
+          "ukjentBosted": {
+            "bostedskommune": "bostedskommune"
           }
         }
       ],
@@ -87,24 +106,83 @@
           "gradering": "UGRADERT"
         }
       ],
+      "oppholdsadresse": [
+        {
+          "gyldigFraOgMed": null,
+          "gyldigTilOgMed": null,
+          "coAdressenavn": "coAdressenavn",
+          "oppholdAnnetSted": "oppholdAnnetSted",
+          "vegadresse": {
+            "matrikkelId": "123456789",
+            "husnummer": "husnummer",
+            "husbokstav": "husbokstav",
+            "bruksenhetsnummer": "bruksenhetsnummer",
+            "adressenavn": "adressenavn",
+            "kommunenummer": "kommunenummer",
+            "bydelsnummer": "bydelsnummer",
+            "tilleggsnavn": "tilleggsnavn",
+            "postnummer": "postnummer"
+          },
+          "matrikkeladresse": {
+            "matrikkelId": "123456789",
+            "bruksenhetsnummer": "bruksenhetsnummer",
+            "tilleggsnavn": "tilleggsnavn",
+            "postnummer": "postnummer",
+            "kommunenummer": "kommunenummer"
+          },
+          "utenlandskAdresse": {
+            "adressenavnNummer": "adressenavnNummer",
+            "bygningEtasjeLeilighet": "bygningEtasjeLeilighet",
+            "postboksNummerNavn": "postboksNummerNavn",
+            "postkode": "postkode",
+            "bySted": "bySted",
+            "regionDistriktOmraade": "regionDistriktOmraade",
+            "landkode": "landkode"
+          }
+        }
+      ],
       "kontaktadresse": [
         {
-        "postadresseIFrittFormat": {
-          "adresselinje1": "SOT6",
-          "adresselinje2": "POSTBOKS 2094 VIKA",
-          "adresselinje3": null,
-          "postnummer": "0125"
-        },
-        "utenlandskAdresseIFrittFormat": {
-          "adresselinje1": "Postboks 100",
-          "adresselinje2": "12345",
-          "adresselinje3": null,
-          "postkode": null,
-          "byEllerStedsnavn": "Paris",
-          "landkode": "FRA"
-         }
+          "vegadresse": {
+            "matrikkelId": "123456789",
+            "postnummer": "postnummer",
+            "husnummer": "husnummer",
+            "husbokstav": "husbokstav",
+            "adressenavn": "adressenavn",
+            "kommunenummer": "kommunenummer",
+            "tilleggsnavn": "tilleggsnavn"
+          },
+          "postboksadresse": {
+            "postbokseier": "postbokseier",
+            "postboks": "postboks",
+            "postnummer": "postnummer"
+          },
+          "utenlandskAdresse": {
+            "adressenavnNummer": "adressenavnNummer",
+            "bygningEtasjeLeilighet": "bygningEtasjeLeilighet",
+            "postboksNummerNavn": "postboksNummerNavn",
+            "postkode": "postkode",
+            "bySted": "bySted",
+            "regionDistriktOmraade": "regionDistriktOmraade",
+            "landkode": "landkode"
+          },
+          "postadresseIFrittFormat": {
+            "adresselinje1": "SOT6",
+            "adresselinje2": "POSTBOKS 2094 VIKA",
+            "adresselinje3": null,
+            "postnummer": "0125"
+          },
+          "utenlandskAdresseIFrittFormat": {
+            "adresselinje1": "Postboks 100",
+            "adresselinje2": "12345",
+            "adresselinje3": null,
+            "postkode": null,
+            "byEllerStedsnavn": "Paris",
+            "landkode": "FRA"
+          }
         }
       ]
     }
   }
 }
+
