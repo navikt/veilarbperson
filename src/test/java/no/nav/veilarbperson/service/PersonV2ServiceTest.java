@@ -62,6 +62,9 @@ public class PersonV2ServiceTest {
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
         when(pdlClient.hentPersonBolk(any())).thenReturn(hentPersonBolk(testFnrsTilBarna));
+        when(kodeverkService.getPoststedForPostnummer(any())).thenReturn("POSTSTED");
+        when(kodeverkService.getBeskrivelseForLandkode(any())).thenReturn("LANDKODE");
+        when(kodeverkService.getBeskrivelseForKommunenummer(any())).thenReturn("KOMMUNE");
 
         personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, pamClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
         pdlPerson = hentPerson(FNR);
@@ -313,15 +316,40 @@ public class PersonV2ServiceTest {
         assertEquals("+4733333333", telefonListe.get(0).getTelefonNr());
     }
 
+    @Test
+    public void flettBeskrivelseFraKodeverkTest() {
+        PersonV2Data personV2Data = lagPersonV2Data();
+        personV2Service.flettKodeverk(personV2Data);
+        Bostedsadresse bostedsadresse = personV2Data.getBostedsadresse();
+        Oppholdsadresse oppholdsadresse = personV2Data.getOppholdsadresse();
+        Kontaktadresse kontaktadresse = personV2Data.getKontaktadresser().get(0);
+
+        assertEquals("POSTSTED", bostedsadresse.getVegadresse().getPoststed());
+        assertEquals("KOMMUNE", bostedsadresse.getVegadresse().getKommune());
+        assertEquals("LANDKODE", bostedsadresse.getUtenlandskAdresse().getLandkode());
+
+        assertEquals("POSTSTED", oppholdsadresse.getMatrikkeladresse().getPoststed());
+        assertEquals("KOMMUNE", oppholdsadresse.getMatrikkeladresse().getKommune());
+        assertEquals("LANDKODE", oppholdsadresse.getUtenlandskAdresse().getLandkode());
+
+        assertEquals("POSTSTED", kontaktadresse.getPostadresseIFrittFormat().getPoststed());
+        assertEquals("KOMMUNE", kontaktadresse.getVegadresse().getKommune());
+        assertEquals("LANDKODE", kontaktadresse.getUtenlandskAdresseIFrittFormat().getLandkode());
+    }
+
     public PersonV2Data lagPersonV2Data() {
         PersonV2Data personV2Data = new PersonV2Data();
         Bostedsadresse personsBostedsAdresse = PersonV2DataMapper.getFirstElement(pdlPerson.getBostedsadresse());
+        Oppholdsadresse personsOppholdsadresse = PersonV2DataMapper.getFirstElement(pdlPerson.getOppholdsadresse());
+        List<Kontaktadresse> personsKontaktsadresse = pdlPerson.getKontaktadresse();
+
         Telefon telefon = new Telefon().setPrioritet("1").setTelefonNr("+4733333333").setMaster("PDL");
 
         personV2Data.setBostedsadresse(personsBostedsAdresse);
+        personV2Data.setOppholdsadresse(personsOppholdsadresse);
+        personV2Data.setKontaktadresser(personsKontaktsadresse);
         personV2Data.setTelefon(new ArrayList<>(List.of(telefon)));
 
         return personV2Data;
-
     }
 }

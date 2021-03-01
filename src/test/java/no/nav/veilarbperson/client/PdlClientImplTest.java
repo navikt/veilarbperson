@@ -123,7 +123,7 @@ public class PdlClientImplTest {
         assertEquals("kommunenummer", kontaktsVegadresse.getKommunenummer());
         assertEquals("tilleggsnavn", kontaktsVegadresse.getTilleggsnavn());
 
-        Kontaktadresse.Postboksadresse kontaktsPostboksadresse = kontaktAdresse.getPostboksadresse();
+        Kontaktadresse.Postboksadresse kontaktsPostboksadresse = person.getKontaktadresse().get(1).getPostboksadresse();
         assertEquals("postnummer", kontaktsPostboksadresse.getPostnummer());
         assertEquals("postboks", kontaktsPostboksadresse.getPostboks());
         assertEquals("postbokseier", kontaktsPostboksadresse.getPostbokseier());

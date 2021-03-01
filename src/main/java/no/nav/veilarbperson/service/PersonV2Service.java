@@ -156,7 +156,7 @@ public class PersonV2Service {
         }
     }
 
-    private void flettKodeverk(PersonV2Data personV2Data) {
+    public void flettKodeverk(PersonV2Data personV2Data) {
         Optional<String> postnrIBostedsVegAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(Bostedsadresse.Vegadresse::getPostnummer);
         Optional<String> postnrIBostedsMatrikkelAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getMatrikkeladresse).map(Bostedsadresse.Matrikkeladresse::getPostnummer);
         Optional<String> kommunenrIBostedsVegAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(Bostedsadresse.Vegadresse::getKommunenummer);
@@ -182,7 +182,7 @@ public class PersonV2Service {
         landkodeIOppholdsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setLandkodeIOppholdsUtenlandskadresse);
         ofNullable(personV2Data.getStatsborgerskap()).map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setStatsborgerskap);
 
-        List<Kontaktadresse> kontaktadresseList = personV2Data.getKontaktadresse();
+        List<Kontaktadresse> kontaktadresseList = personV2Data.getKontaktadresser();
         List<Kontaktadresse> fettetKontaktadrList = new ArrayList<>();
 
         for (Kontaktadresse kontaktadresse: kontaktadresseList) {
@@ -203,7 +203,7 @@ public class PersonV2Service {
                 fettetKontaktadrList.add(kontaktadresse);
         }
 
-        personV2Data.setKontaktadresse(fettetKontaktadrList);
+        personV2Data.setKontaktadresser(fettetKontaktadrList);
     }
 
     private void flettDigitalKontaktinformasjon(String fnr, PersonV2Data personV2Data) {

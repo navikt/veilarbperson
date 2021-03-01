@@ -37,13 +37,13 @@ public class PersonV2Data {
     Familiemedlem partner;
     Bostedsadresse bostedsadresse;
     Oppholdsadresse oppholdsadresse;
-    List<Kontaktadresse> kontaktadresse;
+    List<Kontaktadresse> kontaktadresser;
     String malform;
 
     public PersonV2Data() {
         telefon = new ArrayList<>();
         barn = new ArrayList<>();
-        kontaktadresse = new ArrayList<>();
+        kontaktadresser = new ArrayList<>();
     }
 
     public void setPoststedIBostedsVegadresse(String poststed) {

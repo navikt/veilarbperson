@@ -36,7 +36,7 @@ public class PersonV2DataMapper {
                 .setSivilstand(ofNullable(sivilstandMapper(getFirstElement(pdlPerson.getSivilstand()))).orElse(null))
                 .setBostedsadresse(ofNullable(getFirstElement(pdlPerson.getBostedsadresse())).orElse(null))
                 .setOppholdsadresse(ofNullable(getFirstElement(pdlPerson.getOppholdsadresse())).orElse(null))
-                .setKontaktadresse(ofNullable(pdlPerson.getKontaktadresse()).orElse(null));
+                .setKontaktadresser(ofNullable(pdlPerson.getKontaktadresse()).orElse(null));
     }
 
     public static <T> T getFirstElement(List<T> list) {

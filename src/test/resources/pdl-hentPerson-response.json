@@ -67,16 +67,9 @@
             "husbokstav": "A",
             "kommunenummer": "0570",
             "adressenavn": "ARENDALSGATE",
-            "tilleggsnavn": "ARENDAL",
-            "poststed": "OSLO"
+            "tilleggsnavn": "ARENDAL"
           },
-          "matrikkeladresse": {
-            "matrikkelId": "123456789",
-            "bruksenhetsnummer": "bruksenhetsnummer",
-            "tilleggsnavn": "tilleggsnavn",
-            "postnummer": "postnummer",
-            "kommunenummer": "kommunenummer"
-          },
+          "matrikkeladresse": null,
           "utenlandskAdresse": {
             "adressenavnNummer": "adressenavnNummer",
             "bygningEtasjeLeilighet": "bygningEtasjeLeilighet",
@@ -152,11 +145,7 @@
             "kommunenummer": "kommunenummer",
             "tilleggsnavn": "tilleggsnavn"
           },
-          "postboksadresse": {
-            "postbokseier": "postbokseier",
-            "postboks": "postboks",
-            "postnummer": "postnummer"
-          },
+          "postboksadresse": null,
           "utenlandskAdresse": {
             "adressenavnNummer": "adressenavnNummer",
             "bygningEtasjeLeilighet": "bygningEtasjeLeilighet",
@@ -180,7 +169,18 @@
             "byEllerStedsnavn": "Paris",
             "landkode": "FRA"
           }
-        }
+        },
+          {
+            "vegadresse": null,
+            "postboksadresse": {
+              "postbokseier": "postbokseier",
+              "postboks": "postboks",
+              "postnummer": "postnummer"
+            },
+            "utenlandskAdresse": null,
+            "postadresseIFrittFormat": null,
+            "utenlandskAdresseIFrittFormat": null
+          }
       ]
     }
   }
