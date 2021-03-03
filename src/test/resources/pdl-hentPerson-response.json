@@ -60,6 +60,8 @@
       ],
       "bostedsadresse": [
         {
+          "gyldigFraOgMed": "2021-01-17T11:58:57",
+          "gyldigTilOgMed": "2021-01-18T11:58:57",
           "vegadresse": {
             "matrikkelId": "123456789",
             "postnummer": "0560",
@@ -101,8 +103,8 @@
       ],
       "oppholdsadresse": [
         {
-          "gyldigFraOgMed": null,
-          "gyldigTilOgMed": null,
+          "gyldigFraOgMed": "2021-01-15T11:58:57",
+          "gyldigTilOgMed": "2021-01-16T11:58:57",
           "coAdressenavn": "coAdressenavn",
           "oppholdAnnetSted": "oppholdAnnetSted",
           "vegadresse": {
@@ -136,6 +138,8 @@
       ],
       "kontaktadresse": [
         {
+          "gyldigFraOgMed": "2021-01-15T11:58:57",
+          "gyldigTilOgMed": "2021-01-15T11:58:57",
           "vegadresse": {
             "matrikkelId": "123456789",
             "postnummer": "postnummer",
@@ -170,17 +174,17 @@
             "landkode": "FRA"
           }
         },
-          {
-            "vegadresse": null,
-            "postboksadresse": {
-              "postbokseier": "postbokseier",
-              "postboks": "postboks",
-              "postnummer": "postnummer"
-            },
-            "utenlandskAdresse": null,
-            "postadresseIFrittFormat": null,
-            "utenlandskAdresseIFrittFormat": null
-          }
+        {
+          "vegadresse": null,
+          "postboksadresse": {
+            "postbokseier": "postbokseier",
+            "postboks": "postboks",
+            "postnummer": "postnummer"
+          },
+          "utenlandskAdresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresseIFrittFormat": null
+        }
       ]
     }
   }

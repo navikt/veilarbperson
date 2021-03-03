@@ -183,7 +183,7 @@ public class PersonV2Service {
         ofNullable(personV2Data.getStatsborgerskap()).map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setStatsborgerskap);
 
         List<Kontaktadresse> kontaktadresseList = personV2Data.getKontaktadresser();
-        List<Kontaktadresse> fettetKontaktadrList = new ArrayList<>();
+        List<Kontaktadresse> flettetKontaktadrList = new ArrayList<>();
 
         for (Kontaktadresse kontaktadresse: kontaktadresseList) {
                 Optional<String> postnrIKontaktsVegAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getVegadresse).map(Kontaktadresse.Vegadresse::getPostnummer);
@@ -200,17 +200,16 @@ public class PersonV2Service {
                 landkodeIKontaktsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(landkode -> kontaktadresse.getUtenlandskAdresse().setLandkode(landkode));
                 landkodeIUtenlandskAdresseIFrittFormat.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(landkode -> kontaktadresse.getUtenlandskAdresseIFrittFormat().setLandkode(landkode));
 
-                fettetKontaktadrList.add(kontaktadresse);
+                flettetKontaktadrList.add(kontaktadresse);
         }
-
-        personV2Data.setKontaktadresser(fettetKontaktadrList);
+        personV2Data.setKontaktadresser(flettetKontaktadrList);
     }
 
     private void flettDigitalKontaktinformasjon(String fnr, PersonV2Data personV2Data) {
         try {
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(Fnr.of(fnr));
 
-            personV2Data.setTelefon(leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), personV2Data.getTelefon()));
+            leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), personV2Data.getTelefon());
             personV2Data.setEpost(kontaktinfo.getEpostadresse());
             personV2Data.setMalform(kontaktinfo.getSpraak());
         } catch (Exception e) {
@@ -219,15 +218,14 @@ public class PersonV2Service {
     }
 
     /* Legger telefonnummer fra PDL og KRR til en liste. Hvis de er like da kan liste inneholde kun en av dem */
-    public List<Telefon> leggKrrTelefonNrIListe(String telefonNummerFraKrr, List<Telefon> telefonListe) {
-        List<String> telefonNrListeFraPdl = telefonListe.stream().map(Telefon::getTelefonNr).collect(Collectors.toList());
+    public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, List<Telefon> telefonListe) {
+        boolean harIkkeTelefonFraKrr = telefonNummerFraKrr != null
+                && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
 
-        if (telefonNummerFraKrr != null && !telefonNrListeFraPdl.contains(telefonNummerFraKrr)) {
-            Telefon telefonNrFraKrr = new Telefon().setPrioritet(telefonListe.size()+1+"").setTelefonNr(telefonNummerFraKrr).setMaster("KRR");
-            telefonListe.add(telefonNrFraKrr);
+        if (harIkkeTelefonFraKrr) {
+                Telefon telefonNrFraKrr = new Telefon().setPrioritet(telefonListe.size()+1+"").setTelefonNr(telefonNummerFraKrr).setMaster("KRR");
+                telefonListe.add(telefonNrFraKrr);
         }
-
-        return telefonListe;
     }
 
     public String hentMalform(Fnr fnr) {
