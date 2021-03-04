@@ -123,7 +123,6 @@ public class PdlClientImpl implements PdlClient {
 
     private static <T> T parseGqlJsonResponse(String gqlJsonResponse, Class<T> gqlDataClass) throws JsonProcessingException {
         ObjectMapper mapper = JsonUtils.getMapper();
-        mapper.registerModule(new JavaTimeModule());
         JsonNode gqlResponseNode = mapper.readTree(gqlJsonResponse);
         JsonNode errorsNode = gqlResponseNode.get("errors");
 
