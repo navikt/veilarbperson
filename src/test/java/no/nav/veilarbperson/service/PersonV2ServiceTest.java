@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -181,9 +182,12 @@ public class PersonV2ServiceTest {
     }
 
     @Test
-    public void unngoArrayIndexOutOfBoundExceptionNorListeErTomIPdlTest() {
-        String doedsfall = ofNullable(PersonV2DataMapper.getFirstElement(pdlPerson.getDoedsfall())).map(HentPdlPerson.Doedsfall::getDoedsdato).orElse(null);
-        assertNull(doedsfall);
+    public void getFirstElementFraListeTest() {
+        String identStatus = ofNullable(PersonV2DataMapper.getFirstElement(pdlPerson.getFolkeregisteridentifikator())).map(HentPdlPerson.Folkeregisteridentifikator::getStatus).orElse(null);
+        assertEquals("I_BRUK", identStatus);
+
+        String kjoenn = ofNullable(PersonV2DataMapper.getFirstElement(pdlPerson.getKjoenn())).map(HentPdlPerson.Kjoenn::getKjoenn).orElse(null);
+        assertNull(kjoenn);
     }
 
     @Test
@@ -197,7 +201,7 @@ public class PersonV2ServiceTest {
         Familiemedlem partner = PersonV2DataMapper.familiemedlemMapper(partnerInformasjon, personsBostedsAdresse);
 
         assertEquals("TYKKMAGET GASELLE", partner.getForkortetNavn());
-        assertEquals("1981-12-13", partner.getFodselsdato());
+        assertEquals(LocalDate.of(1981,12,13), partner.getFodselsdato());
     }
 
     @Test

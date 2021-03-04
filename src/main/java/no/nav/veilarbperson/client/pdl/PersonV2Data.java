@@ -7,6 +7,7 @@ import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.Telefon;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +21,9 @@ public class PersonV2Data {
     String etternavn;
     String forkortetNavn;
     Fnr fodselsnummer;
-    String fodselsdato;
+    LocalDate fodselsdato;
     String kjonn;
-    String dodsdato;
+    LocalDate dodsdato;
     String diskresjonskode;
     boolean egenAnsatt;
     String kontonummer;

@@ -14,19 +14,24 @@
           "foedselsdato": "1981-12-13"
         }
       ],
-      "kjoenn": [
-        {
-          "kjoenn": "KVINNE"
-        }
-      ],
+      "kjoenn": [],
       "folkeregisteridentifikator": [
         {
           "identifikasjonsnummer": "0123456789",
           "status": "I_BRUK",
           "type": "FNR"
+        },
+        {
+          "identifikasjonsnummer": "0123456781",
+          "status": "IKKE_I_BRUK",
+          "type": "FNR"
         }
       ],
-      "doedsfall": [],
+      "doedsfall": [
+        {
+          "doedsdato": "2020-06-01"
+        }
+      ],
       "sivilstand": [
         {
           "type": "GIFT",
@@ -139,7 +144,7 @@
       "kontaktadresse": [
         {
           "gyldigFraOgMed": "2021-01-15T11:58:57",
-          "gyldigTilOgMed": "2021-01-15T11:58:57",
+          "gyldigTilOgMed": null,
           "vegadresse": {
             "matrikkelId": "123456789",
             "postnummer": "postnummer",

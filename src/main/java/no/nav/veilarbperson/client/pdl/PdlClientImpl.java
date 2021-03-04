@@ -3,6 +3,7 @@ package no.nav.veilarbperson.client.pdl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.health.HealthCheckResult;
@@ -122,6 +123,7 @@ public class PdlClientImpl implements PdlClient {
 
     private static <T> T parseGqlJsonResponse(String gqlJsonResponse, Class<T> gqlDataClass) throws JsonProcessingException {
         ObjectMapper mapper = JsonUtils.getMapper();
+        mapper.registerModule(new JavaTimeModule());
         JsonNode gqlResponseNode = mapper.readTree(gqlJsonResponse);
         JsonNode errorsNode = gqlResponseNode.get("errors");
 

@@ -3,6 +3,8 @@ package no.nav.veilarbperson.client.pdl.domain;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDate;
+
 @Data
 @Accessors(chain = true)
 public class Familiemedlem {
@@ -11,8 +13,8 @@ public class Familiemedlem {
     String etternavn;
     String forkortetNavn;
     String fodselsnummer;
-    String fodselsdato;
+    LocalDate fodselsdato;
     String kjonn;
-    String dodsdato;
+    LocalDate dodsdato;
     boolean harSammeBosted;
 }

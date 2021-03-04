@@ -15,6 +15,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -68,13 +72,13 @@ public class PdlClientImplTest {
         assertEquals("FNR", identifikator.getType());
 
         HentPdlPerson.Sivilstand sivilstand = person.getSivilstand().get(0);
-        assertEquals("2020-06-01", sivilstand.getGyldigFraOgMed());
+        assertEquals(LocalDate.of(2020,06,01), sivilstand.getGyldigFraOgMed());
         assertEquals("GIFT", sivilstand.getType());
 
-        assertTrue(person.getDoedsfall().isEmpty());
+        assertTrue(person.getKjoenn().isEmpty());
 
         HentPdlPerson.Foedsel foedsel = person.getFoedsel().get(0);
-        assertEquals("1981-12-13", foedsel.getFoedselsdato());
+        assertEquals(LocalDate.of(1981,12,13), foedsel.getFoedselsdato());
 
         HentPdlPerson.Familierelasjoner familierelasjoner = person.getFamilierelasjoner().get(0);
         assertEquals("MOR", familierelasjoner.getMinRolleForPerson());
@@ -83,8 +87,6 @@ public class PdlClientImplTest {
 
         HentPdlPerson.Statsborgerskap statsborgerskap = person.getStatsborgerskap().get(0);
         assertEquals("NORGE", statsborgerskap.getLand());
-        assertEquals("1980-12-24", statsborgerskap.getGyldigFraOgMed());
-        assertEquals("2010-12-30", statsborgerskap.getGyldigTilOgMed());
 
         Bostedsadresse bostedsadresse = person.getBostedsadresse().get(0);
         Bostedsadresse.Vegadresse vegadresse = bostedsadresse.getVegadresse();
@@ -113,6 +115,10 @@ public class PdlClientImplTest {
         assertEquals("tilleggsnavn", matrikkeladresse.getTilleggsnavn());
 
         Kontaktadresse kontaktAdresse = person.getKontaktadresse().get(0);
+
+        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.of(2021,01,15), LocalTime.of(11,58,57));
+        assertEquals(localDateTime, kontaktAdresse.getGyldigFraOgMed());
+        assertNull(kontaktAdresse.getGyldigTilOgMed());
 
         Kontaktadresse.Vegadresse kontaktsVegadresse = kontaktAdresse.getVegadresse();
         assertEquals(123456789L, kontaktsVegadresse.getMatrikkelId());

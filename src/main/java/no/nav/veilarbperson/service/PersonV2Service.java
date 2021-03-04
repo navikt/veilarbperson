@@ -183,7 +183,6 @@ public class PersonV2Service {
         ofNullable(personV2Data.getStatsborgerskap()).map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setStatsborgerskap);
 
         List<Kontaktadresse> kontaktadresseList = personV2Data.getKontaktadresser();
-        List<Kontaktadresse> flettetKontaktadrList = new ArrayList<>();
 
         for (Kontaktadresse kontaktadresse: kontaktadresseList) {
                 Optional<String> postnrIKontaktsVegAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getVegadresse).map(Kontaktadresse.Vegadresse::getPostnummer);
@@ -199,10 +198,7 @@ public class PersonV2Service {
                 postnrIPostAdresseIFrittFormat.map(kodeverkService::getPoststedForPostnummer).ifPresent(poststed -> kontaktadresse.getPostadresseIFrittFormat().setPoststed(poststed));
                 landkodeIKontaktsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(landkode -> kontaktadresse.getUtenlandskAdresse().setLandkode(landkode));
                 landkodeIUtenlandskAdresseIFrittFormat.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(landkode -> kontaktadresse.getUtenlandskAdresseIFrittFormat().setLandkode(landkode));
-
-                flettetKontaktadrList.add(kontaktadresse);
         }
-        personV2Data.setKontaktadresser(flettetKontaktadrList);
     }
 
     private void flettDigitalKontaktinformasjon(String fnr, PersonV2Data personV2Data) {
