@@ -8,11 +8,16 @@ import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlPersonVariables;
 import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
 import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
+import no.nav.veilarbperson.client.pdl.domain.Oppholdsadresse;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,13 +72,13 @@ public class PdlClientImplTest {
         assertEquals("FNR", identifikator.getType());
 
         HentPdlPerson.Sivilstand sivilstand = person.getSivilstand().get(0);
-        assertEquals("2020-06-01", sivilstand.getGyldigFraOgMed());
+        assertEquals(LocalDate.of(2020,06,01), sivilstand.getGyldigFraOgMed());
         assertEquals("GIFT", sivilstand.getType());
 
-        assertTrue(person.getDoedsfall().isEmpty());
+        assertTrue(person.getKjoenn().isEmpty());
 
         HentPdlPerson.Foedsel foedsel = person.getFoedsel().get(0);
-        assertEquals("1981-12-13", foedsel.getFoedselsdato());
+        assertEquals(LocalDate.of(1981,12,13), foedsel.getFoedselsdato());
 
         HentPdlPerson.Familierelasjoner familierelasjoner = person.getFamilierelasjoner().get(0);
         assertEquals("MOR", familierelasjoner.getMinRolleForPerson());
@@ -82,8 +87,6 @@ public class PdlClientImplTest {
 
         HentPdlPerson.Statsborgerskap statsborgerskap = person.getStatsborgerskap().get(0);
         assertEquals("NORGE", statsborgerskap.getLand());
-        assertEquals("1980-12-24", statsborgerskap.getGyldigFraOgMed());
-        assertEquals("2010-12-30", statsborgerskap.getGyldigTilOgMed());
 
         Bostedsadresse bostedsadresse = person.getBostedsadresse().get(0);
         Bostedsadresse.Vegadresse vegadresse = bostedsadresse.getVegadresse();
@@ -96,24 +99,61 @@ public class PdlClientImplTest {
 
         HentPdlPerson.Telefonnummer telefonnummer = person.getTelefonnummer().get(0);
         assertEquals("33333333", telefonnummer.getNummer());
-        assertEquals("+47", telefonnummer.getLandkode());
+        assertEquals("+47", telefonnummer.getLandskode());
         assertEquals("1", telefonnummer.getPrioritet());
+        assertEquals("PDL", telefonnummer.getMetadata().getMaster());
 
         HentPdlPerson.Adressebeskyttelse adressebeskyttelse = person.getAdressebeskyttelse().get(0);
-        assertEquals("UGRADERT", adressebeskyttelse.getGradering().toString());
+        assertEquals("UGRADERT", adressebeskyttelse.getGradering());
+
+        Oppholdsadresse oppholdsadresse = person.getOppholdsadresse().get(0);
+        Oppholdsadresse.Matrikkeladresse matrikkeladresse = oppholdsadresse.getMatrikkeladresse();
+        assertEquals(123456789L, matrikkeladresse.getMatrikkelId());
+        assertEquals("kommunenummer", matrikkeladresse.getKommunenummer());
+        assertEquals("postnummer", matrikkeladresse.getPostnummer());
+        assertEquals("bruksenhetsnummer", matrikkeladresse.getBruksenhetsnummer());
+        assertEquals("tilleggsnavn", matrikkeladresse.getTilleggsnavn());
 
         Kontaktadresse kontaktAdresse = person.getKontaktadresse().get(0);
+
+        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.of(2021,01,15), LocalTime.of(11,58,57));
+        assertEquals(localDateTime, kontaktAdresse.getGyldigFraOgMed());
+        assertNull(kontaktAdresse.getGyldigTilOgMed());
+
+        Kontaktadresse.Vegadresse kontaktsVegadresse = kontaktAdresse.getVegadresse();
+        assertEquals(123456789L, kontaktsVegadresse.getMatrikkelId());
+        assertEquals("postnummer", kontaktsVegadresse.getPostnummer());
+        assertEquals("adressenavn", kontaktsVegadresse.getAdressenavn());
+        assertEquals("husbokstav", kontaktsVegadresse.getHusbokstav());
+        assertEquals("husnummer", kontaktsVegadresse.getHusnummer());
+        assertEquals("kommunenummer", kontaktsVegadresse.getKommunenummer());
+        assertEquals("tilleggsnavn", kontaktsVegadresse.getTilleggsnavn());
+
+        Kontaktadresse.Postboksadresse kontaktsPostboksadresse = person.getKontaktadresse().get(1).getPostboksadresse();
+        assertEquals("postnummer", kontaktsPostboksadresse.getPostnummer());
+        assertEquals("postboks", kontaktsPostboksadresse.getPostboks());
+        assertEquals("postbokseier", kontaktsPostboksadresse.getPostbokseier());
+
+        Kontaktadresse.Utenlandskadresse utenlandskAdresse = kontaktAdresse.getUtenlandskAdresse();
+        assertEquals("adressenavnNummer", utenlandskAdresse.getAdressenavnNummer());
+        assertEquals("bygningEtasjeLeilighet", utenlandskAdresse.getBygningEtasjeLeilighet());
+        assertEquals("postboksNummerNavn", utenlandskAdresse.getPostboksNummerNavn());
+        assertEquals("postkode", utenlandskAdresse.getPostkode());
+        assertEquals("bySted", utenlandskAdresse.getBySted());
+        assertEquals("regionDistriktOmraade", utenlandskAdresse.getRegionDistriktOmraade());
+        assertEquals("landkode", utenlandskAdresse.getLandkode());
+
         Kontaktadresse.PostadresseIFrittFormat postadresse = kontaktAdresse.getPostadresseIFrittFormat();
         assertEquals("SOT6", postadresse.getAdresselinje1());
         assertEquals("POSTBOKS 2094 VIKA", postadresse.getAdresselinje2());
         assertNull(postadresse.getAdresselinje3());
         assertEquals("0125", postadresse.getPostnummer());
 
-        Kontaktadresse.UtenlandskAdresseIFrittFormat utenlandskAdresse = kontaktAdresse.getUtenlandskAdresseIFrittFormat();
-        assertEquals("Postboks 100", utenlandskAdresse.getAdresselinje1());
-        assertEquals("12345", utenlandskAdresse.getAdresselinje2());
-        assertNull(utenlandskAdresse.getAdresselinje3());
-        assertEquals("FRA", utenlandskAdresse.getLandkode());
+        Kontaktadresse.UtenlandskAdresseIFrittFormat utenlandskAdresseIFrittFormat = kontaktAdresse.getUtenlandskAdresseIFrittFormat();
+        assertEquals("Postboks 100", utenlandskAdresseIFrittFormat.getAdresselinje1());
+        assertEquals("12345", utenlandskAdresseIFrittFormat.getAdresselinje2());
+        assertNull(utenlandskAdresseIFrittFormat.getAdresselinje3());
+        assertEquals("FRA", utenlandskAdresseIFrittFormat.getLandkode());
     }
 
     @Test

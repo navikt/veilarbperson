@@ -5,9 +5,10 @@ import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.PersonData;
+import no.nav.veilarbperson.domain.Telefon;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 
@@ -28,10 +29,14 @@ public class PersonV2DataMapper {
                         .map(HentPdlPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer)
                         .map(Fnr::of).orElse(null))
                 .setKontonummer(personDataFraTps.getKontonummer())
+                .setDiskresjonskode(ofNullable(getFirstElement(pdlPerson.getAdressebeskyttelse()))
+                        .map(HentPdlPerson.Adressebeskyttelse::getGradering)
+                        .map(Diskresjonskoder::mapTilTallkode).orElse(null))
+                .setTelefon(mapTelefonNrFraPdl(pdlPerson.getTelefonnummer()))
                 .setSivilstand(ofNullable(sivilstandMapper(getFirstElement(pdlPerson.getSivilstand()))).orElse(null))
                 .setBostedsadresse(ofNullable(getFirstElement(pdlPerson.getBostedsadresse())).orElse(null))
-                .setMidlertidigAdresseUtland(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(Kontaktadresse::getUtenlandskAdresseIFrittFormat).orElse(null))
-                .setPostAdresse(ofNullable(getFirstElement(pdlPerson.getKontaktadresse())).map(Kontaktadresse::getPostadresseIFrittFormat).orElse(null));
+                .setOppholdsadresse(ofNullable(getFirstElement(pdlPerson.getOppholdsadresse())).orElse(null))
+                .setKontaktadresser(ofNullable(pdlPerson.getKontaktadresse()).orElse(null));
     }
 
     public static <T> T getFirstElement(List<T> list) {
@@ -88,11 +93,23 @@ public class PersonV2DataMapper {
                 .setFraDato(ofNullable(sivilstand).map(HentPdlPerson.Sivilstand::getGyldigFraOgMed).orElse(null));
     }
 
-    /* Slår sammen landkode og nummer og så lager et telefonnummer */
-    public static String telefonNummerMapper(HentPdlPerson.Telefonnummer telefonnummer) {
-         String landkode = ofNullable(telefonnummer).map(HentPdlPerson.Telefonnummer::getLandkode).orElse("");
-         String nummer = ofNullable(telefonnummer).map(HentPdlPerson.Telefonnummer::getNummer).orElse(null);
-
-         return (nummer!=null) ? (landkode + nummer) : null;
+    public static List<Telefon> mapTelefonNrFraPdl(List<HentPdlPerson.Telefonnummer> telefonnummer) {
+        return (!telefonnummer.isEmpty())
+                ? telefonnummer.stream().map(PersonV2DataMapper::telefonNummerMapper).filter(Objects::nonNull).collect(Collectors.toList())
+                : new ArrayList<>();
     }
+
+    /* Slår sammen landkode og nummer og så lager et telefonnummer */
+    public static Telefon telefonNummerMapper(HentPdlPerson.Telefonnummer telefonnummer) {
+         String telefonnr = telefonnummer.getNummer();
+         String landkode = telefonnummer.getLandskode()!=null ?  telefonnummer.getLandskode() : "";
+
+         return (telefonnr!=null)
+                 ? new Telefon()
+                        .setPrioritet(telefonnummer.getPrioritet())
+                        .setTelefonNr(landkode + telefonnr)
+                        .setMaster(telefonnummer.getMetadata().getMaster())
+                 : null;
+    }
+
 }

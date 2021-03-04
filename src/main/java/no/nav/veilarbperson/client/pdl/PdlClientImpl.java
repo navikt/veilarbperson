@@ -3,6 +3,7 @@ package no.nav.veilarbperson.client.pdl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.health.HealthCheckResult;
@@ -132,5 +133,4 @@ public class PdlClientImpl implements PdlClient {
 
         return mapper.treeToValue(gqlResponseNode.get("data"), gqlDataClass);
     }
-
 }

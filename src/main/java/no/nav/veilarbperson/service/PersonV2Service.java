@@ -10,12 +10,13 @@ import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
-import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
-import no.nav.veilarbperson.client.pdl.domain.Familiemedlem;
+import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
+import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.PersonData;
+import no.nav.veilarbperson.domain.Telefon;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,9 +70,17 @@ public class PersonV2Service {
         HentPdlPerson.PdlPerson personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer, userToken)).orElseThrow(() -> new Exception("Fant ikke person i hentPerson operasjonen i PDL"));
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl, personDataFraTps);
 
+        try {
+            flettPersoninfoFraPortefolje(personV2Data, fodselsnummer);
+        } catch (Exception e) {
+            log.warn("Bruker fallbackløsning for egenAnsatt-sjekk", e);
+            personV2Data.setEgenAnsatt(egenAnsattClient.erEgenAnsatt(Fnr.of(fodselsnummer)));
+            personV2Data.setSikkerhetstiltak(ofNullable(getFirstElement(personDataFraPdl.getSikkerhetstiltak())).map(HentPdlPerson.Sikkerhetstiltak::getBeskrivelse).orElse(null));
+        }
+
         flettBarnInformasjon(personDataFraPdl.getFamilierelasjoner(), personV2Data);
         flettPartnerInformasjon(personDataFraPdl.getSivilstand(), personV2Data, userToken);
-        flettDigitalKontaktinformasjon(fodselsnummer, getFirstElement(personDataFraPdl.getTelefonnummer()), personV2Data);
+        flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
         flettGeografiskEnhet(fodselsnummer, userToken, personV2Data);
         flettKodeverk(personV2Data);
 
@@ -125,9 +134,17 @@ public class PersonV2Service {
         }
     }
 
+    private void flettPersoninfoFraPortefolje(PersonV2Data personV2Data, String fodselsnummer) {
+        Personinfo personinfo = veilarbportefoljeClient.hentPersonInfo(Fnr.of(fodselsnummer));
+        personV2Data.setEgenAnsatt(personinfo.egenAnsatt);
+        personV2Data.setSikkerhetstiltak(personinfo.sikkerhetstiltak);
+    }
+
     private void flettGeografiskEnhet(String fodselsnummer,  String userToken, PersonV2Data personV2Data) {
         String geografiskTilknytning = ofNullable(pdlClient.hentGeografiskTilknytning(fodselsnummer, userToken))
                 .map(HentPdlPerson.GeografiskTilknytning::getGtKommune).orElse(null);
+
+        personV2Data.setGeografiskTilknytning(geografiskTilknytning);
 
         if (geografiskTilknytning != null && geografiskTilknytning.matches("\\d+")) {
             try {
@@ -139,17 +156,56 @@ public class PersonV2Service {
         }
     }
 
-    private void flettKodeverk(PersonV2Data personV2Data) {
+    public void flettKodeverk(PersonV2Data personV2Data) {
+        Optional<String> postnrIBostedsVegAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(Bostedsadresse.Vegadresse::getPostnummer);
+        Optional<String> postnrIBostedsMatrikkelAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getMatrikkeladresse).map(Bostedsadresse.Matrikkeladresse::getPostnummer);
+        Optional<String> kommunenrIBostedsVegAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(Bostedsadresse.Vegadresse::getKommunenummer);
+        Optional<String> kommunenrIBostedsMatrikkelAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getMatrikkeladresse).map(Bostedsadresse.Matrikkeladresse::getKommunenummer);
+        Optional<String> kommunenrIBostedsUkjentAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getUkjentBosted).map(Bostedsadresse.UkjentBosted::getBostedskommune);
+        Optional<String> kommunenrIOppholdsVegAdr = ofNullable(personV2Data.getOppholdsadresse()).map(Oppholdsadresse::getVegadresse).map(Oppholdsadresse.Vegadresse::getKommunenummer);
+        Optional<String> kommunenrIOppholdsMatrikkelAdr = ofNullable(personV2Data.getOppholdsadresse()).map(Oppholdsadresse::getMatrikkeladresse).map(Oppholdsadresse.Matrikkeladresse::getKommunenummer);
+        Optional<String> landkodeIBostedsUtenlandskAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getUtenlandskAdresse).map(Bostedsadresse.Utenlandskadresse::getLandkode);
+        Optional<String> postnrIOppholdsVegAdr = ofNullable(personV2Data.getOppholdsadresse()).map(Oppholdsadresse::getVegadresse).map(Oppholdsadresse.Vegadresse::getPostnummer);
+        Optional<String> postnrIOppholdsMatrikkelAdr = ofNullable(personV2Data.getOppholdsadresse()).map(Oppholdsadresse::getMatrikkeladresse).map(Oppholdsadresse.Matrikkeladresse::getPostnummer);
+        Optional<String> landkodeIOppholdsUtenlandskAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getUtenlandskAdresse).map(Bostedsadresse.Utenlandskadresse::getLandkode);
+
+        postnrIBostedsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIBostedsVegadresse);
+        postnrIBostedsMatrikkelAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIBostedsMatrikkeladresse);
+        kommunenrIBostedsVegAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personV2Data::setKommuneIBostedsVegadresse);
+        kommunenrIBostedsMatrikkelAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personV2Data::setKommuneIBostedsMatrikkeladresse);
+        kommunenrIBostedsUkjentAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personV2Data::setKommuneIBostedsUkjentadresse);
+        kommunenrIOppholdsVegAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personV2Data::setKommuneIOppholdssVegadresse);
+        kommunenrIOppholdsMatrikkelAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personV2Data::setKommuneIOppholdsMatrikkeladresse);
+        postnrIOppholdsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIOppholdsVegadresse);
+        postnrIOppholdsMatrikkelAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIOppholdsMatrikkeladresse);
+        landkodeIBostedsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setLandkodeIBostedsUtenlandskadresse);
+        landkodeIOppholdsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setLandkodeIOppholdsUtenlandskadresse);
         ofNullable(personV2Data.getStatsborgerskap()).map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setStatsborgerskap);
-        personV2Data.getPostnummerFraBostedsadresse().map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedUnderBostedsAdresse);
-        personV2Data.getLandKodeFraKontaktadresse().map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setBeskrivelseForLandkodeIKontaktadresse);
+
+        List<Kontaktadresse> kontaktadresseList = personV2Data.getKontaktadresser();
+
+        for (Kontaktadresse kontaktadresse: kontaktadresseList) {
+                Optional<String> postnrIKontaktsVegAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getVegadresse).map(Kontaktadresse.Vegadresse::getPostnummer);
+                Optional<String> postnrIKontaktsPostboksAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getPostboksadresse).map(Kontaktadresse.Postboksadresse::getPostnummer);
+                Optional<String> postnrIPostAdresseIFrittFormat = ofNullable(kontaktadresse).map(Kontaktadresse::getPostadresseIFrittFormat).map(Kontaktadresse.PostadresseIFrittFormat::getPostnummer);
+                Optional<String> landkodeIKontaktsUtenlandskAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getUtenlandskAdresse).map(Kontaktadresse.Utenlandskadresse::getLandkode);
+                Optional<String> landkodeIUtenlandskAdresseIFrittFormat = ofNullable(kontaktadresse).map(Kontaktadresse::getUtenlandskAdresseIFrittFormat).map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode);
+                Optional<String> kommunenrIKontaktsVegAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getVegadresse).map(Kontaktadresse.Vegadresse::getKommunenummer);
+
+                postnrIKontaktsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(poststed -> kontaktadresse.getVegadresse().setPoststed(poststed));
+                kommunenrIKontaktsVegAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(kommune -> kontaktadresse.getVegadresse().setKommune(kommune));
+                postnrIKontaktsPostboksAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(poststed -> kontaktadresse.getPostboksadresse().setPoststed(poststed));
+                postnrIPostAdresseIFrittFormat.map(kodeverkService::getPoststedForPostnummer).ifPresent(poststed -> kontaktadresse.getPostadresseIFrittFormat().setPoststed(poststed));
+                landkodeIKontaktsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(landkode -> kontaktadresse.getUtenlandskAdresse().setLandkode(landkode));
+                landkodeIUtenlandskAdresseIFrittFormat.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(landkode -> kontaktadresse.getUtenlandskAdresseIFrittFormat().setLandkode(landkode));
+        }
     }
 
-    private void flettDigitalKontaktinformasjon(String fnr, HentPdlPerson.Telefonnummer telefonnummerFraPdl, PersonV2Data personV2Data) {
+    private void flettDigitalKontaktinformasjon(String fnr, PersonV2Data personV2Data) {
         try {
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(Fnr.of(fnr));
 
-            personV2Data.setTelefon(leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), telefonnummerFraPdl));
+            leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), personV2Data.getTelefon());
             personV2Data.setEpost(kontaktinfo.getEpostadresse());
             personV2Data.setMalform(kontaktinfo.getSpraak());
         } catch (Exception e) {
@@ -158,18 +214,14 @@ public class PersonV2Service {
     }
 
     /* Legger telefonnummer fra PDL og KRR til en liste. Hvis de er like da kan liste inneholde kun en av dem */
-    public List<String> leggKrrTelefonNrIListe(String telefonNummerFraKrr, HentPdlPerson.Telefonnummer telefonNummerFraPdl) {
-        String telefonNrFraPdl = PersonV2DataMapper.telefonNummerMapper(telefonNummerFraPdl);
-        List<String> telefonList = new ArrayList<>();
+    public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, List<Telefon> telefonListe) {
+        boolean harIkkeTelefonFraKrr = telefonNummerFraKrr != null
+                && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
 
-        if (telefonNrFraPdl != null) {
-            telefonList.add(telefonNrFraPdl);
+        if (harIkkeTelefonFraKrr) {
+                Telefon telefonNrFraKrr = new Telefon().setPrioritet(telefonListe.size()+1+"").setTelefonNr(telefonNummerFraKrr).setMaster("KRR");
+                telefonListe.add(telefonNrFraKrr);
         }
-        if (telefonNummerFraKrr != null && !telefonNummerFraKrr.equals(telefonNrFraPdl)) {
-            telefonList.add(telefonNummerFraKrr);
-        }
-
-        return telefonList;
     }
 
     public String hentMalform(Fnr fnr) {

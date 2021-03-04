@@ -14,19 +14,24 @@
           "foedselsdato": "1981-12-13"
         }
       ],
-      "kjoenn": [
-        {
-          "kjoenn":"KVINNE"
-        }
-      ],
+      "kjoenn": [],
       "folkeregisteridentifikator": [
         {
-          "identifikasjonsnummer":"0123456789",
+          "identifikasjonsnummer": "0123456789",
           "status": "I_BRUK",
+          "type": "FNR"
+        },
+        {
+          "identifikasjonsnummer": "0123456781",
+          "status": "IKKE_I_BRUK",
           "type": "FNR"
         }
       ],
-      "doedsfall": [],
+      "doedsfall": [
+        {
+          "doedsdato": "2020-06-01"
+        }
+      ],
       "sivilstand": [
         {
           "type": "GIFT",
@@ -60,23 +65,40 @@
       ],
       "bostedsadresse": [
         {
+          "gyldigFraOgMed": "2021-01-17T11:58:57",
+          "gyldigTilOgMed": "2021-01-18T11:58:57",
           "vegadresse": {
-            "matrikkelId": null,
+            "matrikkelId": "123456789",
             "postnummer": "0560",
             "husnummer": "21",
             "husbokstav": "A",
             "kommunenummer": "0570",
             "adressenavn": "ARENDALSGATE",
-            "tilleggsnavn": "ARENDAL",
-            "poststed": "OSLO"
+            "tilleggsnavn": "ARENDAL"
+          },
+          "matrikkeladresse": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "adressenavnNummer",
+            "bygningEtasjeLeilighet": "bygningEtasjeLeilighet",
+            "postboksNummerNavn": "postboksNummerNavn",
+            "postkode": "postkode",
+            "bySted": "bySted",
+            "regionDistriktOmraade": "regionDistriktOmraade",
+            "landkode": "landkode"
+          },
+          "ukjentBosted": {
+            "bostedskommune": "bostedskommune"
           }
         }
       ],
       "telefonnummer": [
         {
           "nummer": "33333333",
-          "landkode": "+47",
-          "prioritet": "1"
+          "landskode": "+47",
+          "prioritet": "1",
+          "metadata": {
+            "master": "PDL"
+          }
         }
       ],
       "adressebeskyttelse": [
@@ -84,24 +106,92 @@
           "gradering": "UGRADERT"
         }
       ],
+      "oppholdsadresse": [
+        {
+          "gyldigFraOgMed": "2021-01-15T11:58:57",
+          "gyldigTilOgMed": "2021-01-16T11:58:57",
+          "coAdressenavn": "coAdressenavn",
+          "oppholdAnnetSted": "oppholdAnnetSted",
+          "vegadresse": {
+            "matrikkelId": "123456789",
+            "husnummer": "husnummer",
+            "husbokstav": "husbokstav",
+            "bruksenhetsnummer": "bruksenhetsnummer",
+            "adressenavn": "adressenavn",
+            "kommunenummer": "kommunenummer",
+            "bydelsnummer": "bydelsnummer",
+            "tilleggsnavn": "tilleggsnavn",
+            "postnummer": "postnummer"
+          },
+          "matrikkeladresse": {
+            "matrikkelId": "123456789",
+            "bruksenhetsnummer": "bruksenhetsnummer",
+            "tilleggsnavn": "tilleggsnavn",
+            "postnummer": "postnummer",
+            "kommunenummer": "kommunenummer"
+          },
+          "utenlandskAdresse": {
+            "adressenavnNummer": "adressenavnNummer",
+            "bygningEtasjeLeilighet": "bygningEtasjeLeilighet",
+            "postboksNummerNavn": "postboksNummerNavn",
+            "postkode": "postkode",
+            "bySted": "bySted",
+            "regionDistriktOmraade": "regionDistriktOmraade",
+            "landkode": "landkode"
+          }
+        }
+      ],
       "kontaktadresse": [
         {
-        "postadresseIFrittFormat": {
-          "adresselinje1": "SOT6",
-          "adresselinje2": "POSTBOKS 2094 VIKA",
-          "adresselinje3": null,
-          "postnummer": "0125"
+          "gyldigFraOgMed": "2021-01-15T11:58:57",
+          "gyldigTilOgMed": null,
+          "vegadresse": {
+            "matrikkelId": "123456789",
+            "postnummer": "postnummer",
+            "husnummer": "husnummer",
+            "husbokstav": "husbokstav",
+            "adressenavn": "adressenavn",
+            "kommunenummer": "kommunenummer",
+            "tilleggsnavn": "tilleggsnavn"
+          },
+          "postboksadresse": null,
+          "utenlandskAdresse": {
+            "adressenavnNummer": "adressenavnNummer",
+            "bygningEtasjeLeilighet": "bygningEtasjeLeilighet",
+            "postboksNummerNavn": "postboksNummerNavn",
+            "postkode": "postkode",
+            "bySted": "bySted",
+            "regionDistriktOmraade": "regionDistriktOmraade",
+            "landkode": "landkode"
+          },
+          "postadresseIFrittFormat": {
+            "adresselinje1": "SOT6",
+            "adresselinje2": "POSTBOKS 2094 VIKA",
+            "adresselinje3": null,
+            "postnummer": "0125"
+          },
+          "utenlandskAdresseIFrittFormat": {
+            "adresselinje1": "Postboks 100",
+            "adresselinje2": "12345",
+            "adresselinje3": null,
+            "postkode": null,
+            "byEllerStedsnavn": "Paris",
+            "landkode": "FRA"
+          }
         },
-        "utenlandskAdresseIFrittFormat": {
-          "adresselinje1": "Postboks 100",
-          "adresselinje2": "12345",
-          "adresselinje3": null,
-          "postkode": null,
-          "byEllerStedsnavn": "Paris",
-          "landkode": "FRA"
-         }
+        {
+          "vegadresse": null,
+          "postboksadresse": {
+            "postbokseier": "postbokseier",
+            "postboks": "postboks",
+            "postnummer": "postnummer"
+          },
+          "utenlandskAdresse": null,
+          "postadresseIFrittFormat": null,
+          "utenlandskAdresseIFrittFormat": null
         }
       ]
     }
   }
 }
+

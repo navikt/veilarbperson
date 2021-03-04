@@ -50,13 +50,13 @@
       "bostedsadresse": [
         {
           "vegadresse": {
+            "matrikkelId": "123456789",
             "postnummer": "0560",
             "husnummer": "21",
             "husbokstav": "A",
             "kommunenummer": "0570",
             "adressenavn": "ARENDALSGATE",
-            "tilleggsnavn": "ARENDAL",
-            "poststed": "OSLO"
+            "tilleggsnavn": "ARENDAL"
           }
         }
       ],
@@ -72,14 +72,37 @@
           "gradering": "UGRADERT"
         }
       ],
+      "oppholdsadresse": [
+        {
+          "vegadresse": null,
+          "matrikkeladresse": {
+            "matrikkelId": "123456789",
+            "bruksenhetsnummer": "bruksenhetsnummer",
+            "tilleggsnavn": "tilleggsnavn",
+            "postnummer": "postnummer",
+            "kommunenummer": "kommunenummer"
+          },
+          "utenlandskAdresse": null
+        }
+      ],
       "kontaktadresse": [
         {
+          "vegadresse": null,
+          "matrikkeladresse": null,
+          "utenlandskAdresse": null,
           "postadresseIFrittFormat": {
             "adresselinje1": "SOT6",
             "adresselinje2": "POSTBOKS 2094 VIKA",
             "adresselinje3": null,
             "postnummer": "0125"
           },
+          "utenlandskAdresseIFrittFormat": null
+        },
+        {
+          "vegadresse": null,
+          "matrikkeladresse": null,
+          "utenlandskAdresse": null,
+          "postadresseIFrittFormat": null,
           "utenlandskAdresseIFrittFormat": {
             "adresselinje1": "Postboks 100",
             "adresselinje2": "12345",

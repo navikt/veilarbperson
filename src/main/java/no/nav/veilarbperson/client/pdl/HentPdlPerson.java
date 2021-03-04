@@ -4,7 +4,10 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
 import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
+import no.nav.veilarbperson.client.pdl.domain.Metadata;
+import no.nav.veilarbperson.client.pdl.domain.Oppholdsadresse;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -30,6 +33,7 @@ public class HentPdlPerson {
 
         List<Adressebeskyttelse> adressebeskyttelse;
         List<Bostedsadresse> bostedsadresse;
+        List<Oppholdsadresse> oppholdsadresse;
         List<Kontaktadresse> kontaktadresse;
     }
 
@@ -65,9 +69,10 @@ public class HentPdlPerson {
 
     @Data
     public static class Telefonnummer {
-        private String landkode;
+        private String landskode;
         private String nummer;
         private String prioritet;
+        private Metadata metadata;
     }
 
     @Data
@@ -77,7 +82,7 @@ public class HentPdlPerson {
 
     @Data
     public static class Doedsfall {
-        private String doedsdato;
+        private LocalDate doedsdato;
     }
 
     @Data
@@ -89,7 +94,7 @@ public class HentPdlPerson {
 
     @Data
     public static class Foedsel {
-        private String foedselsdato;
+        private LocalDate foedselsdato;
     }
 
     @Data
@@ -115,7 +120,7 @@ public class HentPdlPerson {
     @Data
     public static class Sivilstand {
         String type;
-        String gyldigFraOgMed;
+        LocalDate gyldigFraOgMed;
         String relatertVedSivilstand;
     }
 
@@ -128,8 +133,6 @@ public class HentPdlPerson {
     @Data
     public static class Statsborgerskap {
         private String land;
-        private String gyldigFraOgMed;
-        private String gyldigTilOgMed;
     }
 
 }
