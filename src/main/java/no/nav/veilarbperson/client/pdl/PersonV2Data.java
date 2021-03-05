@@ -42,6 +42,8 @@ public class PersonV2Data {
     String malform;
     List<HentPdlPerson.Fullmakt> fullmakt;
     List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
+    boolean harVergemaal;
+    boolean harFullmakt;
 
     public PersonV2Data() {
         telefon = new ArrayList<>();

@@ -39,7 +39,9 @@ public class PersonV2DataMapper {
                 .setOppholdsadresse(ofNullable(getFirstElement(pdlPerson.getOppholdsadresse())).orElse(null))
                 .setKontaktadresser(ofNullable(pdlPerson.getKontaktadresse()).orElse(null))
                 .setVergemaalEllerFremtidsfullmakt(vergemaalMapper(pdlPerson.getVergemaalEllerFremtidsfullmakt()))
-                .setFullmakt(pdlPerson.getFullmakt());
+                .setFullmakt(pdlPerson.getFullmakt())
+                .setHarVergemaal((ofNullable(getFirstElement(pdlPerson.getVergemaalEllerFremtidsfullmakt())).isPresent()))
+                .setHarFullmakt(ofNullable(getFirstElement(pdlPerson.getFullmakt())).isPresent());
     }
 
     public static <T> T getFirstElement(List<T> list) {
