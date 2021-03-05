@@ -3,7 +3,6 @@ package no.nav.veilarbperson.client.pdl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.health.HealthCheckResult;
@@ -43,7 +42,6 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentGeografiskTilknytningQuery;
 
-
     public PdlClientImpl(String pdlUrl, Supplier<String> systemUserTokenSupplier) {
         this.pdlUrl = pdlUrl;
         this.client = RestClient.baseClient();
@@ -66,8 +64,8 @@ public class PdlClientImpl implements PdlClient {
     }
 
     @Override
-    public List<HentPdlPerson.Barn> hentPersonBolk(String[] personIdent) {
-        GqlRequest request = new GqlRequest<>(hentPersonBolkQuery, new PdlPersonVariables.HentPersonBolkVariables(personIdent, false));
+    public List<HentPdlPerson.Barn> hentPersonBolk(String[] personsIdenter) {
+        GqlRequest request = new GqlRequest<>(hentPersonBolkQuery, new PdlPersonVariables.HentPersonBolkVariables(personsIdenter, false));
         return graphqlRequest(request, systemUserTokenSupplier.get(), HentPdlPerson.class).hentPersonBolk;
     }
 

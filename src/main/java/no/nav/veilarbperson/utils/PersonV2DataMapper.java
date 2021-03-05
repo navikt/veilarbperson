@@ -3,6 +3,7 @@ package no.nav.veilarbperson.utils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
+import no.nav.veilarbperson.client.pdl.VergemaalEllerFullmaktConstants;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.domain.Telefon;
@@ -36,7 +37,9 @@ public class PersonV2DataMapper {
                 .setSivilstand(ofNullable(sivilstandMapper(getFirstElement(pdlPerson.getSivilstand()))).orElse(null))
                 .setBostedsadresse(ofNullable(getFirstElement(pdlPerson.getBostedsadresse())).orElse(null))
                 .setOppholdsadresse(ofNullable(getFirstElement(pdlPerson.getOppholdsadresse())).orElse(null))
-                .setKontaktadresser(ofNullable(pdlPerson.getKontaktadresse()).orElse(null));
+                .setKontaktadresser(ofNullable(pdlPerson.getKontaktadresse()).orElse(null))
+                .setVergemaalEllerFremtidsfullmakt(vergemaalMapper(pdlPerson.getVergemaalEllerFremtidsfullmakt()))
+                .setFullmakt(pdlPerson.getFullmakt());
     }
 
     public static <T> T getFirstElement(List<T> list) {
@@ -44,7 +47,7 @@ public class PersonV2DataMapper {
     }
 
     public static HentPdlPerson.Navn hentNavn(List<HentPdlPerson.Navn> personNavn) {
-            HentPdlPerson.Navn navn = getFirstElement(personNavn);
+        HentPdlPerson.Navn navn = getFirstElement(personNavn);
 
         return new HentPdlPerson.Navn()
                 .setFornavn(ofNullable(navn).map(HentPdlPerson.Navn::getFornavn).orElse(null))
@@ -87,10 +90,11 @@ public class PersonV2DataMapper {
     }
 
     public static Sivilstand sivilstandMapper(HentPdlPerson.Sivilstand sivilstand) {
-
-         return new Sivilstand()
-                .setSivilstand(ofNullable(sivilstand).map(HentPdlPerson.Sivilstand::getType).orElse(null))
-                .setFraDato(ofNullable(sivilstand).map(HentPdlPerson.Sivilstand::getGyldigFraOgMed).orElse(null));
+        return (sivilstand != null)
+               ? new Sivilstand()
+                    .setSivilstand(sivilstand.getType())
+                    .setFraDato(sivilstand.getGyldigFraOgMed())
+               : null;
     }
 
     public static List<Telefon> mapTelefonNrFraPdl(List<HentPdlPerson.Telefonnummer> telefonnummer) {
@@ -112,4 +116,16 @@ public class PersonV2DataMapper {
                  : null;
     }
 
+    public static List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaalMapper(List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {
+        if (!vergemaalEllerFremtidsfullmaktListe.isEmpty()) {
+            for (HentPdlPerson.VergemaalEllerFremtidsfullmakt vergemaalEllerFremtidsfullmakt : vergemaalEllerFremtidsfullmaktListe) {
+                String saksType = VergemaalEllerFullmaktConstants.saksType.get(vergemaalEllerFremtidsfullmakt.getType());
+                String omfangType = VergemaalEllerFullmaktConstants.omfangType.get(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig().getOmfang());
+
+                vergemaalEllerFremtidsfullmakt.setType(saksType);
+                vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig().setOmfang(omfangType);
+            }
+        }
+        return vergemaalEllerFremtidsfullmaktListe;
+    }
 }

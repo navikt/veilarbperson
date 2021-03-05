@@ -166,6 +166,30 @@ query($ident: ID!, $historikk: Boolean!) {
                 master
             }
         }
+        vergemaalEllerFremtidsfullmakt(historikk:$historikk) {
+            type
+            embete
+            vergeEllerFullmektig {
+                navn {
+                    fornavn
+                    mellomnavn
+                    etternavn
+                }
+                motpartsPersonident
+                omfang
+            }
+            folkeregistermetadata {
+                ajourholdstidspunkt
+                gyldighetstidspunkt
+            }
+        }
+        fullmakt(historikk:$historikk) {
+            motpartsPersonident
+            motpartsRolle
+            omraader
+            gyldigFraOgMed
+            gyldigTilOgMed
+        }
     }
 }
 

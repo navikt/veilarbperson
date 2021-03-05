@@ -154,6 +154,21 @@ public class PdlClientImplTest {
         assertEquals("12345", utenlandskAdresseIFrittFormat.getAdresselinje2());
         assertNull(utenlandskAdresseIFrittFormat.getAdresselinje3());
         assertEquals("FRA", utenlandskAdresseIFrittFormat.getLandkode());
+
+        HentPdlPerson.VergemaalEllerFremtidsfullmakt vergemaal = person.getVergemaalEllerFremtidsfullmakt().get(0);
+        HentPdlPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
+
+        assertEquals("midlertidigForVoksen", vergemaal.getType());
+        assertEquals("VergemallEmbete", vergemaal.getEmbete());
+        assertEquals("oekonomiskeInteresser", vergeEllerFullmektig.getOmfang());
+        assertEquals("VergeMotpartsPersonident", vergeEllerFullmektig.getMotpartsPersonident());
+        assertEquals("vergeEtternavn", vergeEllerFullmektig.getNavn().getEtternavn());
+
+        HentPdlPerson.Fullmakt fullmakt = person.getFullmakt().get(0);
+
+        assertEquals("motpartsPersonident", fullmakt.getMotpartsPersonident());
+        assertEquals("motpartsRolle", fullmakt.getMotpartsRolle());
+        assertEquals(2, fullmakt.getOmraader().length);
     }
 
     @Test

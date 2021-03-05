@@ -341,6 +341,20 @@ public class PersonV2ServiceTest {
         assertEquals("LANDKODE", kontaktadresse.getUtenlandskAdresseIFrittFormat().getLandkode());
     }
 
+    @Test
+    public void vergemaalMapperTest() {
+        List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaal = pdlPerson.getVergemaalEllerFremtidsfullmakt();
+        vergemaal = PersonV2DataMapper.vergemaalMapper(vergemaal);
+        String omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).orElse(null);
+        String omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).orElse(null);
+
+        assertEquals("Voksen midlertidig", vergemaal.get(0).getType());
+        assertEquals("Ivareta personens interesser innenfor det økonomiske området", omfang1);
+
+        assertEquals("Fremtidsfullmakt", vergemaal.get(1).getType());
+        assertEquals("Ivareta personens interesser innenfor det personlige området", omfang2);
+    }
+
     public PersonV2Data lagPersonV2Data() {
         PersonV2Data personV2Data = new PersonV2Data();
         Bostedsadresse personsBostedsAdresse = PersonV2DataMapper.getFirstElement(pdlPerson.getBostedsadresse());
