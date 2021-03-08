@@ -3,7 +3,6 @@ package no.nav.veilarbperson.service;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashService;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.dkif.DkifClient;
@@ -17,12 +16,14 @@ import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.domain.Telefon;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.util.Optional.ofNullable;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,10 +47,8 @@ public class PersonV2ServiceTest {
     private DifiCient difiCient = mock(DifiClientImpl.class);
     private AuthService authService = mock(AuthService.class);
     private PamClient pamClient = mock(PamClient.class);
-    private PersonService personService;
     private PersonV2Service personV2Service;
     private HentPdlPerson.PdlPerson pdlPerson;
-    private final UnleashService unleashService = mock(UnleashService.class);
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
@@ -58,13 +58,15 @@ public class PersonV2ServiceTest {
 
     @Before
     public void setup() {
-
         when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
         when(pdlClient.hentPersonBolk(any())).thenReturn(hentPersonBolk(testFnrsTilBarna));
-        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient, difiCient, null, unleashService);
+        when(kodeverkService.getPoststedForPostnummer(any())).thenReturn("POSTSTED");
+        when(kodeverkService.getBeskrivelseForLandkode(any())).thenReturn("LANDKODE");
+        when(kodeverkService.getBeskrivelseForKommunenummer(any())).thenReturn("KOMMUNE");
+
         personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, pamClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
         pdlPerson = hentPerson(FNR);
     }
@@ -180,9 +182,12 @@ public class PersonV2ServiceTest {
     }
 
     @Test
-    public void unngoArrayIndexOutOfBoundExceptionNorListeErTomIPdlTest() {
-        String doedsfall = ofNullable(PersonV2DataMapper.getFirstElement(pdlPerson.getDoedsfall())).map(HentPdlPerson.Doedsfall::getDoedsdato).orElse(null);
-        assertNull(doedsfall);
+    public void getFirstElementFraListeTest() {
+        String identStatus = ofNullable(PersonV2DataMapper.getFirstElement(pdlPerson.getFolkeregisteridentifikator())).map(HentPdlPerson.Folkeregisteridentifikator::getStatus).orElse(null);
+        assertEquals("I_BRUK", identStatus);
+
+        String kjoenn = ofNullable(PersonV2DataMapper.getFirstElement(pdlPerson.getKjoenn())).map(HentPdlPerson.Kjoenn::getKjoenn).orElse(null);
+        assertNull(kjoenn);
     }
 
     @Test
@@ -196,7 +201,7 @@ public class PersonV2ServiceTest {
         Familiemedlem partner = PersonV2DataMapper.familiemedlemMapper(partnerInformasjon, personsBostedsAdresse);
 
         assertEquals("TYKKMAGET GASELLE", partner.getForkortetNavn());
-        assertEquals("1981-12-13", partner.getFodselsdato());
+        assertEquals(LocalDate.of(1981,12,13), partner.getFodselsdato());
     }
 
     @Test
@@ -257,7 +262,7 @@ public class PersonV2ServiceTest {
         Bostedsadresse personsBostedsAdresse = pdlPerson.getBostedsadresse().get(0);
         Bostedsadresse familiemedlemsBostedsAdresse = new Bostedsadresse();
 
-        Adresse.Vegadresse medlemsVegAdresse = new Adresse.Vegadresse()
+        Bostedsadresse.Vegadresse medlemsVegAdresse = new Bostedsadresse.Vegadresse()
                 .setMatrikkelId(123L).setAdressenavn("ARENDALSGATE").setHusbokstav("A").setHusnummer("21").setKommunenummer("0570").setPostnummer("0560").setPoststed("OSLO").setTilleggsnavn("ARENDAL");
         familiemedlemsBostedsAdresse.setVegadresse(medlemsVegAdresse);
 
@@ -266,7 +271,6 @@ public class PersonV2ServiceTest {
         assertFalse(harSammeBbosted);
 
         familiemedlemsBostedsAdresse = hentFamiliemedlem("12345678910").getBostedsadresse().get(0);
-
         harSammeBbosted = PersonV2DataMapper.harFamiliamedlemSammeBostedSomPerson(familiemedlemsBostedsAdresse, personsBostedsAdresse);  // Sammeligner to like bostedsadresser
 
         assertTrue(harSammeBbosted);
@@ -274,49 +278,82 @@ public class PersonV2ServiceTest {
 
     @Test
     public void telfonNummerMapperTest() {
-        HentPdlPerson.Telefonnummer telefonNrFraPdl = pdlPerson.getTelefonnummer().get(0);   //telefonNrFraPdl: landkode: +47 nummer: 33333333
-        String telefonNummer = PersonV2DataMapper.telefonNummerMapper(telefonNrFraPdl);
-        assertEquals("+4733333333", telefonNummer);
+        List<HentPdlPerson.Telefonnummer> telefonListeFraPdl = pdlPerson.getTelefonnummer();   //telefonNrFraPdl: landkode: +47 nummer: 33333333
+        Telefon telefonNummer = PersonV2DataMapper.telefonNummerMapper(telefonListeFraPdl.get(0));
+        assertEquals("+4733333333", telefonNummer.getTelefonNr());
     }
 
     @Test
     public void leggKrrTelefonNrIListeTest() {
         String telefonNrFraKrr = "+4622222222";
-        HentPdlPerson.Telefonnummer telefonNrFraPdl = pdlPerson.getTelefonnummer().get(0);
-        List<String> telefonListe = personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonNrFraPdl);  // Legger telefonnummere fra PDL og KRR som er ulike til en liste
+        List<Telefon> telefonListeFraPdl = PersonV2DataMapper.mapTelefonNrFraPdl(pdlPerson.getTelefonnummer());
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonListeFraPdl);  //Legger telefonnummere fra PDL og KRR som er ulike, til en liste
 
-        assertEquals(2, telefonListe.size());
-        assertEquals("+4733333333", telefonListe.get(0));
-        assertEquals("+4622222222", telefonListe.get(1));
+        assertEquals(2, telefonListeFraPdl.size());
+        assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
+        assertEquals("+4622222222", telefonListeFraPdl.get(1).getTelefonNr());
 
         telefonNrFraKrr = "+4733333333";
-        telefonListe = personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonNrFraPdl); // Legger telefonnummere fra PDL og KRR som er like til en liste
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR som er like, til en liste
 
-        assertEquals(1, telefonListe.size());
-        assertEquals("+4733333333", telefonListe.get(0));
+        assertEquals(2, telefonListeFraPdl.size());
+        assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
+
+        telefonNrFraKrr = "+4811111111";
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonListeFraPdl); //Legger en ny telefonnr fra KRR til en pdlTelefonNrListe
+
+        assertEquals(3, telefonListeFraPdl.size());
+        assertEquals("+4811111111", telefonListeFraPdl.get(2).getTelefonNr());
+        assertEquals("3", telefonListeFraPdl.get(2).getPrioritet());
 
         telefonNrFraKrr = null;
-        telefonListe = personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonNrFraPdl); // Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra KRR er null
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra KRR er null
 
-        assertEquals(1, telefonListe.size());
-        assertEquals("+4733333333", telefonListe.get(0));
+        assertEquals(3, telefonListeFraPdl.size());
+        assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
 
-        telefonNrFraPdl = null;
+        telefonListeFraPdl = new ArrayList<>();
         telefonNrFraKrr = "+4733333333";
-        telefonListe = personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonNrFraPdl); // Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra PDL er null
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra PDL er null
 
-        assertEquals(1, telefonListe.size());
-        assertEquals("+4733333333", telefonListe.get(0));
+        assertEquals(1, telefonListeFraPdl.size());
+        assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
+    }
+
+    @Test
+    public void flettBeskrivelseFraKodeverkTest() {
+        PersonV2Data personV2Data = lagPersonV2Data();
+        personV2Service.flettKodeverk(personV2Data);
+        Bostedsadresse bostedsadresse = personV2Data.getBostedsadresse();
+        Oppholdsadresse oppholdsadresse = personV2Data.getOppholdsadresse();
+        Kontaktadresse kontaktadresse = personV2Data.getKontaktadresser().get(0);
+
+        assertEquals("POSTSTED", bostedsadresse.getVegadresse().getPoststed());
+        assertEquals("KOMMUNE", bostedsadresse.getVegadresse().getKommune());
+        assertEquals("LANDKODE", bostedsadresse.getUtenlandskAdresse().getLandkode());
+
+        assertEquals("POSTSTED", oppholdsadresse.getMatrikkeladresse().getPoststed());
+        assertEquals("KOMMUNE", oppholdsadresse.getMatrikkeladresse().getKommune());
+        assertEquals("LANDKODE", oppholdsadresse.getUtenlandskAdresse().getLandkode());
+
+        assertEquals("POSTSTED", kontaktadresse.getPostadresseIFrittFormat().getPoststed());
+        assertEquals("KOMMUNE", kontaktadresse.getVegadresse().getKommune());
+        assertEquals("LANDKODE", kontaktadresse.getUtenlandskAdresseIFrittFormat().getLandkode());
     }
 
     public PersonV2Data lagPersonV2Data() {
         PersonV2Data personV2Data = new PersonV2Data();
         Bostedsadresse personsBostedsAdresse = PersonV2DataMapper.getFirstElement(pdlPerson.getBostedsadresse());
+        Oppholdsadresse personsOppholdsadresse = PersonV2DataMapper.getFirstElement(pdlPerson.getOppholdsadresse());
+        List<Kontaktadresse> personsKontaktsadresse = pdlPerson.getKontaktadresse();
+
+        Telefon telefon = new Telefon().setPrioritet("1").setTelefonNr("+4733333333").setMaster("PDL");
 
         personV2Data.setBostedsadresse(personsBostedsAdresse);
-        personV2Data.setTelefon(new ArrayList<>(List.of("+4733333333")));
+        personV2Data.setOppholdsadresse(personsOppholdsadresse);
+        personV2Data.setKontaktadresser(personsKontaktsadresse);
+        personV2Data.setTelefon(new ArrayList<>(List.of(telefon)));
 
         return personV2Data;
-
     }
 }

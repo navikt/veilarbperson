@@ -9,7 +9,7 @@ query($ident: ID!, $historikk: Boolean!) {
         foedsel {
             foedselsdato
         }
-        kjoenn{
+        kjoenn {
             kjoenn
         }
         folkeregisteridentifikator(historikk: $historikk) {
@@ -37,8 +37,11 @@ query($ident: ID!, $historikk: Boolean!) {
             landskode
             nummer
             prioritet
+            metadata {
+                master
+            }
         }
-        sikkerhetstiltak{
+        sikkerhetstiltak {
             tiltakstype
             beskrivelse
             gyldigFraOgMed
@@ -48,6 +51,9 @@ query($ident: ID!, $historikk: Boolean!) {
             gradering
         }
         bostedsadresse(historikk:$historikk) {
+            gyldigFraOgMed
+            gyldigTilOgMed
+            coAdressenavn
             vegadresse {
                 matrikkelId
                 postnummer
@@ -55,6 +61,13 @@ query($ident: ID!, $historikk: Boolean!) {
                 husbokstav
                 kommunenummer
                 adressenavn
+            }
+            matrikkeladresse {
+                matrikkelId
+                bruksenhetsnummer
+                tilleggsnavn
+                postnummer
+                kommunenummer
             }
             utenlandskAdresse {
                 adressenavnNummer
@@ -65,6 +78,29 @@ query($ident: ID!, $historikk: Boolean!) {
                 regionDistriktOmraade
                 landkode
             }
+            ukjentBosted {
+                bostedskommune
+            }
+            metadata {
+                master
+            }
+        }
+        oppholdsadresse(historikk:$historikk) {
+            gyldigFraOgMed
+            gyldigTilOgMed
+            coAdressenavn
+            oppholdAnnetSted
+            vegadresse {
+                matrikkelId
+                husnummer
+                husbokstav
+                bruksenhetsnummer
+                adressenavn
+                kommunenummer
+                bydelsnummer
+                tilleggsnavn
+                postnummer
+            }
             matrikkeladresse {
                 matrikkelId
                 bruksenhetsnummer
@@ -72,12 +108,24 @@ query($ident: ID!, $historikk: Boolean!) {
                 postnummer
                 kommunenummer
             }
-            ukjentBosted {
-                bostedskommune
+            utenlandskAdresse {
+                adressenavnNummer
+                bygningEtasjeLeilighet
+                postboksNummerNavn
+                postkode
+                bySted
+                regionDistriktOmraade
+                landkode
+            }
+            metadata {
+                master
             }
         }
         kontaktadresse(historikk:$historikk) {
             type
+            gyldigFraOgMed
+            gyldigTilOgMed
+            coAdressenavn
             vegadresse {
                 matrikkelId
                 postnummer
@@ -85,6 +133,11 @@ query($ident: ID!, $historikk: Boolean!) {
                 husbokstav
                 adressenavn
                 kommunenummer
+            }
+            postboksadresse {
+                postbokseier
+                postboks
+                postnummer
             }
             utenlandskAdresse {
                 adressenavnNummer
@@ -109,10 +162,8 @@ query($ident: ID!, $historikk: Boolean!) {
                 adresselinje3
                 postnummer
             }
-            postboksadresse {
-                postbokseier
-                postboks
-                postnummer
+            metadata {
+                master
             }
         }
     }

@@ -3,12 +3,12 @@ package no.nav.veilarbperson.client.pdl.domain;
 import lombok.Data;
 
 @Data
-public class Bostedsadresse extends Adresse {
+public class Oppholdsadresse extends Adresse {
 
+    private String oppholdAnnetSted;
     private Vegadresse vegadresse;
     private Matrikkeladresse matrikkeladresse;
     private Utenlandskadresse utenlandskAdresse;
-    private UkjentBosted ukjentBosted;
 
     @Data
     public static class Matrikkeladresse {
@@ -30,16 +30,4 @@ public class Bostedsadresse extends Adresse {
             return this;
         }
     }
-
-    @Data
-    public static class UkjentBosted {
-        private String bostedskommune;
-        private String kommune;
-
-        public UkjentBosted withKommune(String kommune) {
-            this.kommune = kommune;
-            return this;
-        }
-    }
-
 }

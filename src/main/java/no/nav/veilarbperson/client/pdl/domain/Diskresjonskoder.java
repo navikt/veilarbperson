@@ -1,6 +1,6 @@
 package no.nav.veilarbperson.client.pdl.domain;
 
-public enum  Diskresjonskoder {
+public enum Diskresjonskoder {
 
     UGRADERT("UGRADERT", "0"),
     FORTROLIG("FORTROLIG", "7"),
