@@ -38,6 +38,8 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentPersonQuery;
 
+    private final String hentVergeOgFullmaktQuery;
+
     private final String hentPersonBolkQuery;
 
     private final String hentGeografiskTilknytningQuery;
@@ -48,6 +50,7 @@ public class PdlClientImpl implements PdlClient {
         this.systemUserTokenSupplier = systemUserTokenSupplier;
         this.hentPersonQuery = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
         this.hentPersonBolkQuery = FileUtils.getResourceFileAsString("graphql/hentPersonBolk.gql");
+        this.hentVergeOgFullmaktQuery = FileUtils.getResourceFileAsString("graphql/hentVergeOgFullmakt.gql");
         this.hentGeografiskTilknytningQuery = FileUtils.getResourceFileAsString("graphql/hentGeografiskTilknytning.gql");
     }
 
@@ -55,6 +58,12 @@ public class PdlClientImpl implements PdlClient {
     public HentPdlPerson.PdlPerson hentPerson(String personIdent, String userToken) {
         GqlRequest request = new GqlRequest<>(hentPersonQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
         return graphqlRequest(request, userToken, HentPdlPerson.class).hentPerson;
+    }
+
+    @Override
+    public HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(String personIdent, String userToken) {
+        GqlRequest request = new GqlRequest<>(hentVergeOgFullmaktQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
+        return graphqlRequest(request, userToken, HentPdlPerson.HentVergeOgFullmakt.class).hentPerson;
     }
 
     @Override

@@ -40,17 +40,11 @@ public class PersonV2Data {
     Oppholdsadresse oppholdsadresse;
     List<Kontaktadresse> kontaktadresser;
     String malform;
-    List<HentPdlPerson.Fullmakt> fullmakt;
-    List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
-    boolean harVergemaal;
-    boolean harFullmakt;
 
     public PersonV2Data() {
         telefon = new ArrayList<>();
         barn = new ArrayList<>();
         kontaktadresser = new ArrayList<>();
-        fullmakt = new ArrayList<>();
-        vergemaalEllerFremtidsfullmakt = new ArrayList<>();
     }
 
     public void setPoststedIBostedsVegadresse(String poststed) {
@@ -118,5 +112,4 @@ public class PersonV2Data {
                 .map(Oppholdsadresse::getUtenlandskAdresse)
                 .ifPresent(utenlandskadresse -> utenlandskadresse.withLandkode(landkode));
     }
-
 }

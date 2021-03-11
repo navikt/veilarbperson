@@ -36,9 +36,6 @@ public class HentPdlPerson {
         private List<Bostedsadresse> bostedsadresse;
         private List<Oppholdsadresse> oppholdsadresse;
         private List<Kontaktadresse> kontaktadresse;
-
-        private List<VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
-        private List<Fullmakt> fullmakt;
     }
 
     @Data
@@ -176,4 +173,14 @@ public class HentPdlPerson {
         public LocalDateTime gyldighetstidspunkt;
     }
 
+    @Data
+    public static class VergeOgFullmakt {
+        private List<VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
+        private List<Fullmakt> fullmakt;
+    }
+
+    @Data
+    public static class HentVergeOgFullmakt {
+        public VergeOgFullmakt hentPerson;
+    }
 }

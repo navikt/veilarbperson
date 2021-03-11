@@ -154,8 +154,24 @@ public class PdlClientImplTest {
         assertEquals("12345", utenlandskAdresseIFrittFormat.getAdresselinje2());
         assertNull(utenlandskAdresseIFrittFormat.getAdresselinje3());
         assertEquals("FRA", utenlandskAdresseIFrittFormat.getLandkode());
+    }
 
-        HentPdlPerson.VergemaalEllerFremtidsfullmakt vergemaal = person.getVergemaalEllerFremtidsfullmakt().get(0);
+    @Test
+    public void henteVergeOgFullmakt_skal_parse_request() {
+        String hentVergeOgFullmaktResponseJson = TestUtils.readTestResourceFile("pdl-hentVergeOgFullmakt-response.json");
+        String apiUrl = "http://localhost:" + wireMockRule.port();
+
+        givenThat(post(anyUrl())
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody(hentVergeOgFullmaktResponseJson))
+        );
+
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+
+        HentPdlPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt("IDENT", "USER_TOKEN");
+
+        HentPdlPerson.VergemaalEllerFremtidsfullmakt vergemaal = vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt().get(0);
         HentPdlPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
 
         assertEquals("midlertidigForVoksen", vergemaal.getType());
@@ -164,7 +180,7 @@ public class PdlClientImplTest {
         assertEquals("VergeMotpartsPersonident", vergeEllerFullmektig.getMotpartsPersonident());
         assertEquals("vergeEtternavn", vergeEllerFullmektig.getNavn().getEtternavn());
 
-        HentPdlPerson.Fullmakt fullmakt = person.getFullmakt().get(0);
+        HentPdlPerson.Fullmakt fullmakt = vergeOgFullmakt.getFullmakt().get(0);
 
         assertEquals("motpartsPersonident", fullmakt.getMotpartsPersonident());
         assertEquals("motpartsRolle", fullmakt.getMotpartsRolle());

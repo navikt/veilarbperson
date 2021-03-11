@@ -106,6 +106,11 @@ public class PersonV2ServiceTest {
         return pdlClient.hentPartner(fnr, "USER_TOKEN");
     }
 
+    public HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(String fnr) {
+        PdlClientImpl pdlClient = configurPdlClient("pdl-hentVergeOgFullmakt-response.json");
+        return pdlClient.hentVergeOgFullmakt(fnr, "USER_TOKEN");
+    }
+
     public HentPdlPerson.GeografiskTilknytning hentGeografisktilknytning(String fnr) {
         PdlClientImpl pdlClient = configurPdlClient("pdl-hentGeografiskTilknytning-response.json");
         return pdlClient.hentGeografiskTilknytning(fnr, "USER_TOKEN");
@@ -343,8 +348,8 @@ public class PersonV2ServiceTest {
 
     @Test
     public void vergemaalMapperTest() {
-        List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaal = pdlPerson.getVergemaalEllerFremtidsfullmakt();
-        vergemaal = PersonV2DataMapper.vergemaalMapper(vergemaal);
+        List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVergeOgFullmakt(FNR).getVergemaalEllerFremtidsfullmakt();
+        PersonV2DataMapper.vergemaalMapper(vergemaal);
         String omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).orElse(null);
         String omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).orElse(null);
 

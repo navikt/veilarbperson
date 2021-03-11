@@ -219,9 +219,13 @@ public class PersonV2Service {
                 && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
 
         if (harIkkeTelefonFraKrr) {
-                Telefon telefonNrFraKrr = new Telefon().setPrioritet(telefonListe.size()+1+"").setTelefonNr(telefonNummerFraKrr).setMaster("KRR");
-                telefonListe.add(telefonNrFraKrr);
+            Telefon telefonNrFraKrr = new Telefon().setPrioritet(telefonListe.size()+1+"").setTelefonNr(telefonNummerFraKrr).setMaster("KRR");
+            telefonListe.add(telefonNrFraKrr);
         }
+    }
+
+    public VergeOgFullmakt hentVergeEllerFullmakt(String fnr, String userToken) {
+            return PersonV2DataMapper.vergeOgFullmaktMapper(pdlClient.hentVergeOgFullmakt(fnr, userToken));
     }
 
     public String hentMalform(Fnr fnr) {

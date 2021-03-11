@@ -3,7 +3,6 @@ package no.nav.veilarbperson.utils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
-import no.nav.veilarbperson.client.pdl.VergemaalEllerFullmaktConstants;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.domain.Telefon;
@@ -37,11 +36,7 @@ public class PersonV2DataMapper {
                 .setSivilstand(ofNullable(sivilstandMapper(getFirstElement(pdlPerson.getSivilstand()))).orElse(null))
                 .setBostedsadresse(ofNullable(getFirstElement(pdlPerson.getBostedsadresse())).orElse(null))
                 .setOppholdsadresse(ofNullable(getFirstElement(pdlPerson.getOppholdsadresse())).orElse(null))
-                .setKontaktadresser(ofNullable(pdlPerson.getKontaktadresse()).orElse(null))
-                .setVergemaalEllerFremtidsfullmakt(vergemaalMapper(pdlPerson.getVergemaalEllerFremtidsfullmakt()))
-                .setFullmakt(pdlPerson.getFullmakt())
-                .setHarVergemaal((ofNullable(getFirstElement(pdlPerson.getVergemaalEllerFremtidsfullmakt())).isPresent()))
-                .setHarFullmakt(ofNullable(getFirstElement(pdlPerson.getFullmakt())).isPresent());
+                .setKontaktadresser(ofNullable(pdlPerson.getKontaktadresse()).orElse(null));
     }
 
     public static <T> T getFirstElement(List<T> list) {
@@ -108,7 +103,7 @@ public class PersonV2DataMapper {
     /* Slår sammen landkode og nummer og så lager et telefonnummer */
     public static Telefon telefonNummerMapper(HentPdlPerson.Telefonnummer telefonnummer) {
          String telefonnr = telefonnummer.getNummer();
-         String landkode = telefonnummer.getLandskode()!=null ?  telefonnummer.getLandskode() : "";
+         String landkode = telefonnummer.getLandskode()!=null ? telefonnummer.getLandskode() : "";
 
          return (telefonnr!=null)
                  ? new Telefon()
@@ -118,16 +113,20 @@ public class PersonV2DataMapper {
                  : null;
     }
 
-    public static List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaalMapper(List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {
-        if (!vergemaalEllerFremtidsfullmaktListe.isEmpty()) {
-            for (HentPdlPerson.VergemaalEllerFremtidsfullmakt vergemaalEllerFremtidsfullmakt : vergemaalEllerFremtidsfullmaktListe) {
-                String saksType = VergemaalEllerFullmaktConstants.saksType.get(vergemaalEllerFremtidsfullmakt.getType());
-                String omfangType = VergemaalEllerFullmaktConstants.omfangType.get(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig().getOmfang());
+    public static VergeOgFullmakt vergeOgFullmaktMapper(HentPdlPerson.VergeOgFullmakt vergeOgFullmakt) {
+        return new VergeOgFullmakt()
+        .setVergeEllerFremtidsfullmakt(vergemaalMapper(vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt()))
+        .setFullmakt(vergeOgFullmakt.getFullmakt());
+    }
 
-                vergemaalEllerFremtidsfullmakt.setType(saksType);
-                vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig().setOmfang(omfangType);
-            }
-        }
+    public static List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaalMapper(List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {
+        vergemaalEllerFremtidsfullmaktListe.forEach(vergemaalEllerFremtidsfullmakt -> {
+            String saksType = Vergetyper.getBeskrivelse(vergemaalEllerFremtidsfullmakt.getType());
+            String omfangType = Omfangtyper.getBeskrivelse(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig().getOmfang());
+
+            vergemaalEllerFremtidsfullmakt.setType(saksType);
+            vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig().setOmfang(omfangType);
+        });
         return vergemaalEllerFremtidsfullmaktListe;
     }
 }

@@ -10,6 +10,8 @@ public interface PdlClient extends HealthCheck {
 
     HentPdlPerson.Familiemedlem hentPartner(String personIdent, String userToken);
 
+    HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(String personIdent, String userToken);
+
     List<HentPdlPerson.Barn> hentPersonBolk(String[] personsIdenter);
 
     HentPdlPerson.GeografiskTilknytning hentGeografiskTilknytning(String personIdent, String userToken);
