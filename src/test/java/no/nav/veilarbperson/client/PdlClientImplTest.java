@@ -6,9 +6,7 @@ import no.nav.veilarbperson.client.pdl.GqlRequest;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlPersonVariables;
-import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
-import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
-import no.nav.veilarbperson.client.pdl.domain.Oppholdsadresse;
+import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
@@ -174,9 +172,9 @@ public class PdlClientImplTest {
         HentPdlPerson.VergemaalEllerFremtidsfullmakt vergemaal = vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt().get(0);
         HentPdlPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
 
-        assertEquals("midlertidigForVoksen", vergemaal.getType());
+        assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaal.getType());
         assertEquals("VergemallEmbete", vergemaal.getEmbete());
-        assertEquals("oekonomiskeInteresser", vergeEllerFullmektig.getOmfang());
+        assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, vergeEllerFullmektig.getOmfang());
         assertEquals("VergeMotpartsPersonident", vergeEllerFullmektig.getMotpartsPersonident());
         assertEquals("vergeEtternavn", vergeEllerFullmektig.getNavn().getEtternavn());
 

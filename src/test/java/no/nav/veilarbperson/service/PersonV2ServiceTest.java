@@ -349,15 +349,14 @@ public class PersonV2ServiceTest {
     @Test
     public void vergemaalMapperTest() {
         List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVergeOgFullmakt(FNR).getVergemaalEllerFremtidsfullmakt();
-        PersonV2DataMapper.vergemaalMapper(vergemaal);
-        String omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).orElse(null);
-        String omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).orElse(null);
+        VergemaalEllerFullmaktOmfangType omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).get();
+        VergemaalEllerFullmaktOmfangType omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).get();
 
-        assertEquals("Voksen midlertidig", vergemaal.get(0).getType());
-        assertEquals("Ivareta personens interesser innenfor det økonomiske området", omfang1);
+        assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaal.get(0).getType());
+        assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, omfang1);
 
-        assertEquals("Fremtidsfullmakt", vergemaal.get(1).getType());
-        assertEquals("Ivareta personens interesser innenfor det personlige området", omfang2);
+        assertEquals(Vergetype.STADFESTET_FREMTIDSFULLMAKT, vergemaal.get(1).getType());
+        assertEquals(VergemaalEllerFullmaktOmfangType.PERSONLIGE_INTERESSER, omfang2);
     }
 
     public PersonV2Data lagPersonV2Data() {

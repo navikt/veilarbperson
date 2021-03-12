@@ -112,21 +112,4 @@ public class PersonV2DataMapper {
                         .setMaster(telefonnummer.getMetadata().getMaster())
                  : null;
     }
-
-    public static VergeOgFullmakt vergeOgFullmaktMapper(HentPdlPerson.VergeOgFullmakt vergeOgFullmakt) {
-        return new VergeOgFullmakt()
-        .setVergeEllerFremtidsfullmakt(vergemaalMapper(vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt()))
-        .setFullmakt(vergeOgFullmakt.getFullmakt());
-    }
-
-    public static List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaalMapper(List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {
-        vergemaalEllerFremtidsfullmaktListe.forEach(vergemaalEllerFremtidsfullmakt -> {
-            String saksType = Vergetyper.getBeskrivelse(vergemaalEllerFremtidsfullmakt.getType());
-            String omfangType = Omfangtyper.getBeskrivelse(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig().getOmfang());
-
-            vergemaalEllerFremtidsfullmakt.setType(saksType);
-            vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig().setOmfang(omfangType);
-        });
-        return vergemaalEllerFremtidsfullmaktListe;
-    }
 }

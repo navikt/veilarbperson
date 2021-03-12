@@ -2,10 +2,7 @@ package no.nav.veilarbperson.client.pdl;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
-import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
-import no.nav.veilarbperson.client.pdl.domain.Metadata;
-import no.nav.veilarbperson.client.pdl.domain.Oppholdsadresse;
+import no.nav.veilarbperson.client.pdl.domain.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -147,12 +144,12 @@ public class HentPdlPerson {
     public static class VergeEllerFullmektig {
         private HentPdlPerson.VergeNavn navn;
         private String motpartsPersonident;
-        private String omfang;
+        private VergemaalEllerFullmaktOmfangType omfang;
     }
 
     @Data
     public static class VergemaalEllerFremtidsfullmakt {
-        private String type;
+        private Vergetype type;
         private String embete;
         private VergeEllerFullmektig vergeEllerFullmektig;
         private Folkeregistermetadata folkeregistermetadata;

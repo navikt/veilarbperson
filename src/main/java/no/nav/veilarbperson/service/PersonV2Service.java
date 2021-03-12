@@ -224,8 +224,8 @@ public class PersonV2Service {
         }
     }
 
-    public VergeOgFullmakt hentVergeEllerFullmakt(String fnr, String userToken) {
-            return PersonV2DataMapper.vergeOgFullmaktMapper(pdlClient.hentVergeOgFullmakt(fnr, userToken));
+    public HentPdlPerson.VergeOgFullmakt hentVergeEllerFullmakt(String fnr, String userToken) {
+            return pdlClient.hentVergeOgFullmakt(fnr, userToken);
     }
 
     public String hentMalform(Fnr fnr) {

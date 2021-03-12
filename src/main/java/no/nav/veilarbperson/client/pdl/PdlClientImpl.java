@@ -73,8 +73,8 @@ public class PdlClientImpl implements PdlClient {
     }
 
     @Override
-    public List<HentPdlPerson.Barn> hentPersonBolk(String[] personsIdenter) {
-        GqlRequest request = new GqlRequest<>(hentPersonBolkQuery, new PdlPersonVariables.HentPersonBolkVariables(personsIdenter, false));
+    public List<HentPdlPerson.Barn> hentPersonBolk(String[] personIdenter) {
+        GqlRequest request = new GqlRequest<>(hentPersonBolkQuery, new PdlPersonVariables.HentPersonBolkVariables(personIdenter, false));
         return graphqlRequest(request, systemUserTokenSupplier.get(), HentPdlPerson.class).hentPersonBolk;
     }
 
