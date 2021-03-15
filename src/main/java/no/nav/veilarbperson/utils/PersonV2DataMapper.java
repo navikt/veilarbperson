@@ -112,4 +112,41 @@ public class PersonV2DataMapper {
                         .setMaster(telefonnummer.getMetadata().getMaster())
                  : null;
     }
+
+    public static VergeOgFullmaktData toVergeOgFullmaktData(HentPdlPerson.VergeOgFullmakt vergeOgFullmaktFraPdl) {
+        return new VergeOgFullmaktData()
+                .setVergemaalEllerFremtidsfullmaktList(vergemaalEllerFremtidsfullmaktMapper(vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt()))
+                .setFullmaktList(fullmaktMapper(vergeOgFullmaktFraPdl.getFullmakt()));
+    }
+
+    public static List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktMapper(List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {
+        List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakts = new ArrayList<>();
+
+        vergemaalEllerFremtidsfullmaktListe.forEach(vergemaalEllerFremtidsfullmakt -> {
+                vergemaalEllerFremtidsfullmakts.add(
+                    new VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt()
+                        .setType(vergemaalEllerFremtidsfullmakt.getType())
+                        .setEmbete(vergemaalEllerFremtidsfullmakt.getEmbete())
+                        .setVergeEllerFullmektig(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig())
+                        .setFolkeregistermetadata(vergemaalEllerFremtidsfullmakt.getFolkeregistermetadata())
+                );
+            }
+        );
+        return vergemaalEllerFremtidsfullmakts;
+    }
+
+    public static List<VergeOgFullmaktData.Fullmakt> fullmaktMapper(List<HentPdlPerson.Fullmakt> fullmaktListe) {
+        List<VergeOgFullmaktData.Fullmakt> fullmakter = new ArrayList<>();
+
+            fullmaktListe.forEach(fullmakt -> {
+                fullmakter.add(new VergeOgFullmaktData.Fullmakt()
+                    .setMotpartsPersonident(fullmakt.getMotpartsPersonident())
+                    .setMotpartsRolle(fullmakt.getMotpartsRolle())
+                    .setOmraader(fullmakt.getOmraader())
+                    .setGyldigFraOgMed(fullmakt.getGyldigFraOgMed())
+                    .setGyldigTilOgMed(fullmakt.getGyldigTilOgMed()));
+            }
+        );
+        return fullmakter;
+    }
 }

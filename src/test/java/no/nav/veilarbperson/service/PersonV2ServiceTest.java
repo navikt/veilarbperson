@@ -3,12 +3,9 @@ package no.nav.veilarbperson.service;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.veilarbperson.client.difi.DifiCient;
-import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
-import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
@@ -44,11 +41,10 @@ public class PersonV2ServiceTest {
     private EgenAnsattClient egenAnsattClient = mock(EgenAnsattClient.class);
     private KodeverkService kodeverkService = mock(KodeverkService.class);
     private VeilarbportefoljeClient veilarbportefoljeClient = mock(VeilarbportefoljeClient.class);
-    private DifiCient difiCient = mock(DifiClientImpl.class);
     private AuthService authService = mock(AuthService.class);
-    private PamClient pamClient = mock(PamClient.class);
     private PersonV2Service personV2Service;
     private HentPdlPerson.PdlPerson pdlPerson;
+
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
@@ -67,7 +63,7 @@ public class PersonV2ServiceTest {
         when(kodeverkService.getBeskrivelseForLandkode(any())).thenReturn("LANDKODE");
         when(kodeverkService.getBeskrivelseForKommunenummer(any())).thenReturn("KOMMUNE");
 
-        personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, pamClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
+        personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
         pdlPerson = hentPerson(FNR);
     }
 
@@ -153,7 +149,7 @@ public class PersonV2ServiceTest {
 
         assertEquals(3, hentPersonBolk.size());
 
-        List<HentPdlPerson.Barn> filterPersonBolkMedOkStatus = ofNullable(hentPersonBolk).stream().flatMap(Collection::stream)
+        List<HentPdlPerson.Barn> filterPersonBolkMedOkStatus = Optional.of(hentPersonBolk).stream().flatMap(Collection::stream)
                                                                         .filter(status -> status.getCode().equals("ok"))
                                                                         .collect(Collectors.toList());
 
@@ -347,7 +343,7 @@ public class PersonV2ServiceTest {
     }
 
     @Test
-    public void vergemaalMapperTest() {
+    public void vergetypeOgOmfangEnumMapperTest() {
         List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVergeOgFullmakt(FNR).getVergemaalEllerFremtidsfullmakt();
         VergemaalEllerFullmaktOmfangType omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).get();
         VergemaalEllerFullmaktOmfangType omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).get();

@@ -12,6 +12,8 @@ public interface PdlClient extends HealthCheck {
 
     HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(String personIdent, String userToken);
 
+    List<HentPdlPerson.Navn> hentPersonNavn(String personIdent, String userToken);
+
     List<HentPdlPerson.Barn> hentPersonBolk(String[] personIdenter);
 
     HentPdlPerson.GeografiskTilknytning hentGeografiskTilknytning(String personIdent, String userToken);

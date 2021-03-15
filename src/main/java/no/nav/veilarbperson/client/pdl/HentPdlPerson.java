@@ -142,7 +142,7 @@ public class HentPdlPerson {
 
     @Data
     public static class VergeEllerFullmektig {
-        private HentPdlPerson.VergeNavn navn;
+        private VergeNavn navn;
         private String motpartsPersonident;
         private VergemaalEllerFullmaktOmfangType omfang;
     }
@@ -156,18 +156,18 @@ public class HentPdlPerson {
     }
 
     @Data
+    public static class Folkeregistermetadata {
+        public LocalDateTime ajourholdstidspunkt;
+        public LocalDateTime gyldighetstidspunkt;
+    }
+
+    @Data
     public static class Fullmakt {
         private String motpartsPersonident;
         private String motpartsRolle;
         private String[] omraader;
         private LocalDate gyldigFraOgMed;
         private LocalDate gyldigTilOgMed;
-    }
-
-    @Data
-    public static class Folkeregistermetadata {
-        public LocalDateTime ajourholdstidspunkt;
-        public LocalDateTime gyldighetstidspunkt;
     }
 
     @Data
@@ -180,4 +180,10 @@ public class HentPdlPerson {
     public static class HentVergeOgFullmakt {
         public VergeOgFullmakt hentPerson;
     }
+
+    @Data
+    public static class HentFullmaktNavn {
+        public List<Navn> hentPerson;
+    }
+
 }

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
+import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
 
 @Slf4j
 @Service
@@ -38,20 +38,18 @@ public class PersonV2Service {
     private final DkifClient dkifClient;
     private final Norg2Client norg2Client;
     private final PersonClient personClient;
-    private final PamClient pamClient;
     private final EgenAnsattClient egenAnsattClient;
     private final VeilarbportefoljeClient veilarbportefoljeClient;
     private final KodeverkService kodeverkService;
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient, AuthService authService, DkifClient dkifClient, Norg2Client norg2Client, PersonClient personClient,
-                           PamClient pamClient, EgenAnsattClient egenAnsattClient, VeilarbportefoljeClient veilarbportefoljeClient, KodeverkService kodeverkService) {
+                           EgenAnsattClient egenAnsattClient, VeilarbportefoljeClient veilarbportefoljeClient, KodeverkService kodeverkService) {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.dkifClient = dkifClient;
         this.norg2Client = norg2Client;
         this.personClient = personClient;
-        this.pamClient = pamClient;
         this.egenAnsattClient = egenAnsattClient;
         this.veilarbportefoljeClient = veilarbportefoljeClient;
         this.kodeverkService = kodeverkService;
@@ -224,8 +222,25 @@ public class PersonV2Service {
         }
     }
 
-    public HentPdlPerson.VergeOgFullmakt hentVergeEllerFullmakt(String fnr, String userToken) {
-            return pdlClient.hentVergeOgFullmakt(fnr, userToken);
+    public VergeOgFullmaktData hentVergeEllerFullmakt(String fnr, String userToken) throws Exception {
+        HentPdlPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = ofNullable(pdlClient.hentVergeOgFullmakt(fnr, userToken)).orElseThrow(() -> new Exception("Error mens å hente Verge og Fullmakt til personen"));
+        VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+        flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, userToken);
+
+        return vergeOgFullmaktData;
+    }
+
+    public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData, String userToken) {
+        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmaktList();
+
+        fullmaktListe.forEach(fullmakt -> {
+             try {
+                 HentPdlPerson.Navn fullmaktNavn = getFirstElement(pdlClient.hentPersonNavn(fullmakt.getMotpartsPersonident(), userToken));
+                 fullmakt.setNavn(fullmaktNavn);
+             } catch (Exception e) {
+                 log.error("Error mens å hente motpartsPersonNavn til fullmakt");
+             }
+        });
     }
 
     public String hentMalform(Fnr fnr) {
