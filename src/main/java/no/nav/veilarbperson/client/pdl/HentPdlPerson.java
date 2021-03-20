@@ -182,8 +182,13 @@ public class HentPdlPerson {
     }
 
     @Data
+    public static class PersonNavn {
+        public List<Navn> navn;
+    }
+
+    @Data
     public static class HentFullmaktNavn {
-        public List<Navn> hentPerson;
+        public PersonNavn hentPerson;
     }
 
 }

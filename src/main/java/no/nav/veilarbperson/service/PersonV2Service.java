@@ -16,9 +16,11 @@ import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.PersonData;
+import no.nav.veilarbperson.domain.PersonNavn;
 import no.nav.veilarbperson.domain.Telefon;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.PersonDataMapper;
+import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
+import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.personNavnMapper;
+import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
 
 @Slf4j
 @Service
@@ -231,12 +235,13 @@ public class PersonV2Service {
     }
 
     public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData, String userToken) {
-        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmaktList();
+        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmakt();
 
         fullmaktListe.forEach(fullmakt -> {
-             try {
-                 HentPdlPerson.Navn fullmaktNavn = getFirstElement(pdlClient.hentPersonNavn(fullmakt.getMotpartsPersonident(), userToken));
-                 fullmakt.setNavn(fullmaktNavn);
+            try {
+                 HentPdlPerson.PersonNavn fullmaktNavn = pdlClient.hentPersonNavn(fullmakt.getMotpartsPersonident(), userToken);
+                 VergeOgFullmaktData.Navn personNavn = ofNullable(fullmaktNavn).map(HentPdlPerson.PersonNavn::getNavn).map(PersonV2DataMapper::getFirstElement).map(VergeOgFullmaktDataMapper::personNavnMapper).orElse(null);
+                 fullmakt.setMotpartsPersonNavn(personNavn);
              } catch (Exception e) {
                  log.error("Error mens å hente motpartsPersonNavn til fullmakt");
              }

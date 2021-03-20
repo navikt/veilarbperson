@@ -225,7 +225,7 @@ public class ClientTestConfig {
             }
 
             @Override
-            public List<HentPdlPerson.Navn> hentPersonNavn(String personIdent, String userToken) { return null; }
+            public HentPdlPerson.PersonNavn hentPersonNavn(String personIdent, String userToken) { return null; }
 
             @Override
             public HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(String personIdent, String userToken) { return null; }

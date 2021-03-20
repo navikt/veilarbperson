@@ -1,6 +1,5 @@
 package no.nav.veilarbperson.service;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.veilarbperson.client.dkif.DkifClient;
@@ -13,18 +12,17 @@ import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.config.PdlClientTestConfig;
 import no.nav.veilarbperson.domain.Telefon;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
-import no.nav.veilarbperson.utils.TestUtils;
+import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.util.Optional.ofNullable;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,7 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PersonV2ServiceTest {
+public class PersonV2ServiceTest extends PdlClientTestConfig {
     private Norg2Client norg2Client = mock(Norg2Client.class);
     private DkifClient dkifClient = mock(DkifClient.class);
     private PersonClient personClient = mock(PersonClient.class);
@@ -45,10 +43,6 @@ public class PersonV2ServiceTest {
     private PersonV2Service personV2Service;
     private HentPdlPerson.PdlPerson pdlPerson;
 
-
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(0);
-
     static final String FNR = "0123456789";
     String[] testFnrsTilBarna = {"12345678910", "12345678911", "12345678912"};
 
@@ -59,6 +53,7 @@ public class PersonV2ServiceTest {
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
         when(pdlClient.hentPersonBolk(any())).thenReturn(hentPersonBolk(testFnrsTilBarna));
+        when(pdlClient.hentPersonNavn(any(), any())).thenReturn(hentPersonNavn(FNR));
         when(kodeverkService.getPoststedForPostnummer(any())).thenReturn("POSTSTED");
         when(kodeverkService.getBeskrivelseForLandkode(any())).thenReturn("LANDKODE");
         when(kodeverkService.getBeskrivelseForKommunenummer(any())).thenReturn("KOMMUNE");
@@ -67,33 +62,19 @@ public class PersonV2ServiceTest {
         pdlPerson = hentPerson(FNR);
     }
 
-    public String configurApiResponse(String responseFilename) {
-        String hentPersonResponseJson = TestUtils.readTestResourceFile(responseFilename);
-        String apiUrl = "http://localhost:" + wireMockRule.port();
-
-        givenThat(post(anyUrl())
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withBody(hentPersonResponseJson))
-        );
-
-        return apiUrl;
-    }
-
-    public PdlClientImpl configurPdlClient(String responseFile) {
-        String apiUrl = configurApiResponse(responseFile);
-        return new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
-    }
-
     public HentPdlPerson.PdlPerson hentPerson(String fnr) {
         PdlClientImpl pdlClient = configurPdlClient("pdl-hentPerson-response.json");
         return pdlClient.hentPerson(fnr, "USER_TOKEN");
     }
 
+    public HentPdlPerson.PersonNavn hentPersonNavn(String fnr) {
+        PdlClientImpl pdlClient = configurPdlClient("pdl-hentPersonNavn-response.json");
+        return pdlClient.hentPersonNavn(fnr, "USER_TOKEN");
+    }
+
     public List<HentPdlPerson.Barn> hentPersonBolk(String[] fnrs) {
         String apiUrl = configurApiResponse("pdl-hentPersonBolk-response.json");
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
-
         return pdlClient.hentPersonBolk(fnrs);
     }
 
@@ -343,16 +324,14 @@ public class PersonV2ServiceTest {
     }
 
     @Test
-    public void vergetypeOgOmfangEnumMapperTest() {
-        List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVergeOgFullmakt(FNR).getVergemaalEllerFremtidsfullmakt();
-        VergemaalEllerFullmaktOmfangType omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).get();
-        VergemaalEllerFullmaktOmfangType omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).get();
+    public void flettMotpartsPersonNavnTilFullmakt() {
+        HentPdlPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
+        VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
 
-        assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaal.get(0).getType());
-        assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, omfang1);
+        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, "USER_TOKEN");
+        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmakt();
 
-        assertEquals(Vergetype.STADFESTET_FREMTIDSFULLMAKT, vergemaal.get(1).getType());
-        assertEquals(VergemaalEllerFullmaktOmfangType.PERSONLIGE_INTERESSER, omfang2);
+        assertEquals("NORDMANN OLA", fullmaktListe.get(0).getMotpartsPersonNavn().getForkortetNavn());
     }
 
     public PersonV2Data lagPersonV2Data() {

@@ -175,13 +175,13 @@ public class PdlClientImplTest {
         assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaal.getType());
         assertEquals("VergemallEmbete", vergemaal.getEmbete());
         assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, vergeEllerFullmektig.getOmfang());
-        assertEquals("VergeMotpartsPersonident", vergeEllerFullmektig.getMotpartsPersonident());
-        assertEquals("vergeEtternavn", vergeEllerFullmektig.getNavn().getEtternavn());
+        assertEquals("VergeMotpartsPersonident1", vergeEllerFullmektig.getMotpartsPersonident());
+        assertEquals("vergeEtternavn1", vergeEllerFullmektig.getNavn().getEtternavn());
 
         HentPdlPerson.Fullmakt fullmakt = vergeOgFullmakt.getFullmakt().get(0);
 
-        assertEquals("motpartsPersonident", fullmakt.getMotpartsPersonident());
-        assertEquals("motpartsRolle", fullmakt.getMotpartsRolle());
+        assertEquals("motpartsPersonident1", fullmakt.getMotpartsPersonident());
+        assertEquals("motpartsRolle1", fullmakt.getMotpartsRolle());
         assertEquals(2, fullmakt.getOmraader().length);
     }
 

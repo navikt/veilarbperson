@@ -12,8 +12,16 @@ import java.util.List;
 @Accessors(chain=true)
 public class VergeOgFullmaktData {
 
-    public List<VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktList;
-    public List<Fullmakt> fullmaktList;
+    public List<VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
+    public List<Fullmakt> fullmakt;
+
+    @Data
+    public static class Navn {
+        private String fornavn;
+        private String mellomnavn;
+        private String etternavn;
+        private String forkortetNavn;
+    }
 
     @Data
     public static class VergeNavn {
@@ -24,7 +32,7 @@ public class VergeOgFullmaktData {
 
     @Data
     public static class VergeEllerFullmektig {
-        private HentPdlPerson.VergeNavn navn;
+        private VergeNavn navn;
         private String motpartsPersonident;
         private VergemaalEllerFullmaktOmfangType omfang;
     }
@@ -33,8 +41,8 @@ public class VergeOgFullmaktData {
     public static class VergemaalEllerFremtidsfullmakt {
         private Vergetype type;
         private String embete;
-        private HentPdlPerson.VergeEllerFullmektig vergeEllerFullmektig;
-        private HentPdlPerson.Folkeregistermetadata folkeregistermetadata;
+        private VergeEllerFullmektig vergeEllerFullmektig;
+        private Folkeregistermetadata folkeregistermetadata;
     }
 
     @Data
@@ -46,7 +54,7 @@ public class VergeOgFullmaktData {
     @Data
     public static class Fullmakt {
         private String motpartsPersonident;
-        private HentPdlPerson.Navn navn;
+        private Navn motpartsPersonNavn;
         private String motpartsRolle;
         private String[] omraader;
         private LocalDate gyldigFraOgMed;
