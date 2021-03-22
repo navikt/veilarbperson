@@ -16,9 +16,11 @@ import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.PersonData;
+import no.nav.veilarbperson.domain.PersonNavn;
 import no.nav.veilarbperson.domain.Telefon;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.PersonDataMapper;
+import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,9 @@ import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
+import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
+import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.personNavnMapper;
+import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
 
 @Slf4j
 @Service
@@ -38,20 +42,18 @@ public class PersonV2Service {
     private final DkifClient dkifClient;
     private final Norg2Client norg2Client;
     private final PersonClient personClient;
-    private final PamClient pamClient;
     private final EgenAnsattClient egenAnsattClient;
     private final VeilarbportefoljeClient veilarbportefoljeClient;
     private final KodeverkService kodeverkService;
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient, AuthService authService, DkifClient dkifClient, Norg2Client norg2Client, PersonClient personClient,
-                           PamClient pamClient, EgenAnsattClient egenAnsattClient, VeilarbportefoljeClient veilarbportefoljeClient, KodeverkService kodeverkService) {
+                           EgenAnsattClient egenAnsattClient, VeilarbportefoljeClient veilarbportefoljeClient, KodeverkService kodeverkService) {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.dkifClient = dkifClient;
         this.norg2Client = norg2Client;
         this.personClient = personClient;
-        this.pamClient = pamClient;
         this.egenAnsattClient = egenAnsattClient;
         this.veilarbportefoljeClient = veilarbportefoljeClient;
         this.kodeverkService = kodeverkService;
@@ -219,9 +221,31 @@ public class PersonV2Service {
                 && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
 
         if (harIkkeTelefonFraKrr) {
-                Telefon telefonNrFraKrr = new Telefon().setPrioritet(telefonListe.size()+1+"").setTelefonNr(telefonNummerFraKrr).setMaster("KRR");
-                telefonListe.add(telefonNrFraKrr);
+            Telefon telefonNrFraKrr = new Telefon().setPrioritet(telefonListe.size()+1+"").setTelefonNr(telefonNummerFraKrr).setMaster("KRR");
+            telefonListe.add(telefonNrFraKrr);
         }
+    }
+
+    public VergeOgFullmaktData hentVergeEllerFullmakt(String fnr, String userToken) throws Exception {
+        HentPdlPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = ofNullable(pdlClient.hentVergeOgFullmakt(fnr, userToken)).orElseThrow(() -> new Exception("Error mens å hente Verge og Fullmakt til personen"));
+        VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+        flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, userToken);
+
+        return vergeOgFullmaktData;
+    }
+
+    public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData, String userToken) {
+        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmakt();
+
+        fullmaktListe.forEach(fullmakt -> {
+            try {
+                 HentPdlPerson.PersonNavn fullmaktNavn = pdlClient.hentPersonNavn(fullmakt.getMotpartsPersonident(), userToken);
+                 VergeOgFullmaktData.Navn personNavn = ofNullable(fullmaktNavn).map(HentPdlPerson.PersonNavn::getNavn).map(PersonV2DataMapper::getFirstElement).map(VergeOgFullmaktDataMapper::personNavnMapper).orElse(null);
+                 fullmakt.setMotpartsPersonNavn(personNavn);
+             } catch (Exception e) {
+                 log.error("Error mens å hente motpartsPersonNavn til fullmakt");
+             }
+        });
     }
 
     public String hentMalform(Fnr fnr) {
