@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
+import lombok.SneakyThrows;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.TilrettelagtKommunikasjonData;
@@ -28,7 +29,8 @@ public class PersonV2Controller {
 
     @GetMapping
     @ApiOperation(value = "Henter informasjon om en person fra PDL")
-    public PersonV2Data hentPerson(@RequestParam String fnr) throws Exception {
+    @SneakyThrows
+    public PersonV2Data hentPerson(@RequestParam String fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(Fnr.of(fnr));
         return personV2Service.hentFlettetPerson(fnr, authService.getInnloggetBrukerToken());
@@ -36,7 +38,8 @@ public class PersonV2Controller {
 
     @GetMapping("/vergeOgFullmakt")
     @ApiOperation(value = "Henter informasjon om verge og fullmakt for en person fra PDL")
-    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam String fnr) throws Exception {
+    @SneakyThrows
+    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam String fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(Fnr.of(fnr));
         return personV2Service.hentVergeEllerFullmakt(fnr, authService.getInnloggetBrukerToken());
@@ -44,7 +47,8 @@ public class PersonV2Controller {
 
     @GetMapping("/tolk")
     @ApiOperation(value = "Henter tolk informajon til en person fra PDL")
-    public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestParam String fnr) throws Exception {
+    @SneakyThrows
+    public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestParam String fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(Fnr.of(fnr));
         return personV2Service.hentSpraakTolkInfo(fnr, authService.getInnloggetBrukerToken());
