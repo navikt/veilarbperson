@@ -224,6 +224,17 @@ public class PersonV2Service {
         }
     }
 
+    public TilrettelagtKommunikasjonData hentSpraakTolkInfo(String fnr, String userToken) throws Exception {
+        HentPdlPerson.HentSpraakTolk spraakTolkInfo = ofNullable(pdlClient.hentTilrettelagtKommunikasjon(fnr, userToken)).orElseThrow(() -> new Exception("Klarte ikke å hente persons tolkinformasjon"));
+        HentPdlPerson.TilrettelagtKommunikasjon tilrettelagtKommunikasjon = ofNullable(spraakTolkInfo)
+                                                                                .map(HentPdlPerson.HentSpraakTolk::getTilrettelagtKommunikasjon)
+                                                                                .map(PersonV2DataMapper::getFirstElement).orElse(null);
+        String tegnSpraak = ofNullable(tilrettelagtKommunikasjon).map(HentPdlPerson.TilrettelagtKommunikasjon::getTegnspraaktolk).map(HentPdlPerson.Tolk::getSpraak).map(kodeverkService::getBeskrivelseForSpraakKode).orElse(null);
+        String taleSpraak = ofNullable(tilrettelagtKommunikasjon).map(HentPdlPerson.TilrettelagtKommunikasjon::getTalespraaktolk).map(HentPdlPerson.Tolk::getSpraak).map(kodeverkService::getBeskrivelseForSpraakKode).orElse(null);
+
+        return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
+    }
+
     public String hentMalform(Fnr fnr) {
         try{
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);

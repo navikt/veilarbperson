@@ -235,6 +235,9 @@ public class ClientTestConfig {
             }
 
             @Override
+            public HentPdlPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(String personIdent, String userToken) { return null; }
+
+            @Override
             public HealthCheckResult checkHealth() {
                 return HealthCheckResult.healthy();
             }

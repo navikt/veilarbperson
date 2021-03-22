@@ -3,7 +3,6 @@ package no.nav.veilarbperson.client.pdl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.health.HealthCheckResult;
@@ -43,6 +42,7 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentGeografiskTilknytningQuery;
 
+    private final String hentTilrettelagtKommunikasjonQuery;
 
     public PdlClientImpl(String pdlUrl, Supplier<String> systemUserTokenSupplier) {
         this.pdlUrl = pdlUrl;
@@ -51,6 +51,7 @@ public class PdlClientImpl implements PdlClient {
         this.hentPersonQuery = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
         this.hentPersonBolkQuery = FileUtils.getResourceFileAsString("graphql/hentPersonBolk.gql");
         this.hentGeografiskTilknytningQuery = FileUtils.getResourceFileAsString("graphql/hentGeografiskTilknytning.gql");
+        this.hentTilrettelagtKommunikasjonQuery = FileUtils.getResourceFileAsString("graphql/hentTilrettelagtKommunikasjon.gql");
     }
 
     @Override
@@ -75,6 +76,12 @@ public class PdlClientImpl implements PdlClient {
     public HentPdlPerson.GeografiskTilknytning hentGeografiskTilknytning(String personIdent, String userToken) {
         GqlRequest request = new GqlRequest<>(hentGeografiskTilknytningQuery, new PdlPersonVariables.HentGeografiskTilknytningVariables(personIdent));
         return graphqlRequest(request, userToken, HentPdlPerson.class).hentGeografiskTilknytning;
+    }
+
+    @Override
+    public HentPdlPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(String personIdent, String userToken) {
+        GqlRequest request = new GqlRequest<>(hentTilrettelagtKommunikasjonQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
+        return graphqlRequest(request, userToken, HentPdlPerson.HentTilrettelagtKommunikasjon.class).hentPerson;
     }
 
     @SneakyThrows

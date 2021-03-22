@@ -66,6 +66,9 @@ public class PersonV2ServiceTest {
         when(kodeverkService.getPoststedForPostnummer(any())).thenReturn("POSTSTED");
         when(kodeverkService.getBeskrivelseForLandkode(any())).thenReturn("LANDKODE");
         when(kodeverkService.getBeskrivelseForKommunenummer(any())).thenReturn("KOMMUNE");
+        when(kodeverkService.getBeskrivelseForSpraakKode("EN")).thenReturn("Engelsk");
+        when(kodeverkService.getBeskrivelseForSpraakKode("NO")).thenReturn("Norsk");
+        when(pdlClient.hentTilrettelagtKommunikasjon(any(), any())).thenReturn(hentTilrettelagtKommunikasjon(FNR));
 
         personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, pamClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
         pdlPerson = hentPerson(FNR);
@@ -114,6 +117,11 @@ public class PersonV2ServiceTest {
     public HentPdlPerson.PdlPerson hentFamiliemedlem(String fnr) {
         PdlClientImpl pdlClient = configurPdlClient("pdl-hentPersonMedIngenBarn-responsen.json");
         return pdlClient.hentPerson(fnr, "USER_TOKEN");
+    }
+
+    public HentPdlPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(String fnr) {
+        PdlClientImpl pdlClient = configurPdlClient("pdl-hentTilrettelagtKommunikasjon-response.json");
+        return pdlClient.hentTilrettelagtKommunikasjon(fnr, "USER_TOKEN");
     }
 
     @Test
@@ -339,6 +347,13 @@ public class PersonV2ServiceTest {
         assertEquals("POSTSTED", kontaktadresse.getPostadresseIFrittFormat().getPoststed());
         assertEquals("KOMMUNE", kontaktadresse.getVegadresse().getKommune());
         assertEquals("LANDKODE", kontaktadresse.getUtenlandskAdresseIFrittFormat().getLandkode());
+    }
+
+    @Test
+    public void hentSpraakTolkInfoTest() throws Exception {
+        TilrettelagtKommunikasjonData tilrettelagtKommunikasjonData = personV2Service.hentSpraakTolkInfo(FNR, "USER_TOKEN");
+        assertEquals("Engelsk", tilrettelagtKommunikasjonData.getTalespraak());
+        assertEquals("Norsk", tilrettelagtKommunikasjonData.getTegnspraak());
     }
 
     public PersonV2Data lagPersonV2Data() {
