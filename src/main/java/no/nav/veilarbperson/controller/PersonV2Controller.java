@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.TilrettelagtKommunikasjonData;
+import no.nav.veilarbperson.client.pdl.domain.VergeOgFullmaktData;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonV2Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,14 @@ public class PersonV2Controller {
         return personV2Service.hentFlettetPerson(fnr, authService.getInnloggetBrukerToken());
     }
 
+    @GetMapping("/vergeOgFullmakt")
+    @ApiOperation(value = "Henter informasjon om verge og fullmakt for en person fra PDL")
+    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam String fnr) throws Exception {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(Fnr.of(fnr));
+        return personV2Service.hentVergeEllerFullmakt(fnr, authService.getInnloggetBrukerToken());
+    }
+
     @GetMapping("/tolk")
     @ApiOperation(value = "Henter tolk informajon til en person fra PDL")
     public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestParam String fnr) throws Exception {
@@ -40,5 +49,4 @@ public class PersonV2Controller {
         authService.sjekkLesetilgang(Fnr.of(fnr));
         return personV2Service.hentSpraakTolkInfo(fnr, authService.getInnloggetBrukerToken());
     }
-
 }

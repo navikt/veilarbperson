@@ -44,7 +44,7 @@ public class PersonV2DataMapper {
     }
 
     public static HentPdlPerson.Navn hentNavn(List<HentPdlPerson.Navn> personNavn) {
-            HentPdlPerson.Navn navn = getFirstElement(personNavn);
+        HentPdlPerson.Navn navn = getFirstElement(personNavn);
 
         return new HentPdlPerson.Navn()
                 .setFornavn(ofNullable(navn).map(HentPdlPerson.Navn::getFornavn).orElse(null))
@@ -87,10 +87,11 @@ public class PersonV2DataMapper {
     }
 
     public static Sivilstand sivilstandMapper(HentPdlPerson.Sivilstand sivilstand) {
-
-         return new Sivilstand()
-                .setSivilstand(ofNullable(sivilstand).map(HentPdlPerson.Sivilstand::getType).orElse(null))
-                .setFraDato(ofNullable(sivilstand).map(HentPdlPerson.Sivilstand::getGyldigFraOgMed).orElse(null));
+        return (sivilstand != null)
+               ? new Sivilstand()
+                    .setSivilstand(sivilstand.getType())
+                    .setFraDato(sivilstand.getGyldigFraOgMed())
+               : null;
     }
 
     public static List<Telefon> mapTelefonNrFraPdl(List<HentPdlPerson.Telefonnummer> telefonnummer) {
@@ -102,7 +103,7 @@ public class PersonV2DataMapper {
     /* Slår sammen landkode og nummer og så lager et telefonnummer */
     public static Telefon telefonNummerMapper(HentPdlPerson.Telefonnummer telefonnummer) {
          String telefonnr = telefonnummer.getNummer();
-         String landkode = telefonnummer.getLandskode()!=null ?  telefonnummer.getLandskode() : "";
+         String landkode = telefonnummer.getLandskode()!=null ? telefonnummer.getLandskode() : "";
 
          return (telefonnr!=null)
                  ? new Telefon()

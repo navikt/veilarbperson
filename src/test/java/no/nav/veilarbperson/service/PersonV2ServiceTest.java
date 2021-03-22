@@ -1,14 +1,10 @@
 package no.nav.veilarbperson.service;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.veilarbperson.client.difi.DifiCient;
-import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
-import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
@@ -16,18 +12,17 @@ import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.config.PdlClientTestConfig;
 import no.nav.veilarbperson.domain.Telefon;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
-import no.nav.veilarbperson.utils.TestUtils;
+import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.util.Optional.ofNullable;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PersonV2ServiceTest {
+public class PersonV2ServiceTest extends PdlClientTestConfig {
     private Norg2Client norg2Client = mock(Norg2Client.class);
     private DkifClient dkifClient = mock(DkifClient.class);
     private PersonClient personClient = mock(PersonClient.class);
@@ -44,14 +39,9 @@ public class PersonV2ServiceTest {
     private EgenAnsattClient egenAnsattClient = mock(EgenAnsattClient.class);
     private KodeverkService kodeverkService = mock(KodeverkService.class);
     private VeilarbportefoljeClient veilarbportefoljeClient = mock(VeilarbportefoljeClient.class);
-    private DifiCient difiCient = mock(DifiClientImpl.class);
     private AuthService authService = mock(AuthService.class);
-    private PamClient pamClient = mock(PamClient.class);
     private PersonV2Service personV2Service;
     private HentPdlPerson.PdlPerson pdlPerson;
-
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(0);
 
     static final String FNR = "0123456789";
     String[] testFnrsTilBarna = {"12345678910", "12345678911", "12345678912"};
@@ -63,6 +53,7 @@ public class PersonV2ServiceTest {
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
         when(pdlClient.hentPersonBolk(any())).thenReturn(hentPersonBolk(testFnrsTilBarna));
+        when(pdlClient.hentPersonNavn(any(), any())).thenReturn(hentPersonNavn(FNR));
         when(kodeverkService.getPoststedForPostnummer(any())).thenReturn("POSTSTED");
         when(kodeverkService.getBeskrivelseForLandkode(any())).thenReturn("LANDKODE");
         when(kodeverkService.getBeskrivelseForKommunenummer(any())).thenReturn("KOMMUNE");
@@ -70,26 +61,8 @@ public class PersonV2ServiceTest {
         when(kodeverkService.getBeskrivelseForSpraakKode("NO")).thenReturn("Norsk");
         when(pdlClient.hentTilrettelagtKommunikasjon(any(), any())).thenReturn(hentTilrettelagtKommunikasjon(FNR));
 
-        personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, pamClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
+        personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
         pdlPerson = hentPerson(FNR);
-    }
-
-    public String configurApiResponse(String responseFilename) {
-        String hentPersonResponseJson = TestUtils.readTestResourceFile(responseFilename);
-        String apiUrl = "http://localhost:" + wireMockRule.port();
-
-        givenThat(post(anyUrl())
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withBody(hentPersonResponseJson))
-        );
-
-        return apiUrl;
-    }
-
-    public PdlClientImpl configurPdlClient(String responseFile) {
-        String apiUrl = configurApiResponse(responseFile);
-        return new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
     }
 
     public HentPdlPerson.PdlPerson hentPerson(String fnr) {
@@ -97,16 +70,25 @@ public class PersonV2ServiceTest {
         return pdlClient.hentPerson(fnr, "USER_TOKEN");
     }
 
+    public HentPdlPerson.PersonNavn hentPersonNavn(String fnr) {
+        PdlClientImpl pdlClient = configurPdlClient("pdl-hentPersonNavn-response.json");
+        return pdlClient.hentPersonNavn(fnr, "USER_TOKEN");
+    }
+
     public List<HentPdlPerson.Barn> hentPersonBolk(String[] fnrs) {
         String apiUrl = configurApiResponse("pdl-hentPersonBolk-response.json");
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
-
         return pdlClient.hentPersonBolk(fnrs);
     }
 
     public HentPdlPerson.Familiemedlem hentPartner(String fnr) {
         PdlClientImpl pdlClient = configurPdlClient("pdl-hentPartner-response.json");
         return pdlClient.hentPartner(fnr, "USER_TOKEN");
+    }
+
+    public HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(String fnr) {
+        PdlClientImpl pdlClient = configurPdlClient("pdl-hentVergeOgFullmakt-response.json");
+        return pdlClient.hentVergeOgFullmakt(fnr, "USER_TOKEN");
     }
 
     public HentPdlPerson.GeografiskTilknytning hentGeografisktilknytning(String fnr) {
@@ -156,7 +138,7 @@ public class PersonV2ServiceTest {
 
         assertEquals(3, hentPersonBolk.size());
 
-        List<HentPdlPerson.Barn> filterPersonBolkMedOkStatus = ofNullable(hentPersonBolk).stream().flatMap(Collection::stream)
+        List<HentPdlPerson.Barn> filterPersonBolkMedOkStatus = Optional.of(hentPersonBolk).stream().flatMap(Collection::stream)
                                                                         .filter(status -> status.getCode().equals("ok"))
                                                                         .collect(Collectors.toList());
 
@@ -348,6 +330,18 @@ public class PersonV2ServiceTest {
         assertEquals("KOMMUNE", kontaktadresse.getVegadresse().getKommune());
         assertEquals("LANDKODE", kontaktadresse.getUtenlandskAdresseIFrittFormat().getLandkode());
     }
+
+    @Test
+    public void flettMotpartsPersonNavnTilFullmakt() {
+        HentPdlPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
+        VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+
+        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, "USER_TOKEN");
+        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmakt();
+
+        assertEquals("NORDMANN OLA", fullmaktListe.get(0).getMotpartsPersonNavn().getForkortetNavn());
+    }
+
 
     @Test
     public void hentSpraakTolkInfoTest() throws Exception {
