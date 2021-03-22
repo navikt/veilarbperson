@@ -20,7 +20,7 @@ public enum Vergetype {
         }
 
         @JsonValue
-        public String getType() {
+        public String toString() {
             return type;
         }
 }
