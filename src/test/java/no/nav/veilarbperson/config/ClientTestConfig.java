@@ -215,28 +215,31 @@ public class ClientTestConfig {
     public PdlClient pdlClient() {
         return new PdlClient() {
             @Override
-            public HentPdlPerson.PdlPerson hentPerson(String personIdent, String userToken) {
+            public HentPdlPerson.PdlPerson hentPerson(Fnr personIdent, String userToken) {
                 return null;
             }
 
             @Override
-            public HentPdlPerson.Familiemedlem hentPartner(String personIdent, String userToken) {
+            public HentPdlPerson.Familiemedlem hentPartner(Fnr personIdent, String userToken) {
                 return null;
             }
 
             @Override
-            public HentPdlPerson.PersonNavn hentPersonNavn(String personIdent, String userToken) { return null; }
+            public HentPdlPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken) { return null; }
 
             @Override
-            public HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(String personIdent, String userToken) { return null; }
+            public HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) { return null; }
 
             @Override
-            public List<HentPdlPerson.Barn> hentPersonBolk(String[] personIdent) {
+            public List<HentPdlPerson.Barn> hentPersonBolk(Fnr[] personIdent) {
                 return null;
             }
 
             @Override
-            public HentPdlPerson.GeografiskTilknytning hentGeografiskTilknytning(String personIdent, String userToken) { return null; }
+            public HentPdlPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) { return null; }
+
+            @Override
+            public HentPdlPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, String userToken) { return null; }
 
             @Override
             public HealthCheckResult checkHealth() {

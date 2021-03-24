@@ -10,6 +10,7 @@ import no.nav.common.health.HealthCheckUtils;
 import no.nav.common.json.JsonUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
+import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.RestClientUtils;
 import okhttp3.OkHttpClient;
@@ -46,51 +47,60 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentGeografiskTilknytningQuery;
 
+    private final String hentTilrettelagtKommunikasjonQuery;
+
     public PdlClientImpl(String pdlUrl, Supplier<String> systemUserTokenSupplier) {
         this.pdlUrl = pdlUrl;
         this.client = RestClient.baseClient();
         this.systemUserTokenSupplier = systemUserTokenSupplier;
         this.hentPersonQuery = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
         this.hentPersonBolkQuery = FileUtils.getResourceFileAsString("graphql/hentPersonBolk.gql");
+        this.hentPersonNavnQuery = FileUtils.getResourceFileAsString("graphql/hentPersonNavn.gql");
         this.hentVergeOgFullmaktQuery = FileUtils.getResourceFileAsString("graphql/hentVergeOgFullmakt.gql");
         this.hentGeografiskTilknytningQuery = FileUtils.getResourceFileAsString("graphql/hentGeografiskTilknytning.gql");
-        this.hentPersonNavnQuery = FileUtils.getResourceFileAsString("graphql/hentPersonNavn.gql");
+        this.hentTilrettelagtKommunikasjonQuery = FileUtils.getResourceFileAsString("graphql/hentTilrettelagtKommunikasjon.gql");
     }
 
     @Override
-    public HentPdlPerson.PdlPerson hentPerson(String personIdent, String userToken) {
+    public HentPdlPerson.PdlPerson hentPerson(Fnr personIdent, String userToken) {
         GqlRequest request = new GqlRequest<>(hentPersonQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
         return graphqlRequest(request, userToken, HentPdlPerson.class).hentPerson;
     }
 
     @Override
-    public HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(String personIdent, String userToken) {
+    public HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) {
         GqlRequest request = new GqlRequest<>(hentVergeOgFullmaktQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
         return graphqlRequest(request, userToken, HentPdlPerson.HentVergeOgFullmakt.class).hentPerson;
     }
 
     @Override
-    public HentPdlPerson.PersonNavn hentPersonNavn(String personIdent, String userToken) {
+    public HentPdlPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken) {
         GqlRequest request = new GqlRequest<>(hentPersonNavnQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
         return graphqlRequest(request, userToken, HentPdlPerson.HentFullmaktNavn.class).hentPerson;
     }
 
     @Override
-    public HentPdlPerson.Familiemedlem hentPartner(String personIdent, String userToken) {
+    public HentPdlPerson.Familiemedlem hentPartner(Fnr personIdent, String userToken) {
         GqlRequest request = new GqlRequest<>(hentPersonQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
         return graphqlRequest(request, userToken, HentPdlPerson.Partner.class).hentPerson;
     }
 
     @Override
-    public List<HentPdlPerson.Barn> hentPersonBolk(String[] personIdenter) {
+    public List<HentPdlPerson.Barn> hentPersonBolk(Fnr[] personIdenter) {
         GqlRequest request = new GqlRequest<>(hentPersonBolkQuery, new PdlPersonVariables.HentPersonBolkVariables(personIdenter, false));
         return graphqlRequest(request, systemUserTokenSupplier.get(), HentPdlPerson.class).hentPersonBolk;
     }
 
     @Override
-    public HentPdlPerson.GeografiskTilknytning hentGeografiskTilknytning(String personIdent, String userToken) {
+    public HentPdlPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) {
         GqlRequest request = new GqlRequest<>(hentGeografiskTilknytningQuery, new PdlPersonVariables.HentGeografiskTilknytningVariables(personIdent));
         return graphqlRequest(request, userToken, HentPdlPerson.class).hentGeografiskTilknytning;
+    }
+
+    @Override
+    public HentPdlPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, String userToken) {
+        GqlRequest request = new GqlRequest<>(hentTilrettelagtKommunikasjonQuery, new PdlPersonVariables.HentPersonVariables(personIdent, false));
+        return graphqlRequest(request, userToken, HentPdlPerson.HentTilrettelagtKommunikasjon.class).hentPerson;
     }
 
     @SneakyThrows

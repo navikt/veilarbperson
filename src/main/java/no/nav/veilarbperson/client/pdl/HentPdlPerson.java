@@ -191,4 +191,24 @@ public class HentPdlPerson {
         public PersonNavn hentPerson;
     }
 
+    @Data
+    public static class Tolk {
+        private String spraak;
+    }
+
+    @Data
+    public static class TilrettelagtKommunikasjon {
+        private Tolk talespraaktolk;
+        private Tolk tegnspraaktolk;
+    }
+
+    @Data
+    public static class HentSpraakTolk {
+        private List<TilrettelagtKommunikasjon> tilrettelagtKommunikasjon;
+    }
+
+    @Data
+    public static class HentTilrettelagtKommunikasjon {
+        public HentSpraakTolk hentPerson;
+    }
 }
