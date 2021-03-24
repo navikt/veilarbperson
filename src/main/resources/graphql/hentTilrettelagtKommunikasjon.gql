@@ -1,0 +1,12 @@
+query($ident: ID!, $historikk: Boolean!) {
+    hentPerson(ident: $ident) {
+        tilrettelagtKommunikasjon(historikk: $historikk) {
+            talespraaktolk {
+                spraak
+            }
+            tegnspraaktolk {
+                spraak
+            }
+        }
+    }
+}

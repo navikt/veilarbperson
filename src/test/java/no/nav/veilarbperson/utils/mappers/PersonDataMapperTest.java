@@ -154,7 +154,7 @@ public class PersonDataMapperTest {
     }
 
     @Test
-    public void fodselsnummerMappesTilNullDersomIdentErNull() throws Exception {
+    public void fodselsnummerMappesTilNullDersomIdentErNull() {
         final Person wsPerson = new Person().withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(null)));
 
         final TpsPerson tpsPerson = PersonDataMapper.tilTpsPerson(wsPerson);
