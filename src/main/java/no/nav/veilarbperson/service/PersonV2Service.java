@@ -6,7 +6,6 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
-import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
@@ -16,21 +15,23 @@ import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.PersonData;
-import no.nav.veilarbperson.domain.PersonNavn;
 import no.nav.veilarbperson.domain.Telefon;
-import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.PersonDataMapper;
+import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
-import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.personNavnMapper;
+import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
 
 @Slf4j
@@ -67,9 +68,11 @@ public class PersonV2Service {
         return PersonDataMapper.tilPersonData(personClient.hentPerson(personIdent));
     }
 
-    public PersonV2Data hentFlettetPerson(Fnr fodselsnummer, String userToken) throws Exception {
+    public PersonV2Data hentFlettetPerson(Fnr fodselsnummer, String userToken) {
         PersonData personDataFraTps = hentPersonDataFraTps(fodselsnummer);
-        HentPdlPerson.PdlPerson personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer, userToken)).orElseThrow(() -> new Exception("Fant ikke person i hentPerson operasjonen i PDL"));
+        HentPdlPerson.PdlPerson personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer, userToken))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Fant ikke person i hentPerson operasjonen i PDL"));
+
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl, personDataFraTps);
 
         try {
@@ -227,8 +230,10 @@ public class PersonV2Service {
         }
     }
 
-    public TilrettelagtKommunikasjonData hentSpraakTolkInfo(Fnr fnr, String userToken) throws Exception {
-        HentPdlPerson.HentSpraakTolk spraakTolkInfo = ofNullable(pdlClient.hentTilrettelagtKommunikasjon(fnr, userToken)).orElseThrow(() -> new Exception("Klarte ikke å hente persons tolkinformasjon"));
+    public TilrettelagtKommunikasjonData hentSpraakTolkInfo(Fnr fnr, String userToken) {
+        HentPdlPerson.HentSpraakTolk spraakTolkInfo = ofNullable(pdlClient.hentTilrettelagtKommunikasjon(fnr, userToken))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Klarte ikke å hente persons tolkinformasjon"));
+
         HentPdlPerson.TilrettelagtKommunikasjon tilrettelagtKommunikasjon = ofNullable(spraakTolkInfo)
                 .map(HentPdlPerson.HentSpraakTolk::getTilrettelagtKommunikasjon)
                 .map(PersonV2DataMapper::getFirstElement).orElse(null);
@@ -238,8 +243,10 @@ public class PersonV2Service {
         return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
     }
 
-    public VergeOgFullmaktData hentVergeEllerFullmakt(Fnr fnr, String userToken) throws Exception {
-        HentPdlPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = ofNullable(pdlClient.hentVergeOgFullmakt(fnr, userToken)).orElseThrow(() -> new Exception("Error mens å hente Verge og Fullmakt til personen"));
+    public VergeOgFullmaktData hentVergeEllerFullmakt(Fnr fnr, String userToken) {
+        HentPdlPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = ofNullable(pdlClient.hentVergeOgFullmakt(fnr, userToken))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error mens å hente Verge og Fullmakt til personen"));
+
         VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
         flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, userToken);
 

@@ -346,7 +346,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
 
     @Test
-    public void hentSpraakTolkInfoTest() throws Exception {
+    public void hentSpraakTolkInfoTest() {
         TilrettelagtKommunikasjonData tilrettelagtKommunikasjonData = personV2Service.hentSpraakTolkInfo(FNR, "USER_TOKEN");
         assertEquals("Engelsk", tilrettelagtKommunikasjonData.getTalespraak());
         assertEquals("Norsk", tilrettelagtKommunikasjonData.getTegnspraak());

@@ -1,7 +1,6 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
-import lombok.SneakyThrows;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.TilrettelagtKommunikasjonData;
@@ -29,7 +28,6 @@ public class PersonV2Controller {
 
     @GetMapping
     @ApiOperation(value = "Henter informasjon om en person fra PDL")
-    @SneakyThrows
     public PersonV2Data hentPerson(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
@@ -38,7 +36,6 @@ public class PersonV2Controller {
 
     @GetMapping("/vergeOgFullmakt")
     @ApiOperation(value = "Henter informasjon om verge og fullmakt for en person fra PDL")
-    @SneakyThrows
     public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
@@ -47,7 +44,6 @@ public class PersonV2Controller {
 
     @GetMapping("/tolk")
     @ApiOperation(value = "Henter tolk informajon til en person fra PDL")
-    @SneakyThrows
     public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
