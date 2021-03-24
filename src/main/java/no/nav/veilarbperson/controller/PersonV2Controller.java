@@ -30,27 +30,27 @@ public class PersonV2Controller {
     @GetMapping
     @ApiOperation(value = "Henter informasjon om en person fra PDL")
     @SneakyThrows
-    public PersonV2Data hentPerson(@RequestParam String fnr) {
+    public PersonV2Data hentPerson(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(Fnr.of(fnr));
+        authService.sjekkLesetilgang(fnr);
         return personV2Service.hentFlettetPerson(fnr, authService.getInnloggetBrukerToken());
     }
 
     @GetMapping("/vergeOgFullmakt")
     @ApiOperation(value = "Henter informasjon om verge og fullmakt for en person fra PDL")
     @SneakyThrows
-    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam String fnr) {
+    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(Fnr.of(fnr));
+        authService.sjekkLesetilgang(fnr);
         return personV2Service.hentVergeEllerFullmakt(fnr, authService.getInnloggetBrukerToken());
     }
 
     @GetMapping("/tolk")
     @ApiOperation(value = "Henter tolk informajon til en person fra PDL")
     @SneakyThrows
-    public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestParam String fnr) {
+    public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(Fnr.of(fnr));
+        authService.sjekkLesetilgang(fnr);
         return personV2Service.hentSpraakTolkInfo(fnr, authService.getInnloggetBrukerToken());
     }
 }
