@@ -6,9 +6,7 @@ import no.nav.veilarbperson.client.pdl.GqlRequest;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlPersonVariables;
-import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
-import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
-import no.nav.veilarbperson.client.pdl.domain.Oppholdsadresse;
+import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
@@ -154,6 +152,37 @@ public class PdlClientImplTest {
         assertEquals("12345", utenlandskAdresseIFrittFormat.getAdresselinje2());
         assertNull(utenlandskAdresseIFrittFormat.getAdresselinje3());
         assertEquals("FRA", utenlandskAdresseIFrittFormat.getLandkode());
+    }
+
+    @Test
+    public void henteVergeOgFullmakt_skal_parse_request() {
+        String hentVergeOgFullmaktResponseJson = TestUtils.readTestResourceFile("pdl-hentVergeOgFullmakt-response.json");
+        String apiUrl = "http://localhost:" + wireMockRule.port();
+
+        givenThat(post(anyUrl())
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody(hentVergeOgFullmaktResponseJson))
+        );
+
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+
+        HentPdlPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt("IDENT", "USER_TOKEN");
+
+        HentPdlPerson.VergemaalEllerFremtidsfullmakt vergemaal = vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt().get(0);
+        HentPdlPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
+
+        assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaal.getType());
+        assertEquals("VergemallEmbete", vergemaal.getEmbete());
+        assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, vergeEllerFullmektig.getOmfang());
+        assertEquals("VergeMotpartsPersonident1", vergeEllerFullmektig.getMotpartsPersonident());
+        assertEquals("vergeEtternavn1", vergeEllerFullmektig.getNavn().getEtternavn());
+
+        HentPdlPerson.Fullmakt fullmakt = vergeOgFullmakt.getFullmakt().get(0);
+
+        assertEquals("motpartsPersonident1", fullmakt.getMotpartsPersonident());
+        assertEquals("motpartsRolle1", fullmakt.getMotpartsRolle());
+        assertEquals(2, fullmakt.getOmraader().length);
     }
 
     @Test

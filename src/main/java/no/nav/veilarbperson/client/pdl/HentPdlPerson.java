@@ -2,12 +2,10 @@ package no.nav.veilarbperson.client.pdl;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
-import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
-import no.nav.veilarbperson.client.pdl.domain.Metadata;
-import no.nav.veilarbperson.client.pdl.domain.Oppholdsadresse;
+import no.nav.veilarbperson.client.pdl.domain.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -19,39 +17,39 @@ public class HentPdlPerson {
 
     @Data
     public static class PdlPerson {
-        List<Navn> navn;
-        List<Foedsel> foedsel;
-        List<Kjoenn> kjoenn;
-        List<Folkeregisteridentifikator> folkeregisteridentifikator;
-        List<Statsborgerskap> statsborgerskap;
+        private List<Navn> navn;
+        private List<Foedsel> foedsel;
+        private List<Kjoenn> kjoenn;
+        private List<Folkeregisteridentifikator> folkeregisteridentifikator;
+        private List<Statsborgerskap> statsborgerskap;
 
-        List<Doedsfall> doedsfall;
-        List<Sivilstand> sivilstand;
-        List<Familierelasjoner> familierelasjoner;
-        List<Telefonnummer> telefonnummer;
-        List<Sikkerhetstiltak> sikkerhetstiltak;
+        private List<Doedsfall> doedsfall;
+        private List<Sivilstand> sivilstand;
+        private List<Familierelasjoner> familierelasjoner;
+        private List<Telefonnummer> telefonnummer;
 
-        List<Adressebeskyttelse> adressebeskyttelse;
-        List<Bostedsadresse> bostedsadresse;
-        List<Oppholdsadresse> oppholdsadresse;
-        List<Kontaktadresse> kontaktadresse;
+        private List<Sikkerhetstiltak> sikkerhetstiltak;
+        private List<Adressebeskyttelse> adressebeskyttelse;
+        private List<Bostedsadresse> bostedsadresse;
+        private List<Oppholdsadresse> oppholdsadresse;
+        private List<Kontaktadresse> kontaktadresse;
     }
 
     @Data
     public static class Barn {
-        String ident;
-        Familiemedlem person;
-        String code;
+        private String ident;
+        private Familiemedlem person;
+        private String code;
     }
 
     @Data
     public static class Familiemedlem {
-        List<Navn> navn;
-        List<Foedsel> foedsel;
-        List<Kjoenn> kjoenn;
-        List<Folkeregisteridentifikator> folkeregisteridentifikator;
-        List<Doedsfall> doedsfall;
-        List<Bostedsadresse> bostedsadresse;
+        private List<Navn> navn;
+        private List<Foedsel> foedsel;
+        private List<Kjoenn> kjoenn;
+        private List<Folkeregisteridentifikator> folkeregisteridentifikator;
+        private List<Doedsfall> doedsfall;
+        private List<Bostedsadresse> bostedsadresse;
     }
 
     @Data
@@ -61,10 +59,10 @@ public class HentPdlPerson {
 
     @Data
     public static class Navn {
-        String fornavn;
-        String mellomnavn;
-        String etternavn;
-        String forkortetNavn;
+        private String fornavn;
+        private String mellomnavn;
+        private String etternavn;
+        private String forkortetNavn;
     }
 
     @Data
@@ -99,9 +97,9 @@ public class HentPdlPerson {
 
     @Data
     public static class Folkeregisteridentifikator {
-        String identifikasjonsnummer;
-        String status;
-        String type;
+        private String identifikasjonsnummer;
+        private String status;
+        private String type;
     }
 
     @Data
@@ -133,6 +131,64 @@ public class HentPdlPerson {
     @Data
     public static class Statsborgerskap {
         private String land;
+    }
+
+    @Data
+    public static class VergeNavn {
+        private String fornavn;
+        private String mellomnavn;
+        private String etternavn;
+    }
+
+    @Data
+    public static class VergeEllerFullmektig {
+        private VergeNavn navn;
+        private String motpartsPersonident;
+        private VergemaalEllerFullmaktOmfangType omfang;
+    }
+
+    @Data
+    public static class VergemaalEllerFremtidsfullmakt {
+        private Vergetype type;
+        private String embete;
+        private VergeEllerFullmektig vergeEllerFullmektig;
+        private Folkeregistermetadata folkeregistermetadata;
+    }
+
+    @Data
+    public static class Folkeregistermetadata {
+        public LocalDateTime ajourholdstidspunkt;
+        public LocalDateTime gyldighetstidspunkt;
+    }
+
+    @Data
+    public static class Fullmakt {
+        private String motpartsPersonident;
+        private String motpartsRolle;
+        private String[] omraader;
+        private LocalDate gyldigFraOgMed;
+        private LocalDate gyldigTilOgMed;
+    }
+
+    @Data
+    public static class VergeOgFullmakt {
+        private List<VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
+        private List<Fullmakt> fullmakt;
+    }
+
+    @Data
+    public static class HentVergeOgFullmakt {
+        public VergeOgFullmakt hentPerson;
+    }
+
+    @Data
+    public static class PersonNavn {
+        public List<Navn> navn;
+    }
+
+    @Data
+    public static class HentFullmaktNavn {
+        public PersonNavn hentPerson;
     }
 
 }
