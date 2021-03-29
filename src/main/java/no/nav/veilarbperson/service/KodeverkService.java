@@ -16,6 +16,7 @@ public class KodeverkService {
     public final static String KODEVERK_SIVILSTANDER = "Sivilstander";
     public final static String KODEVERK_POSTNUMMER = "Postnummer";
     public final static String KODEVERK_KOMMUNER = "Kommuner";
+    public final static String KODEVERK_SPRAAK = "Språk";
     private final KodeverkClient kodeverkClient;
 
     @Autowired
@@ -37,6 +38,10 @@ public class KodeverkService {
 
     public String getBeskrivelseForKommunenummer(String kommunenummer) {
         return finnBeskrivelse(KODEVERK_KOMMUNER, kommunenummer);
+    }
+
+    public String getBeskrivelseForSpraakKode(String spraakKode) {
+        return finnBeskrivelse(KODEVERK_SPRAAK, spraakKode);
     }
 
     private String finnBeskrivelse(String kodeverksnavn, String kode) {

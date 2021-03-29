@@ -112,5 +112,4 @@ public class PersonV2Data {
                 .map(Oppholdsadresse::getUtenlandskAdresse)
                 .ifPresent(utenlandskadresse -> utenlandskadresse.withLandkode(landkode));
     }
-
 }

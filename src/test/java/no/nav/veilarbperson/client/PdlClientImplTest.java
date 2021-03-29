@@ -2,13 +2,12 @@ package no.nav.veilarbperson.client;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.common.json.JsonUtils;
+import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.GqlRequest;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlPersonVariables;
-import no.nav.veilarbperson.client.pdl.domain.Bostedsadresse;
-import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
-import no.nav.veilarbperson.client.pdl.domain.Oppholdsadresse;
+import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
@@ -23,6 +22,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PdlClientImplTest {
+
+    private static Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
+    private static String USER_TOKEN = "USER_TOKEN";
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
@@ -42,7 +44,7 @@ public class PdlClientImplTest {
 
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
 
-        pdlClient.hentPerson("IDENT", "USER_TOKEN");
+        pdlClient.hentPerson(FNR, "USER_TOKEN");
     }
 
     @Test
@@ -58,7 +60,7 @@ public class PdlClientImplTest {
 
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
 
-        HentPdlPerson.PdlPerson person = pdlClient.hentPerson("IDENT", "USER_TOKEN");
+        HentPdlPerson.PdlPerson person = pdlClient.hentPerson(FNR, USER_TOKEN);
 
         HentPdlPerson.Navn navn = person.getNavn().get(0);
         assertEquals("NATURLIG", navn.getFornavn());
@@ -157,6 +159,37 @@ public class PdlClientImplTest {
     }
 
     @Test
+    public void henteVergeOgFullmakt_skal_parse_request() {
+        String hentVergeOgFullmaktResponseJson = TestUtils.readTestResourceFile("pdl-hentVergeOgFullmakt-response.json");
+        String apiUrl = "http://localhost:" + wireMockRule.port();
+
+        givenThat(post(anyUrl())
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody(hentVergeOgFullmaktResponseJson))
+        );
+
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+
+        HentPdlPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(FNR, USER_TOKEN);
+
+        HentPdlPerson.VergemaalEllerFremtidsfullmakt vergemaal = vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt().get(0);
+        HentPdlPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
+
+        assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaal.getType());
+        assertEquals("VergemallEmbete", vergemaal.getEmbete());
+        assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, vergeEllerFullmektig.getOmfang());
+        assertEquals("VergeMotpartsPersonident1", vergeEllerFullmektig.getMotpartsPersonident());
+        assertEquals("vergeEtternavn1", vergeEllerFullmektig.getNavn().getEtternavn());
+
+        HentPdlPerson.Fullmakt fullmakt = vergeOgFullmakt.getFullmakt().get(0);
+
+        assertEquals("motpartsPersonident1", fullmakt.getMotpartsPersonident());
+        assertEquals("motpartsRolle1", fullmakt.getMotpartsRolle());
+        assertEquals(2, fullmakt.getOmraader().length);
+    }
+
+    @Test
     public void hentePerson_skal_sjekke_feil() {
         String hentPersonErrorResponseJson = TestUtils.readTestResourceFile("pdl-hentPerson-error-response.json");
         String apiUrl = "http://localhost:" + wireMockRule.port();
@@ -170,7 +203,7 @@ public class PdlClientImplTest {
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
 
         assertThrows(ResponseStatusException.class, () -> {
-            pdlClient.hentPerson("IDENT", "USER_TOKEN");
+            pdlClient.hentPerson(FNR, "USER_TOKEN");
         });
     }
 
@@ -180,7 +213,7 @@ public class PdlClientImplTest {
         String hentPersonRequest = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
         String apiUrl = "http://localhost:" + wireMockRule.port();
 
-        String jsonRequest = JsonUtils.toJson(new GqlRequest<>(hentPersonRequest, new PdlPersonVariables.HentPersonVariables("TEST_IDENT", false)));
+        String jsonRequest = JsonUtils.toJson(new GqlRequest<>(hentPersonRequest, new PdlPersonVariables.HentPersonVariables(Fnr.of("TEST_IDENT"), false)));
 
         givenThat(post(urlEqualTo("/graphql"))
                 .withRequestBody(equalToJson(jsonRequest))

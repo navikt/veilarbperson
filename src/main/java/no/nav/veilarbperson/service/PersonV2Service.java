@@ -6,7 +6,6 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
-import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
@@ -17,17 +16,23 @@ import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.domain.Telefon;
-import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.PersonDataMapper;
+import no.nav.veilarbperson.utils.PersonV2DataMapper;
+import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
+import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
 
 @Slf4j
 @Service
@@ -38,43 +43,43 @@ public class PersonV2Service {
     private final DkifClient dkifClient;
     private final Norg2Client norg2Client;
     private final PersonClient personClient;
-    private final PamClient pamClient;
     private final EgenAnsattClient egenAnsattClient;
     private final VeilarbportefoljeClient veilarbportefoljeClient;
     private final KodeverkService kodeverkService;
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient, AuthService authService, DkifClient dkifClient, Norg2Client norg2Client, PersonClient personClient,
-                           PamClient pamClient, EgenAnsattClient egenAnsattClient, VeilarbportefoljeClient veilarbportefoljeClient, KodeverkService kodeverkService) {
+                           EgenAnsattClient egenAnsattClient, VeilarbportefoljeClient veilarbportefoljeClient, KodeverkService kodeverkService) {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.dkifClient = dkifClient;
         this.norg2Client = norg2Client;
         this.personClient = personClient;
-        this.pamClient = pamClient;
         this.egenAnsattClient = egenAnsattClient;
         this.veilarbportefoljeClient = veilarbportefoljeClient;
         this.kodeverkService = kodeverkService;
     }
 
-    public HentPdlPerson.PdlPerson hentPerson(String personIdent) {
+    public HentPdlPerson.PdlPerson hentPerson(Fnr personIdent) {
         return pdlClient.hentPerson(personIdent, authService.getInnloggetBrukerToken());
     }
 
-    public PersonData hentPersonDataFraTps(String personIdent) {
-        return PersonDataMapper.tilPersonData(personClient.hentPerson(Fnr.of(personIdent)));
+    public PersonData hentPersonDataFraTps(Fnr personIdent) {
+        return PersonDataMapper.tilPersonData(personClient.hentPerson(personIdent));
     }
 
-    public PersonV2Data hentFlettetPerson(String fodselsnummer, String userToken) throws Exception {
+    public PersonV2Data hentFlettetPerson(Fnr fodselsnummer, String userToken) {
         PersonData personDataFraTps = hentPersonDataFraTps(fodselsnummer);
-        HentPdlPerson.PdlPerson personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer, userToken)).orElseThrow(() -> new Exception("Fant ikke person i hentPerson operasjonen i PDL"));
+        HentPdlPerson.PdlPerson personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer, userToken))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Fant ikke person i hentPerson operasjonen i PDL"));
+
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl, personDataFraTps);
 
         try {
             flettPersoninfoFraPortefolje(personV2Data, fodselsnummer);
         } catch (Exception e) {
             log.warn("Bruker fallbackløsning for egenAnsatt-sjekk", e);
-            personV2Data.setEgenAnsatt(egenAnsattClient.erEgenAnsatt(Fnr.of(fodselsnummer)));
+            personV2Data.setEgenAnsatt(egenAnsattClient.erEgenAnsatt(fodselsnummer));
             personV2Data.setSikkerhetstiltak(ofNullable(getFirstElement(personDataFraPdl.getSikkerhetstiltak())).map(HentPdlPerson.Sikkerhetstiltak::getBeskrivelse).orElse(null));
         }
 
@@ -87,7 +92,7 @@ public class PersonV2Service {
         return personV2Data;
     }
 
-    public List<Familiemedlem> hentOpplysningerTilBarna(String[] barnasFnrs, Bostedsadresse foreldresBostedsAdresse) {
+    public List<Familiemedlem> hentOpplysningerTilBarna(Fnr[] barnasFnrs, Bostedsadresse foreldresBostedsAdresse) {
         List<HentPdlPerson.Barn> barnasInformasjon = pdlClient.hentPersonBolk(barnasFnrs);
 
         return ofNullable(barnasInformasjon)
@@ -99,16 +104,17 @@ public class PersonV2Service {
                 .collect(Collectors.toList());
     }
 
-    public String[] hentFnrTilBarna(List<HentPdlPerson.Familierelasjoner> familierelasjoner) {
+    public Fnr[] hentFnrTilBarna(List<HentPdlPerson.Familierelasjoner> familierelasjoner) {
         return familierelasjoner.stream()
                 .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
                 .map(HentPdlPerson.Familierelasjoner::getRelatertPersonsIdent)
-                .toArray(String[]::new);
+                .map(Fnr::of)
+                .toArray(Fnr[]::new);
     }
 
     public void flettBarnInformasjon(List<HentPdlPerson.Familierelasjoner> familierelasjoner, PersonV2Data personV2Data) {
         if (!familierelasjoner.isEmpty()) {
-            String[] barnasFnrListe = hentFnrTilBarna(familierelasjoner);
+            Fnr[] barnasFnrListe = hentFnrTilBarna(familierelasjoner);
 
             if (barnasFnrListe.length != 0) {
                 List<Familiemedlem> barnasInformasjon = hentOpplysningerTilBarna(barnasFnrListe, personV2Data.getBostedsadresse());
@@ -117,13 +123,13 @@ public class PersonV2Service {
         }
     }
 
-    public String hentFnrTilPartner(List<HentPdlPerson.Sivilstand> personsSivilstand) {
+    public Fnr hentFnrTilPartner(List<HentPdlPerson.Sivilstand> personsSivilstand) {
         return ofNullable(getFirstElement(personsSivilstand))
-                .map(HentPdlPerson.Sivilstand::getRelatertVedSivilstand).orElse(null);
+                .map(HentPdlPerson.Sivilstand::getRelatertVedSivilstand).map(Fnr::of).orElse(null);
     }
 
     public void flettPartnerInformasjon(List<HentPdlPerson.Sivilstand> personsSivilstand, PersonV2Data personV2Data, String userToken) {
-        String fnrTilPartner = hentFnrTilPartner(personsSivilstand);
+        Fnr fnrTilPartner = hentFnrTilPartner(personsSivilstand);
 
         if(fnrTilPartner != null) {
             HentPdlPerson.Familiemedlem partnerInformasjon = pdlClient.hentPartner(fnrTilPartner, userToken);
@@ -134,13 +140,13 @@ public class PersonV2Service {
         }
     }
 
-    private void flettPersoninfoFraPortefolje(PersonV2Data personV2Data, String fodselsnummer) {
-        Personinfo personinfo = veilarbportefoljeClient.hentPersonInfo(Fnr.of(fodselsnummer));
+    private void flettPersoninfoFraPortefolje(PersonV2Data personV2Data, Fnr fodselsnummer) {
+        Personinfo personinfo = veilarbportefoljeClient.hentPersonInfo(fodselsnummer);
         personV2Data.setEgenAnsatt(personinfo.egenAnsatt);
         personV2Data.setSikkerhetstiltak(personinfo.sikkerhetstiltak);
     }
 
-    private void flettGeografiskEnhet(String fodselsnummer,  String userToken, PersonV2Data personV2Data) {
+    private void flettGeografiskEnhet(Fnr fodselsnummer,  String userToken, PersonV2Data personV2Data) {
         String geografiskTilknytning = ofNullable(pdlClient.hentGeografiskTilknytning(fodselsnummer, userToken))
                 .map(HentPdlPerson.GeografiskTilknytning::getGtKommune).orElse(null);
 
@@ -201,9 +207,9 @@ public class PersonV2Service {
         }
     }
 
-    private void flettDigitalKontaktinformasjon(String fnr, PersonV2Data personV2Data) {
+    private void flettDigitalKontaktinformasjon(Fnr fnr, PersonV2Data personV2Data) {
         try {
-            DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(Fnr.of(fnr));
+            DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);
 
             leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), personV2Data.getTelefon());
             personV2Data.setEpost(kontaktinfo.getEpostadresse());
@@ -219,9 +225,46 @@ public class PersonV2Service {
                 && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
 
         if (harIkkeTelefonFraKrr) {
-                Telefon telefonNrFraKrr = new Telefon().setPrioritet(telefonListe.size()+1+"").setTelefonNr(telefonNummerFraKrr).setMaster("KRR");
-                telefonListe.add(telefonNrFraKrr);
+            Telefon telefonNrFraKrr = new Telefon().setPrioritet(telefonListe.size()+1+"").setTelefonNr(telefonNummerFraKrr).setMaster("KRR");
+            telefonListe.add(telefonNrFraKrr);
         }
+    }
+
+    public TilrettelagtKommunikasjonData hentSpraakTolkInfo(Fnr fnr, String userToken) {
+        HentPdlPerson.HentSpraakTolk spraakTolkInfo = ofNullable(pdlClient.hentTilrettelagtKommunikasjon(fnr, userToken))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Klarte ikke å hente persons tolkinformasjon"));
+
+        HentPdlPerson.TilrettelagtKommunikasjon tilrettelagtKommunikasjon = ofNullable(spraakTolkInfo)
+                .map(HentPdlPerson.HentSpraakTolk::getTilrettelagtKommunikasjon)
+                .map(PersonV2DataMapper::getFirstElement).orElse(null);
+        String tegnSpraak = ofNullable(tilrettelagtKommunikasjon).map(HentPdlPerson.TilrettelagtKommunikasjon::getTegnspraaktolk).map(HentPdlPerson.Tolk::getSpraak).map(kodeverkService::getBeskrivelseForSpraakKode).orElse(null);
+        String taleSpraak = ofNullable(tilrettelagtKommunikasjon).map(HentPdlPerson.TilrettelagtKommunikasjon::getTalespraaktolk).map(HentPdlPerson.Tolk::getSpraak).map(kodeverkService::getBeskrivelseForSpraakKode).orElse(null);
+
+        return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
+    }
+
+    public VergeOgFullmaktData hentVergeEllerFullmakt(Fnr fnr, String userToken) {
+        HentPdlPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = ofNullable(pdlClient.hentVergeOgFullmakt(fnr, userToken))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error mens å hente Verge og Fullmakt til personen"));
+
+        VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+        flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, userToken);
+
+        return vergeOgFullmaktData;
+    }
+
+    public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData, String userToken) {
+        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmakt();
+
+        fullmaktListe.forEach(fullmakt -> {
+            try {
+                 HentPdlPerson.PersonNavn fullmaktNavn = pdlClient.hentPersonNavn(Fnr.of(fullmakt.getMotpartsPersonident()), userToken);
+                 VergeOgFullmaktData.Navn personNavn = ofNullable(fullmaktNavn).map(HentPdlPerson.PersonNavn::getNavn).map(PersonV2DataMapper::getFirstElement).map(VergeOgFullmaktDataMapper::personNavnMapper).orElse(null);
+                 fullmakt.setMotpartsPersonNavn(personNavn);
+             } catch (Exception e) {
+                 log.error("Error mens å hente motpartsPersonNavn til fullmakt");
+             }
+        });
     }
 
     public String hentMalform(Fnr fnr) {

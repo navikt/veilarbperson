@@ -1,0 +1,59 @@
+{
+  "data": {
+    "hentPerson": {
+      "vergemaalEllerFremtidsfullmakt": [
+        {
+          "type": "midlertidigForVoksen",
+          "embete": "VergemallEmbete",
+          "vergeEllerFullmektig" : {
+            "navn": {
+              "fornavn": "vergeFornavn1",
+              "mellomnavn": "vergeMellomnavn1",
+              "etternavn": "vergeEtternavn1"
+            },
+            "motpartsPersonident": "VergeMotpartsPersonident1",
+            "omfang": "oekonomiskeInteresser"
+          },
+          "folkeregistermetadata": {
+            "ajourholdstidspunkt":  "2021-03-02T13:00:42",
+            "gyldighetstidspunkt":  "2021-03-02T13:00:42"
+          }
+        },
+        {
+          "type": "stadfestetFremtidsfullmakt",
+          "embete": "VergemallEmbete",
+          "vergeEllerFullmektig" : {
+            "navn": {
+              "fornavn": "vergeFornavn2",
+              "mellomnavn": "vergeMellomnavn2",
+              "etternavn": "vergeEtternavn2"
+            },
+            "motpartsPersonident": "VergeMotpartsPersonident2",
+            "omfang": "personligeInteresser"
+          },
+          "folkeregistermetadata": {
+            "ajourholdstidspunkt":  "2021-03-02T13:00:42",
+            "gyldighetstidspunkt":  "2021-03-02T13:00:42"
+          }
+        }
+      ],
+      "fullmakt": [
+        {
+          "motpartsPersonident": "motpartsPersonident1",
+          "motpartsRolle": "motpartsRolle1",
+          "omraader": ["AAA", "BBB"],
+          "gyldigFraOgMed": "2021-01-15",
+          "gyldigTilOgMed": "2021-01-15"
+        },
+        {
+          "motpartsPersonident": "motpartsPersonident2",
+          "motpartsRolle": "motpartsRolle2",
+          "omraader": ["AAA", "BBB"],
+          "gyldigFraOgMed": "2021-01-15",
+          "gyldigTilOgMed": "2021-01-15"
+        }
+      ]
+    }
+  }
+}
+
