@@ -344,6 +344,13 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals("NORDMANN OLA", fullmaktListe.get(0).getMotpartsPersonNavn().getForkortetNavn());
     }
 
+    @Test
+    public void personNavnMapperTest() {
+        PersonNavn navn = PersonV2DataMapper.hentNavn(hentPersonNavn(FNR).getNavn());
+        assertEquals("OLA", navn.getFornavn());
+        assertEquals("NORDMANN", navn.getEtternavn());
+        assertEquals("NORDMANN OLA", navn.getForkortetNavn());
+    }
 
     @Test
     public void hentSpraakTolkInfoTest() {
