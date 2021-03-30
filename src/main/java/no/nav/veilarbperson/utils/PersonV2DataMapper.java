@@ -43,10 +43,10 @@ public class PersonV2DataMapper {
         return list.stream().findFirst().orElse(null);
     }
 
-    public static HentPdlPerson.Navn hentNavn(List<HentPdlPerson.Navn> personNavn) {
+    public static PersonNavn hentNavn(List<HentPdlPerson.Navn> personNavn) {
         HentPdlPerson.Navn navn = getFirstElement(personNavn);
 
-        return new HentPdlPerson.Navn()
+        return new PersonNavn()
                 .setFornavn(ofNullable(navn).map(HentPdlPerson.Navn::getFornavn).orElse(null))
                 .setMellomnavn(ofNullable(navn).map(HentPdlPerson.Navn::getMellomnavn).orElse(null))
                 .setEtternavn(ofNullable(navn).map(HentPdlPerson.Navn::getEtternavn).orElse(null))

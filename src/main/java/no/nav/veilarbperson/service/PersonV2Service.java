@@ -276,4 +276,11 @@ public class PersonV2Service {
         }
         return null;
     }
+
+    public PersonNavn hentNavn(Fnr fnr, String userToken) {
+        HentPdlPerson.PersonNavn personNavn = ofNullable(pdlClient.hentPersonNavn(fnr, userToken))
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Klarte ikke å hente personsnavn"));
+
+        return PersonV2DataMapper.hentNavn(personNavn.getNavn());
+    }
 }
