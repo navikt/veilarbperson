@@ -14,6 +14,7 @@ import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
+import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.Telefon;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.TestUtils;
@@ -346,7 +347,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void personNavnMapperTest() {
-        PersonNavn navn = PersonV2DataMapper.hentNavn(hentPersonNavn(FNR).getNavn());
+        PersonNavnV2 navn = PersonV2DataMapper.navnMapper(hentPersonNavn(FNR).getNavn());
         assertEquals("OLA", navn.getFornavn());
         assertEquals("NORDMANN", navn.getEtternavn());
         assertEquals("NORDMANN OLA", navn.getForkortetNavn());

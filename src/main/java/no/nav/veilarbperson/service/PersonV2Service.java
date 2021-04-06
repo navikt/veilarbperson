@@ -15,6 +15,7 @@ import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.PersonData;
+import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.Telefon;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
@@ -277,10 +278,13 @@ public class PersonV2Service {
         return null;
     }
 
-    public PersonNavn hentNavn(Fnr fnr, String userToken) {
-        HentPdlPerson.PersonNavn personNavn = ofNullable(pdlClient.hentPersonNavn(fnr, userToken))
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Klarte ikke å hente personsnavn"));
+    public PersonNavnV2 hentNavn(Fnr fnr, String userToken) {
+        HentPdlPerson.PersonNavn personNavn = pdlClient.hentPersonNavn(fnr, userToken);
 
-        return PersonV2DataMapper.hentNavn(personNavn.getNavn());
+        if(personNavn.getNavn().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke navn til person");
+        }
+
+        return PersonV2DataMapper.navnMapper(personNavn.getNavn());
     }
 }

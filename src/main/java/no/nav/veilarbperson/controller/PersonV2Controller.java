@@ -3,7 +3,7 @@ package no.nav.veilarbperson.controller;
 import io.swagger.annotations.ApiOperation;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
-import no.nav.veilarbperson.client.pdl.domain.PersonNavn;
+import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.client.pdl.domain.TilrettelagtKommunikasjonData;
 import no.nav.veilarbperson.client.pdl.domain.VergeOgFullmaktData;
 import no.nav.veilarbperson.domain.Malform;
@@ -64,7 +64,7 @@ public class PersonV2Controller {
 
     @GetMapping("/navn")
     @ApiOperation(value = "Henter navn til en person fra PDL")
-    public PersonNavn hentNavn(@RequestParam("fnr") Fnr fnr) {
+    public PersonNavnV2 hentNavn(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
         return personV2Service.hentNavn(fnr, authService.getInnloggetBrukerToken());
