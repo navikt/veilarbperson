@@ -5,6 +5,7 @@ import no.nav.veilarbperson.client.pdl.HentPdlPerson;
 import no.nav.veilarbperson.client.pdl.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.PersonData;
+import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.Telefon;
 
 import java.util.*;
@@ -43,10 +44,10 @@ public class PersonV2DataMapper {
         return list.stream().findFirst().orElse(null);
     }
 
-    public static HentPdlPerson.Navn hentNavn(List<HentPdlPerson.Navn> personNavn) {
+    public static PersonNavnV2 navnMapper(List<HentPdlPerson.Navn> personNavn) {
         HentPdlPerson.Navn navn = getFirstElement(personNavn);
 
-        return new HentPdlPerson.Navn()
+        return new PersonNavnV2()
                 .setFornavn(ofNullable(navn).map(HentPdlPerson.Navn::getFornavn).orElse(null))
                 .setMellomnavn(ofNullable(navn).map(HentPdlPerson.Navn::getMellomnavn).orElse(null))
                 .setEtternavn(ofNullable(navn).map(HentPdlPerson.Navn::getEtternavn).orElse(null))
