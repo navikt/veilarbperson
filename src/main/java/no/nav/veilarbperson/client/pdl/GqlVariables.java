@@ -4,25 +4,25 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import no.nav.common.types.identer.Fnr;
 
-public class PdlPersonVariables {
+public class GqlVariables {
 
     @Data
     @AllArgsConstructor
-    public static class HentPersonVariables {
+    public static class HentPerson {
         private Fnr ident;
         private boolean historikk;
     }
 
     @Data
     @AllArgsConstructor
-    public static class HentPersonBolkVariables {
+    public static class HentPersonBolk {
         private Fnr[] identer;
         private boolean historikk;
     }
 
     @Data
     @AllArgsConstructor
-    public static class HentGeografiskTilknytningVariables {
+    public static class HenGeografiskTilknytning {
         private Fnr ident;
     }
 }

@@ -1,8 +1,9 @@
-package no.nav.veilarbperson.client.pdl.domain;
+package no.nav.veilarbperson.domain;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import no.nav.veilarbperson.client.pdl.HentPdlPerson;
+import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
+import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

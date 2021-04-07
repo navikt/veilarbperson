@@ -1,6 +1,6 @@
 query($ident: ID!, $historikk: Boolean!) {
     hentPerson(ident: $ident) {
-        tilrettelagtKommunikasjon(historikk: $historikk) {
+        tilrettelagtKommunikasjon {
             talespraaktolk {
                 spraak
             }
