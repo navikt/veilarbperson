@@ -2,10 +2,10 @@ package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.pdl.PersonV2Data;
+import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.domain.PersonNavnV2;
-import no.nav.veilarbperson.client.pdl.domain.TilrettelagtKommunikasjonData;
-import no.nav.veilarbperson.client.pdl.domain.VergeOgFullmaktData;
+import no.nav.veilarbperson.domain.TilrettelagtKommunikasjonData;
+import no.nav.veilarbperson.domain.VergeOgFullmaktData;
 import no.nav.veilarbperson.domain.Malform;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonV2Service;

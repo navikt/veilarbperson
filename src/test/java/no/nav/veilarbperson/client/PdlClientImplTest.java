@@ -3,10 +3,10 @@ package no.nav.veilarbperson.client;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.common.json.JsonUtils;
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.pdl.GqlVariables;
 import no.nav.veilarbperson.client.pdl.GqlRequest;
-import no.nav.veilarbperson.client.pdl.HentPdlPerson;
+import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
-import no.nav.veilarbperson.client.pdl.PdlPersonVariables;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
@@ -60,34 +60,34 @@ public class PdlClientImplTest {
 
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
 
-        HentPdlPerson.PdlPerson person = pdlClient.hentPerson(FNR, USER_TOKEN);
+        HentPerson.Person person = pdlClient.hentPerson(FNR, USER_TOKEN);
 
-        HentPdlPerson.Navn navn = person.getNavn().get(0);
+        HentPerson.Navn navn = person.getNavn().get(0);
         assertEquals("NATURLIG", navn.getFornavn());
         assertEquals("GLITRENDE", navn.getMellomnavn());
         assertEquals("STAFFELI", navn.getEtternavn());
         assertEquals("NATURLIG STAFFELI", navn.getForkortetNavn());
 
-        HentPdlPerson.Folkeregisteridentifikator identifikator = person.getFolkeregisteridentifikator().get(0);
+        HentPerson.Folkeregisteridentifikator identifikator = person.getFolkeregisteridentifikator().get(0);
         assertEquals("0123456789", identifikator.getIdentifikasjonsnummer());
         assertEquals("I_BRUK", identifikator.getStatus());
         assertEquals("FNR", identifikator.getType());
 
-        HentPdlPerson.Sivilstand sivilstand = person.getSivilstand().get(0);
+        HentPerson.Sivilstand sivilstand = person.getSivilstand().get(0);
         assertEquals(LocalDate.of(2020,06,01), sivilstand.getGyldigFraOgMed());
         assertEquals("GIFT", sivilstand.getType());
 
         assertTrue(person.getKjoenn().isEmpty());
 
-        HentPdlPerson.Foedsel foedsel = person.getFoedsel().get(0);
+        HentPerson.Foedsel foedsel = person.getFoedsel().get(0);
         assertEquals(LocalDate.of(1981,12,13), foedsel.getFoedselsdato());
 
-        HentPdlPerson.Familierelasjoner familierelasjoner = person.getFamilierelasjoner().get(0);
+        HentPerson.Familierelasjoner familierelasjoner = person.getFamilierelasjoner().get(0);
         assertEquals("MOR", familierelasjoner.getMinRolleForPerson());
         assertEquals("BARN", familierelasjoner.getRelatertPersonsRolle());
         assertEquals("12345678910", familierelasjoner.getRelatertPersonsIdent());
 
-        HentPdlPerson.Statsborgerskap statsborgerskap = person.getStatsborgerskap().get(0);
+        HentPerson.Statsborgerskap statsborgerskap = person.getStatsborgerskap().get(0);
         assertEquals("NORGE", statsborgerskap.getLand());
 
         Bostedsadresse bostedsadresse = person.getBostedsadresse().get(0);
@@ -99,13 +99,13 @@ public class PdlClientImplTest {
         assertEquals("0570", vegadresse.getKommunenummer());
         assertEquals("ARENDAL", vegadresse.getTilleggsnavn());
 
-        HentPdlPerson.Telefonnummer telefonnummer = person.getTelefonnummer().get(0);
+        HentPerson.Telefonnummer telefonnummer = person.getTelefonnummer().get(0);
         assertEquals("33333333", telefonnummer.getNummer());
         assertEquals("+47", telefonnummer.getLandskode());
         assertEquals("1", telefonnummer.getPrioritet());
         assertEquals("PDL", telefonnummer.getMetadata().getMaster());
 
-        HentPdlPerson.Adressebeskyttelse adressebeskyttelse = person.getAdressebeskyttelse().get(0);
+        HentPerson.Adressebeskyttelse adressebeskyttelse = person.getAdressebeskyttelse().get(0);
         assertEquals("UGRADERT", adressebeskyttelse.getGradering());
 
         Oppholdsadresse oppholdsadresse = person.getOppholdsadresse().get(0);
@@ -171,10 +171,10 @@ public class PdlClientImplTest {
 
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
 
-        HentPdlPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(FNR, USER_TOKEN);
+        HentPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(FNR, USER_TOKEN);
 
-        HentPdlPerson.VergemaalEllerFremtidsfullmakt vergemaal = vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt().get(0);
-        HentPdlPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
+        HentPerson.VergemaalEllerFremtidsfullmakt vergemaal = vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt().get(0);
+        HentPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
 
         assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaal.getType());
         assertEquals("VergemallEmbete", vergemaal.getEmbete());
@@ -182,7 +182,7 @@ public class PdlClientImplTest {
         assertEquals("VergeMotpartsPersonident1", vergeEllerFullmektig.getMotpartsPersonident());
         assertEquals("vergeEtternavn1", vergeEllerFullmektig.getNavn().getEtternavn());
 
-        HentPdlPerson.Fullmakt fullmakt = vergeOgFullmakt.getFullmakt().get(0);
+        HentPerson.Fullmakt fullmakt = vergeOgFullmakt.getFullmakt().get(0);
 
         assertEquals("motpartsPersonident1", fullmakt.getMotpartsPersonident());
         assertEquals("motpartsRolle1", fullmakt.getMotpartsRolle());
@@ -213,7 +213,7 @@ public class PdlClientImplTest {
         String hentPersonRequest = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
         String apiUrl = "http://localhost:" + wireMockRule.port();
 
-        String jsonRequest = JsonUtils.toJson(new GqlRequest<>(hentPersonRequest, new PdlPersonVariables.HentPersonVariables(Fnr.of("TEST_IDENT"), false)));
+        String jsonRequest = JsonUtils.toJson(new GqlRequest<>(hentPersonRequest, new GqlVariables.HentPerson(Fnr.of("TEST_IDENT"), false)));
 
         givenThat(post(urlEqualTo("/graphql"))
                 .withRequestBody(equalToJson(jsonRequest))

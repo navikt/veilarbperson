@@ -5,8 +5,8 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class Telefon {
-    private String prioritet;
-    private String telefonNr;
-    private String master;
+public class TilrettelagtKommunikasjonData {
+
+    private String talespraak;
+    private String tegnspraak;
 }

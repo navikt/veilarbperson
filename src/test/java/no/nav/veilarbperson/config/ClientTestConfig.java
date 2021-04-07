@@ -15,7 +15,7 @@ import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.pam.PamClient;
-import no.nav.veilarbperson.client.pdl.HentPdlPerson;
+import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
@@ -215,31 +215,31 @@ public class ClientTestConfig {
     public PdlClient pdlClient() {
         return new PdlClient() {
             @Override
-            public HentPdlPerson.PdlPerson hentPerson(Fnr personIdent, String userToken) {
+            public HentPerson.Person hentPerson(Fnr personIdent, String userToken) {
                 return null;
             }
 
             @Override
-            public HentPdlPerson.Familiemedlem hentPartner(Fnr personIdent, String userToken) {
+            public HentPerson.Familiemedlem hentPartner(Fnr personIdent, String userToken) {
                 return null;
             }
 
             @Override
-            public HentPdlPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken) { return null; }
+            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken) { return null; }
 
             @Override
-            public HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) { return null; }
+            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) { return null; }
 
             @Override
-            public List<HentPdlPerson.Barn> hentPersonBolk(Fnr[] personIdent) {
+            public List<HentPerson.Barn> hentPersonBolk(Fnr[] personIdent) {
                 return null;
             }
 
             @Override
-            public HentPdlPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) { return null; }
+            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) { return null; }
 
             @Override
-            public HentPdlPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, String userToken) { return null; }
+            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, String userToken) { return null; }
 
             @Override
             public HealthCheckResult checkHealth() {
