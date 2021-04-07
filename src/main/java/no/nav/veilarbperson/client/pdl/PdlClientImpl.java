@@ -93,13 +93,13 @@ public class PdlClientImpl implements PdlClient {
 
     @Override
     public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) {
-        GqlRequest request = new GqlRequest<>(hentGeografiskTilknytningQuery, new GqlVariables.HenGeografiskTilknytning(personIdent));
+        GqlRequest request = new GqlRequest<>(hentGeografiskTilknytningQuery, new GqlVariables.HentGeografiskTilknytning(personIdent));
         return graphqlRequest(request, userToken, HentPerson.class).hentGeografiskTilknytning;
     }
 
     @Override
     public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, String userToken) {
-        GqlRequest request = new GqlRequest<>(hentTilrettelagtKommunikasjonQuery, new GqlVariables.HentPerson(personIdent, false));
+        GqlRequest request = new GqlRequest<>(hentTilrettelagtKommunikasjonQuery, new GqlVariables.HentTilrettelagtKommunikasjon(personIdent));
         return graphqlRequest(request, userToken, HentPerson.HentTilrettelagtKommunikasjon.class).hentPerson;
     }
 

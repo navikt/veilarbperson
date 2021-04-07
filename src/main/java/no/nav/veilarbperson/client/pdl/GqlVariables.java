@@ -22,7 +22,13 @@ public class GqlVariables {
 
     @Data
     @AllArgsConstructor
-    public static class HenGeografiskTilknytning {
+    public static class HentGeografiskTilknytning {
+        private Fnr ident;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class HentTilrettelagtKommunikasjon {
         private Fnr ident;
     }
 }
