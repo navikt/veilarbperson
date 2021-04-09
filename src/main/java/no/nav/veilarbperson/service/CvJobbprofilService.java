@@ -44,22 +44,22 @@ public class CvJobbprofilService {
             return ikkeTilgangResponse(CvIkkeTilgang.BRUKER_IKKE_UNDER_OPPFOLGING);
         }
 
-        Response cvJobbprofilResponse = pamClient.hentCvOgJobbprofilJsonV2(fnr, underOppfolging.isErManuell());
+        try (Response cvJobbprofilResponse = pamClient.hentCvOgJobbprofilJsonV2(fnr, underOppfolging.isErManuell())) {
+            if (cvJobbprofilResponse.code() == HttpStatus.NOT_FOUND.value()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            } else if (cvJobbprofilResponse.code() == HttpStatus.FORBIDDEN.value()) {
+                return ikkeTilgangResponse(CvIkkeTilgang.BRUKER_IKKE_GODKJENT_SAMTYKKE);
+            }
 
-        if (cvJobbprofilResponse.code() == HttpStatus.NOT_FOUND.value()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        } else if (cvJobbprofilResponse.code() == HttpStatus.FORBIDDEN.value()) {
-            return ikkeTilgangResponse(CvIkkeTilgang.BRUKER_IKKE_GODKJENT_SAMTYKKE);
+            String cvJobbprofilJson = RestUtils.getBodyStr(cvJobbprofilResponse)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+            if (cvJobbprofilJson.trim().equals(EMPTY_JSON_OBJ)) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+
+            return ResponseEntity.ok(cvJobbprofilJson);
         }
-
-        String cvJobbprofilJson = RestUtils.getBodyStr(cvJobbprofilResponse)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        if (cvJobbprofilJson.trim().equals(EMPTY_JSON_OBJ)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return ResponseEntity.ok(cvJobbprofilJson);
     }
 
     private static ResponseEntity<String> ikkeTilgangResponse(CvIkkeTilgang cvIkkeTilgang) {
