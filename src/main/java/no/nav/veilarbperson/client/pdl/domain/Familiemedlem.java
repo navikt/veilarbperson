@@ -2,6 +2,7 @@ package no.nav.veilarbperson.client.pdl.domain;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import no.nav.common.types.identer.Fnr;
 
 import java.time.LocalDate;
 
@@ -12,7 +13,7 @@ public class Familiemedlem {
     String mellomnavn;
     String etternavn;
     String forkortetNavn;
-    String fodselsnummer;
+    Fnr fodselsnummer;
     LocalDate fodselsdato;
     String kjonn;
     LocalDate dodsdato;

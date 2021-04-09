@@ -1,12 +1,12 @@
 package no.nav.veilarbperson.utils.mappers;
 
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.pdl.HentPdlPerson;
+import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
-import no.nav.veilarbperson.client.pdl.domain.VergeOgFullmaktData;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
+import no.nav.veilarbperson.domain.VergeOgFullmaktData;
 import no.nav.veilarbperson.utils.TestUtils;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.junit.Test;
@@ -23,16 +23,16 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
 
     private static Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
 
-    public HentPdlPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
+    public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
         PdlClientImpl pdlClient = configurPdlClient("pdl-hentVergeOgFullmakt-response.json");
         return pdlClient.hentVergeOgFullmakt(fnr, "USER_TOKEN");
     }
 
     @Test
     public void vergetypeOgOmfangEnumMapperTest() {
-        List<HentPdlPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVergeOgFullmakt(FNR).getVergemaalEllerFremtidsfullmakt();
-        VergemaalEllerFullmaktOmfangType omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).get();
-        VergemaalEllerFullmaktOmfangType omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPdlPerson.VergeEllerFullmektig::getOmfang).get();
+        List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVergeOgFullmakt(FNR).getVergemaalEllerFremtidsfullmakt();
+        VergemaalEllerFullmaktOmfangType omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
+        VergemaalEllerFullmaktOmfangType omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
 
         assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaal.get(0).getType());
         assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, omfang1);
@@ -43,7 +43,7 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
 
     @Test
     public void toVergeOgFullmaktDataTest() {
-        HentPdlPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
+        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
         VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
 
         List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktData = vergeOgFullmaktData.getVergemaalEllerFremtidsfullmakt();

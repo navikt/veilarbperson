@@ -49,11 +49,6 @@
           "minRolleForPerson": "MOR",
           "relatertPersonsRolle": "BARN",
           "relatertPersonsIdent": "12345678911"
-        },
-        {
-          "minRolleForPerson": "MOR",
-          "relatertPersonsRolle": "BARN",
-          "relatertPersonsIdent": "12345678912"
         }
       ],
       "statsborgerskap": [

@@ -10,13 +10,13 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-public class HentPdlPerson {
-    public PdlPerson hentPerson;
+public class HentPerson {
+    public Person hentPerson;
     public List<Barn> hentPersonBolk;
     public GeografiskTilknytning hentGeografiskTilknytning;
 
     @Data
-    public static class PdlPerson {
+    public static class Person {
         private List<Navn> navn;
         private List<Foedsel> foedsel;
         private List<Kjoenn> kjoenn;

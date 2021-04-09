@@ -1,6 +1,5 @@
 package no.nav.veilarbperson.utils;
 
-
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.Fnr;
 import no.nav.common.types.identer.NavIdent;
