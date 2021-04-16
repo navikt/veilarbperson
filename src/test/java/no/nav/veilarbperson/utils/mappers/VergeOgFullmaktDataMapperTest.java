@@ -31,14 +31,25 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
     @Test
     public void vergetypeOgOmfangEnumMapperTest() {
         List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVergeOgFullmakt(FNR).getVergemaalEllerFremtidsfullmakt();
-        VergemaalEllerFullmaktOmfangType omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
-        VergemaalEllerFullmaktOmfangType omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
 
-        assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaal.get(0).getType());
-        assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, omfang1);
+        //Vergetype og omfang fra PDL
+        String vergeType1 = vergemaal.get(0).getType();
+        String vergeType2 = vergemaal.get(1).getType();
+        String omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
+        String omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
 
-        assertEquals(Vergetype.STADFESTET_FREMTIDSFULLMAKT, vergemaal.get(1).getType());
-        assertEquals(VergemaalEllerFullmaktOmfangType.PERSONLIGE_INTERESSER, omfang2);
+        assertEquals("midlertidigForVoksen", vergeType1);
+        assertEquals("stadfestetFremtidsfullmakt", vergeType2);
+
+        assertEquals("oekonomiskeInteresser", omfang1);
+        assertEquals("personligeInteresser", omfang2);
+
+        //Vergetype og omfang etter ble mappet til enum
+        assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, Vergetype.getVergetype(vergeType1));
+        assertEquals(Vergetype.STADFESTET_FREMTIDSFULLMAKT, Vergetype.getVergetype(vergeType2));
+
+        assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, VergemaalEllerFullmaktOmfangType.getOmfang(omfang1));
+        assertEquals(VergemaalEllerFullmaktOmfangType.PERSONLIGE_INTERESSER, VergemaalEllerFullmaktOmfangType.getOmfang(omfang2));
     }
 
     @Test

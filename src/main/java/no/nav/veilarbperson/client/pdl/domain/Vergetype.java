@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.client.pdl.domain;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.HashMap;
+import java.util.Map;
 
 public enum Vergetype {
 
@@ -14,13 +15,19 @@ public enum Vergetype {
         MIDLERTIDIG_FOR_VOKSEN("midlertidigForVoksen");
 
         private final String type;
+        private static final Map<String, Vergetype> BY_NAME = new HashMap<>();
 
-        Vergetype(String type) {
-            this.type = type;
+        static {
+                for (Vergetype vergetype: values()) {
+                        BY_NAME.put(vergetype.type, vergetype);
+                }
         }
 
-        @JsonValue
-        public String toString() {
-            return type;
+        Vergetype(String type) {
+                this.type = type;
+        }
+
+        public static Vergetype getVergetype(String type) {
+                return BY_NAME.get(type);
         }
 }

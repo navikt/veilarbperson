@@ -1,6 +1,8 @@
 package no.nav.veilarbperson.utils;
 
 import no.nav.veilarbperson.client.pdl.HentPerson;
+import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
+import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 import no.nav.veilarbperson.domain.VergeOgFullmaktData;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,25 +22,25 @@ public class VergeOgFullmaktDataMapper {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person har ikke vergemål eller fremtidsfullmakt i PDL");
         }
 
-        List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakts = new ArrayList<>();
+        List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakter = new ArrayList<>();
         vergemaalEllerFremtidsfullmaktListe.forEach(vergemaalEllerFremtidsfullmakt -> {
-                    vergemaalEllerFremtidsfullmakts.add(
+                    vergemaalEllerFremtidsfullmakter.add(
                             new VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt()
-                                    .setType(vergemaalEllerFremtidsfullmakt.getType())
+                                    .setType(Vergetype.getVergetype(vergemaalEllerFremtidsfullmakt.getType()))
                                     .setEmbete(vergemaalEllerFremtidsfullmakt.getEmbete())
                                     .setVergeEllerFullmektig(vergeEllerFullmektigMapper(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig()))
                                     .setFolkeregistermetadata(folkeregisterMetadataMapper(vergemaalEllerFremtidsfullmakt.getFolkeregistermetadata()))
                     );
                 }
         );
-        return vergemaalEllerFremtidsfullmakts;
+        return vergemaalEllerFremtidsfullmakter;
     }
 
     public static VergeOgFullmaktData.VergeEllerFullmektig vergeEllerFullmektigMapper(HentPerson.VergeEllerFullmektig vergeEllerFullmektig) {
         return new VergeOgFullmaktData.VergeEllerFullmektig()
                 .setNavn(vergeNavnMapper(vergeEllerFullmektig.getNavn()))
                 .setMotpartsPersonident(vergeEllerFullmektig.getMotpartsPersonident())
-                .setOmfang(vergeEllerFullmektig.getOmfang());
+                .setOmfang(VergemaalEllerFullmaktOmfangType.getOmfang(vergeEllerFullmektig.getOmfang()));
     }
 
     public static VergeOgFullmaktData.VergeNavn vergeNavnMapper(HentPerson.VergeNavn vergeNavn) {
