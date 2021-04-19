@@ -144,12 +144,12 @@ public class HentPerson {
     public static class VergeEllerFullmektig {
         private VergeNavn navn;
         private String motpartsPersonident;
-        private String omfang;
+        private VergemaalEllerFullmaktOmfangType omfang;
     }
 
     @Data
     public static class VergemaalEllerFremtidsfullmakt {
-        private String type;
+        private Vergetype type;
         private String embete;
         private VergeEllerFullmektig vergeEllerFullmektig;
         private Folkeregistermetadata folkeregistermetadata;

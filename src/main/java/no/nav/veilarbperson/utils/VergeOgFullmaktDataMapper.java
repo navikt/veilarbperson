@@ -20,7 +20,7 @@ public class VergeOgFullmaktDataMapper {
         vergemaalEllerFremtidsfullmaktListe.forEach(vergemaalEllerFremtidsfullmakt -> {
                     vergemaalEllerFremtidsfullmakter.add(
                             new VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt()
-                                    .setType(Vergetype.getVergetype(vergemaalEllerFremtidsfullmakt.getType()))
+                                    .setType(vergemaalEllerFremtidsfullmakt.getType())
                                     .setEmbete(vergemaalEllerFremtidsfullmakt.getEmbete())
                                     .setVergeEllerFullmektig(vergeEllerFullmektigMapper(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig()))
                                     .setFolkeregistermetadata(folkeregisterMetadataMapper(vergemaalEllerFremtidsfullmakt.getFolkeregistermetadata()))
@@ -34,7 +34,7 @@ public class VergeOgFullmaktDataMapper {
         return new VergeOgFullmaktData.VergeEllerFullmektig()
                 .setNavn(vergeNavnMapper(vergeEllerFullmektig.getNavn()))
                 .setMotpartsPersonident(vergeEllerFullmektig.getMotpartsPersonident())
-                .setOmfang(VergemaalEllerFullmaktOmfangType.getOmfang(vergeEllerFullmektig.getOmfang()));
+                .setOmfang(vergeEllerFullmektig.getOmfang());
     }
 
     public static VergeOgFullmaktData.VergeNavn vergeNavnMapper(HentPerson.VergeNavn vergeNavn) {
