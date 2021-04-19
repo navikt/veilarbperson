@@ -94,19 +94,7 @@ public class PersonController {
 
     @GetMapping("/cv_jobbprofil")
     public ResponseEntity<String> cvOgJobbprofil(@RequestParam(value = "fnr", required = false) Fnr fnr) {
-        Fnr fodselsnummer = hentIdentForEksternEllerIntern(fnr);
-
-        if (unleashService.isEnabled("veilarbperson.cv_jobbprofil-v2")) {
-            return cvJobbprofilService.hentCvJobbprofilJsonV2(fnr);
-        } else {
-            if (!authService.erInternBruker()) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-            }
-
-            authService.sjekkLesetilgang(fodselsnummer);
-
-            return ResponseEntity.ok(cvJobbprofilService.hentCvJobbprofilJson(fnr));
-        }
+        return cvJobbprofilService.hentCvJobbprofilJson(fnr);
     }
 
     // TODO: Det er hårete å måtte skille på ekstern og intern

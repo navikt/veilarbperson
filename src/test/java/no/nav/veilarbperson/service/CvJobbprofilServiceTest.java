@@ -47,7 +47,7 @@ public class CvJobbprofilServiceTest {
     public void should_return_error_when_not_internal_user() {
         when(authService.erInternBruker()).thenReturn(false);
 
-        ResponseEntity<String> response = cvJobbprofilService.hentCvJobbprofilJsonV2(Fnr.of("1234"));
+        ResponseEntity<String> response = cvJobbprofilService.hentCvJobbprofilJson(Fnr.of("1234"));
 
         String expectedJson = JsonUtils.toJson(new CvJobbprofilService.CvIkkeTilgangResponse(CvIkkeTilgang.IKKE_TILGANG_TIL_BRUKER));
 
@@ -60,7 +60,7 @@ public class CvJobbprofilServiceTest {
         when(authService.erInternBruker()).thenReturn(true);
         when(authService.harLesetilgang(any())).thenReturn(false);
 
-        ResponseEntity<String> response = cvJobbprofilService.hentCvJobbprofilJsonV2(Fnr.of("1234"));
+        ResponseEntity<String> response = cvJobbprofilService.hentCvJobbprofilJson(Fnr.of("1234"));
 
         String expectedJson = JsonUtils.toJson(new CvJobbprofilService.CvIkkeTilgangResponse(CvIkkeTilgang.IKKE_TILGANG_TIL_BRUKER));
 
@@ -74,7 +74,7 @@ public class CvJobbprofilServiceTest {
         when(authService.harLesetilgang(any())).thenReturn(true);
         when(veilarboppfolgingClient.hentUnderOppfolgingStatus(any())).thenReturn(new UnderOppfolging());
 
-        ResponseEntity<String> response = cvJobbprofilService.hentCvJobbprofilJsonV2(Fnr.of("1234"));
+        ResponseEntity<String> response = cvJobbprofilService.hentCvJobbprofilJson(Fnr.of("1234"));
 
         String expectedJson = JsonUtils.toJson(new CvJobbprofilService.CvIkkeTilgangResponse(CvIkkeTilgang.BRUKER_IKKE_UNDER_OPPFOLGING));
 
@@ -90,7 +90,7 @@ public class CvJobbprofilServiceTest {
         when(authService.harLesetilgang(any())).thenReturn(true);
         when(veilarboppfolgingClient.hentUnderOppfolgingStatus(any()))
                 .thenReturn(new UnderOppfolging().setErManuell(true).setUnderOppfolging(true));
-        when(pamClient.hentCvOgJobbprofilJsonV2(any(), anyBoolean())).thenReturn(
+        when(pamClient.hentCvOgJobbprofil(any(), anyBoolean())).thenReturn(
                 new Response.Builder()
                         .request(new Request.Builder().url("http://local.test").build())
                         .protocol(Protocol.HTTP_1_1)
@@ -100,9 +100,9 @@ public class CvJobbprofilServiceTest {
                         .build()
         );
 
-        cvJobbprofilService.hentCvJobbprofilJsonV2(Fnr.of("1234"));
+        cvJobbprofilService.hentCvJobbprofilJson(Fnr.of("1234"));
 
-        verify(pamClient, times(1)).hentCvOgJobbprofilJsonV2(any(), eq(true));
+        verify(pamClient, times(1)).hentCvOgJobbprofil(any(), eq(true));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class CvJobbprofilServiceTest {
         when(authService.erInternBruker()).thenReturn(true);
         when(authService.harLesetilgang(any())).thenReturn(true);
         when(veilarboppfolgingClient.hentUnderOppfolgingStatus(any())).thenReturn(new UnderOppfolging().setUnderOppfolging(true));
-        when(pamClient.hentCvOgJobbprofilJsonV2(any(), anyBoolean())).thenReturn(
+        when(pamClient.hentCvOgJobbprofil(any(), anyBoolean())).thenReturn(
                 new Response.Builder()
                         .request(new Request.Builder().url("http://local.test").build())
                         .protocol(Protocol.HTTP_1_1)
@@ -120,7 +120,7 @@ public class CvJobbprofilServiceTest {
         );
 
         try {
-            cvJobbprofilService.hentCvJobbprofilJsonV2(Fnr.of("1234"));
+            cvJobbprofilService.hentCvJobbprofilJson(Fnr.of("1234"));
             fail();
         } catch (ResponseStatusException e) {
             assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
@@ -132,16 +132,17 @@ public class CvJobbprofilServiceTest {
         when(authService.erInternBruker()).thenReturn(true);
         when(authService.harLesetilgang(any())).thenReturn(true);
         when(veilarboppfolgingClient.hentUnderOppfolgingStatus(any())).thenReturn(new UnderOppfolging().setUnderOppfolging(true));
-        when(pamClient.hentCvOgJobbprofilJsonV2(any(), anyBoolean())).thenReturn(
+        when(pamClient.hentCvOgJobbprofil(any(), anyBoolean())).thenReturn(
                 new Response.Builder()
                         .request(new Request.Builder().url("http://local.test").build())
                         .protocol(Protocol.HTTP_1_1)
                         .message("")
+                        .body(ResponseBody.create(MEDIA_TYPE_JSON, ""))
                         .code(403)
                         .build()
         );
 
-        ResponseEntity<String> response = cvJobbprofilService.hentCvJobbprofilJsonV2(Fnr.of("1234"));
+        ResponseEntity<String> response = cvJobbprofilService.hentCvJobbprofilJson(Fnr.of("1234"));
 
         String expectedJson = JsonUtils.toJson(new CvJobbprofilService.CvIkkeTilgangResponse(CvIkkeTilgang.BRUKER_IKKE_GODKJENT_SAMTYKKE));
 
@@ -154,7 +155,7 @@ public class CvJobbprofilServiceTest {
         when(authService.erInternBruker()).thenReturn(true);
         when(authService.harLesetilgang(any())).thenReturn(true);
         when(veilarboppfolgingClient.hentUnderOppfolgingStatus(any())).thenReturn(new UnderOppfolging().setUnderOppfolging(true));
-        when(pamClient.hentCvOgJobbprofilJsonV2(any(), anyBoolean())).thenReturn(
+        when(pamClient.hentCvOgJobbprofil(any(), anyBoolean())).thenReturn(
                 new Response.Builder()
                         .request(new Request.Builder().url("http://local.test").build())
                         .protocol(Protocol.HTTP_1_1)
@@ -165,7 +166,7 @@ public class CvJobbprofilServiceTest {
         );
 
         try {
-            cvJobbprofilService.hentCvJobbprofilJsonV2(Fnr.of("1234"));
+            cvJobbprofilService.hentCvJobbprofilJson(Fnr.of("1234"));
             fail();
         } catch (ResponseStatusException e) {
             assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
@@ -179,7 +180,7 @@ public class CvJobbprofilServiceTest {
         when(authService.erInternBruker()).thenReturn(true);
         when(authService.harLesetilgang(any())).thenReturn(true);
         when(veilarboppfolgingClient.hentUnderOppfolgingStatus(any())).thenReturn(new UnderOppfolging().setUnderOppfolging(true));
-        when(pamClient.hentCvOgJobbprofilJsonV2(any(), anyBoolean())).thenReturn(
+        when(pamClient.hentCvOgJobbprofil(any(), anyBoolean())).thenReturn(
                 new Response.Builder()
                         .request(new Request.Builder().url("http://local.test").build())
                         .protocol(Protocol.HTTP_1_1)
@@ -189,7 +190,7 @@ public class CvJobbprofilServiceTest {
                         .build()
         );
 
-        ResponseEntity<String> response = cvJobbprofilService.hentCvJobbprofilJsonV2(Fnr.of("1234"));
+        ResponseEntity<String> response = cvJobbprofilService.hentCvJobbprofilJson(Fnr.of("1234"));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(pamCvJobbprofilJson, response.getBody());

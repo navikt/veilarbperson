@@ -28,12 +28,8 @@ public class CvJobbprofilService {
 
     private final PamClient pamClient;
 
-    public String hentCvJobbprofilJson(Fnr fnr) {
-        return pamClient.hentCvOgJobbprofilJson(fnr);
-    }
-
     @SneakyThrows
-    public ResponseEntity<String> hentCvJobbprofilJsonV2(Fnr fnr) {
+    public ResponseEntity<String> hentCvJobbprofilJson(Fnr fnr) {
         if (!authService.erInternBruker() || !authService.harLesetilgang(fnr)) {
             return ikkeTilgangResponse(CvIkkeTilgang.IKKE_TILGANG_TIL_BRUKER);
         }
@@ -44,7 +40,7 @@ public class CvJobbprofilService {
             return ikkeTilgangResponse(CvIkkeTilgang.BRUKER_IKKE_UNDER_OPPFOLGING);
         }
 
-        try (Response cvJobbprofilResponse = pamClient.hentCvOgJobbprofilJsonV2(fnr, underOppfolging.isErManuell())) {
+        try (Response cvJobbprofilResponse = pamClient.hentCvOgJobbprofil(fnr, underOppfolging.isErManuell())) {
             if (cvJobbprofilResponse.code() == HttpStatus.NOT_FOUND.value()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             } else if (cvJobbprofilResponse.code() == HttpStatus.FORBIDDEN.value()) {
