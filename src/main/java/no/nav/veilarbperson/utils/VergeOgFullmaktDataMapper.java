@@ -4,8 +4,6 @@ import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 import no.nav.veilarbperson.domain.VergeOgFullmaktData;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,10 +16,6 @@ public class VergeOgFullmaktDataMapper {
     }
 
     public static List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktMapper(List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {
-        if(vergemaalEllerFremtidsfullmaktListe.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person har ikke vergemål eller fremtidsfullmakt i PDL");
-        }
-
         List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakter = new ArrayList<>();
         vergemaalEllerFremtidsfullmaktListe.forEach(vergemaalEllerFremtidsfullmakt -> {
                     vergemaalEllerFremtidsfullmakter.add(
@@ -61,10 +55,6 @@ public class VergeOgFullmaktDataMapper {
     }
 
     public static List<VergeOgFullmaktData.Fullmakt> fullmaktMapper(List<HentPerson.Fullmakt> fullmaktListe) {
-        if(fullmaktListe.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person har ikke fullmakt i PDL");
-        }
-
         List<VergeOgFullmaktData.Fullmakt> fullmakter = new ArrayList<>();
         fullmaktListe.forEach(fullmakt -> {
                     fullmakter.add(new VergeOgFullmaktData.Fullmakt()

@@ -21,7 +21,7 @@ public enum VergemaalEllerFullmaktOmfangType {
 
     VergemaalEllerFullmaktOmfangType(String type) {
          this.type = type;
-     }
+    }
 
     public static VergemaalEllerFullmaktOmfangType getOmfang(String type) {
         return BY_NAME.get(type);

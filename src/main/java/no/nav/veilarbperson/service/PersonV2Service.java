@@ -21,9 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
@@ -244,10 +242,29 @@ public class PersonV2Service {
     public VergeOgFullmaktData hentVergeEllerFullmakt(Fnr fnr, String userToken) {
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(fnr, userToken);
 
-        VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
-        flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, userToken);
+        if(vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person har ikke verge eller fullmakt i PDL");
+        }
 
+        VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+
+        flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, userToken);
+        flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
         return vergeOgFullmaktData;
+    }
+
+
+    public void flettBeskrivelseForFullmaktOmraader(VergeOgFullmaktData vergeOgFullmaktData) {
+        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmakt();
+
+        fullmaktListe.forEach(fullmakt -> {
+            String[] fullmaktOmraader = fullmakt.getOmraader();
+            ArrayList<String> omraaderMedBeskrivelse = new ArrayList<>();
+
+            Arrays.stream(fullmaktOmraader).forEach(omraade -> omraaderMedBeskrivelse.add(kodeverkService.getBeskrivelseForTema(omraade)));
+
+            fullmakt.setOmraader(omraaderMedBeskrivelse.toArray(new String[omraaderMedBeskrivelse.size()]));
+        });
     }
 
     public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData, String userToken) {

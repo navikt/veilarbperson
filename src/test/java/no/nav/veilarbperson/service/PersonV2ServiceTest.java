@@ -50,7 +50,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     private static final String USER_TOKEN = "USER_TOKEN";
     private static Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
-    Fnr[] testFnrsTilBarna = {Fnr.of("12345678910"), Fnr.of("12345678911"), Fnr.of("12345678912")};
+    Fnr[] testFnrsTilBarna = {Fnr.of("12345678910"), Fnr.of("12345678911")};
 
     @Before
     public void setup() {
@@ -65,6 +65,8 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(kodeverkService.getBeskrivelseForKommunenummer(any())).thenReturn("KOMMUNE");
         when(kodeverkService.getBeskrivelseForSpraakKode("EN")).thenReturn("Engelsk");
         when(kodeverkService.getBeskrivelseForSpraakKode("NO")).thenReturn("Norsk");
+        when(kodeverkService.getBeskrivelseForTema("AAP")).thenReturn("Arbeidsavklaring");
+        when(kodeverkService.getBeskrivelseForTema("DAG")).thenReturn("Dagpenger");
         when(pdlClient.hentTilrettelagtKommunikasjon(any(), any())).thenReturn(hentTilrettelagtKommunikasjon(FNR));
 
         personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
@@ -121,9 +123,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         assertEquals("12345678911", familierelasjoner.get(1).getRelatertPersonsIdent());
         assertEquals("BARN", familierelasjoner.get(1).getRelatertPersonsRolle());
-
-        assertEquals("12345678912", familierelasjoner.get(2).getRelatertPersonsIdent());
-        assertEquals("BARN", familierelasjoner.get(2).getRelatertPersonsRolle());
     }
 
     @Test
@@ -131,7 +130,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         List<HentPerson.Familierelasjoner> familierelasjoner = person.getFamilierelasjoner();
         Fnr[] fnrListe = personV2Service.hentFnrTilBarna(familierelasjoner);
 
-        assertEquals(3, fnrListe.length);
+        assertEquals(2, fnrListe.length);
 
         for(int i =0; i<testFnrsTilBarna.length; i++) {
             assertEquals(testFnrsTilBarna[i], fnrListe[i]);
@@ -338,12 +337,25 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     }
 
     @Test
+    public void flettBeskrivelseForFullmaktOmraader() {
+        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
+        VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+        personV2Service.flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
+
+        List<VergeOgFullmaktData.Fullmakt> fullmaktListe =  vergeOgFullmaktData.getFullmakt();
+        String[] omraader = fullmaktListe.get(0).getOmraader();
+
+        assertEquals("Arbeidsavklaring", omraader[0]);
+        assertEquals("Dagpenger", omraader[1]);
+    }
+
+    @Test
     public void flettMotpartsPersonNavnTilFullmakt() {
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
         VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, USER_TOKEN);
 
-        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, "USER_TOKEN");
-        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmakt();
+        List<VergeOgFullmaktData.Fullmakt> fullmaktListe =  vergeOgFullmaktData.getFullmakt();
 
         assertEquals("NORDMANN OLA", fullmaktListe.get(0).getMotpartsPersonNavn().getForkortetNavn());
     }
