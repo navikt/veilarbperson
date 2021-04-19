@@ -250,27 +250,20 @@ public class PersonV2Service {
 
         flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, userToken);
         flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
+
         return vergeOgFullmaktData;
     }
 
-
     public void flettBeskrivelseForFullmaktOmraader(VergeOgFullmaktData vergeOgFullmaktData) {
-        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmakt();
-
-        fullmaktListe.forEach(fullmakt -> {
-            String[] fullmaktOmraader = fullmakt.getOmraader();
-            ArrayList<String> omraaderMedBeskrivelse = new ArrayList<>();
-
-            Arrays.stream(fullmaktOmraader).forEach(omraade -> omraaderMedBeskrivelse.add(kodeverkService.getBeskrivelseForTema(omraade)));
-
-            fullmakt.setOmraader(omraaderMedBeskrivelse.toArray(new String[omraaderMedBeskrivelse.size()]));
-        });
+        vergeOgFullmaktData.getFullmakt().forEach(fullmakt ->
+            fullmakt.getOmraader().forEach(omraade ->
+                    omraade.setBeskrivelse(kodeverkService.getBeskrivelseForTema(omraade.getKode()))
+            )
+        );
     }
 
     public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData, String userToken) {
-        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmakt();
-
-        fullmaktListe.forEach(fullmakt -> {
+        vergeOgFullmaktData.getFullmakt().forEach(fullmakt -> {
             HentPerson.PersonNavn fullmaktNavn = pdlClient.hentPersonNavn(Fnr.of(fullmakt.getMotpartsPersonident()), userToken);
 
             if(fullmaktNavn.getNavn().isEmpty()) {

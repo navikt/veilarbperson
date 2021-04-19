@@ -65,7 +65,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(kodeverkService.getBeskrivelseForKommunenummer(any())).thenReturn("KOMMUNE");
         when(kodeverkService.getBeskrivelseForSpraakKode("EN")).thenReturn("Engelsk");
         when(kodeverkService.getBeskrivelseForSpraakKode("NO")).thenReturn("Norsk");
-        when(kodeverkService.getBeskrivelseForTema("AAP")).thenReturn("Arbeidsavklaring");
+        when(kodeverkService.getBeskrivelseForTema("AAP")).thenReturn("Arbeidsavklaringpenger");
         when(kodeverkService.getBeskrivelseForTema("DAG")).thenReturn("Dagpenger");
         when(pdlClient.hentTilrettelagtKommunikasjon(any(), any())).thenReturn(hentTilrettelagtKommunikasjon(FNR));
 
@@ -342,11 +342,13 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
         personV2Service.flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
 
-        List<VergeOgFullmaktData.Fullmakt> fullmaktListe =  vergeOgFullmaktData.getFullmakt();
-        String[] omraader = fullmaktListe.get(0).getOmraader();
+        List<VergeOgFullmaktData.Omraade> omraader = vergeOgFullmaktData.getFullmakt().get(0).getOmraader();
 
-        assertEquals("Arbeidsavklaring", omraader[0]);
-        assertEquals("Dagpenger", omraader[1]);
+        assertEquals("AAP", omraader.get(0).getKode());
+        assertEquals("DAG", omraader.get(1).getKode());
+
+        assertEquals("Arbeidsavklaringpenger", omraader.get(0).getBeskrivelse());
+        assertEquals("Dagpenger", omraader.get(1).getBeskrivelse());
     }
 
     @Test

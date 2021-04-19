@@ -5,6 +5,7 @@ import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 import no.nav.veilarbperson.domain.VergeOgFullmaktData;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class VergeOgFullmaktDataMapper {
@@ -57,10 +58,13 @@ public class VergeOgFullmaktDataMapper {
     public static List<VergeOgFullmaktData.Fullmakt> fullmaktMapper(List<HentPerson.Fullmakt> fullmaktListe) {
         List<VergeOgFullmaktData.Fullmakt> fullmakter = new ArrayList<>();
         fullmaktListe.forEach(fullmakt -> {
+                    ArrayList<VergeOgFullmaktData.Omraade> omraadeKodeListe = new ArrayList<>();
+                    fullmakt.getOmraader().forEach(omraade -> omraadeKodeListe.add(new VergeOgFullmaktData.Omraade().setKode(omraade)));
+
                     fullmakter.add(new VergeOgFullmaktData.Fullmakt()
                             .setMotpartsPersonident(fullmakt.getMotpartsPersonident())
                             .setMotpartsRolle(fullmakt.getMotpartsRolle())
-                            .setOmraader(fullmakt.getOmraader())
+                            .setOmraader(omraadeKodeListe)
                             .setGyldigFraOgMed(fullmakt.getGyldigFraOgMed())
                             .setGyldigTilOgMed(fullmakt.getGyldigTilOgMed()));
                 }
