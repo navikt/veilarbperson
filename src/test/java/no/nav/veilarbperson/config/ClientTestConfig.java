@@ -252,12 +252,7 @@ public class ClientTestConfig {
     public PamClient pamClient() {
         return new PamClient() {
             @Override
-            public String hentCvOgJobbprofilJson(Fnr fnr) {
-                return null;
-            }
-
-            @Override
-            public Response hentCvOgJobbprofilJsonV2(Fnr fnr, boolean erBrukerManuell) {
+            public Response hentCvOgJobbprofil(Fnr fnr, boolean erBrukerManuell) {
                 return null;
             }
 
