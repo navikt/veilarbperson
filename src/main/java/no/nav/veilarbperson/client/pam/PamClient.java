@@ -6,8 +6,6 @@ import okhttp3.Response;
 
 public interface PamClient extends HealthCheck {
 
-    String hentCvOgJobbprofilJson(Fnr fnr);
-
-    Response hentCvOgJobbprofilJsonV2(Fnr fnr, boolean erBrukerManuell);
+    Response hentCvOgJobbprofil(Fnr fnr, boolean erBrukerManuell);
 
 }

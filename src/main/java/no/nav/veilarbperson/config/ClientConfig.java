@@ -87,12 +87,12 @@ public class ClientConfig {
 
 
     @Bean
-    public PamClient pamClient(AuthService authService, SystemUserTokenProvider systemUserTokenProvider) {
+    public PamClient pamClient(SystemUserTokenProvider systemUserTokenProvider) {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(PAM_CV_API, true)
                 : createDevAdeoIngressUrl(PAM_CV_API, true);
 
-        return new PamClientImpl(url, authService::getInnloggetBrukerToken, systemUserTokenProvider::getSystemUserToken);
+        return new PamClientImpl(url, systemUserTokenProvider::getSystemUserToken);
     }
 
     @Bean
