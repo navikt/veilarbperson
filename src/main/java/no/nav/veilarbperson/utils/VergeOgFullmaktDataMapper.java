@@ -1,12 +1,10 @@
 package no.nav.veilarbperson.utils;
 
 import no.nav.veilarbperson.client.pdl.HentPerson;
-import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
-import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 import no.nav.veilarbperson.domain.VergeOgFullmaktData;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VergeOgFullmaktDataMapper {
 
@@ -17,18 +15,14 @@ public class VergeOgFullmaktDataMapper {
     }
 
     public static List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktMapper(List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {
-        List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakter = new ArrayList<>();
-        vergemaalEllerFremtidsfullmaktListe.forEach(vergemaalEllerFremtidsfullmakt -> {
-                    vergemaalEllerFremtidsfullmakter.add(
-                            new VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt()
-                                    .setType(vergemaalEllerFremtidsfullmakt.getType())
-                                    .setEmbete(vergemaalEllerFremtidsfullmakt.getEmbete())
-                                    .setVergeEllerFullmektig(vergeEllerFullmektigMapper(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig()))
-                                    .setFolkeregistermetadata(folkeregisterMetadataMapper(vergemaalEllerFremtidsfullmakt.getFolkeregistermetadata()))
-                    );
-                }
-        );
-        return vergemaalEllerFremtidsfullmakter;
+            return vergemaalEllerFremtidsfullmaktListe.stream()
+                  .map(vergemaalEllerFremtidsfullmakt ->
+                       new VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt()
+                             .setType(vergemaalEllerFremtidsfullmakt.getType())
+                             .setEmbete(vergemaalEllerFremtidsfullmakt.getEmbete())
+                             .setVergeEllerFullmektig(vergeEllerFullmektigMapper(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig()))
+                             .setFolkeregistermetadata(folkeregisterMetadataMapper(vergemaalEllerFremtidsfullmakt.getFolkeregistermetadata())))
+                  .collect(Collectors.toList());
     }
 
     public static VergeOgFullmaktData.VergeEllerFullmektig vergeEllerFullmektigMapper(HentPerson.VergeEllerFullmektig vergeEllerFullmektig) {
