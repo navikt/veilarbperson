@@ -9,13 +9,12 @@ import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
-import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
 import no.nav.veilarbperson.domain.PersonNavnV2;
-import no.nav.veilarbperson.client.pdl.domain.Telefon;
+import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.domain.TilrettelagtKommunikasjonData;
 import no.nav.veilarbperson.domain.VergeOgFullmaktData;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
@@ -132,7 +131,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         assertEquals(2, fnrListe.length);
 
-        for(int i =0; i<testFnrsTilBarna.length; i++) {
+        for (int i = 0; i < testFnrsTilBarna.length; i++) {
             assertEquals(testFnrsTilBarna[i], fnrListe[i]);
         }
     }
