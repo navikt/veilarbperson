@@ -186,7 +186,7 @@ public class PdlClientImplTest {
 
         assertEquals("motpartsPersonident1", fullmakt.getMotpartsPersonident());
         assertEquals("motpartsRolle1", fullmakt.getMotpartsRolle());
-        assertEquals(2, fullmakt.getOmraader().length);
+        assertEquals(2, fullmakt.getOmraader().size());
     }
 
     @Test

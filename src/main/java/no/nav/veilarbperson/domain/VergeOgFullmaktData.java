@@ -53,11 +53,17 @@ public class VergeOgFullmaktData {
     }
 
     @Data
+    public static class Omraade {
+        public String kode;
+        public String beskrivelse;
+    }
+
+    @Data
     public static class Fullmakt {
         private String motpartsPersonident;
         private Navn motpartsPersonNavn;
         private String motpartsRolle;
-        private String[] omraader;
+        private List<Omraade> omraader;
         private LocalDate gyldigFraOgMed;
         private LocalDate gyldigTilOgMed;
     }

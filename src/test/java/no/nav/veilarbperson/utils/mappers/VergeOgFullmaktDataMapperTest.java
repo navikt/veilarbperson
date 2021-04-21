@@ -31,13 +31,14 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
     @Test
     public void vergetypeOgOmfangEnumMapperTest() {
         List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVergeOgFullmakt(FNR).getVergemaalEllerFremtidsfullmakt();
+
         VergemaalEllerFullmaktOmfangType omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
         VergemaalEllerFullmaktOmfangType omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
 
         assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaal.get(0).getType());
-        assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, omfang1);
-
         assertEquals(Vergetype.STADFESTET_FREMTIDSFULLMAKT, vergemaal.get(1).getType());
+
+        assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, omfang1);
         assertEquals(VergemaalEllerFullmaktOmfangType.PERSONLIGE_INTERESSER, omfang2);
     }
 

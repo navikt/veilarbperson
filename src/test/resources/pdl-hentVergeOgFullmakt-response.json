@@ -41,14 +41,14 @@
         {
           "motpartsPersonident": "motpartsPersonident1",
           "motpartsRolle": "motpartsRolle1",
-          "omraader": ["AAA", "BBB"],
+          "omraader": ["AAP", "DAG"],
           "gyldigFraOgMed": "2021-01-15",
           "gyldigTilOgMed": "2021-01-15"
         },
         {
           "motpartsPersonident": "motpartsPersonident2",
           "motpartsRolle": "motpartsRolle2",
-          "omraader": ["AAA", "BBB"],
+          "omraader": ["AAP", "DAG"],
           "gyldigFraOgMed": "2021-01-15",
           "gyldigTilOgMed": "2021-01-15"
         }

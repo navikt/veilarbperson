@@ -1,22 +1,15 @@
 package no.nav.veilarbperson.client.pdl.domain;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 public enum VergemaalEllerFullmaktOmfangType {
 
-    PERSONLIGE_OG_OEKONOMISKE_INTERESSER("personligeOgOekonomiskeInteresser"),
-    UTLENDINGSSAKER("utlendingssakerPersonligeOgOekonomiskeInteresser"),
-    PERSONLIGE_INTERESSER("personligeInteresser"),
-    OEKONOMISKE_INTERESSER("oekonomiskeInteresser");
-
-     private String type;
-
-    VergemaalEllerFullmaktOmfangType(String type) {
-         this.type = type;
-     }
-
-    @JsonValue
-    public String toString() {
-        return type;
-    }
+    @JsonAlias("personligeOgOekonomiskeInteresser")
+    PERSONLIGE_OG_OEKONOMISKE_INTERESSER,
+    @JsonAlias("utlendingssakerPersonligeOgOekonomiskeInteresser")
+    UTLENDINGSSAKER,
+    @JsonAlias("personligeInteresser")
+    PERSONLIGE_INTERESSER,
+    @JsonAlias("oekonomiskeInteresser")
+    OEKONOMISKE_INTERESSER;
 }

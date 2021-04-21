@@ -165,7 +165,7 @@ public class HentPerson {
     public static class Fullmakt {
         private String motpartsPersonident;
         private String motpartsRolle;
-        private String[] omraader;
+        private List<String> omraader;
         private LocalDate gyldigFraOgMed;
         private LocalDate gyldigTilOgMed;
     }

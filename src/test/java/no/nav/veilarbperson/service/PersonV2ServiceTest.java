@@ -64,6 +64,8 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(kodeverkService.getBeskrivelseForKommunenummer(any())).thenReturn("KOMMUNE");
         when(kodeverkService.getBeskrivelseForSpraakKode("EN")).thenReturn("Engelsk");
         when(kodeverkService.getBeskrivelseForSpraakKode("NO")).thenReturn("Norsk");
+        when(kodeverkService.getBeskrivelseForTema("AAP")).thenReturn("Arbeidsavklaringpenger");
+        when(kodeverkService.getBeskrivelseForTema("DAG")).thenReturn("Dagpenger");
         when(pdlClient.hentTilrettelagtKommunikasjon(any(), any())).thenReturn(hentTilrettelagtKommunikasjon(FNR));
 
         personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
@@ -334,12 +336,27 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     }
 
     @Test
+    public void flettBeskrivelseForFullmaktOmraader() {
+        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
+        VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+        personV2Service.flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
+
+        List<VergeOgFullmaktData.Omraade> omraader = vergeOgFullmaktData.getFullmakt().get(0).getOmraader();
+
+        assertEquals("AAP", omraader.get(0).getKode());
+        assertEquals("DAG", omraader.get(1).getKode());
+
+        assertEquals("Arbeidsavklaringpenger", omraader.get(0).getBeskrivelse());
+        assertEquals("Dagpenger", omraader.get(1).getBeskrivelse());
+    }
+
+    @Test
     public void flettMotpartsPersonNavnTilFullmakt() {
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
         VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, USER_TOKEN);
 
-        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, "USER_TOKEN");
-        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmakt();
+        List<VergeOgFullmaktData.Fullmakt> fullmaktListe =  vergeOgFullmaktData.getFullmakt();
 
         assertEquals("NORDMANN OLA", fullmaktListe.get(0).getMotpartsPersonNavn().getForkortetNavn());
     }

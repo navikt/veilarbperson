@@ -2,10 +2,9 @@ package no.nav.veilarbperson.utils;
 
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.domain.VergeOgFullmaktData;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VergeOgFullmaktDataMapper {
 
@@ -16,22 +15,14 @@ public class VergeOgFullmaktDataMapper {
     }
 
     public static List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktMapper(List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {
-        if(vergemaalEllerFremtidsfullmaktListe.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person har ikke vergemål eller fremtidsfullmakt i PDL");
-        }
-
-        List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakts = new ArrayList<>();
-        vergemaalEllerFremtidsfullmaktListe.forEach(vergemaalEllerFremtidsfullmakt -> {
-                    vergemaalEllerFremtidsfullmakts.add(
-                            new VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt()
-                                    .setType(vergemaalEllerFremtidsfullmakt.getType())
-                                    .setEmbete(vergemaalEllerFremtidsfullmakt.getEmbete())
-                                    .setVergeEllerFullmektig(vergeEllerFullmektigMapper(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig()))
-                                    .setFolkeregistermetadata(folkeregisterMetadataMapper(vergemaalEllerFremtidsfullmakt.getFolkeregistermetadata()))
-                    );
-                }
-        );
-        return vergemaalEllerFremtidsfullmakts;
+            return vergemaalEllerFremtidsfullmaktListe.stream()
+                  .map(vergemaalEllerFremtidsfullmakt ->
+                       new VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt()
+                             .setType(vergemaalEllerFremtidsfullmakt.getType())
+                             .setEmbete(vergemaalEllerFremtidsfullmakt.getEmbete())
+                             .setVergeEllerFullmektig(vergeEllerFullmektigMapper(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig()))
+                             .setFolkeregistermetadata(folkeregisterMetadataMapper(vergemaalEllerFremtidsfullmakt.getFolkeregistermetadata())))
+                  .collect(Collectors.toList());
     }
 
     public static VergeOgFullmaktData.VergeEllerFullmektig vergeEllerFullmektigMapper(HentPerson.VergeEllerFullmektig vergeEllerFullmektig) {
@@ -59,16 +50,15 @@ public class VergeOgFullmaktDataMapper {
     }
 
     public static List<VergeOgFullmaktData.Fullmakt> fullmaktMapper(List<HentPerson.Fullmakt> fullmaktListe) {
-        if(fullmaktListe.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person har ikke fullmakt i PDL");
-        }
-
         List<VergeOgFullmaktData.Fullmakt> fullmakter = new ArrayList<>();
         fullmaktListe.forEach(fullmakt -> {
+                    ArrayList<VergeOgFullmaktData.Omraade> omraadeKodeListe = new ArrayList<>();
+                    fullmakt.getOmraader().forEach(omraade -> omraadeKodeListe.add(new VergeOgFullmaktData.Omraade().setKode(omraade)));
+
                     fullmakter.add(new VergeOgFullmaktData.Fullmakt()
                             .setMotpartsPersonident(fullmakt.getMotpartsPersonident())
                             .setMotpartsRolle(fullmakt.getMotpartsRolle())
-                            .setOmraader(fullmakt.getOmraader())
+                            .setOmraader(omraadeKodeListe)
                             .setGyldigFraOgMed(fullmakt.getGyldigFraOgMed())
                             .setGyldigTilOgMed(fullmakt.getGyldigTilOgMed()));
                 }

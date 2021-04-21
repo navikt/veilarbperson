@@ -21,9 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
@@ -244,16 +242,28 @@ public class PersonV2Service {
     public VergeOgFullmaktData hentVergeEllerFullmakt(Fnr fnr, String userToken) {
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(fnr, userToken);
 
+        if(vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person har ikke verge eller fullmakt i PDL");
+        }
+
         VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+
         flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, userToken);
+        flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
 
         return vergeOgFullmaktData;
     }
 
-    public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData, String userToken) {
-        List<VergeOgFullmaktData.Fullmakt> fullmaktListe = vergeOgFullmaktData.getFullmakt();
+    public void flettBeskrivelseForFullmaktOmraader(VergeOgFullmaktData vergeOgFullmaktData) {
+        vergeOgFullmaktData.getFullmakt().forEach(fullmakt ->
+            fullmakt.getOmraader().forEach(omraade ->
+                    omraade.setBeskrivelse(kodeverkService.getBeskrivelseForTema(omraade.getKode()))
+            )
+        );
+    }
 
-        fullmaktListe.forEach(fullmakt -> {
+    public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData, String userToken) {
+        vergeOgFullmaktData.getFullmakt().forEach(fullmakt -> {
             HentPerson.PersonNavn fullmaktNavn = pdlClient.hentPersonNavn(Fnr.of(fullmakt.getMotpartsPersonident()), userToken);
 
             if(fullmaktNavn.getNavn().isEmpty()) {
