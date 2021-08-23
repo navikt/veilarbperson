@@ -38,6 +38,9 @@ public class AuthService {
         return AuthContextHolder.erInternBruker();
     }
 
+    public boolean erSystemBruker() {
+        return AuthContextHolder.erSystemBruker();
+    }
     public void sjekkLesetilgang(Fnr fnr) {
         if (!harLesetilgang(fnr)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -62,5 +65,4 @@ public class AuthService {
         return AuthContextHolder.getSubject()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Subject is missing"));
     }
-
 }

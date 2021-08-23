@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
+import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.featuretoggle.UnleashService;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
@@ -15,9 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/person")
 public class PersonController {
+
+    private final List<String> allowedUsers = List.of("srvveilarbaktivitet");
 
     private final PersonService personService;
 
@@ -80,7 +85,12 @@ public class PersonController {
     @GetMapping("/{fodselsnummer}/harNivaa4")
     public HarLoggetInnRespons harNivaa4(@PathVariable("fodselsnummer") Fnr fodselsnummer) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(fodselsnummer);
+        String username = AuthContextHolder.getSubject().orElse("").toLowerCase();
+        // Hack fordi vi mangler policy i ABAC
+        if (authService.erSystemBruker() && allowedUsers.contains(username)) {
+        } else {
+            authService.sjekkLesetilgang(fodselsnummer);
+        }
 
         return personService.hentHarNivaa4(fodselsnummer);
     }
@@ -116,5 +126,4 @@ public class PersonController {
 
         return fnr;
     }
-
 }
