@@ -85,13 +85,7 @@ public class PersonController {
     @GetMapping("/{fodselsnummer}/harNivaa4")
     public HarLoggetInnRespons harNivaa4(@PathVariable("fodselsnummer") Fnr fodselsnummer) {
         authService.stoppHvisEksternBruker();
-        String username = AuthContextHolder.getSubject().orElse("").toLowerCase();
-        // Hack fordi vi mangler policy i ABAC
-        if (authService.erSystemBruker() && allowedUsers.contains(username)) {
-        } else {
-            authService.sjekkLesetilgang(fodselsnummer);
-        }
-
+        authService.sjekkLesetilgang(fodselsnummer);
         return personService.hentHarNivaa4(fodselsnummer);
     }
 
