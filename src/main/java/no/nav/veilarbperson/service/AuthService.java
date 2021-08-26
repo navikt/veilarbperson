@@ -18,10 +18,13 @@ public class AuthService {
 
     private final AktorregisterClient aktorregisterClient;
 
+    private final AuthContextHolder authContextHolder;
+
     @Autowired
-    public AuthService(Pep veilarbPep, AktorregisterClient aktorregisterClient) {
+    public AuthService(Pep veilarbPep, AktorregisterClient aktorregisterClient, AuthContextHolder authContextHolder) {
         this.veilarbPep = veilarbPep;
         this.aktorregisterClient = aktorregisterClient;
+        this.authContextHolder = authContextHolder;
     }
 
     public void stoppHvisEksternBruker() {
@@ -31,16 +34,17 @@ public class AuthService {
     }
 
     public boolean erEksternBruker() {
-        return AuthContextHolder.erEksternBruker();
+        return authContextHolder.erEksternBruker();
     }
 
     public boolean erInternBruker() {
-        return AuthContextHolder.erInternBruker();
+        return authContextHolder.erInternBruker();
     }
 
     public boolean erSystemBruker() {
-        return AuthContextHolder.erSystemBruker();
+        return authContextHolder.erSystemBruker();
     }
+
     public void sjekkLesetilgang(Fnr fnr) {
         if (!harLesetilgang(fnr)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -57,12 +61,12 @@ public class AuthService {
     }
 
     public String getInnloggetBrukerToken() {
-        return AuthContextHolder.getIdTokenString()
+        return authContextHolder.getIdTokenString()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is missing"));
     }
 
     public String getInnloggerBrukerSubject() {
-        return AuthContextHolder.getSubject()
+        return authContextHolder.getSubject()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Subject is missing"));
     }
 }

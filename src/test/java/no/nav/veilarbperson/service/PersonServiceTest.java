@@ -2,7 +2,7 @@ package no.nav.veilarbperson.service;
 
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashService;
+import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.DifiClientImpl;
@@ -41,7 +41,7 @@ public class PersonServiceTest {
 
     private DifiCient difiCient = mock(DifiClientImpl.class);
 
-    private final UnleashService unleashService = mock(UnleashService.class);
+    private final UnleashClient unleashClient = mock(UnleashClient.class);
 
     private PersonService personService;
 
@@ -53,7 +53,7 @@ public class PersonServiceTest {
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
 
-        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient, difiCient, unleashService);
+        personService = new PersonService(norg2Client, personClient, egenAnsattClient, dkifClient, kodeverkService, veilarbportefoljeClient, difiCient, unleashClient);
     }
 
     @Test

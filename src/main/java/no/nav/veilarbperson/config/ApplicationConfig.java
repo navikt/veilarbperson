@@ -2,11 +2,14 @@ package no.nav.veilarbperson.config;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.abac.Pep;
-import no.nav.common.abac.VeilarbPep;
+import no.nav.common.abac.VeilarbPepFactory;
+import no.nav.common.abac.audit.AuditLogFilterUtils;
 import no.nav.common.abac.audit.SpringAuditRequestInfoSupplier;
+import no.nav.common.abac.constants.NavAttributter;
+import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.cxf.StsConfig;
-import no.nav.common.featuretoggle.UnleashService;
-import no.nav.common.featuretoggle.UnleashServiceConfig;
+import no.nav.common.featuretoggle.UnleashClient;
+import no.nav.common.featuretoggle.UnleashClientImpl;
 import no.nav.common.sts.NaisSystemUserTokenProvider;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.utils.Credentials;
@@ -15,9 +18,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
+import no.nav.common.auth.context.AuthContextHolderThreadLocal;
 import static no.nav.common.utils.NaisUtils.getCredentials;
-
 
 @Slf4j
 @Configuration
@@ -50,15 +52,19 @@ public class ApplicationConfig {
     @Bean
     public Pep veilarbPep(EnvironmentProperties properties) {
         Credentials serviceUserCredentials = NaisUtils.getCredentials("service_user");
-        return new VeilarbPep(
+        return VeilarbPepFactory.get(
                 properties.getAbacUrl(), serviceUserCredentials.username,
-                serviceUserCredentials.password, new SpringAuditRequestInfoSupplier()
-        );
+                serviceUserCredentials.password, new SpringAuditRequestInfoSupplier());
     }
 
     @Bean
-    public UnleashService unleashService() {
-        return new UnleashService(UnleashServiceConfig.resolveFromEnvironment());
+    public AuthContextHolder authContextHolder() {
+        return AuthContextHolderThreadLocal.instance();
+    }
+
+    @Bean
+    public UnleashClient unleashClient(EnvironmentProperties properties) {
+        return new UnleashClientImpl(properties.getUnleashUrl(), APPLICATION_NAME);
     }
 
 

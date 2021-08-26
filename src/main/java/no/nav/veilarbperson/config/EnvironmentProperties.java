@@ -41,4 +41,6 @@ public class EnvironmentProperties {
 
     private String pdlUrl;
 
+    private String unleashUrl;
+
 }
