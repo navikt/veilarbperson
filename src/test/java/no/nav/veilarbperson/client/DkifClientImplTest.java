@@ -34,14 +34,12 @@ public class DkifClientImplTest {
                         .withBody(kodeverkJson))
         );
 
-        AuthContextHolder.withContext(AuthTestUtils.createAuthContext(UserRole.INTERN, "test"), () -> {
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(TEST_FNR);
             assertEquals(kontaktinfo.getPersonident(), TEST_FNR.get());
             assertTrue(kontaktinfo.isKanVarsles());
             assertFalse(kontaktinfo.isReservert());
             assertEquals(kontaktinfo.getEpostadresse(), "noreply@nav.no");
             assertEquals(kontaktinfo.getMobiltelefonnummer(), "11111111");
-        });
     }
 
 }

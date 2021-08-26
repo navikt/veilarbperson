@@ -3,7 +3,6 @@ package no.nav.veilarbperson.config;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.aktorregister.AktorregisterClient;
 import no.nav.common.client.aktorregister.AktorregisterHttpClient;
-import no.nav.common.client.aktorregister.CachedAktorregisterClient;
 import no.nav.common.client.norg2.CachedNorg2Client;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
@@ -51,10 +50,9 @@ public class ClientConfig {
 
     @Bean
     public AktorregisterClient aktorregisterClient(EnvironmentProperties properties, SystemUserTokenProvider tokenProvider) {
-        AktorregisterClient aktorregisterClient = new AktorregisterHttpClient(
+        return new AktorregisterHttpClient(
                 properties.getAktorregisterUrl(), APPLICATION_NAME, tokenProvider::getSystemUserToken
         );
-        return new CachedAktorregisterClient(aktorregisterClient);
     }
 
     @Bean
@@ -63,12 +61,12 @@ public class ClientConfig {
     }
 
     @Bean
-    public VeilarbportefoljeClient veilarbportefoljeClient() {
+    public VeilarbportefoljeClient veilarbportefoljeClient(AuthService authService) {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(VEILARBPORTEFOLJE, true)
                 : createNaisPreprodIngressUrl(VEILARBPORTEFOLJE, "q1", true);
 
-        return new VeilarbportefoljeClientImpl(url);
+        return new VeilarbportefoljeClientImpl(url, authService::getInnloggetBrukerToken);
     }
 
     @Bean

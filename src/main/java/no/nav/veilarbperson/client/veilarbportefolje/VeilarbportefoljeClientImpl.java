@@ -12,8 +12,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.cache.annotation.Cacheable;
 
+import java.util.function.Supplier;
+
 import static no.nav.common.utils.UrlUtils.joinPaths;
-import static no.nav.veilarbperson.utils.RestClientUtils.authHeaderMedInnloggetBruker;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -24,8 +25,11 @@ public class VeilarbportefoljeClientImpl implements VeilarbportefoljeClient {
 
     private final OkHttpClient client;
 
-    public VeilarbportefoljeClientImpl(String veilarbportefoljeUrl) {
+    private final Supplier<String> userTokenProvider;
+
+    public VeilarbportefoljeClientImpl(String veilarbportefoljeUrl, Supplier<String> userTokenProvider) {
         this.veilarbportefoljeUrl = veilarbportefoljeUrl;
+        this.userTokenProvider = userTokenProvider;
         this.client = RestClient.baseClient();
     }
 
@@ -36,7 +40,7 @@ public class VeilarbportefoljeClientImpl implements VeilarbportefoljeClient {
         Request request = new Request.Builder()
                 .url(joinPaths(veilarbportefoljeUrl, "/api/personinfo/", fodselsnummer.get()))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
-                .header(AUTHORIZATION, authHeaderMedInnloggetBruker())
+                .header(AUTHORIZATION, userTokenProvider.get())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {

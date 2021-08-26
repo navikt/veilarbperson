@@ -1,8 +1,7 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
-import no.nav.common.auth.context.AuthContextHolder;
-import no.nav.common.featuretoggle.UnleashService;
+import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
@@ -30,13 +29,10 @@ public class PersonController {
 
     private final CvJobbprofilService cvJobbprofilService;
 
-    private final UnleashService unleashService;
-
-    public PersonController(PersonService personService, AuthService authService, CvJobbprofilService cvJobbprofilService, UnleashService unleashService) {
+    public PersonController(PersonService personService, AuthService authService, CvJobbprofilService cvJobbprofilService) {
         this.personService = personService;
         this.authService = authService;
         this.cvJobbprofilService = cvJobbprofilService;
-        this.unleashService = unleashService;
     }
 
     @GetMapping("/{fodselsnummer}")

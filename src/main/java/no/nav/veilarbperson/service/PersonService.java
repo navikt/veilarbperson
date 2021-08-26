@@ -3,7 +3,7 @@ package no.nav.veilarbperson.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashService;
+import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
@@ -38,7 +38,7 @@ public class PersonService {
     private final KodeverkService kodeverkService;
     private final VeilarbportefoljeClient veilarbportefoljeClient;
     private final DifiCient difiCient;
-    private final UnleashService unleashService;
+    private final UnleashClient unleashClient;
 
     public TpsPerson hentPerson(Fnr fodselsnummer){
         return personClient.hentPerson(fodselsnummer);
@@ -67,7 +67,7 @@ public class PersonService {
     }
 
     public HarLoggetInnRespons hentHarNivaa4(Fnr fodselsnummer) {
-        if (unleashService.isEnabled(UNLEASH_NIVAA4_DISABLED)) {
+        if (unleashClient.isEnabled(UNLEASH_NIVAA4_DISABLED)) {
             return new HarLoggetInnRespons()
                     .setErRegistrertIdPorten(true)
                     .setHarbruktnivaa4(true)
