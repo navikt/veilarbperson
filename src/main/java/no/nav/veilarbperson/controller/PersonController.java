@@ -1,7 +1,6 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
-import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;

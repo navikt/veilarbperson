@@ -7,6 +7,7 @@ import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.client.pdl.domain.Telefon;
+import no.nav.veilarbperson.service.AuthService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,8 +55,25 @@ public class PersonV2DataMapper {
                 .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null));
     }
 
-    public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem, Bostedsadresse personsBostedsadresse) {
+    public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem, boolean isEgenAnsatt, Bostedsadresse personsBostedsadresse, AuthService authService) {
         HentPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
+        Fnr medlemFnr = ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
+                .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null);
+        String gradering = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse())).map(HentPerson.Adressebeskyttelse::getGradering).orElse(null);
+        boolean harVeilederLeseTilgang = authService.harLesetilgang(medlemFnr);
+
+        if (("FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering)) && !harVeilederLeseTilgang) {
+            return new Familiemedlem()
+                .setFodselsnummer(ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
+                            .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null))
+                .setGradering(ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse())).map(HentPerson.Adressebeskyttelse::getGradering).orElse(null));
+        } else if (isEgenAnsatt && !harVeilederLeseTilgang) {
+            return new Familiemedlem()
+                .setFodselsnummer(ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
+                            .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null))
+                .setFodselsdato(ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null))
+                .setHarSammeBosted(harFamiliamedlemSammeBostedSomPerson(getFirstElement(familiemedlem.getBostedsadresse()), personsBostedsadresse));
+        }
 
         return new Familiemedlem()
                 .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))

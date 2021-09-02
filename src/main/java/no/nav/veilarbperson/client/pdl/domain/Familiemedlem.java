@@ -17,5 +17,6 @@ public class Familiemedlem {
     LocalDate fodselsdato;
     String kjonn;
     LocalDate dodsdato;
+    String gradering;       //diskresjonskode
     boolean harSammeBosted;
 }

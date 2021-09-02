@@ -11,7 +11,7 @@ query($identer: [ID!]!, $historikk: Boolean!) {
             foedsel {
                 foedselsdato
             }
-            kjoenn{
+            kjoenn {
                 kjoenn
             }
             folkeregisteridentifikator(historikk: $historikk) {
@@ -21,6 +21,9 @@ query($identer: [ID!]!, $historikk: Boolean!) {
             }
             doedsfall {
                 doedsdato
+            }
+            adressebeskyttelse {
+                gradering
             }
             bostedsadresse(historikk:$historikk) {
                 vegadresse {

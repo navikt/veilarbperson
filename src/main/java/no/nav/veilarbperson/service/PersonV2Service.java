@@ -78,8 +78,7 @@ public class PersonV2Service {
             personV2Data.setSikkerhetstiltak(ofNullable(getFirstElement(personDataFraPdl.getSikkerhetstiltak())).map(HentPerson.Sikkerhetstiltak::getBeskrivelse).orElse(null));
         }
 
-        flettBarnInformasjon(personDataFraPdl.getFamilierelasjoner(), personV2Data);
-        flettPartnerInformasjon(personDataFraPdl.getSivilstand(), personV2Data, userToken);
+        flettPartnerOgBarnInformasjon(personDataFraPdl.getSivilstand(), personDataFraPdl.getFamilierelasjoner(), personV2Data);
         flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
         flettGeografiskEnhet(fodselsnummer, userToken, personV2Data);
         flettKodeverk(personV2Data);
@@ -87,51 +86,71 @@ public class PersonV2Service {
         return personV2Data;
     }
 
-    public List<Familiemedlem> hentOpplysningerTilBarna(Fnr[] barnasFnrs, Bostedsadresse foreldresBostedsAdresse) {
-        List<HentPerson.Barn> barnasInformasjon = pdlClient.hentPersonBolk(barnasFnrs);
+    public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse foreldresBostedsAdresse) {
+        List<HentPerson.Familiemedlemmer> familimedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr);
 
-        return ofNullable(barnasInformasjon)
+        return ofNullable(familimedlemInfo)
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(barn -> barn.getCode().equals("ok"))
-                .map(HentPerson.Barn::getPerson)
-                .map(barn -> PersonV2DataMapper.familiemedlemMapper(barn, foreldresBostedsAdresse))
+                .filter(medlemInfo -> medlemInfo.getCode().equals("ok"))
+                .map(HentPerson.Familiemedlemmer::getPerson)
+                .map(familiemedlem ->
+                        PersonV2DataMapper.familiemedlemMapper(
+                            familiemedlem,
+                            egenAnsattClient.erEgenAnsatt(ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator())).map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null)),
+                            foreldresBostedsAdresse,
+                            authService
+                        ))
                 .collect(Collectors.toList());
     }
 
-    public Fnr[] hentFnrTilBarna(List<HentPerson.Familierelasjoner> familierelasjoner) {
+    public List<Fnr> hentBarnaFnr(List<HentPerson.Familierelasjoner> familierelasjoner) {
         return familierelasjoner.stream()
                 .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
                 .map(HentPerson.Familierelasjoner::getRelatertPersonsIdent)
                 .map(Fnr::of)
-                .toArray(Fnr[]::new);
+                .collect(Collectors.toList());
     }
 
-    public void flettBarnInformasjon(List<HentPerson.Familierelasjoner> familierelasjoner, PersonV2Data personV2Data) {
-        if (!familierelasjoner.isEmpty()) {
-            Fnr[] barnasFnrListe = hentFnrTilBarna(familierelasjoner);
-
-            if (barnasFnrListe.length != 0) {
-                List<Familiemedlem> barnasInformasjon = hentOpplysningerTilBarna(barnasFnrListe, personV2Data.getBostedsadresse());
-                personV2Data.setBarn(barnasInformasjon);
-            }
-        }
-    }
-
-    public Fnr hentFnrTilPartner(List<HentPerson.Sivilstand> personsSivilstand) {
+    public Fnr hentPartnerFnr(List<HentPerson.Sivilstand> personsSivilstand) {
         return ofNullable(getFirstElement(personsSivilstand))
                 .map(HentPerson.Sivilstand::getRelatertVedSivilstand).map(Fnr::of).orElse(null);
     }
 
-    public void flettPartnerInformasjon(List<HentPerson.Sivilstand> personsSivilstand, PersonV2Data personV2Data, String userToken) {
-        Fnr fnrTilPartner = hentFnrTilPartner(personsSivilstand);
+    public void flettPartnerOgBarnInformasjon(List<HentPerson.Sivilstand> personsSivilstand, List<HentPerson.Familierelasjoner> familierelasjoner, PersonV2Data personV2Data) {
+        List<Fnr> familiemedlemFnrListe = new ArrayList<>();
 
-        if(fnrTilPartner != null) {
-            HentPerson.Familiemedlem partnerInformasjon = pdlClient.hentPartner(fnrTilPartner, userToken);
-            personV2Data.setPartner(ofNullable(partnerInformasjon)
-                                    .map(partner -> PersonV2DataMapper.familiemedlemMapper(partner, personV2Data.getBostedsadresse()))
-                                    .orElse(null)
-            );
+        if (!familierelasjoner.isEmpty()) {
+            List<Fnr> barnaFnr = hentBarnaFnr(familierelasjoner);
+            if(barnaFnr.size() > 0) {
+                familiemedlemFnrListe = barnaFnr;
+            }
+        }
+
+        if(!personsSivilstand.isEmpty()) {
+            Fnr partnerFnr = hentPartnerFnr(personsSivilstand);
+            if(partnerFnr != null) {
+                familiemedlemFnrListe.add(partnerFnr);
+            }
+        }
+
+        if (familiemedlemFnrListe.size() > 0) {
+            List<Familiemedlem> familiemedlemInfo = hentFamiliemedlemOpplysninger(familiemedlemFnrListe, personV2Data.getBostedsadresse());
+
+            Familiemedlem partnerInfo = familiemedlemInfo
+                                            .stream()
+                                            .filter(medlem -> hentPartnerFnr(personsSivilstand).toString().equals(medlem.getFodselsnummer().toString()))
+                                            .findAny()
+                                            .orElse(null);
+
+            personV2Data.setPartner(partnerInfo);
+
+            List<Familiemedlem> barnInfo =  familiemedlemInfo
+                                            .stream()
+                                            .filter(medlem -> !hentPartnerFnr(personsSivilstand).equals(medlem.getFodselsnummer()))
+                                            .collect(Collectors.toList());
+
+            personV2Data.setBarn(barnInfo);
         }
     }
 
