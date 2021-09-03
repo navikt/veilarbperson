@@ -87,17 +87,20 @@ public class PersonV2Service {
     }
 
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse foreldresBostedsAdresse) {
-        List<HentPerson.Familiemedlemmer> familimedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr);
+        List<HentPerson.PersonBolk> familimedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr);
 
         return ofNullable(familimedlemInfo)
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(medlemInfo -> medlemInfo.getCode().equals("ok"))
-                .map(HentPerson.Familiemedlemmer::getPerson)
+                .map(HentPerson.PersonBolk::getPerson)
                 .map(familiemedlem ->
                         PersonV2DataMapper.familiemedlemMapper(
                             familiemedlem,
-                            egenAnsattClient.erEgenAnsatt(ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator())).map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null)),
+                            egenAnsattClient.erEgenAnsatt(
+                                    ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
+                                    .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null)
+                            ),
                             foreldresBostedsAdresse,
                             authService
                         ))
@@ -139,7 +142,7 @@ public class PersonV2Service {
 
             Familiemedlem partnerInfo = familiemedlemInfo
                                             .stream()
-                                            .filter(medlem -> hentPartnerFnr(personsSivilstand).toString().equals(medlem.getFodselsnummer().toString()))
+                                            .filter(medlem -> hentPartnerFnr(personsSivilstand).equals(medlem.getFodselsnummer()))
                                             .findAny()
                                             .orElse(null);
 

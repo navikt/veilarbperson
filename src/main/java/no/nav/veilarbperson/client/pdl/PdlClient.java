@@ -13,7 +13,7 @@ public interface PdlClient extends HealthCheck {
 
     HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken);
 
-    List<HentPerson.Familiemedlemmer> hentPersonBolk(List<Fnr> personIdenter);
+    List<HentPerson.PersonBolk> hentPersonBolk(List<Fnr> personIdenter);
 
     HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken);
 

@@ -23,6 +23,7 @@ import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -81,7 +82,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         return pdlClient.hentPersonNavn(fnr, USER_TOKEN);
     }
 
-    public List<HentPerson.Familiemedlemmer> hentPersonBolk(List<Fnr> fnrs) {
+    public List<HentPerson.PersonBolk> hentPersonBolk(List<Fnr> fnrs) {
         String apiUrl = configurApiResponse("pdl-hentPersonBolk-response.json");
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
         return pdlClient.hentPersonBolk(fnrs);
@@ -132,11 +133,11 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentOpplysningerTilBarnaMedKodeOkFraPdlTest() {
-        List<HentPerson.Familiemedlemmer> hentPersonBolk = hentPersonBolk(testFnrsTilBarna);
+        List<HentPerson.PersonBolk> hentPersonBolk = hentPersonBolk(testFnrsTilBarna);
 
         assertEquals(4, hentPersonBolk.size());
 
-        List<HentPerson.Familiemedlemmer> filterPersonBolkMedOkStatus = Optional.of(hentPersonBolk).stream().flatMap(Collection::stream)
+        List<HentPerson.PersonBolk> filterPersonBolkMedOkStatus = Optional.of(hentPersonBolk).stream().flatMap(Collection::stream)
                                                                         .filter(status -> status.getCode().equals("ok"))
                                                                         .collect(Collectors.toList());
 
@@ -231,6 +232,21 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getFamilierelasjoner(), personV2Data); // Forsøker å flette person som har ingen barn
 
         assertEquals(Collections.emptyList(), personV2Data.getBarn());     // Ingen barn blir lagt i personV2Data
+    }
+
+    @Test
+    public void flettPartnerInformasjonenSomErEgenAnsattTest() {
+        PersonV2Data personV2Data = getPersonV2Data();
+        person = hentPerson(FNR);
+
+        when(egenAnsattClient.erEgenAnsatt(Fnr.of("2134567890"))).thenReturn(true);
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getFamilierelasjoner(), personV2Data);
+
+        Familiemedlem partner = personV2Data.getPartner();
+        assertNull(partner.getForkortetNavn());
+        assertNull(partner.getKjonn());
+        assertEquals("2134567890", partner.getFodselsnummer().toString());
+        assertEquals(LocalDate.of(1982,12,14), partner.getFodselsdato());
     }
 
     @Test
@@ -363,7 +379,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         Bostedsadresse personsBostedsAdresse = PersonV2DataMapper.getFirstElement(person.getBostedsadresse());
         Oppholdsadresse personsOppholdsadresse = PersonV2DataMapper.getFirstElement(person.getOppholdsadresse());
         List<Kontaktadresse> personsKontaktsadresse = person.getKontaktadresse();
-
         Telefon telefon = new Telefon().setPrioritet("1").setTelefonNr("+4733333333").setMaster("PDL");
 
         personV2Data.setBostedsadresse(personsBostedsAdresse);
