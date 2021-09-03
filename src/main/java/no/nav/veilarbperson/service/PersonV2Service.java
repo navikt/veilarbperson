@@ -87,24 +87,27 @@ public class PersonV2Service {
     }
 
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse foreldresBostedsAdresse) {
-        List<HentPerson.PersonBolk> familimedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr);
+        List<HentPerson.PersonFraBolk> familiemedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr);
 
-        return ofNullable(familimedlemInfo)
+        return ofNullable(familiemedlemInfo)
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(medlemInfo -> medlemInfo.getCode().equals("ok"))
-                .map(HentPerson.PersonBolk::getPerson)
-                .map(familiemedlem ->
-                        PersonV2DataMapper.familiemedlemMapper(
-                            familiemedlem,
-                            egenAnsattClient.erEgenAnsatt(
-                                    ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
-                                    .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null)
-                            ),
-                            foreldresBostedsAdresse,
-                            authService
-                        ))
+                .map(HentPerson.PersonFraBolk::getPerson)
+                .map(familiemedlem -> mapPartnerOgBarnSomFamiliemedlem(familiemedlem, foreldresBostedsAdresse))
                 .collect(Collectors.toList());
+    }
+
+    public Familiemedlem mapPartnerOgBarnSomFamiliemedlem(HentPerson.Familiemedlem familiemedlem, Bostedsadresse foreldresBostedsAdresse) {
+        return PersonV2DataMapper.familiemedlemMapper(
+            familiemedlem,
+            egenAnsattClient.erEgenAnsatt(
+                    ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
+                    .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null)
+            ),
+            foreldresBostedsAdresse,
+            authService
+        );
     }
 
     public List<Fnr> hentBarnaFnr(List<HentPerson.Familierelasjoner> familierelasjoner) {

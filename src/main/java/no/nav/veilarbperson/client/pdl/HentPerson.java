@@ -12,7 +12,7 @@ import java.util.List;
 @Accessors(chain = true)
 public class HentPerson {
     public Person hentPerson;
-    public List<PersonBolk> hentPersonBolk;
+    public List<PersonFraBolk> hentPersonBolk;
     public GeografiskTilknytning hentGeografiskTilknytning;
 
     @Data
@@ -36,7 +36,7 @@ public class HentPerson {
     }
 
     @Data
-    public static class PersonBolk {
+    public static class PersonFraBolk {
         private String ident;
         private Familiemedlem person;
         private String code;

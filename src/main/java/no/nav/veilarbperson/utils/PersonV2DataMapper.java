@@ -68,24 +68,29 @@ public class PersonV2DataMapper {
         boolean harAdressebeskyttelse = (AdressebeskyttelseGradering.FORTROLIG).equals(gradering)
                 || (AdressebeskyttelseGradering.STRENGT_FORTROLIG).equals(gradering)
                 || (AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND).equals(gradering);
+        boolean ukjentGradering = AdressebeskyttelseGradering.UKJENT.equals(gradering);
         boolean harVeilederLeseTilgang = authService.harLesetilgang(medlemFnr);
         boolean harSammeBosted = harFamiliamedlemSammeBostedSomPerson(getFirstElement(familiemedlem.getBostedsadresse()), personsBostedsadresse);
         Familiemedlem medlem = new Familiemedlem().setFodselsnummer(medlemFnr).setFodselsdato(fodselsdato);
 
-        if (harAdressebeskyttelse && !harVeilederLeseTilgang) {
-            return medlem.setGradering(gradering);
+        if ((harAdressebeskyttelse || ukjentGradering) && !harVeilederLeseTilgang) {
+            return medlem
+                    .setGradering(gradering);
         } else if (erEgenAnsatt && !harVeilederLeseTilgang) {
-            return medlem.setHarSammeBosted(harSammeBosted);
-        } else if (AdressebeskyttelseGradering.UGRADERT.equals(gradering)) {
-            return medlem.setHarSammeBosted(harSammeBosted)
+            return medlem
+                    .setErEgenAnsatt(true)
+                    .setHarSammeBosted(harSammeBosted);
+        } else {
+            return medlem
+                    .setGradering(gradering)
+                    .setHarVeilederTilgang(harVeilederLeseTilgang)
+                    .setHarSammeBosted(harSammeBosted)
                     .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
                     .setMellomnavn(ofNullable(navn).map(HentPerson.Navn::getMellomnavn).orElse(null))
                     .setEtternavn(ofNullable(navn).map(HentPerson.Navn::getEtternavn).orElse(null))
                     .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null))
                     .setKjonn(ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
                     .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));
-        } else {
-            return new Familiemedlem();
         }
     }
 

@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.client.pdl.domain;
 
 public enum AdressebeskyttelseGradering {
+    UKJENT,
     UGRADERT,
     FORTROLIG,
     STRENGT_FORTROLIG,
@@ -17,7 +18,7 @@ public enum AdressebeskyttelseGradering {
             case "STRENGT_FORTROLIG_UTLAND":
                 return STRENGT_FORTROLIG_UTLAND;
             default:
-                return UGRADERT;
+                return UKJENT;
         }
     }
 }

@@ -82,7 +82,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         return pdlClient.hentPersonNavn(fnr, USER_TOKEN);
     }
 
-    public List<HentPerson.PersonBolk> hentPersonBolk(List<Fnr> fnrs) {
+    public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> fnrs) {
         String apiUrl = configurApiResponse("pdl-hentPersonBolk-response.json");
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
         return pdlClient.hentPersonBolk(fnrs);
@@ -133,11 +133,11 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentOpplysningerTilBarnaMedKodeOkFraPdlTest() {
-        List<HentPerson.PersonBolk> hentPersonBolk = hentPersonBolk(testFnrsTilBarna);
+        List<HentPerson.PersonFraBolk> hentPersonBolk = hentPersonBolk(testFnrsTilBarna);
 
         assertEquals(4, hentPersonBolk.size());
 
-        List<HentPerson.PersonBolk> filterPersonBolkMedOkStatus = Optional.of(hentPersonBolk).stream().flatMap(Collection::stream)
+        List<HentPerson.PersonFraBolk> filterPersonBolkMedOkStatus = Optional.of(hentPersonBolk).stream().flatMap(Collection::stream)
                                                                         .filter(status -> status.getCode().equals("ok"))
                                                                         .collect(Collectors.toList());
 

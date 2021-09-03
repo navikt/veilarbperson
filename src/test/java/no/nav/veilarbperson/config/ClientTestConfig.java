@@ -231,7 +231,7 @@ public class ClientTestConfig {
             public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) { return null; }
 
             @Override
-            public List<HentPerson.PersonBolk> hentPersonBolk(List<Fnr> personIdent) { return null; }
+            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdent) { return null; }
 
             @Override
             public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) { return null; }
