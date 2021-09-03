@@ -30,6 +30,11 @@
             }
           ],
           "doedsfall": [],
+          "adressebeskyttelse": [
+            {
+              "gradering": "FORTROLIG"
+            }
+          ],
           "bostedsadresse": [
             {
               "vegadresse": {
@@ -75,9 +80,65 @@
               "type": "FNR"
             }
           ],
-          "doedsfall": []
+          "doedsfall": [],
+          "adressebeskyttelse": [
+            {
+              "gradering": "UGRADERT"
+            }
+          ]
         },
         "code": "not_found"
+      },
+      {
+        "ident": "2134567890",
+        "person": {
+          "navn": [
+            {
+              "fornavn": "FORFJAMSET",
+              "mellomnavn": "GLITRENDE",
+              "etternavn": "STAFFELI",
+              "forkortetNavn": "FORFJAMSET STAFFELI"
+            }
+          ],
+          "foedsel": [
+            {
+              "foedselsdato": "1982-12-14"
+            }
+          ],
+          "kjoenn": [
+            {
+              "kjoenn": "MANN"
+            }
+          ],
+          "folkeregisteridentifikator": [
+            {
+              "identifikasjonsnummer": "2134567890",
+              "status": "I_BRUK",
+              "type": "FNR"
+            }
+          ],
+          "doedsfall": [],
+          "adressebeskyttelse": [
+            {
+              "gradering": "UGRADERT"
+            }
+          ],
+          "bostedsadresse": [
+            {
+              "vegadresse": {
+                "matrikkelId": null,
+                "postnummer": "0560",
+                "husnummer": "21",
+                "husbokstav": "A",
+                "kommunenummer": "0570",
+                "adressenavn": "ARENDALSGATE",
+                "tilleggsnavn": "ARENDAL",
+                "poststed": "OSLO"
+              }
+            }
+          ]
+        },
+        "code": "ok"
       },
       {
         "ident": "12345678912",

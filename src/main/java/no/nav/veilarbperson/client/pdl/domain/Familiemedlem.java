@@ -17,5 +17,8 @@ public class Familiemedlem {
     LocalDate fodselsdato;
     String kjonn;
     LocalDate dodsdato;
+    boolean erEgenAnsatt;
+    boolean harVeilederTilgang;
+    AdressebeskyttelseGradering gradering;       //diskresjonskode
     boolean harSammeBosted;
 }

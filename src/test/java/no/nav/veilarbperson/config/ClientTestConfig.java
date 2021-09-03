@@ -225,20 +225,13 @@ public class ClientTestConfig {
             }
 
             @Override
-            public HentPerson.Familiemedlem hentPartner(Fnr personIdent, String userToken) {
-                return null;
-            }
-
-            @Override
             public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken) { return null; }
 
             @Override
             public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) { return null; }
 
             @Override
-            public List<HentPerson.Barn> hentPersonBolk(Fnr[] personIdent) {
-                return null;
-            }
+            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdent) { return null; }
 
             @Override
             public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) { return null; }

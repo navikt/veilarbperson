@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import no.nav.common.types.identer.Fnr;
 
+import java.util.List;
+
 public class GqlVariables {
 
     @Data
@@ -16,7 +18,7 @@ public class GqlVariables {
     @Data
     @AllArgsConstructor
     public static class HentPersonBolk {
-        private Fnr[] identer;
+        private List<Fnr> identer;
         private boolean historikk;
     }
 

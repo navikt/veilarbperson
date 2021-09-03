@@ -49,14 +49,14 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     private static final String USER_TOKEN = "USER_TOKEN";
     private static Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
-    Fnr[] testFnrsTilBarna = {Fnr.of("12345678910"), Fnr.of("12345678911")};
+    List<Fnr> testFnrsTilBarna = new ArrayList<>(List.of(Fnr.of("12345678910"), Fnr.of("12345678911")));
 
     @Before
     public void setup() {
         when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
-        when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(true);
+        when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(false);
         when(pdlClient.hentPersonBolk(any())).thenReturn(hentPersonBolk(testFnrsTilBarna));
         when(pdlClient.hentPersonNavn(any(), any())).thenReturn(hentPersonNavn(FNR));
         when(kodeverkService.getPoststedForPostnummer(any())).thenReturn("POSTSTED");
@@ -82,15 +82,10 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         return pdlClient.hentPersonNavn(fnr, USER_TOKEN);
     }
 
-    public List<HentPerson.Barn> hentPersonBolk(Fnr[] fnrs) {
+    public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> fnrs) {
         String apiUrl = configurApiResponse("pdl-hentPersonBolk-response.json");
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
         return pdlClient.hentPersonBolk(fnrs);
-    }
-
-    public HentPerson.Familiemedlem hentPartner(Fnr fnr) {
-        PdlClientImpl pdlClient = configurPdlClient("pdl-hentPartner-response.json");
-        return pdlClient.hentPartner(fnr, USER_TOKEN);
     }
 
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
@@ -127,26 +122,26 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void hentFnrTilBarnaTest() {
         List<HentPerson.Familierelasjoner> familierelasjoner = person.getFamilierelasjoner();
-        Fnr[] fnrListe = personV2Service.hentFnrTilBarna(familierelasjoner);
+        List<Fnr> fnrListe = personV2Service.hentBarnaFnr(familierelasjoner);
 
-        assertEquals(2, fnrListe.length);
+        assertEquals(2, fnrListe.size());
 
-        for (int i = 0; i < testFnrsTilBarna.length; i++) {
-            assertEquals(testFnrsTilBarna[i], fnrListe[i]);
+        for (int i = 0; i < testFnrsTilBarna.size(); i++) {
+            assertEquals(testFnrsTilBarna.get(i), fnrListe.get(i));
         }
     }
 
     @Test
     public void hentOpplysningerTilBarnaMedKodeOkFraPdlTest() {
-        List<HentPerson.Barn> hentPersonBolk = hentPersonBolk(testFnrsTilBarna);
+        List<HentPerson.PersonFraBolk> hentPersonBolk = hentPersonBolk(testFnrsTilBarna);
 
-        assertEquals(3, hentPersonBolk.size());
+        assertEquals(4, hentPersonBolk.size());
 
-        List<HentPerson.Barn> filterPersonBolkMedOkStatus = Optional.of(hentPersonBolk).stream().flatMap(Collection::stream)
+        List<HentPerson.PersonFraBolk> filterPersonBolkMedOkStatus = Optional.of(hentPersonBolk).stream().flatMap(Collection::stream)
                                                                         .filter(status -> status.getCode().equals("ok"))
                                                                         .collect(Collectors.toList());
 
-        assertEquals(1, filterPersonBolkMedOkStatus.size());
+        assertEquals(2, filterPersonBolkMedOkStatus.size());
     }
 
     @Test
@@ -185,20 +180,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     }
 
     @Test
-    public void hentPartnerInformasjonTest() {
-        Fnr fnrTilPartner = personV2Service.hentFnrTilPartner(person.getSivilstand());
-        Bostedsadresse personsBostedsAdresse = person.getBostedsadresse().get(0);
-
-        assertEquals("2134567890", fnrTilPartner.get());
-
-        HentPerson.Familiemedlem partnerInformasjon = hentPartner(fnrTilPartner);
-        Familiemedlem partner = PersonV2DataMapper.familiemedlemMapper(partnerInformasjon, personsBostedsAdresse);
-
-        assertEquals("TYKKMAGET GASELLE", partner.getForkortetNavn());
-        assertEquals(LocalDate.of(1981,12,13), partner.getFodselsdato());
-    }
-
-    @Test
     public void hentGeografiskTilknytningTest() {
         HentPerson.GeografiskTilknytning geografiskTilknytning = hentGeografisktilknytning(FNR);
 
@@ -234,21 +215,38 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     }
 
     @Test
-    public void flettBarnInformasjonTest() {
+    public void flettPartnerOgBarnInformasjonTest() {
         PersonV2Data personV2Data = getPersonV2Data();
 
         assertEquals(0, personV2Data.getBarn().size());
+        assertNull(personV2Data.getPartner());
 
-        personV2Service.flettBarnInformasjon(person.getFamilierelasjoner(), personV2Data); // Forsøker å flette person med 3 barn hvor informasjonen til bare 1 barn er tilgjemgelig i PDL
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getFamilierelasjoner(), personV2Data); // Forsøker å flette person med 3 barn hvor informasjonen til bare 1 barn er tilgjemgelig i PDL
 
         assertEquals(1, personV2Data.getBarn().size()); // Fant bare 1 av 3 barna med "ok"(gyldig) status fra hentPersonBolk operasjonen
+        assertNotNull(personV2Data.getPartner());
 
         person = hentFamiliemedlem(Fnr.of("12345678910"));  // Hent person med ingen barn for ex.Opplysninger til et barn selv
         personV2Data = getPersonV2Data();
 
-        personV2Service.flettBarnInformasjon(person.getFamilierelasjoner(), personV2Data); // Forsøker å flette person som har ingen barn
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getFamilierelasjoner(), personV2Data); // Forsøker å flette person som har ingen barn
 
         assertEquals(Collections.emptyList(), personV2Data.getBarn());     // Ingen barn blir lagt i personV2Data
+    }
+
+    @Test
+    public void flettPartnerInformasjonenSomErEgenAnsattTest() {
+        PersonV2Data personV2Data = getPersonV2Data();
+        person = hentPerson(FNR);
+
+        when(egenAnsattClient.erEgenAnsatt(Fnr.of("2134567890"))).thenReturn(true);
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getFamilierelasjoner(), personV2Data);
+
+        Familiemedlem partner = personV2Data.getPartner();
+        assertNull(partner.getForkortetNavn());
+        assertNull(partner.getKjonn());
+        assertEquals("2134567890", partner.getFodselsnummer().toString());
+        assertEquals(LocalDate.of(1982,12,14), partner.getFodselsdato());
     }
 
     @Test
@@ -381,7 +379,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         Bostedsadresse personsBostedsAdresse = PersonV2DataMapper.getFirstElement(person.getBostedsadresse());
         Oppholdsadresse personsOppholdsadresse = PersonV2DataMapper.getFirstElement(person.getOppholdsadresse());
         List<Kontaktadresse> personsKontaktsadresse = person.getKontaktadresse();
-
         Telefon telefon = new Telefon().setPrioritet("1").setTelefonNr("+4733333333").setMaster("PDL");
 
         personV2Data.setBostedsadresse(personsBostedsAdresse);

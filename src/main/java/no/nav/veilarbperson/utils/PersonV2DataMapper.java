@@ -7,7 +7,9 @@ import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.client.pdl.domain.Telefon;
+import no.nav.veilarbperson.service.AuthService;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,7 +34,7 @@ public class PersonV2DataMapper {
                 .setKontonummer(personDataFraTps.getKontonummer())
                 .setDiskresjonskode(ofNullable(getFirstElement(person.getAdressebeskyttelse()))
                         .map(HentPerson.Adressebeskyttelse::getGradering)
-                        .map(Diskresjonskoder::mapTilTallkode).orElse(null))
+                        .map(Diskresjonskoder::mapTilTallkode).orElse("0"))
                 .setTelefon(mapTelefonNrFraPdl(person.getTelefonnummer()))
                 .setSivilstand(ofNullable(sivilstandMapper(getFirstElement(person.getSivilstand()))).orElse(null))
                 .setBostedsadresse(ofNullable(getFirstElement(person.getBostedsadresse())).orElse(null))
@@ -54,20 +56,42 @@ public class PersonV2DataMapper {
                 .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null));
     }
 
-    public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem, Bostedsadresse personsBostedsadresse) {
+    public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem, boolean erEgenAnsatt, Bostedsadresse personsBostedsadresse, AuthService authService) {
         HentPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
+        Fnr medlemFnr = ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
+                .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null);
+        LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null);
+        AdressebeskyttelseGradering gradering = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
+                .map(HentPerson.Adressebeskyttelse::getGradering)
+                .map(AdressebeskyttelseGradering::mapGradering)
+                .orElse(AdressebeskyttelseGradering.UGRADERT);
+        boolean harAdressebeskyttelse = (AdressebeskyttelseGradering.FORTROLIG).equals(gradering)
+                || (AdressebeskyttelseGradering.STRENGT_FORTROLIG).equals(gradering)
+                || (AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND).equals(gradering);
+        boolean ukjentGradering = AdressebeskyttelseGradering.UKJENT.equals(gradering);
+        boolean harVeilederLeseTilgang = authService.harLesetilgang(medlemFnr);
+        boolean harSammeBosted = harFamiliamedlemSammeBostedSomPerson(getFirstElement(familiemedlem.getBostedsadresse()), personsBostedsadresse);
+        Familiemedlem medlem = new Familiemedlem().setFodselsnummer(medlemFnr).setFodselsdato(fodselsdato);
 
-        return new Familiemedlem()
-                .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
-                .setMellomnavn(ofNullable(navn).map(HentPerson.Navn::getMellomnavn).orElse(null))
-                .setEtternavn(ofNullable(navn).map(HentPerson.Navn::getEtternavn).orElse(null))
-                .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null))
-                .setFodselsdato(ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null))
-                .setFodselsnummer(ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
-                        .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null))
-                .setKjonn(ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
-                .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null))
-                .setHarSammeBosted(harFamiliamedlemSammeBostedSomPerson(getFirstElement(familiemedlem.getBostedsadresse()), personsBostedsadresse));
+        if ((harAdressebeskyttelse || ukjentGradering) && !harVeilederLeseTilgang) {
+            return medlem
+                    .setGradering(gradering);
+        } else if (erEgenAnsatt && !harVeilederLeseTilgang) {
+            return medlem
+                    .setErEgenAnsatt(true)
+                    .setHarSammeBosted(harSammeBosted);
+        } else {
+            return medlem
+                    .setGradering(gradering)
+                    .setHarVeilederTilgang(harVeilederLeseTilgang)
+                    .setHarSammeBosted(harSammeBosted)
+                    .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
+                    .setMellomnavn(ofNullable(navn).map(HentPerson.Navn::getMellomnavn).orElse(null))
+                    .setEtternavn(ofNullable(navn).map(HentPerson.Navn::getEtternavn).orElse(null))
+                    .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null))
+                    .setKjonn(ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
+                    .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));
+        }
     }
 
     /* Sammeligner persons bostesadresse med familiemedlems bostedsadresse for å se om de har samme bosted */
