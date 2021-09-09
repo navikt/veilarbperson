@@ -21,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,7 +80,7 @@ public class PersonV2Service {
             personV2Data.setSikkerhetstiltak(ofNullable(getFirstElement(personDataFraPdl.getSikkerhetstiltak())).map(HentPerson.Sikkerhetstiltak::getBeskrivelse).orElse(null));
         }
 
-        flettPartnerOgBarnInformasjon(personDataFraPdl.getSivilstand(), personDataFraPdl.getFamilierelasjoner(), personV2Data);
+        flettPartnerOgBarnInformasjon(personDataFraPdl.getSivilstand(), personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
         flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
         flettGeografiskEnhet(fodselsnummer, userToken, personV2Data);
         flettKodeverk(personV2Data);
@@ -231,7 +233,7 @@ public class PersonV2Service {
         try {
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);
 
-            leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), personV2Data.getTelefon());
+            leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), kontaktinfo.getMobilSistOppdatert(), personV2Data.getTelefon());
             personV2Data.setEpost(kontaktinfo.getEpostadresse());
             personV2Data.setMalform(kontaktinfo.getSpraak());
         } catch (Exception e) {
@@ -240,13 +242,19 @@ public class PersonV2Service {
     }
 
     /* Legger telefonnummer fra PDL og KRR til en liste. Hvis de er like da kan liste inneholde kun en av dem */
-    public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, List<Telefon> telefonListe) {
-        boolean harIkkeTelefonFraKrr = telefonNummerFraKrr != null
+    public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, String sistOppdatert, List<Telefon> telefonListe) {
+        boolean ikkeKrrTelefonIListe = telefonNummerFraKrr != null
                 && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
+        LocalDateTime dateTime = LocalDateTime.parse(sistOppdatert, dateTimeFormatter);
+        String registrertDato = PersonV2DataMapper.formatNorskDato(dateTime);
 
-        if (harIkkeTelefonFraKrr) {
-            Telefon telefonNrFraKrr = new Telefon().setPrioritet(telefonListe.size()+1+"").setTelefonNr(telefonNummerFraKrr).setMaster("KRR");
-            telefonListe.add(telefonNrFraKrr);
+        if (ikkeKrrTelefonIListe) {
+            telefonListe.add(new Telefon()
+                    .setPrioritet(telefonListe.size()+1+"")
+                    .setTelefonNr(telefonNummerFraKrr)
+                    .setRegistrertDato(registrertDato)
+                    .setMaster("KRR"));
         }
     }
 

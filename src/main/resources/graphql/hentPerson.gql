@@ -28,7 +28,7 @@ query($ident: ID!, $historikk: Boolean!) {
             gyldigFraOgMed
             relatertVedSivilstand
         }
-        familierelasjoner {
+        forelderBarnRelasjon {
             minRolleForPerson
             relatertPersonsRolle
             relatertPersonsIdent
@@ -39,6 +39,13 @@ query($ident: ID!, $historikk: Boolean!) {
             prioritet
             metadata {
                 master
+                endringer {
+                    type,
+                    registrert,
+                    registrertAv,
+                    systemkilde,
+                    kilde
+                }
             }
         }
         sikkerhetstiltak {

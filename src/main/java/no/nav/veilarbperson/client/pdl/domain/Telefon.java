@@ -8,5 +8,6 @@ import lombok.experimental.Accessors;
 public class Telefon {
     private String prioritet;
     private String telefonNr;
+    private String registrertDato;
     private String master;
 }
