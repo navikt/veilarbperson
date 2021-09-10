@@ -68,6 +68,7 @@ public class PersonV2DataMapper {
     public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem, boolean erEgenAnsatt, Bostedsadresse personsBostedsadresse, AuthService authService) {
         HentPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
         Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
+        String kjonn = ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null);
         LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null);
         AdressebeskyttelseGradering gradering = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
                 .map(HentPerson.Adressebeskyttelse::getGradering)
@@ -83,13 +84,16 @@ public class PersonV2DataMapper {
 
         if ((harAdressebeskyttelse || ukjentGradering) && !harVeilederLeseTilgang) {
             return medlem
+                    .setKjonn(kjonn)
                     .setGradering(gradering);
         } else if (erEgenAnsatt && !harVeilederLeseTilgang) {
             return medlem
+                    .setKjonn(kjonn)
                     .setErEgenAnsatt(true)
                     .setHarSammeBosted(harSammeBosted);
         } else {
             return medlem
+                    .setKjonn(kjonn)
                     .setGradering(gradering)
                     .setErEgenAnsatt(erEgenAnsatt)
                     .setHarVeilederTilgang(harVeilederLeseTilgang)
