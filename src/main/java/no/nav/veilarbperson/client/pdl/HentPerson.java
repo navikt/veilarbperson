@@ -25,7 +25,7 @@ public class HentPerson {
 
         private List<Doedsfall> doedsfall;
         private List<Sivilstand> sivilstand;
-        private List<Familierelasjoner> familierelasjoner;
+        private List<ForelderBarnRelasjon> forelderBarnRelasjon;
         private List<Telefonnummer> telefonnummer;
 
         private List<Sikkerhetstiltak> sikkerhetstiltak;
@@ -75,6 +75,21 @@ public class HentPerson {
     }
 
     @Data
+    public static class Metadata {
+        private String master;
+        private List<Endringer> endringer;
+
+        @Data
+        public static class Endringer {
+            private String type;
+            private LocalDateTime registrert;
+            private String registrertAv;
+            private String systemkilde;
+            private String kilde;
+        }
+    }
+
+    @Data
     public static class Adressebeskyttelse {
         private String gradering;
     }
@@ -85,7 +100,7 @@ public class HentPerson {
     }
 
     @Data
-    public static class Familierelasjoner {
+    public static class ForelderBarnRelasjon {
         private String minRolleForPerson;
         private String relatertPersonsRolle;
         private String relatertPersonsIdent;

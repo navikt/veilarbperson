@@ -8,6 +8,8 @@ public class DkifKontaktinfo {
     boolean kanVarsles;
     boolean reservert;
     String epostadresse;
+    String epostSistOppdatert;
     String mobiltelefonnummer;
+    String mobilSistOppdatert;
     String spraak;
 }

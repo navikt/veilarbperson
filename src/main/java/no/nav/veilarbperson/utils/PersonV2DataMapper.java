@@ -10,9 +10,13 @@ import no.nav.veilarbperson.client.pdl.domain.Telefon;
 import no.nav.veilarbperson.service.AuthService;
 
 import java.time.LocalDate;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Optional.ofNullable;
 
 public class PersonV2DataMapper {
@@ -34,7 +38,7 @@ public class PersonV2DataMapper {
                 .setKontonummer(personDataFraTps.getKontonummer())
                 .setDiskresjonskode(ofNullable(getFirstElement(person.getAdressebeskyttelse()))
                         .map(HentPerson.Adressebeskyttelse::getGradering)
-                        .map(Diskresjonskoder::mapTilTallkode).orElse("0"))
+                        .map(Diskresjonskoder::mapTilTallkode).orElse(null))
                 .setTelefon(mapTelefonNrFraPdl(person.getTelefonnummer()))
                 .setSivilstand(ofNullable(sivilstandMapper(getFirstElement(person.getSivilstand()))).orElse(null))
                 .setBostedsadresse(ofNullable(getFirstElement(person.getBostedsadresse())).orElse(null))
@@ -56,10 +60,14 @@ public class PersonV2DataMapper {
                 .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null));
     }
 
+    public static Fnr hentFamiliemedlemFnr(HentPerson.Familiemedlem familiemedlem) {
+        return ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
+                .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null);
+    }
+
     public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem, boolean erEgenAnsatt, Bostedsadresse personsBostedsadresse, AuthService authService) {
         HentPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
-        Fnr medlemFnr = ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
-                .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null);
+        Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
         LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null);
         AdressebeskyttelseGradering gradering = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
                 .map(HentPerson.Adressebeskyttelse::getGradering)
@@ -83,6 +91,7 @@ public class PersonV2DataMapper {
         } else {
             return medlem
                     .setGradering(gradering)
+                    .setErEgenAnsatt(erEgenAnsatt)
                     .setHarVeilederTilgang(harVeilederLeseTilgang)
                     .setHarSammeBosted(harSammeBosted)
                     .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
@@ -125,17 +134,36 @@ public class PersonV2DataMapper {
                 : new ArrayList<>();
     }
 
+    public static HentPerson.Metadata.Endringer filtrerGjelendeEndringsInfo(List<HentPerson.Metadata.Endringer> endringer) {
+        return ofNullable(endringer)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(endring -> endring.getType().equals("OPPRETT"))
+                .findAny()
+                .orElse(null);
+    }
+
     /* Slår sammen landkode og nummer og så lager et telefonnummer */
     public static Telefon telefonNummerMapper(HentPerson.Telefonnummer telefonnummer) {
-         String telefonnr = telefonnummer.getNummer();
-         String landkode = telefonnummer.getLandskode()!=null ? telefonnummer.getLandskode() : "";
+        String telefonnr = telefonnummer.getNummer();
+        String master = telefonnummer.getMetadata().getMaster();
+        String landkode = ofNullable(telefonnummer.getLandskode()).orElse("");
+        HentPerson.Metadata.Endringer endringsInfo = filtrerGjelendeEndringsInfo(telefonnummer.getMetadata().getEndringer());
+        String registrert = ofNullable(endringsInfo.getRegistrert())
+                .map(dato -> LocalDateTime.parse(dato.toString(), ISO_LOCAL_DATE_TIME))
+                .map(PersonV2DataMapper::formatererPaaNorskDato)
+                .orElse(null);
 
-         return (telefonnr!=null)
+        return (telefonnr!=null)
                  ? new Telefon()
                         .setPrioritet(telefonnummer.getPrioritet())
                         .setTelefonNr(landkode + telefonnr)
-                        .setMaster(telefonnummer.getMetadata().getMaster())
+                        .setRegistrertDato(registrert)
+                        .setMaster(master)
                  : null;
     }
 
+    public static String formatererPaaNorskDato(LocalDateTime localDateTime) {
+        return DateTimeFormatter.ofPattern("dd.MM.yyyy").format(localDateTime);
+    }
 }

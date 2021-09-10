@@ -38,14 +38,13 @@
           "bostedsadresse": [
             {
               "vegadresse": {
-                "matrikkelId": null,
+                "matrikkelId": "123456789",
                 "postnummer": "0560",
                 "husnummer": "21",
                 "husbokstav": "A",
                 "kommunenummer": "0570",
                 "adressenavn": "ARENDALSGATE",
-                "tilleggsnavn": "ARENDAL",
-                "poststed": "OSLO"
+                "tilleggsnavn": "ARENDAL"
               }
             }
           ]

@@ -24,9 +24,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.time.format.DateTimeFormatter.*;
 import static java.util.Optional.ofNullable;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -110,7 +113,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentFamilieRelasjonerSkalHenteForeldreOgBarnRelasjoner() {
-        List<HentPerson.Familierelasjoner> familierelasjoner = person.getFamilierelasjoner();
+        List<HentPerson.ForelderBarnRelasjon> familierelasjoner = person.getForelderBarnRelasjon();
 
         assertEquals("12345678910", familierelasjoner.get(0).getRelatertPersonsIdent());
         assertEquals("BARN", familierelasjoner.get(0).getRelatertPersonsRolle());
@@ -121,7 +124,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentFnrTilBarnaTest() {
-        List<HentPerson.Familierelasjoner> familierelasjoner = person.getFamilierelasjoner();
+        List<HentPerson.ForelderBarnRelasjon> familierelasjoner = person.getForelderBarnRelasjon();
         List<Fnr> fnrListe = personV2Service.hentBarnaFnr(familierelasjoner);
 
         assertEquals(2, fnrListe.size());
@@ -221,7 +224,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals(0, personV2Data.getBarn().size());
         assertNull(personV2Data.getPartner());
 
-        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getFamilierelasjoner(), personV2Data); // Forsøker å flette person med 3 barn hvor informasjonen til bare 1 barn er tilgjemgelig i PDL
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data); // Forsøker å flette person med 3 barn hvor informasjonen til bare 1 barn er tilgjemgelig i PDL
 
         assertEquals(1, personV2Data.getBarn().size()); // Fant bare 1 av 3 barna med "ok"(gyldig) status fra hentPersonBolk operasjonen
         assertNotNull(personV2Data.getPartner());
@@ -229,24 +232,37 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         person = hentFamiliemedlem(Fnr.of("12345678910"));  // Hent person med ingen barn for ex.Opplysninger til et barn selv
         personV2Data = getPersonV2Data();
 
-        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getFamilierelasjoner(), personV2Data); // Forsøker å flette person som har ingen barn
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data); // Forsøker å flette person som har ingen barn
 
         assertEquals(Collections.emptyList(), personV2Data.getBarn());     // Ingen barn blir lagt i personV2Data
     }
 
     @Test
-    public void flettPartnerInformasjonenSomErEgenAnsattTest() {
+    public void flettPartnerInfoSomErEgenAnsattTest() {
         PersonV2Data personV2Data = getPersonV2Data();
         person = hentPerson(FNR);
 
+        //flett partner info når veileder har ikke lese tilgang
         when(egenAnsattClient.erEgenAnsatt(Fnr.of("2134567890"))).thenReturn(true);
-        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getFamilierelasjoner(), personV2Data);
+        when(authService.harLesetilgang(Fnr.of("2134567890"))).thenReturn(false);
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
 
         Familiemedlem partner = personV2Data.getPartner();
         assertNull(partner.getForkortetNavn());
         assertNull(partner.getKjonn());
         assertEquals("2134567890", partner.getFodselsnummer().toString());
         assertEquals(LocalDate.of(1982,12,14), partner.getFodselsdato());
+
+        //flett partner info når veileder har lese tilgang
+        when(egenAnsattClient.erEgenAnsatt(Fnr.of("2134567890"))).thenReturn(true);
+        when(authService.harLesetilgang(Fnr.of("2134567890"))).thenReturn(true);
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
+
+        Familiemedlem partner1 = personV2Data.getPartner();
+        assertNotNull(partner1.getForkortetNavn());
+        assertNotNull(partner1.getKjonn());
+        assertEquals("2134567890", partner1.getFodselsnummer().toString());
+        assertEquals(LocalDate.of(1982,12,14), partner1.getFodselsdato());
     }
 
     @Test
@@ -278,35 +294,36 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void leggKrrTelefonNrIListeTest() {
         String telefonNrFraKrr = "+4622222222";
+        String registrertDato = "2018-10-01T11:38:22,000+00:00";
         List<Telefon> telefonListeFraPdl = PersonV2DataMapper.mapTelefonNrFraPdl(person.getTelefonnummer());
-        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonListeFraPdl);  //Legger telefonnummere fra PDL og KRR som er ulike, til en liste
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl);  //Legger telefonnummere fra PDL og KRR som er ulike, til en liste
 
         assertEquals(2, telefonListeFraPdl.size());
         assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
         assertEquals("+4622222222", telefonListeFraPdl.get(1).getTelefonNr());
 
         telefonNrFraKrr = "+4733333333";
-        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR som er like, til en liste
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR som er like, til en liste
 
         assertEquals(2, telefonListeFraPdl.size());
         assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
 
         telefonNrFraKrr = "+4811111111";
-        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonListeFraPdl); //Legger en ny telefonnr fra KRR til en pdlTelefonNrListe
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl); //Legger en ny telefonnr fra KRR til en pdlTelefonNrListe
 
         assertEquals(3, telefonListeFraPdl.size());
         assertEquals("+4811111111", telefonListeFraPdl.get(2).getTelefonNr());
         assertEquals("3", telefonListeFraPdl.get(2).getPrioritet());
 
         telefonNrFraKrr = null;
-        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra KRR er null
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra KRR er null
 
         assertEquals(3, telefonListeFraPdl.size());
         assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
 
         telefonListeFraPdl = new ArrayList<>();
         telefonNrFraKrr = "+4733333333";
-        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra PDL er null
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra PDL er null
 
         assertEquals(1, telefonListeFraPdl.size());
         assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
@@ -372,6 +389,30 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         TilrettelagtKommunikasjonData tilrettelagtKommunikasjonData = personV2Service.hentSpraakTolkInfo(FNR, "USER_TOKEN");
         assertEquals("Engelsk", tilrettelagtKommunikasjonData.getTalespraak());
         assertEquals("Norsk", tilrettelagtKommunikasjonData.getTegnspraak());
+    }
+
+
+    @Test
+    public void filtrerGjelendeEndringsInfoTest() {
+        List<HentPerson.Metadata.Endringer> endringerListe = person.getTelefonnummer().get(0).getMetadata().getEndringer();
+
+        HentPerson.Metadata.Endringer filtrertEndringer = PersonV2DataMapper.filtrerGjelendeEndringsInfo(endringerListe);
+        assertEquals("OPPRETT", filtrertEndringer.getType());
+    }
+
+    @Test
+    public void parseDateFromDateTimeTest() {
+        String telefonRegistrertDatoIKrr = "2018-09-01T11:38:22,000+00:00";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
+        LocalDateTime dateTime = LocalDateTime.parse(telefonRegistrertDatoIKrr, dateTimeFormatter);
+        String registrertDato = PersonV2DataMapper.formatererPaaNorskDato(dateTime);
+        assertEquals("01.09.2018", registrertDato);
+
+        LocalDateTime telefonRegistrertDatoIPdl = person.getTelefonnummer().get(0).getMetadata().getEndringer().get(0).getRegistrert();
+
+        LocalDateTime dateTime1 = LocalDateTime.parse(telefonRegistrertDatoIPdl.toString(), ISO_LOCAL_DATE_TIME);
+        String registrertDato1 = PersonV2DataMapper.formatererPaaNorskDato(dateTime1);
+        assertEquals("08.09.2021", registrertDato1);
     }
 
     public PersonV2Data getPersonV2Data() {

@@ -82,7 +82,7 @@ public class PdlClientImplTest {
         HentPerson.Foedsel foedsel = person.getFoedsel().get(0);
         assertEquals(LocalDate.of(1981,12,13), foedsel.getFoedselsdato());
 
-        HentPerson.Familierelasjoner familierelasjoner = person.getFamilierelasjoner().get(0);
+        HentPerson.ForelderBarnRelasjon familierelasjoner = person.getForelderBarnRelasjon().get(0);
         assertEquals("MOR", familierelasjoner.getMinRolleForPerson());
         assertEquals("BARN", familierelasjoner.getRelatertPersonsRolle());
         assertEquals("12345678910", familierelasjoner.getRelatertPersonsIdent());
