@@ -60,10 +60,14 @@ public class PersonV2DataMapper {
                 .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null));
     }
 
+    public static Fnr hentFamiliemedlemFnr(HentPerson.Familiemedlem familiemedlem) {
+        return ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
+                .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null);
+    }
+
     public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem, boolean erEgenAnsatt, Bostedsadresse personsBostedsadresse, AuthService authService) {
         HentPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
-        Fnr medlemFnr = ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
-                .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null);
+        Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
         LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null);
         AdressebeskyttelseGradering gradering = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
                 .map(HentPerson.Adressebeskyttelse::getGradering)
@@ -87,6 +91,7 @@ public class PersonV2DataMapper {
         } else {
             return medlem
                     .setGradering(gradering)
+                    .setErEgenAnsatt(erEgenAnsatt)
                     .setHarVeilederTilgang(harVeilederLeseTilgang)
                     .setHarSammeBosted(harSammeBosted)
                     .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
@@ -146,7 +151,7 @@ public class PersonV2DataMapper {
         HentPerson.Metadata.Endringer endringsInfo = filtrerGjelendeEndringsInfo(telefonnummer.getMetadata().getEndringer());
         String registrert = ofNullable(endringsInfo.getRegistrert())
                 .map(dato -> LocalDateTime.parse(dato.toString(), ISO_LOCAL_DATE_TIME))
-                .map(PersonV2DataMapper::formatNorskDato)
+                .map(PersonV2DataMapper::formatererPaaNorskDato)
                 .orElse(null);
 
         return (telefonnr!=null)
@@ -158,7 +163,7 @@ public class PersonV2DataMapper {
                  : null;
     }
 
-    public static String formatNorskDato(LocalDateTime localDateTime) {
+    public static String formatererPaaNorskDato(LocalDateTime localDateTime) {
         return DateTimeFormatter.ofPattern("dd.MM.yyyy").format(localDateTime);
     }
 }

@@ -113,7 +113,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentFamilieRelasjonerSkalHenteForeldreOgBarnRelasjoner() {
-        List<HentPerson.Familierelasjoner> familierelasjoner = person.getForelderBarnRelasjon();
+        List<HentPerson.ForelderBarnRelasjon> familierelasjoner = person.getForelderBarnRelasjon();
 
         assertEquals("12345678910", familierelasjoner.get(0).getRelatertPersonsIdent());
         assertEquals("BARN", familierelasjoner.get(0).getRelatertPersonsRolle());
@@ -124,7 +124,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentFnrTilBarnaTest() {
-        List<HentPerson.Familierelasjoner> familierelasjoner = person.getForelderBarnRelasjon();
+        List<HentPerson.ForelderBarnRelasjon> familierelasjoner = person.getForelderBarnRelasjon();
         List<Fnr> fnrListe = personV2Service.hentBarnaFnr(familierelasjoner);
 
         assertEquals(2, fnrListe.size());
@@ -238,11 +238,13 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     }
 
     @Test
-    public void flettPartnerInformasjonenSomErEgenAnsattTest() {
+    public void flettPartnerInfoSomErEgenAnsattTest() {
         PersonV2Data personV2Data = getPersonV2Data();
         person = hentPerson(FNR);
 
+        //flett partner info når veileder har ikke lese tilgang
         when(egenAnsattClient.erEgenAnsatt(Fnr.of("2134567890"))).thenReturn(true);
+        when(authService.harLesetilgang(Fnr.of("2134567890"))).thenReturn(false);
         personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
 
         Familiemedlem partner = personV2Data.getPartner();
@@ -250,6 +252,17 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertNull(partner.getKjonn());
         assertEquals("2134567890", partner.getFodselsnummer().toString());
         assertEquals(LocalDate.of(1982,12,14), partner.getFodselsdato());
+
+        //flett partner info når veileder har lese tilgang
+        when(egenAnsattClient.erEgenAnsatt(Fnr.of("2134567890"))).thenReturn(true);
+        when(authService.harLesetilgang(Fnr.of("2134567890"))).thenReturn(true);
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
+
+        Familiemedlem partner1 = personV2Data.getPartner();
+        assertNotNull(partner1.getForkortetNavn());
+        assertNotNull(partner1.getKjonn());
+        assertEquals("2134567890", partner1.getFodselsnummer().toString());
+        assertEquals(LocalDate.of(1982,12,14), partner1.getFodselsdato());
     }
 
     @Test
@@ -378,18 +391,27 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals("Norsk", tilrettelagtKommunikasjonData.getTegnspraak());
     }
 
+
+    @Test
+    public void filtrerGjelendeEndringsInfoTest() {
+        List<HentPerson.Metadata.Endringer> endringerListe = person.getTelefonnummer().get(0).getMetadata().getEndringer();
+
+        HentPerson.Metadata.Endringer filtrertEndringer = PersonV2DataMapper.filtrerGjelendeEndringsInfo(endringerListe);
+        assertEquals("OPPRETT", filtrertEndringer.getType());
+    }
+
     @Test
     public void parseDateFromDateTimeTest() {
         String telefonRegistrertDatoIKrr = "2018-09-01T11:38:22,000+00:00";
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
         LocalDateTime dateTime = LocalDateTime.parse(telefonRegistrertDatoIKrr, dateTimeFormatter);
-        String registrertDato = PersonV2DataMapper.formatNorskDato(dateTime);
+        String registrertDato = PersonV2DataMapper.formatererPaaNorskDato(dateTime);
         assertEquals("01.09.2018", registrertDato);
 
         LocalDateTime telefonRegistrertDatoIPdl = person.getTelefonnummer().get(0).getMetadata().getEndringer().get(0).getRegistrert();
 
         LocalDateTime dateTime1 = LocalDateTime.parse(telefonRegistrertDatoIPdl.toString(), ISO_LOCAL_DATE_TIME);
-        String registrertDato1 = PersonV2DataMapper.formatNorskDato(dateTime1);
+        String registrertDato1 = PersonV2DataMapper.formatererPaaNorskDato(dateTime1);
         assertEquals("08.09.2021", registrertDato1);
     }
 

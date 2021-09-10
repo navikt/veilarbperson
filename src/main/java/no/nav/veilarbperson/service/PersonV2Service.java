@@ -101,21 +101,20 @@ public class PersonV2Service {
     }
 
     public Familiemedlem mapPartnerOgBarnSomFamiliemedlem(HentPerson.Familiemedlem familiemedlem, Bostedsadresse foreldresBostedsAdresse) {
+        Fnr partnerEllerbarnFnr = PersonV2DataMapper.hentFamiliemedlemFnr(familiemedlem);
+
         return PersonV2DataMapper.familiemedlemMapper(
             familiemedlem,
-            egenAnsattClient.erEgenAnsatt(
-                    ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
-                    .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null)
-            ),
+            egenAnsattClient.erEgenAnsatt(partnerEllerbarnFnr),
             foreldresBostedsAdresse,
             authService
         );
     }
 
-    public List<Fnr> hentBarnaFnr(List<HentPerson.Familierelasjoner> familierelasjoner) {
+    public List<Fnr> hentBarnaFnr(List<HentPerson.ForelderBarnRelasjon> familierelasjoner) {
         return familierelasjoner.stream()
                 .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
-                .map(HentPerson.Familierelasjoner::getRelatertPersonsIdent)
+                .map(HentPerson.ForelderBarnRelasjon::getRelatertPersonsIdent)
                 .map(Fnr::of)
                 .collect(Collectors.toList());
     }
@@ -125,7 +124,7 @@ public class PersonV2Service {
                 .map(HentPerson.Sivilstand::getRelatertVedSivilstand).map(Fnr::of).orElse(null);
     }
 
-    public void flettPartnerOgBarnInformasjon(List<HentPerson.Sivilstand> personsSivilstand, List<HentPerson.Familierelasjoner> familierelasjoner, PersonV2Data personV2Data) {
+    public void flettPartnerOgBarnInformasjon(List<HentPerson.Sivilstand> personsSivilstand, List<HentPerson.ForelderBarnRelasjon> familierelasjoner, PersonV2Data personV2Data) {
         List<Fnr> familiemedlemFnrListe = new ArrayList<>();
 
         if (!familierelasjoner.isEmpty()) {
@@ -144,10 +143,11 @@ public class PersonV2Service {
 
         if (familiemedlemFnrListe.size() > 0) {
             List<Familiemedlem> familiemedlemInfo = hentFamiliemedlemOpplysninger(familiemedlemFnrListe, personV2Data.getBostedsadresse());
+            Fnr partnerFnr = hentPartnerFnr(personsSivilstand);
 
             Familiemedlem partnerInfo = familiemedlemInfo
                                             .stream()
-                                            .filter(medlem -> hentPartnerFnr(personsSivilstand).equals(medlem.getFodselsnummer()))
+                                            .filter(medlem -> partnerFnr.equals(medlem.getFodselsnummer()))
                                             .findAny()
                                             .orElse(null);
 
@@ -155,7 +155,7 @@ public class PersonV2Service {
 
             List<Familiemedlem> barnInfo =  familiemedlemInfo
                                             .stream()
-                                            .filter(medlem -> !hentPartnerFnr(personsSivilstand).equals(medlem.getFodselsnummer()))
+                                            .filter(medlem -> !partnerFnr.equals(medlem.getFodselsnummer()))
                                             .collect(Collectors.toList());
 
             personV2Data.setBarn(barnInfo);
@@ -247,7 +247,7 @@ public class PersonV2Service {
                 && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
         LocalDateTime dateTime = LocalDateTime.parse(sistOppdatert, dateTimeFormatter);
-        String registrertDato = PersonV2DataMapper.formatNorskDato(dateTime);
+        String registrertDato = PersonV2DataMapper.formatererPaaNorskDato(dateTime);
 
         if (ikkeKrrTelefonIListe) {
             telefonListe.add(new Telefon()

@@ -25,7 +25,7 @@ public class HentPerson {
 
         private List<Doedsfall> doedsfall;
         private List<Sivilstand> sivilstand;
-        private List<Familierelasjoner> forelderBarnRelasjon;
+        private List<ForelderBarnRelasjon> forelderBarnRelasjon;
         private List<Telefonnummer> telefonnummer;
 
         private List<Sikkerhetstiltak> sikkerhetstiltak;
@@ -100,7 +100,7 @@ public class HentPerson {
     }
 
     @Data
-    public static class Familierelasjoner {
+    public static class ForelderBarnRelasjon {
         private String minRolleForPerson;
         private String relatertPersonsRolle;
         private String relatertPersonsIdent;
