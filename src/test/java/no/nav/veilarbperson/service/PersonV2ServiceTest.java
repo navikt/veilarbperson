@@ -249,7 +249,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         Familiemedlem partner = personV2Data.getPartner();
         assertNull(partner.getForkortetNavn());
-        assertNull(partner.getKjonn());
+        assertEquals("MANN", partner.getKjonn());
         assertEquals("2134567890", partner.getFodselsnummer().toString());
         assertEquals(LocalDate.of(1982,12,14), partner.getFodselsdato());
 

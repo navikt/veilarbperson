@@ -232,9 +232,10 @@ public class PersonV2Service {
     private void flettDigitalKontaktinformasjon(Fnr fnr, PersonV2Data personV2Data) {
         try {
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);
+            String epostSistOppdatert = PersonV2DataMapper.parseDateFromDateTime(kontaktinfo.getEpostSistOppdatert());
 
             leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), kontaktinfo.getMobilSistOppdatert(), personV2Data.getTelefon());
-            personV2Data.setEpost(kontaktinfo.getEpostadresse());
+            personV2Data.setEpost(new Epost().setEpostAdresse(kontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSistOppdatert).setMaster("KRR"));
             personV2Data.setMalform(kontaktinfo.getSpraak());
         } catch (Exception e) {
             log.warn("Kunne ikke flette digitalkontaktinfo fra KRR", e);
@@ -245,9 +246,7 @@ public class PersonV2Service {
     public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, String sistOppdatert, List<Telefon> telefonListe) {
         boolean ikkeKrrTelefonIListe = telefonNummerFraKrr != null
                 && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
-        LocalDateTime dateTime = LocalDateTime.parse(sistOppdatert, dateTimeFormatter);
-        String registrertDato = PersonV2DataMapper.formatererPaaNorskDato(dateTime);
+        String registrertDato = PersonV2DataMapper.parseDateFromDateTime(sistOppdatert);
 
         if (ikkeKrrTelefonIListe) {
             telefonListe.add(new Telefon()
@@ -266,8 +265,14 @@ public class PersonV2Service {
         }
 
         HentPerson.TilrettelagtKommunikasjon tilrettelagtKommunikasjon = getFirstElement(spraakTolkInfo.getTilrettelagtKommunikasjon());
-        String tegnSpraak = ofNullable(tilrettelagtKommunikasjon).map(HentPerson.TilrettelagtKommunikasjon::getTegnspraaktolk).map(HentPerson.Tolk::getSpraak).map(kodeverkService::getBeskrivelseForSpraakKode).orElse(null);
-        String taleSpraak = ofNullable(tilrettelagtKommunikasjon).map(HentPerson.TilrettelagtKommunikasjon::getTalespraaktolk).map(HentPerson.Tolk::getSpraak).map(kodeverkService::getBeskrivelseForSpraakKode).orElse(null);
+        String tegnSpraak = ofNullable(tilrettelagtKommunikasjon)
+                .map(HentPerson.TilrettelagtKommunikasjon::getTegnspraaktolk)
+                .map(HentPerson.Tolk::getSpraak)
+                .map(kodeverkService::getBeskrivelseForSpraakKode).orElse(null);
+        String taleSpraak = ofNullable(tilrettelagtKommunikasjon)
+                .map(HentPerson.TilrettelagtKommunikasjon::getTalespraaktolk)
+                .map(HentPerson.Tolk::getSpraak)
+                .map(kodeverkService::getBeskrivelseForSpraakKode).orElse(null);
 
         return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
     }

@@ -170,4 +170,10 @@ public class PersonV2DataMapper {
     public static String formatererPaaNorskDato(LocalDateTime localDateTime) {
         return DateTimeFormatter.ofPattern("dd.MM.yyyy").format(localDateTime);
     }
+
+    public static String parseDateFromDateTime(String sistOppdatert) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
+        LocalDateTime dateTime = LocalDateTime.parse(sistOppdatert, dateTimeFormatter);
+        return PersonV2DataMapper.formatererPaaNorskDato(dateTime);
+    }
 }
