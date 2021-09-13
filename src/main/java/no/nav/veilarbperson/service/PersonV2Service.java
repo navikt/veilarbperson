@@ -124,11 +124,11 @@ public class PersonV2Service {
                 .map(HentPerson.Sivilstand::getRelatertVedSivilstand).map(Fnr::of).orElse(null);
     }
 
-    public void flettPartnerOgBarnInformasjon(List<HentPerson.Sivilstand> personsSivilstand, List<HentPerson.ForelderBarnRelasjon> familierelasjoner, PersonV2Data personV2Data) {
+    public void flettPartnerOgBarnInformasjon(List<HentPerson.Sivilstand> personsSivilstand, List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data) {
         List<Fnr> familiemedlemFnrListe = new ArrayList<>();
 
-        if (!familierelasjoner.isEmpty()) {
-            List<Fnr> barnaFnr = hentBarnaFnr(familierelasjoner);
+        if (!forelderBarnRelasjoner.isEmpty()) {
+            List<Fnr> barnaFnr = hentBarnaFnr(forelderBarnRelasjoner);
             if(barnaFnr.size() > 0) {
                 familiemedlemFnrListe = barnaFnr;
             }
@@ -144,21 +144,31 @@ public class PersonV2Service {
         if (familiemedlemFnrListe.size() > 0) {
             List<Familiemedlem> familiemedlemInfo = hentFamiliemedlemOpplysninger(familiemedlemFnrListe, personV2Data.getBostedsadresse());
             Fnr partnerFnr = hentPartnerFnr(personsSivilstand);
+            List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
 
-            Familiemedlem partnerInfo = familiemedlemInfo
-                                            .stream()
-                                            .filter(medlem -> partnerFnr.equals(medlem.getFodselsnummer()))
-                                            .findAny()
-                                            .orElse(null);
+            if(partnerFnr != null) {
+                Familiemedlem partnerInfo = familiemedlemInfo
+                        .stream()
+                        .filter(medlem -> partnerFnr.equals(medlem.getFodselsnummer()))
+                        .findAny()
+                        .orElse(null);
 
-            personV2Data.setPartner(partnerInfo);
+                personV2Data.setPartner(partnerInfo);
+            }
 
-            List<Familiemedlem> barnInfo =  familiemedlemInfo
-                                            .stream()
-                                            .filter(medlem -> !partnerFnr.equals(medlem.getFodselsnummer()))
-                                            .collect(Collectors.toList());
+            if(barnFnrListe.size() > 0) {
+                List<Familiemedlem> barnInfo = new ArrayList<>();
 
-            personV2Data.setBarn(barnInfo);
+                for(Fnr fnr: barnFnrListe) {
+                    for(Familiemedlem familiemedlem: familiemedlemInfo) {
+                        if(fnr.equals(familiemedlem.getFodselsnummer())) {
+                            barnInfo.add(familiemedlem);
+                            break;
+                        }
+                    }
+                }
+                personV2Data.setBarn(barnInfo);
+            }
         }
     }
 

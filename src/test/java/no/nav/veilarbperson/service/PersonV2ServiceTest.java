@@ -228,13 +228,20 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         assertEquals(1, personV2Data.getBarn().size()); // Fant bare 1 av 3 barna med "ok"(gyldig) status fra hentPersonBolk operasjonen
         assertNotNull(personV2Data.getPartner());
+    }
 
-        person = hentFamiliemedlem(Fnr.of("12345678910"));  // Hent person med ingen barn for ex.Opplysninger til et barn selv
-        personV2Data = getPersonV2Data();
+    @Test
+    public void flettPartnerOgBarnInfoNorPersonHarIngenPartnerEllerBarn() {
+        PersonV2Data personV2Data = getPersonV2Data();
 
-        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data); // Forsøker å flette person som har ingen barn
+        assertEquals(0, personV2Data.getBarn().size());
+        assertNull(personV2Data.getPartner());
 
-        assertEquals(Collections.emptyList(), personV2Data.getBarn());     // Ingen barn blir lagt i personV2Data
+        person = hentFamiliemedlem(Fnr.of("12345678910"));
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
+
+        assertNull(personV2Data.getPartner());
+        assertEquals(Collections.emptyList(), personV2Data.getBarn());
     }
 
     @Test
