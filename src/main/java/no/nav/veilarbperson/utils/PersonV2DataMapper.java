@@ -29,9 +29,11 @@ public class PersonV2DataMapper {
                 .setEtternavn(ofNullable(getFirstElement(person.getNavn())).map(HentPerson.Navn::getEtternavn).orElse(null))
                 .setForkortetNavn(ofNullable(getFirstElement(person.getNavn())).map(HentPerson.Navn::getForkortetNavn).orElse(null))
                 .setKjonn(ofNullable(getFirstElement(person.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
-                .setFodselsdato(ofNullable(getFirstElement(person.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null))
+                .setFodselsdato(ofNullable(getFirstElement(person.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato)
+                        .map(PersonV2DataMapper::formateDateFromLocalDate).orElse(null))
                 .setStatsborgerskap(ofNullable(getFirstElement(person.getStatsborgerskap())).map(HentPerson.Statsborgerskap::getLand).orElse(null))
-                .setDodsdato(ofNullable(getFirstElement(person.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null))
+                .setDodsdato(ofNullable(getFirstElement(person.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato)
+                        .map(PersonV2DataMapper::formateDateFromLocalDate).orElse(null))
                 .setFodselsnummer(ofNullable(getFirstElement(person.getFolkeregisteridentifikator()))
                         .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer)
                         .map(Fnr::of).orElse(null))
@@ -69,7 +71,10 @@ public class PersonV2DataMapper {
         HentPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
         Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
         String kjonn = ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null);
-        LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null);
+        String fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato)
+                .map(PersonV2DataMapper::formateDateFromLocalDate).orElse(null);
+        String doedsdato = ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato)
+                .map(PersonV2DataMapper::formateDateFromLocalDate).orElse(null);
         AdressebeskyttelseGradering gradering = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
                 .map(HentPerson.Adressebeskyttelse::getGradering)
                 .map(AdressebeskyttelseGradering::mapGradering)
@@ -94,6 +99,7 @@ public class PersonV2DataMapper {
         } else {
             return medlem
                     .setKjonn(kjonn)
+                    .setDodsdato(doedsdato)
                     .setGradering(gradering)
                     .setErEgenAnsatt(erEgenAnsatt)
                     .setHarVeilederTilgang(harVeilederLeseTilgang)
@@ -102,8 +108,7 @@ public class PersonV2DataMapper {
                     .setMellomnavn(ofNullable(navn).map(HentPerson.Navn::getMellomnavn).orElse(null))
                     .setEtternavn(ofNullable(navn).map(HentPerson.Navn::getEtternavn).orElse(null))
                     .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null))
-                    .setKjonn(ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
-                    .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));
+                    .setKjonn(ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null));
         }
     }
 
@@ -128,7 +133,7 @@ public class PersonV2DataMapper {
         return (sivilstand != null)
                ? new Sivilstand()
                     .setSivilstand(sivilstand.getType())
-                    .setFraDato(sivilstand.getGyldigFraOgMed())
+                    .setFraDato(formateDateFromLocalDate(sivilstand.getGyldigFraOgMed()))
                : null;
     }
 
@@ -155,7 +160,7 @@ public class PersonV2DataMapper {
         HentPerson.Metadata.Endringer endringsInfo = filtrerGjelendeEndringsInfo(telefonnummer.getMetadata().getEndringer());
         String registrert = ofNullable(endringsInfo.getRegistrert())
                 .map(dato -> LocalDateTime.parse(dato.toString(), ISO_LOCAL_DATE_TIME))
-                .map(PersonV2DataMapper::formatererPaaNorskDato)
+                .map(PersonV2DataMapper::formateDateFromLocalDateTime)
                 .orElse(null);
 
         return (telefonnr!=null)
@@ -167,13 +172,17 @@ public class PersonV2DataMapper {
                  : null;
     }
 
-    public static String formatererPaaNorskDato(LocalDateTime localDateTime) {
+    public static String formateDateFromLocalDateTime(LocalDateTime localDateTime) {
         return DateTimeFormatter.ofPattern("dd.MM.yyyy").format(localDateTime);
+    }
+
+    public static String formateDateFromLocalDate(LocalDate localDate) {
+        return DateTimeFormatter.ofPattern("dd.MM.yyyy").format(localDate);
     }
 
     public static String parseDateFromDateTime(String sistOppdatert) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
         LocalDateTime dateTime = LocalDateTime.parse(sistOppdatert, dateTimeFormatter);
-        return PersonV2DataMapper.formatererPaaNorskDato(dateTime);
+        return PersonV2DataMapper.formateDateFromLocalDateTime(dateTime);
     }
 }
