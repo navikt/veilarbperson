@@ -205,7 +205,7 @@ public class PersonV2Service {
         Optional<String> landkodeIBostedsUtenlandskAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getUtenlandskAdresse).map(Bostedsadresse.Utenlandskadresse::getLandkode);
         Optional<String> postnrIOppholdsVegAdr = ofNullable(personV2Data.getOppholdsadresse()).map(Oppholdsadresse::getVegadresse).map(Oppholdsadresse.Vegadresse::getPostnummer);
         Optional<String> postnrIOppholdsMatrikkelAdr = ofNullable(personV2Data.getOppholdsadresse()).map(Oppholdsadresse::getMatrikkeladresse).map(Oppholdsadresse.Matrikkeladresse::getPostnummer);
-        Optional<String> landkodeIOppholdsUtenlandskAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getUtenlandskAdresse).map(Bostedsadresse.Utenlandskadresse::getLandkode);
+        Optional<String> landkodeIOppholdsUtenlandskAdr = ofNullable(personV2Data.getOppholdsadresse()).map(Oppholdsadresse::getUtenlandskAdresse).map(Oppholdsadresse.Utenlandskadresse::getLandkode);
 
         postnrIBostedsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIBostedsVegadresse);
         postnrIBostedsMatrikkelAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIBostedsMatrikkeladresse);
@@ -242,11 +242,16 @@ public class PersonV2Service {
     private void flettDigitalKontaktinformasjon(Fnr fnr, PersonV2Data personV2Data) {
         try {
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);
-            String epostSistOppdatert = PersonV2DataMapper.parseDateFromDateTime(kontaktinfo.getEpostSistOppdatert());
+            String epostSisteOppdatert = kontaktinfo.getEpostSistOppdatert();
+            String formatertEpostSisteOppdatert = epostSisteOppdatert!=null ? PersonV2DataMapper.parseDateFromDateTime(epostSisteOppdatert) : null;
 
-            leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), kontaktinfo.getMobilSistOppdatert(), personV2Data.getTelefon());
-            personV2Data.setEpost(new Epost().setEpostAdresse(kontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSistOppdatert).setMaster("KRR"));
+            Epost epost = kontaktinfo.getEpostadresse()!=null
+                    ? new Epost().setEpostAdresse(kontaktinfo.getEpostadresse()).setEpostSistOppdatert(formatertEpostSisteOppdatert).setMaster("KRR")
+                    : null;
+
+            personV2Data.setEpost(epost);
             personV2Data.setMalform(kontaktinfo.getSpraak());
+            leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), kontaktinfo.getMobilSistOppdatert(), personV2Data.getTelefon());
         } catch (Exception e) {
             log.warn("Kunne ikke flette digitalkontaktinfo fra KRR", e);
         }
@@ -256,7 +261,7 @@ public class PersonV2Service {
     public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, String sistOppdatert, List<Telefon> telefonListe) {
         boolean ikkeKrrTelefonIListe = telefonNummerFraKrr != null
                 && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
-        String registrertDato = PersonV2DataMapper.parseDateFromDateTime(sistOppdatert);
+        String registrertDato = sistOppdatert!=null ? PersonV2DataMapper.parseDateFromDateTime(sistOppdatert) : null;
 
         if (ikkeKrrTelefonIListe) {
             telefonListe.add(new Telefon()

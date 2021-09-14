@@ -258,7 +258,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertNull(partner.getForkortetNavn());
         assertEquals("MANN", partner.getKjonn());
         assertEquals("2134567890", partner.getFodselsnummer().toString());
-        assertEquals(LocalDate.of(1982,12,14), partner.getFodselsdato());
+        assertEquals("14.12.1982", partner.getFodselsdato());
 
         //flett partner info når veileder har lese tilgang
         when(egenAnsattClient.erEgenAnsatt(Fnr.of("2134567890"))).thenReturn(true);
@@ -269,7 +269,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertNotNull(partner1.getForkortetNavn());
         assertNotNull(partner1.getKjonn());
         assertEquals("2134567890", partner1.getFodselsnummer().toString());
-        assertEquals(LocalDate.of(1982,12,14), partner1.getFodselsdato());
+        assertEquals("14.12.1982", partner1.getFodselsdato());
     }
 
     @Test
@@ -289,6 +289,13 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         harSammeBbosted = PersonV2DataMapper.harFamiliamedlemSammeBostedSomPerson(familiemedlemsBostedsAdresse, personsBostedsAdresse);  // Sammeligner to like bostedsadresser
 
         assertTrue(harSammeBbosted);
+    }
+
+    @Test
+    public void formateDateFromLocalDateTest() {
+        LocalDate sivilstandGyldigDato = PersonV2DataMapper.getFirstElement(person.getSivilstand()).getGyldigFraOgMed();
+        String fraGyldigDato = PersonV2DataMapper.formateDateFromLocalDate(sivilstandGyldigDato);
+        assertEquals("01.06.2020", fraGyldigDato);
     }
 
     @Test
@@ -412,13 +419,13 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         String telefonRegistrertDatoIKrr = "2018-09-01T11:38:22,000+00:00";
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
         LocalDateTime dateTime = LocalDateTime.parse(telefonRegistrertDatoIKrr, dateTimeFormatter);
-        String registrertDato = PersonV2DataMapper.formatererPaaNorskDato(dateTime);
+        String registrertDato = PersonV2DataMapper.formateDateFromLocalDateTime(dateTime);
         assertEquals("01.09.2018", registrertDato);
 
         LocalDateTime telefonRegistrertDatoIPdl = person.getTelefonnummer().get(0).getMetadata().getEndringer().get(0).getRegistrert();
 
         LocalDateTime dateTime1 = LocalDateTime.parse(telefonRegistrertDatoIPdl.toString(), ISO_LOCAL_DATE_TIME);
-        String registrertDato1 = PersonV2DataMapper.formatererPaaNorskDato(dateTime1);
+        String registrertDato1 = PersonV2DataMapper.formateDateFromLocalDateTime(dateTime1);
         assertEquals("08.09.2021", registrertDato1);
     }
 

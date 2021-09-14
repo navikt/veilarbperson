@@ -5,7 +5,11 @@
       "kanVarsles": true,
       "reservert": false,
       "epostadresse": "noreply@nav.no",
-      "mobiltelefonnummer": "11111111"
+      "epostSistOppdatert": "2018-01-01T11:38:22,000+00:00",
+      "mobiltelefonnummer": "11111111",
+      "mobilSistOppdatert": "2018-01-01T11:38:22,000+00:00",
+      "spraak": "NB"
+
     }
   }
 }
