@@ -258,7 +258,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertNull(partner.getForkortetNavn());
         assertEquals("MANN", partner.getKjonn());
         assertEquals("2134567890", partner.getFodselsnummer().toString());
-        assertEquals("14.12.1982", partner.getFodselsdato());
+        assertEquals(LocalDate.of(1982,12,14), partner.getFodselsdato());
 
         //flett partner info når veileder har lese tilgang
         when(egenAnsattClient.erEgenAnsatt(Fnr.of("2134567890"))).thenReturn(true);
@@ -269,7 +269,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertNotNull(partner1.getForkortetNavn());
         assertNotNull(partner1.getKjonn());
         assertEquals("2134567890", partner1.getFodselsnummer().toString());
-        assertEquals("14.12.1982", partner1.getFodselsdato());
+        assertEquals(LocalDate.of(1982,12,14), partner1.getFodselsdato());
     }
 
     @Test
@@ -289,13 +289,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         harSammeBbosted = PersonV2DataMapper.harFamiliamedlemSammeBostedSomPerson(familiemedlemsBostedsAdresse, personsBostedsAdresse);  // Sammeligner to like bostedsadresser
 
         assertTrue(harSammeBbosted);
-    }
-
-    @Test
-    public void formateDateFromLocalDateTest() {
-        LocalDate sivilstandGyldigDato = PersonV2DataMapper.getFirstElement(person.getSivilstand()).getGyldigFraOgMed();
-        String fraGyldigDato = PersonV2DataMapper.formateDateFromLocalDate(sivilstandGyldigDato);
-        assertEquals("01.06.2020", fraGyldigDato);
     }
 
     @Test

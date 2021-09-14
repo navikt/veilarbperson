@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.common.types.identer.Fnr;
 
+import java.time.LocalDate;
+
 @Data
 @Accessors(chain = true)
 public class Familiemedlem {
@@ -12,9 +14,9 @@ public class Familiemedlem {
     String etternavn;
     String forkortetNavn;
     Fnr fodselsnummer;
-    String fodselsdato;
+    LocalDate fodselsdato;
     String kjonn;
-    String dodsdato;
+    LocalDate dodsdato;
     boolean erEgenAnsatt;
     boolean harVeilederTilgang;
     AdressebeskyttelseGradering gradering;       //diskresjonskode

@@ -19,9 +19,9 @@ public class PersonV2Data {
     String etternavn;
     String forkortetNavn;
     Fnr fodselsnummer;
-    String fodselsdato;
+    LocalDate fodselsdato;
     String kjonn;
-    String dodsdato;
+    LocalDate dodsdato;
     String diskresjonskode;
     boolean egenAnsatt;
     String kontonummer;
