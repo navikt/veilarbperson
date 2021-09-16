@@ -370,6 +370,11 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         assertEquals("Arbeidsavklaringpenger", omraader.get(0).getBeskrivelse());
         assertEquals("Dagpenger", omraader.get(1).getBeskrivelse());
+
+        List<VergeOgFullmaktData.Omraade> omraade = vergeOgFullmaktData.getFullmakt().get(1).getOmraader();
+
+        assertEquals("*", omraade.get(0).getKode());
+        assertEquals("alle ytelser", omraade.get(0).getBeskrivelse());
     }
 
     @Test
