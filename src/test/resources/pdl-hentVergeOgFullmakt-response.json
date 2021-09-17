@@ -48,7 +48,7 @@
         {
           "motpartsPersonident": "motpartsPersonident2",
           "motpartsRolle": "motpartsRolle2",
-          "omraader": ["AAP", "DAG"],
+          "omraader": ["*"],
           "gyldigFraOgMed": "2021-01-15",
           "gyldigTilOgMed": "2021-01-15"
         }

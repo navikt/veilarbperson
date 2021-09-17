@@ -308,10 +308,15 @@ public class PersonV2Service {
     }
 
     public void flettBeskrivelseForFullmaktOmraader(VergeOgFullmaktData vergeOgFullmaktData) {
-        vergeOgFullmaktData.getFullmakt().forEach(fullmakt ->
-            fullmakt.getOmraader().forEach(omraade ->
-                    omraade.setBeskrivelse(kodeverkService.getBeskrivelseForTema(omraade.getKode()))
-            )
+        vergeOgFullmaktData.getFullmakt().forEach(fullmakt -> {
+                    if (!fullmakt.getOmraader().isEmpty() && fullmakt.getOmraader().get(0).getKode().equals("*")) {
+                        fullmakt.getOmraader().get(0).setBeskrivelse("alle ytelser");
+                    } else {
+                        fullmakt.getOmraader().forEach(omraade ->
+                                omraade.setBeskrivelse(kodeverkService.getBeskrivelseForTema(omraade.getKode()))
+                        );
+                    }
+                }
         );
     }
 
