@@ -65,7 +65,10 @@ public class PersonV2DataMapper {
                 .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null);
     }
 
-    public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem, boolean erEgenAnsatt, Bostedsadresse personsBostedsadresse, AuthService authService) {
+    public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem,
+                                                    boolean erEgenAnsatt,
+                                                    Bostedsadresse personsBostedsadresse,
+                                                    AuthService authService) {
         HentPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
         Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
         String kjonn = ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null);
