@@ -137,7 +137,10 @@ public class PersonV2DataMapper {
 
     public static List<Telefon> mapTelefonNrFraPdl(List<HentPerson.Telefonnummer> telefonnummer) {
         return (!telefonnummer.isEmpty())
-                ? telefonnummer.stream().map(PersonV2DataMapper::telefonNummerMapper).filter(Objects::nonNull).collect(Collectors.toList())
+                ? telefonnummer.stream()
+                    .map(PersonV2DataMapper::telefonNummerMapper)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList())
                 : new ArrayList<>();
     }
 
