@@ -1,12 +1,13 @@
 package no.nav.veilarbperson.config;
 
+import no.nav.common.client.aktoroppslag.BrukerIdenter;
 import no.nav.common.client.aktorregister.AktorregisterClient;
-import no.nav.common.client.aktorregister.IdentOppslag;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashService;
+import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.selftest.SelfTestChecks;
 import no.nav.common.types.identer.AktorId;
+import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
@@ -35,7 +36,6 @@ import java.util.Map;
 import static no.nav.veilarbperson.utils.TestData.TEST_AKTOR_ID;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
 
-
 @Configuration
 public class ClientTestConfig {
 
@@ -58,18 +58,23 @@ public class ClientTestConfig {
             }
 
             @Override
-            public List<IdentOppslag> hentFnr(List<AktorId> aktorIdListe) {
+            public Map<AktorId, Fnr> hentFnrBolk(List<AktorId> list) {
                 return null;
             }
 
             @Override
-            public List<IdentOppslag> hentAktorId(List<Fnr> fnrListe) {
+            public Map<Fnr, AktorId> hentAktorIdBolk(List<Fnr> list) {
+                return null;
+            }
+
+            @Override
+            public BrukerIdenter hentIdenter(EksternBrukerId brukerId) {
                 return null;
             }
 
             @Override
             public List<AktorId> hentAktorIder(Fnr fnr) {
-                return null;
+                return List.of(new AktorId(fnr.get()), new AktorId("1000010101001"));
             }
         };
     }
@@ -220,20 +225,13 @@ public class ClientTestConfig {
             }
 
             @Override
-            public HentPerson.Familiemedlem hentPartner(Fnr personIdent, String userToken) {
-                return null;
-            }
-
-            @Override
             public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken) { return null; }
 
             @Override
             public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) { return null; }
 
             @Override
-            public List<HentPerson.Barn> hentPersonBolk(Fnr[] personIdent) {
-                return null;
-            }
+            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdent) { return null; }
 
             @Override
             public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) { return null; }
@@ -264,8 +262,8 @@ public class ClientTestConfig {
     }
 
     @Bean
-    public UnleashService unleashService() {
-        return Mockito.mock(UnleashService.class);
+    public UnleashClient unleashClient() {
+        return Mockito.mock(UnleashClient.class);
     }
 
     @Bean

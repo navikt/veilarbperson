@@ -1,7 +1,6 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
-import no.nav.common.featuretoggle.UnleashService;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
@@ -15,9 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/person")
 public class PersonController {
+
+    private final List<String> allowedUsers = List.of("srvveilarbaktivitet");
 
     private final PersonService personService;
 
@@ -25,13 +28,10 @@ public class PersonController {
 
     private final CvJobbprofilService cvJobbprofilService;
 
-    private final UnleashService unleashService;
-
-    public PersonController(PersonService personService, AuthService authService, CvJobbprofilService cvJobbprofilService, UnleashService unleashService) {
+    public PersonController(PersonService personService, AuthService authService, CvJobbprofilService cvJobbprofilService) {
         this.personService = personService;
         this.authService = authService;
         this.cvJobbprofilService = cvJobbprofilService;
-        this.unleashService = unleashService;
     }
 
     @GetMapping("/{fodselsnummer}")
@@ -81,7 +81,6 @@ public class PersonController {
     public HarLoggetInnRespons harNivaa4(@PathVariable("fodselsnummer") Fnr fodselsnummer) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fodselsnummer);
-
         return personService.hentHarNivaa4(fodselsnummer);
     }
 
@@ -116,5 +115,4 @@ public class PersonController {
 
         return fnr;
     }
-
 }

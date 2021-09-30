@@ -5,9 +5,8 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class Telefon {
-    private String prioritet;
-    private String telefonNr;
-    private String registrertDato;
+public class Epost {
+    private String epostAdresse;
+    private String epostSistOppdatert;
     private String master;
 }

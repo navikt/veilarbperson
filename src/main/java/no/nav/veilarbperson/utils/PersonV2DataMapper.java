@@ -7,10 +7,16 @@ import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.client.pdl.domain.Telefon;
+import no.nav.veilarbperson.service.AuthService;
 
+import java.time.LocalDate;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Optional.ofNullable;
 
 public class PersonV2DataMapper {
@@ -54,20 +60,54 @@ public class PersonV2DataMapper {
                 .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null));
     }
 
-    public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem, Bostedsadresse personsBostedsadresse) {
-        HentPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
+    public static Fnr hentFamiliemedlemFnr(HentPerson.Familiemedlem familiemedlem) {
+        return ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
+                .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null);
+    }
 
-        return new Familiemedlem()
-                .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
-                .setMellomnavn(ofNullable(navn).map(HentPerson.Navn::getMellomnavn).orElse(null))
-                .setEtternavn(ofNullable(navn).map(HentPerson.Navn::getEtternavn).orElse(null))
-                .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null))
-                .setFodselsdato(ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null))
-                .setFodselsnummer(ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
-                        .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null))
-                .setKjonn(ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
-                .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null))
-                .setHarSammeBosted(harFamiliamedlemSammeBostedSomPerson(getFirstElement(familiemedlem.getBostedsadresse()), personsBostedsadresse));
+    public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem,
+                                                    boolean erEgenAnsatt,
+                                                    Bostedsadresse personsBostedsadresse,
+                                                    AuthService authService) {
+        HentPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
+        Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
+        String kjonn = ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null);
+        LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null);
+        AdressebeskyttelseGradering gradering = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
+                .map(HentPerson.Adressebeskyttelse::getGradering)
+                .map(AdressebeskyttelseGradering::mapGradering)
+                .orElse(AdressebeskyttelseGradering.UGRADERT);
+        boolean harAdressebeskyttelse = (AdressebeskyttelseGradering.FORTROLIG).equals(gradering)
+                || (AdressebeskyttelseGradering.STRENGT_FORTROLIG).equals(gradering)
+                || (AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND).equals(gradering);
+        boolean ukjentGradering = AdressebeskyttelseGradering.UKJENT.equals(gradering);
+        boolean harVeilederLeseTilgang = authService.harLesetilgang(medlemFnr);
+        boolean harSammeBosted = harFamiliamedlemSammeBostedSomPerson(getFirstElement(familiemedlem.getBostedsadresse()), personsBostedsadresse);
+        Familiemedlem medlem = new Familiemedlem().setFodselsnummer(medlemFnr).setFodselsdato(fodselsdato);
+
+        if ((harAdressebeskyttelse || ukjentGradering) && !harVeilederLeseTilgang) {
+            return medlem
+                    .setKjonn(kjonn)
+                    .setGradering(gradering);
+        } else if (erEgenAnsatt && !harVeilederLeseTilgang) {
+            return medlem
+                    .setKjonn(kjonn)
+                    .setErEgenAnsatt(true)
+                    .setHarSammeBosted(harSammeBosted);
+        } else {
+            return medlem
+                    .setKjonn(kjonn)
+                    .setGradering(gradering)
+                    .setErEgenAnsatt(erEgenAnsatt)
+                    .setHarVeilederTilgang(harVeilederLeseTilgang)
+                    .setHarSammeBosted(harSammeBosted)
+                    .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
+                    .setMellomnavn(ofNullable(navn).map(HentPerson.Navn::getMellomnavn).orElse(null))
+                    .setEtternavn(ofNullable(navn).map(HentPerson.Navn::getEtternavn).orElse(null))
+                    .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null))
+                    .setKjonn(ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
+                    .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));
+        }
     }
 
     /* Sammeligner persons bostesadresse med familiemedlems bostedsadresse for å se om de har samme bosted */
@@ -97,21 +137,49 @@ public class PersonV2DataMapper {
 
     public static List<Telefon> mapTelefonNrFraPdl(List<HentPerson.Telefonnummer> telefonnummer) {
         return (!telefonnummer.isEmpty())
-                ? telefonnummer.stream().map(PersonV2DataMapper::telefonNummerMapper).filter(Objects::nonNull).collect(Collectors.toList())
+                ? telefonnummer.stream()
+                    .map(PersonV2DataMapper::telefonNummerMapper)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList())
                 : new ArrayList<>();
+    }
+
+    public static HentPerson.Metadata.Endringer filtrerGjelendeEndringsInfo(List<HentPerson.Metadata.Endringer> endringer) {
+        return ofNullable(endringer)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(endring -> endring.getType().equals("OPPRETT"))
+                .findAny()
+                .orElse(null);
     }
 
     /* Slår sammen landkode og nummer og så lager et telefonnummer */
     public static Telefon telefonNummerMapper(HentPerson.Telefonnummer telefonnummer) {
-         String telefonnr = telefonnummer.getNummer();
-         String landkode = telefonnummer.getLandskode()!=null ? telefonnummer.getLandskode() : "";
+        String telefonnr = telefonnummer.getNummer();
+        String master = telefonnummer.getMetadata().getMaster();
+        String landkode = ofNullable(telefonnummer.getLandskode()).orElse("");
+        HentPerson.Metadata.Endringer endringsInfo = filtrerGjelendeEndringsInfo(telefonnummer.getMetadata().getEndringer());
+        String registrert = ofNullable(endringsInfo.getRegistrert())
+                .map(dato -> LocalDateTime.parse(dato.toString(), ISO_LOCAL_DATE_TIME))
+                .map(PersonV2DataMapper::formateDateFromLocalDateTime)
+                .orElse(null);
 
-         return (telefonnr!=null)
+        return (telefonnr!=null)
                  ? new Telefon()
                         .setPrioritet(telefonnummer.getPrioritet())
                         .setTelefonNr(landkode + telefonnr)
-                        .setMaster(telefonnummer.getMetadata().getMaster())
+                        .setRegistrertDato(registrert)
+                        .setMaster(master)
                  : null;
     }
 
+    public static String formateDateFromLocalDateTime(LocalDateTime localDateTime) {
+        return DateTimeFormatter.ofPattern("dd.MM.yyyy").format(localDateTime);
+    }
+
+    public static String parseDateFromDateTime(String sistOppdatert) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
+        LocalDateTime dateTime = LocalDateTime.parse(sistOppdatert, dateTimeFormatter);
+        return PersonV2DataMapper.formateDateFromLocalDateTime(dateTime);
+    }
 }

@@ -28,7 +28,7 @@ public class PersonV2Data {
     String geografiskTilknytning;
     Enhet geografiskEnhet;
     List<Telefon> telefon;
-    String epost;
+    Epost epost;
     String statsborgerskap;
     String sikkerhetstiltak;
     List<Familiemedlem> barn;

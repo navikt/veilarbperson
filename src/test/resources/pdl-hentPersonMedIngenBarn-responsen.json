@@ -27,8 +27,8 @@
         }
       ],
       "doedsfall": [],
-      "sivilstand": null,
-      "familierelasjoner": [
+      "sivilstand": [],
+      "forelderBarnRelasjon": [
         {
           "minRolleForPerson": "BARN",
           "relatertPersonsRolle": "MOR",

@@ -15,6 +15,8 @@ public class EnvironmentProperties {
 
     private String openAmRefreshUrl;
 
+    private String naisStsDiscoveryUrl;
+
     private String aadDiscoveryUrl;
 
     private String veilarbloginAadClientId;
@@ -38,5 +40,7 @@ public class EnvironmentProperties {
     private String soapStsUrl;
 
     private String pdlUrl;
+
+    private String unleashUrl;
 
 }
