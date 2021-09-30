@@ -40,7 +40,7 @@ public class VeilarbportefoljeClientImpl implements VeilarbportefoljeClient {
         Request request = new Request.Builder()
                 .url(joinPaths(veilarbportefoljeUrl, "/api/personinfo/", fodselsnummer.get()))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
-                .header(AUTHORIZATION, userTokenProvider.get())
+                .header(AUTHORIZATION, "Bearer " + userTokenProvider.get())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
