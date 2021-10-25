@@ -24,6 +24,7 @@ import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import okhttp3.Response;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
@@ -271,5 +272,8 @@ public class ClientTestConfig {
         return Mockito.mock(SelfTestChecks.class);
     }
 
-
+    @Bean
+    public VeilarbregistreringClient veilarbregistreringClient() {
+        return null;
+    }
 }
