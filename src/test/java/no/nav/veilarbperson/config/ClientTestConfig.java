@@ -274,6 +274,6 @@ public class ClientTestConfig {
 
     @Bean
     public VeilarbregistreringClient veilarbregistreringClient() {
-        return null;
+        return Mockito.mock(VeilarbregistreringClient.class);
     }
 }
