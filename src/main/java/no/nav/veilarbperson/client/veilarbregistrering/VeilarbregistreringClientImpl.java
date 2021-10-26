@@ -29,7 +29,7 @@ public class VeilarbregistreringClientImpl implements VeilarbregistreringClient 
     public Response hentRegistrering(Fnr fnr) {
         Request request = new Request.Builder()
                 .url(joinPaths(veilarbregistreringUrl, "/veilarbregistrering/api/registrering?fnr=" + fnr))
-                .header(HttpHeaders.AUTHORIZATION, serviceTokenSupplier.get())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + serviceTokenSupplier.get())
                 .build();
 
         try (Response response = RestClient.baseClient().newCall(request).execute()) {
