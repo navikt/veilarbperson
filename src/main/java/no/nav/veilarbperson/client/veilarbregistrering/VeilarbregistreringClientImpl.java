@@ -14,6 +14,8 @@ import org.springframework.http.HttpHeaders;
 import java.util.function.Supplier;
 
 import static no.nav.common.utils.UrlUtils.joinPaths;
+import static org.springframework.http.HttpHeaders.ACCEPT;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RequiredArgsConstructor
 public class VeilarbregistreringClientImpl implements VeilarbregistreringClient {
@@ -29,6 +31,7 @@ public class VeilarbregistreringClientImpl implements VeilarbregistreringClient 
     public Response hentRegistrering(Fnr fnr) {
         Request request = new Request.Builder()
                 .url(joinPaths(veilarbregistreringUrl, "/veilarbregistrering/api/registrering?fnr=" + fnr))
+                .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + serviceTokenSupplier.get())
                 .build();
 
