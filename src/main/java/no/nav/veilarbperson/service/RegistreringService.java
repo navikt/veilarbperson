@@ -7,8 +7,10 @@ import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
+@Service
 public class RegistreringService {
 
     private final VeilarbregistreringClient client;
