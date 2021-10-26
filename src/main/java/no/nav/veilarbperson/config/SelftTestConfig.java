@@ -12,6 +12,7 @@ import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
+import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,7 +31,8 @@ public class SelftTestConfig {
             PersonClient personClient,
             VeilarbportefoljeClient veilarbportefoljeClient,
             Norg2Client norg2Client,
-            PdlClient pdlClient
+            PdlClient pdlClient,
+            VeilarbregistreringClient veilarbregistreringClient
     ) {
         return new SelfTestChecks(List.of(
                 new SelfTestCheck("Aktorregister", true, aktorregisterClient),
@@ -41,7 +43,8 @@ public class SelftTestConfig {
                 new SelfTestCheck("Person_v3 (SOAP)", true, personClient),
                 new SelfTestCheck("Veilarbportefolje", false, veilarbportefoljeClient),
                 new SelfTestCheck("Norg2", false, norg2Client),
-                new SelfTestCheck("PDL", false, pdlClient)
+                new SelfTestCheck("PDL", false, pdlClient),
+                new SelfTestCheck("Veilarbregistrering", false, veilarbregistreringClient)
         ));
     }
 

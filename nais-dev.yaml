@@ -45,6 +45,9 @@ spec:
         mountPath: /var/run/secrets/nais.io/vault
       - kvPath: /apikey/apigw/dev/eksternapp.difi.idporten.authlevel/veilarbperson_q1
         mountPath: /var/run/secrets/nais.io/authlevel
+  azure:
+    application:
+      enabled: true
   env:
     - name: VIRKSOMHET_PERSON_V3_URL
       value: https://app-q1.adeo.no/tpsws-aura/ws/Person/v3
