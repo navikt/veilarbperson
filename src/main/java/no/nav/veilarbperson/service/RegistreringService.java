@@ -17,9 +17,8 @@ public class RegistreringService {
 
     @SneakyThrows
     public ResponseEntity<String> hentRegistrering(Fnr fnr) {
-        Response response = client.hentRegistrering(fnr);
-
-        try (ResponseBody responseBody = response.body()) {
+        try (Response response = client.hentRegistrering(fnr);
+             ResponseBody responseBody = response.body()) {
 
             String bodyString = null;
 

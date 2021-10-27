@@ -6,6 +6,7 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.selftest.SelfTestChecks;
+import no.nav.common.rest.client.RestClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
@@ -25,10 +26,14 @@ import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
+import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import okhttp3.Response;
 import org.mockito.Mockito;
+import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
+import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +43,15 @@ import static no.nav.veilarbperson.utils.TestData.TEST_AKTOR_ID;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
 
 @Configuration
+@Import({WireMockConfiguration.class})
 public class ClientTestConfig {
+
+    public static final int WIREMOCK_PORT = 8081;
+
+    @Bean
+    WireMockConfigurationCustomizer optionsCustomizer() {
+        return config -> config.port(WIREMOCK_PORT);
+    }
 
     @Bean
     public AktorregisterClient aktorregisterClient() {
@@ -226,19 +239,29 @@ public class ClientTestConfig {
             }
 
             @Override
-            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken) { return null; }
+            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken) {
+                return null;
+            }
 
             @Override
-            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) { return null; }
+            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) {
+                return null;
+            }
 
             @Override
-            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdent) { return null; }
+            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdent) {
+                return null;
+            }
 
             @Override
-            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) { return null; }
+            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) {
+                return null;
+            }
 
             @Override
-            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, String userToken) { return null; }
+            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, String userToken) {
+                return null;
+            }
 
             @Override
             public HealthCheckResult checkHealth() {
@@ -274,6 +297,7 @@ public class ClientTestConfig {
 
     @Bean
     public VeilarbregistreringClient veilarbregistreringClient() {
-        return Mockito.mock(VeilarbregistreringClient.class);
+        return new VeilarbregistreringClientImpl(
+                RestClient.baseClient(), "http://localhost:" + WIREMOCK_PORT, () -> "");
     }
 }
