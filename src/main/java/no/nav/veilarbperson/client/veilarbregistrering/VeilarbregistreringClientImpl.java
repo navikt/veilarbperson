@@ -35,9 +35,7 @@ public class VeilarbregistreringClientImpl implements VeilarbregistreringClient 
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + serviceTokenSupplier.get())
                 .build();
 
-        try (Response response = RestClient.baseClient().newCall(request).execute()) {
-            return response;
-        }
+        return RestClient.baseClient().newCall(request).execute();
     }
 
     @Override
