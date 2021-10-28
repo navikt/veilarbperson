@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
@@ -8,6 +9,7 @@ import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.CvJobbprofilService;
 import no.nav.veilarbperson.service.PersonService;
+import no.nav.veilarbperson.service.RegistreringService;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/person")
+@AllArgsConstructor
 public class PersonController {
 
     private final List<String> allowedUsers = List.of("srvveilarbaktivitet");
@@ -28,11 +31,7 @@ public class PersonController {
 
     private final CvJobbprofilService cvJobbprofilService;
 
-    public PersonController(PersonService personService, AuthService authService, CvJobbprofilService cvJobbprofilService) {
-        this.personService = personService;
-        this.authService = authService;
-        this.cvJobbprofilService = cvJobbprofilService;
-    }
+    private final RegistreringService registreringService;
 
     @GetMapping("/{fodselsnummer}")
     @ApiOperation(value = "Henter informasjon om en person",
@@ -94,6 +93,13 @@ public class PersonController {
     @GetMapping("/cv_jobbprofil")
     public ResponseEntity<String> cvOgJobbprofil(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         return cvJobbprofilService.hentCvJobbprofilJson(fnr);
+    }
+
+    @GetMapping("/registrering")
+    public ResponseEntity<String> registrering(@RequestParam(value = "fnr") Fnr fnr) {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(fnr);
+        return registreringService.hentRegistrering(fnr);
     }
 
     // TODO: Det er hårete å måtte skille på ekstern og intern

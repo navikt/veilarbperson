@@ -1,12 +1,14 @@
 package no.nav.veilarbperson.config;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.common.client.aktoroppslag.AktorregisterHttpClient;
 import no.nav.common.client.aktorregister.AktorregisterClient;
-import no.nav.common.client.aktorregister.AktorregisterHttpClient;
 import no.nav.common.client.norg2.CachedNorg2Client;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
+import no.nav.common.rest.client.RestClient;
+import no.nav.common.sts.ServiceToServiceTokenProvider;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.utils.Credentials;
 import no.nav.common.utils.EnvironmentUtils;
@@ -31,10 +33,15 @@ import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClientImpl;
+import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
+import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.function.Supplier;
+
+import static no.nav.common.utils.EnvironmentUtils.requireClusterName;
 import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.*;
 import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
@@ -127,6 +134,20 @@ public class ClientConfig {
         String url = "https://api-gw"+ apiGwSuffix + ".adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa";
 
         return new DifiClientImpl(difiAccessTokenProvider, xNavApikey, url);
+    }
+
+    @Bean
+    public VeilarbregistreringClient veilarbregistreringClient(
+            ServiceToServiceTokenProvider serviceToServiceTokenProvider
+    ) {
+        Supplier<String> serviceTokenSupplier = () -> serviceToServiceTokenProvider
+                .getServiceToken("veilarbregistrering", "paw", requireClusterName());
+
+        return new VeilarbregistreringClientImpl(
+                RestClient.baseClient(),
+                createInternalIngressUrl("veilarbregistrering"),
+                serviceTokenSupplier
+        );
     }
 
     @Bean

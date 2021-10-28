@@ -11,7 +11,9 @@ import no.nav.common.cxf.StsConfig;
 import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.featuretoggle.UnleashClientImpl;
 import no.nav.common.sts.NaisSystemUserTokenProvider;
+import no.nav.common.sts.ServiceToServiceTokenProvider;
 import no.nav.common.sts.SystemUserTokenProvider;
+import no.nav.common.sts.utils.AzureAdServiceTokenProviderBuilder;
 import no.nav.common.utils.Credentials;
 import no.nav.common.utils.NaisUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -67,5 +69,11 @@ public class ApplicationConfig {
         return new UnleashClientImpl(properties.getUnleashUrl(), APPLICATION_NAME);
     }
 
+    @Bean
+    public ServiceToServiceTokenProvider serviceToServiceTokenProvider() {
+        return AzureAdServiceTokenProviderBuilder.builder()
+                .withEnvironmentDefaults()
+                .build();
+    }
 
 }
