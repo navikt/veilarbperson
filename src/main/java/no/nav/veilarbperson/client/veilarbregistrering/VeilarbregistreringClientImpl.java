@@ -40,6 +40,6 @@ public class VeilarbregistreringClientImpl implements VeilarbregistreringClient 
 
     @Override
     public HealthCheckResult checkHealth() {
-        return HealthCheckUtils.pingUrl(joinPaths(veilarbregistreringUrl, "/internal/isReady"), client);
+        return HealthCheckUtils.pingUrl(joinPaths(veilarbregistreringUrl, "/veilarbregistrering/internal/isReady"), client);
     }
 }
