@@ -21,7 +21,7 @@ import static java.util.Optional.ofNullable;
 
 public class PersonV2DataMapper {
 
-    public static PersonV2Data toPersonV2Data(HentPerson.Person person, PersonData personDataFraTps) {
+    public static PersonV2Data toPersonV2Data(HentPerson.Person person) {
 
         return new PersonV2Data()
                 .setFornavn(ofNullable(getFirstElement(person.getNavn())).map(HentPerson.Navn::getFornavn).orElse(null))
@@ -35,7 +35,6 @@ public class PersonV2DataMapper {
                 .setFodselsnummer(ofNullable(getFirstElement(person.getFolkeregisteridentifikator()))
                         .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer)
                         .map(Fnr::of).orElse(null))
-                .setKontonummer(personDataFraTps.getKontonummer())
                 .setDiskresjonskode(ofNullable(getFirstElement(person.getAdressebeskyttelse()))
                         .map(HentPerson.Adressebeskyttelse::getGradering)
                         .map(Diskresjonskoder::mapTilTallkode).orElse(null))
@@ -43,7 +42,8 @@ public class PersonV2DataMapper {
                 .setSivilstand(ofNullable(sivilstandMapper(getFirstElement(person.getSivilstand()))).orElse(null))
                 .setBostedsadresse(ofNullable(getFirstElement(person.getBostedsadresse())).orElse(null))
                 .setOppholdsadresse(ofNullable(getFirstElement(person.getOppholdsadresse())).orElse(null))
-                .setKontaktadresser(ofNullable(person.getKontaktadresse()).orElse(null));
+                .setKontaktadresser(ofNullable(person.getKontaktadresse()).orElse(null))
+                .setSikkerhetstiltak(ofNullable(getFirstElement(person.getSikkerhetstiltak()).getBeskrivelse()).orElse(null));
     }
 
     public static <T> T getFirstElement(List<T> list) {
