@@ -43,7 +43,7 @@ public class PersonV2DataMapper {
                 .setBostedsadresse(ofNullable(getFirstElement(person.getBostedsadresse())).orElse(null))
                 .setOppholdsadresse(ofNullable(getFirstElement(person.getOppholdsadresse())).orElse(null))
                 .setKontaktadresser(ofNullable(person.getKontaktadresse()).orElse(null))
-                .setSikkerhetstiltak(ofNullable(getFirstElement(person.getSikkerhetstiltak()).getTiltakstype()).orElse(null));
+                .setSikkerhetstiltak(ofNullable(getFirstElement(person.getSikkerhetstiltak()).getBeskrivelse()).orElse(null));
     }
 
     public static <T> T getFirstElement(List<T> list) {
