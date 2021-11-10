@@ -8,6 +8,7 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.rest.client.RestClient;
+import no.nav.common.sts.AzureAdServiceTokenProvider;
 import no.nav.common.sts.ServiceToServiceTokenProvider;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.utils.Credentials;
@@ -114,8 +115,9 @@ public class ClientConfig {
 
     @Bean
     public SkjermetClient skjermetClient(ServiceToServiceTokenProvider tokenProvider) {
-        String devSuffix = isProduction() ? "" : ".dev";
-        return new SkjermetClientImpl("https://skjermede-personer-pip"+devSuffix+".intern.nav.no/", tokenProvider);
+        Supplier<String> serviceTokenSupplier = () -> tokenProvider
+                .getServiceToken("skjermede-personer-pip", "nom", isProduction() ? "prod-gcp" : "dev-gcp");
+        return new SkjermetClientImpl(createInternalIngressUrl("skjermede-personer-pip"), serviceTokenSupplier);
     }
 
     @Bean

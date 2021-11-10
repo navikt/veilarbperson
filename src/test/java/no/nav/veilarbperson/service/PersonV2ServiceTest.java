@@ -12,7 +12,6 @@ import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.PersonV2Data;
@@ -46,7 +45,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private PdlClient pdlClient = mock(PdlClient.class);
     private EgenAnsattClient egenAnsattClient = mock(EgenAnsattClient.class);
     private KodeverkService kodeverkService = mock(KodeverkService.class);
-    private VeilarbportefoljeClient veilarbportefoljeClient = mock(VeilarbportefoljeClient.class);
+    private SkjermetClient skjermetClient = mock(SkjermetClient.class);
     private AuthService authService = mock(AuthService.class);
     private PersonV2Service personV2Service;
     private HentPerson.Person person;
@@ -71,8 +70,9 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(kodeverkService.getBeskrivelseForTema("AAP")).thenReturn("Arbeidsavklaringpenger");
         when(kodeverkService.getBeskrivelseForTema("DAG")).thenReturn("Dagpenger");
         when(pdlClient.hentTilrettelagtKommunikasjon(any(), any())).thenReturn(hentTilrettelagtKommunikasjon(FNR));
+        when(skjermetClient.hentSkjermet(any())).thenReturn(false);
 
-        personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, egenAnsattClient, mock(SkjermetClient.class), kodeverkService);
+        personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, egenAnsattClient, skjermetClient, kodeverkService);
         person = hentPerson(FNR);
     }
 

@@ -21,7 +21,7 @@ public class SkjermetClientImplTest {
     @Test
     public void skal_skjermet() {
         String apiUrl = "http://localhost:" + wireMockRule.port();
-        SkjermetClientImpl veilarboppfolgingClient = new SkjermetClientImpl(apiUrl, null);
+        SkjermetClientImpl veilarboppfolgingClient = new SkjermetClientImpl(apiUrl, () -> "TEST");
 
         givenThat(post(anyUrl())
                 .withRequestBody(
