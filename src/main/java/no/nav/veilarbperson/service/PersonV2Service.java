@@ -2,6 +2,7 @@ package no.nav.veilarbperson.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
+import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
@@ -16,6 +17,8 @@ import no.nav.veilarbperson.client.pdl.domain.Kontaktadresse;
 import no.nav.veilarbperson.client.pdl.domain.Oppholdsadresse;
 import no.nav.veilarbperson.client.pdl.domain.Telefon;
 import no.nav.veilarbperson.client.person.PersonClient;
+import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
+import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.domain.PersonNavnV2;
@@ -44,6 +47,7 @@ import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFull
 @Slf4j
 @Service
 public class PersonV2Service {
+    private static final String SKAL_BRUKE_SKJERMET_API_FOR_EGEN_ANSATT = "veilarbperson.skjermet_api.enabled";
 
     private final PdlClient pdlClient;
     private final AuthService authService;
@@ -51,18 +55,22 @@ public class PersonV2Service {
     private final Norg2Client norg2Client;
     private final PersonClient personClient;
     private final EgenAnsattClient egenAnsattClient;
+    private final VeilarbportefoljeClient veilarbportefoljeClient;
+    private final UnleashClient unleashClient;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient, AuthService authService, DkifClient dkifClient, Norg2Client norg2Client, PersonClient personClient,
-                           EgenAnsattClient egenAnsattClient, SkjermetClient skjermetClient, KodeverkService kodeverkService) {
+                           EgenAnsattClient egenAnsattClient, VeilarbportefoljeClient veilarbportefoljeClient, UnleashClient unleashClient, SkjermetClient skjermetClient, KodeverkService kodeverkService) {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.dkifClient = dkifClient;
         this.norg2Client = norg2Client;
         this.personClient = personClient;
         this.egenAnsattClient = egenAnsattClient;
+        this.veilarbportefoljeClient = veilarbportefoljeClient;
+        this.unleashClient = unleashClient;
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
     }
@@ -81,7 +89,17 @@ public class PersonV2Service {
 
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
         flettInnKontonummer(personV2Data);
-        flettInnEgenAnsatt(personV2Data, fodselsnummer); // TODO: legg inn fallback til veilarbarena?
+
+        if (unleashClient.isEnabled(SKAL_BRUKE_SKJERMET_API_FOR_EGEN_ANSATT)) {
+            flettInnEgenAnsatt(personV2Data, fodselsnummer);
+        } else {
+            try {
+                flettPersoninfoFraPortefolje(personV2Data, fodselsnummer);
+            } catch (Exception e) {
+                log.warn("Bruker fallbackløsning for egenAnsatt-sjekk", e);
+                personV2Data.setEgenAnsatt(egenAnsattClient.erEgenAnsatt(fodselsnummer));
+            }
+        }
 
         flettPartnerOgBarnInformasjon(personDataFraPdl.getSivilstand(), personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
         flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
@@ -111,6 +129,14 @@ public class PersonV2Service {
     public Familiemedlem mapPartnerOgBarnSomFamiliemedlem(HentPerson.Familiemedlem familiemedlem, Bostedsadresse foreldresBostedsAdresse) {
         Fnr partnerEllerbarnFnr = PersonV2DataMapper.hentFamiliemedlemFnr(familiemedlem);
 
+        if (unleashClient.isEnabled(SKAL_BRUKE_SKJERMET_API_FOR_EGEN_ANSATT)) {
+            return PersonV2DataMapper.familiemedlemMapper(
+                    familiemedlem,
+                    skjermetClient.hentSkjermet(partnerEllerbarnFnr),
+                    foreldresBostedsAdresse,
+                    authService
+            );
+        }
         return PersonV2DataMapper.familiemedlemMapper(
                 familiemedlem,
                 egenAnsattClient.erEgenAnsatt(partnerEllerbarnFnr),
@@ -183,6 +209,11 @@ public class PersonV2Service {
     private void flettInnEgenAnsatt(PersonV2Data personV2Data, Fnr fodselsnummer) {
         Boolean egenAnsatt = skjermetClient.hentSkjermet(fodselsnummer);
         personV2Data.setEgenAnsatt(egenAnsatt);
+    }
+
+    private void flettPersoninfoFraPortefolje(PersonV2Data personV2Data, Fnr fodselsnummer) {
+        Personinfo personinfo = veilarbportefoljeClient.hentPersonInfo(fodselsnummer);
+        personV2Data.setEgenAnsatt(personinfo.egenAnsatt);
     }
 
     private void flettGeografiskEnhet(Fnr fodselsnummer, String userToken, PersonV2Data personV2Data) {
