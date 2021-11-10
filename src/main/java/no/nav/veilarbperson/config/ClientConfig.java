@@ -23,6 +23,8 @@ import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClientImpl;
+import no.nav.veilarbperson.client.nom.SkjermetClient;
+import no.nav.veilarbperson.client.nom.SkjermetClientImpl;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pam.PamClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -108,6 +110,12 @@ public class ClientConfig {
     @Bean
     public PersonClient personClient(EnvironmentProperties properties, StsConfig stsConfig) {
         return new PersonClientImpl(properties.getPersonV3Endpoint(), stsConfig);
+    }
+
+    @Bean
+    public SkjermetClient skjermetClient(ServiceToServiceTokenProvider tokenProvider) {
+        String devSuffix = isProduction() ? "" : ".dev";
+        return new SkjermetClientImpl("https://skjermede-personer-pip"+devSuffix+".intern.nav.no/", tokenProvider);
     }
 
     @Bean
