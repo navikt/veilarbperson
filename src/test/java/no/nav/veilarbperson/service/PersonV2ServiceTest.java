@@ -278,32 +278,64 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     }
 
     @Test
-    public void flettPartnerInfoSomErEgenAnsattTestMedNyttAPI() {
+    public void flettPartnerInfoSomErEgenAnsattTestMedNyttAPI_UtenLeseTilgang() {
         when(unleashClient.isEnabled(any())).thenReturn(true);
         PersonV2Data personV2Data = getPersonV2Data();
         person = hentPerson(FNR);
 
-        //flett partner info når veileder har ikke lese tilgang
         when(skjermetClient.hentSkjermet(Fnr.of("2134567890"))).thenReturn(true);
         when(authService.harLesetilgang(Fnr.of("2134567890"))).thenReturn(false);
         personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
 
         Familiemedlem partner = personV2Data.getPartner();
+        assertNull(partner.getFornavn());
+        assertNull(partner.getEtternavn());
         assertNull(partner.getForkortetNavn());
         assertEquals("MANN", partner.getKjonn());
         assertEquals("2134567890", partner.getFodselsnummer().toString());
-        assertEquals(LocalDate.of(1982,12,14), partner.getFodselsdato());
+        assertEquals(LocalDate.of(1982, 12, 14), partner.getFodselsdato());
+    }
 
-        //flett partner info når veileder har lese tilgang
-        when(skjermetClient.hentSkjermet(Fnr.of("2134567890"))).thenReturn(true);
+    @Test
+    public void flettPartnerInfoSomErEgenAnsattTestMedNyttAPI_UtenLeseTilgang_SomErEgenAnsatt() {
+        Fnr partnersFnr = Fnr.of("2134567890");
+        when(unleashClient.isEnabled(any())).thenReturn(true);
+        PersonV2Data personV2Data = getPersonV2Data();
+        person = hentPerson(FNR);
+
+        when(skjermetClient.hentSkjermet(partnersFnr)).thenReturn(true);
+        when(authService.harLesetilgang(partnersFnr)).thenReturn(false);
+
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
+
+        Familiemedlem partner = personV2Data.getPartner();
+
+        assertNull(partner.getFornavn());
+        assertNull(partner.getEtternavn());
+        assertNull(partner.getForkortetNavn());
+        assertEquals("MANN", partner.getKjonn());
+        assertEquals("2134567890", partner.getFodselsnummer().toString());
+        assertEquals(LocalDate.of(1982, 12, 14), partner.getFodselsdato());
+    }
+
+    @Test
+    public void flettPartnerInfoTestMedNyttAPI_MedLeseTilgang() {
+        when(unleashClient.isEnabled(any())).thenReturn(true);
+        PersonV2Data personV2Data = getPersonV2Data();
+        person = hentPerson(FNR);
+
+        when(skjermetClient.hentSkjermet(Fnr.of("2134567890"))).thenReturn(false);
         when(authService.harLesetilgang(Fnr.of("2134567890"))).thenReturn(true);
         personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
 
-        Familiemedlem partner1 = personV2Data.getPartner();
-        assertNotNull(partner1.getForkortetNavn());
-        assertNotNull(partner1.getKjonn());
-        assertEquals("2134567890", partner1.getFodselsnummer().toString());
-        assertEquals(LocalDate.of(1982,12,14), partner1.getFodselsdato());
+        Familiemedlem partner = personV2Data.getPartner();
+
+        assertNotNull(partner.getFornavn());
+        assertNotNull(partner.getEtternavn());
+        assertNotNull(partner.getForkortetNavn());
+        assertEquals("MANN", partner.getKjonn());
+        assertEquals("2134567890", partner.getFodselsnummer().toString());
+        assertEquals(LocalDate.of(1982, 12, 14), partner.getFodselsdato());
     }
 
     @Test

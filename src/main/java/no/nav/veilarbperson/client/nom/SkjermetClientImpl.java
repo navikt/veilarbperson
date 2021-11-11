@@ -1,13 +1,12 @@
 package no.nav.veilarbperson.client.nom;
 
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import net.minidev.json.JSONObject;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.HealthCheckUtils;
+import no.nav.common.json.JsonUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
-import no.nav.common.sts.AzureAdServiceTokenProvider;
-import no.nav.common.sts.ServiceToServiceTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.config.CacheConfig;
 import okhttp3.MediaType;
@@ -44,11 +43,11 @@ public class SkjermetClientImpl implements SkjermetClient {
     @SneakyThrows
     @Cacheable(CacheConfig.NOM_SKJERMEDE_PERSONER_CACHE_NAME)
     public Boolean hentSkjermet(Fnr fodselsnummer) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("personident", fodselsnummer.get());
 
         Request request = new Request.Builder()
-                .post(RequestBody.create(mediaType, jsonObject.toJSONString()))
+                .post(RequestBody.create(mediaType,
+                        JsonUtils.toJson(new Personident(fodselsnummer))
+                ))
                 .url(joinPaths(skjermedUrl, "/skjermet"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + serviceTokenSupplier.get())
@@ -63,5 +62,10 @@ public class SkjermetClientImpl implements SkjermetClient {
     @Override
     public HealthCheckResult checkHealth() {
         return HealthCheckUtils.pingUrl(joinPaths(skjermedUrl, "/internal/isAlive"), client);
+    }
+
+    @AllArgsConstructor
+    private static class Personident {
+        Fnr personident;
     }
 }
