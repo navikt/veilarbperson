@@ -16,6 +16,7 @@ import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
+import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -151,6 +152,21 @@ public class ClientTestConfig {
         return new EgenAnsattClient() {
             @Override
             public boolean erEgenAnsatt(Fnr ident) {
+                return false;
+            }
+
+            @Override
+            public HealthCheckResult checkHealth() {
+                return HealthCheckResult.healthy();
+            }
+        };
+    }
+
+    @Bean
+    public SkjermetClient skjermetClient() {
+        return new SkjermetClient() {
+            @Override
+            public Boolean hentSkjermet(Fnr fodselsnummer) {
                 return false;
             }
 

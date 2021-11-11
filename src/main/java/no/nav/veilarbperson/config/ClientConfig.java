@@ -8,6 +8,7 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.rest.client.RestClient;
+import no.nav.common.sts.AzureAdServiceTokenProvider;
 import no.nav.common.sts.ServiceToServiceTokenProvider;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.utils.Credentials;
@@ -23,6 +24,8 @@ import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClientImpl;
+import no.nav.veilarbperson.client.nom.SkjermetClient;
+import no.nav.veilarbperson.client.nom.SkjermetClientImpl;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pam.PamClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -108,6 +111,13 @@ public class ClientConfig {
     @Bean
     public PersonClient personClient(EnvironmentProperties properties, StsConfig stsConfig) {
         return new PersonClientImpl(properties.getPersonV3Endpoint(), stsConfig);
+    }
+
+    @Bean
+    public SkjermetClient skjermetClient(ServiceToServiceTokenProvider tokenProvider) {
+        Supplier<String> serviceTokenSupplier = () -> tokenProvider
+                .getServiceToken("skjermede-personer-pip", "nom", isProduction() ? "prod-gcp" : "dev-gcp");
+        return new SkjermetClientImpl(createInternalIngressUrl("skjermede-personer-pip"), serviceTokenSupplier);
     }
 
     @Bean

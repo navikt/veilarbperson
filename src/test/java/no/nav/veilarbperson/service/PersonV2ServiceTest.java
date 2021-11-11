@@ -2,10 +2,12 @@ package no.nav.veilarbperson.service;
 
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
+import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
+import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
@@ -45,7 +47,9 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private PdlClient pdlClient = mock(PdlClient.class);
     private EgenAnsattClient egenAnsattClient = mock(EgenAnsattClient.class);
     private KodeverkService kodeverkService = mock(KodeverkService.class);
+    private SkjermetClient skjermetClient = mock(SkjermetClient.class);
     private VeilarbportefoljeClient veilarbportefoljeClient = mock(VeilarbportefoljeClient.class);
+    private UnleashClient unleashClient = mock(UnleashClient.class);
     private AuthService authService = mock(AuthService.class);
     private PersonV2Service personV2Service;
     private HentPerson.Person person;
@@ -60,6 +64,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(false);
+        when(unleashClient.isEnabled(any())).thenReturn(false);
         when(pdlClient.hentPersonBolk(any())).thenReturn(hentPersonBolk(testFnrsTilBarna));
         when(pdlClient.hentPersonNavn(any(), any())).thenReturn(hentPersonNavn(FNR));
         when(kodeverkService.getPoststedForPostnummer(any())).thenReturn("POSTSTED");
@@ -71,7 +76,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(kodeverkService.getBeskrivelseForTema("DAG")).thenReturn("Dagpenger");
         when(pdlClient.hentTilrettelagtKommunikasjon(any(), any())).thenReturn(hentTilrettelagtKommunikasjon(FNR));
 
-        personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, egenAnsattClient, veilarbportefoljeClient, kodeverkService);
+        personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, egenAnsattClient, veilarbportefoljeClient, unleashClient, skjermetClient, kodeverkService);
         person = hentPerson(FNR);
     }
 
@@ -270,6 +275,67 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertNotNull(partner1.getKjonn());
         assertEquals("2134567890", partner1.getFodselsnummer().toString());
         assertEquals(LocalDate.of(1982,12,14), partner1.getFodselsdato());
+    }
+
+    @Test
+    public void flettPartnerInfoSomErEgenAnsattTestMedNyttAPI_UtenLeseTilgang() {
+        when(unleashClient.isEnabled(any())).thenReturn(true);
+        PersonV2Data personV2Data = getPersonV2Data();
+        person = hentPerson(FNR);
+
+        when(skjermetClient.hentSkjermet(Fnr.of("2134567890"))).thenReturn(true);
+        when(authService.harLesetilgang(Fnr.of("2134567890"))).thenReturn(false);
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
+
+        Familiemedlem partner = personV2Data.getPartner();
+        assertNull(partner.getFornavn());
+        assertNull(partner.getEtternavn());
+        assertNull(partner.getForkortetNavn());
+        assertEquals("MANN", partner.getKjonn());
+        assertEquals("2134567890", partner.getFodselsnummer().toString());
+        assertEquals(LocalDate.of(1982, 12, 14), partner.getFodselsdato());
+    }
+
+    @Test
+    public void flettPartnerInfoSomErEgenAnsattTestMedNyttAPI_UtenLeseTilgang_SomErEgenAnsatt() {
+        Fnr partnersFnr = Fnr.of("2134567890");
+        when(unleashClient.isEnabled(any())).thenReturn(true);
+        PersonV2Data personV2Data = getPersonV2Data();
+        person = hentPerson(FNR);
+
+        when(skjermetClient.hentSkjermet(partnersFnr)).thenReturn(true);
+        when(authService.harLesetilgang(partnersFnr)).thenReturn(false);
+
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
+
+        Familiemedlem partner = personV2Data.getPartner();
+
+        assertNull(partner.getFornavn());
+        assertNull(partner.getEtternavn());
+        assertNull(partner.getForkortetNavn());
+        assertEquals("MANN", partner.getKjonn());
+        assertEquals("2134567890", partner.getFodselsnummer().toString());
+        assertEquals(LocalDate.of(1982, 12, 14), partner.getFodselsdato());
+    }
+
+    @Test
+    public void flettPartnerInfoTestMedNyttAPI_MedLeseTilgang() {
+        when(unleashClient.isEnabled(any())).thenReturn(true);
+        PersonV2Data personV2Data = getPersonV2Data();
+        person = hentPerson(FNR);
+
+        when(skjermetClient.hentSkjermet(Fnr.of("2134567890"))).thenReturn(false);
+        when(authService.harLesetilgang(Fnr.of("2134567890"))).thenReturn(true);
+        personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
+
+        Familiemedlem partner = personV2Data.getPartner();
+
+        assertNotNull(partner.getFornavn());
+        assertNotNull(partner.getEtternavn());
+        assertNotNull(partner.getForkortetNavn());
+        assertEquals("MANN", partner.getKjonn());
+        assertEquals("2134567890", partner.getFodselsnummer().toString());
+        assertEquals(LocalDate.of(1982, 12, 14), partner.getFodselsdato());
     }
 
     @Test
