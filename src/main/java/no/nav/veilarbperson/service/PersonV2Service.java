@@ -21,8 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,18 +64,17 @@ public class PersonV2Service {
     }
 
     public PersonV2Data hentFlettetPerson(Fnr fodselsnummer, String userToken) {
-        PersonData personDataFraTps = hentPersonDataFraTps(fodselsnummer);
         HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer, userToken))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Fant ikke person i hentPerson operasjonen i PDL"));
 
-        PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl, personDataFraTps);
+        PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
+        flettInnKontonummer(personV2Data);
 
         try {
             flettPersoninfoFraPortefolje(personV2Data, fodselsnummer);
         } catch (Exception e) {
             log.warn("Bruker fallbackløsning for egenAnsatt-sjekk", e);
             personV2Data.setEgenAnsatt(egenAnsattClient.erEgenAnsatt(fodselsnummer));
-            personV2Data.setSikkerhetstiltak(ofNullable(getFirstElement(personDataFraPdl.getSikkerhetstiltak())).map(HentPerson.Sikkerhetstiltak::getBeskrivelse).orElse(null));
         }
 
         flettPartnerOgBarnInformasjon(personDataFraPdl.getSivilstand(), personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
@@ -86,6 +83,11 @@ public class PersonV2Service {
         flettKodeverk(personV2Data);
 
         return personV2Data;
+    }
+
+    public PersonV2Data flettInnKontonummer(PersonV2Data person) {
+        PersonData personDataFraTps = hentPersonDataFraTps(person.getFodselsnummer());
+        return person.setKontonummer(personDataFraTps.getKontonummer());
     }
 
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse foreldresBostedsAdresse) {
@@ -175,7 +177,6 @@ public class PersonV2Service {
     private void flettPersoninfoFraPortefolje(PersonV2Data personV2Data, Fnr fodselsnummer) {
         Personinfo personinfo = veilarbportefoljeClient.hentPersonInfo(fodselsnummer);
         personV2Data.setEgenAnsatt(personinfo.egenAnsatt);
-        personV2Data.setSikkerhetstiltak(personinfo.sikkerhetstiltak);
     }
 
     private void flettGeografiskEnhet(Fnr fodselsnummer,  String userToken, PersonV2Data personV2Data) {
