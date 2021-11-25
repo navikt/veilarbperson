@@ -127,7 +127,7 @@ public class ClientConfig {
 
     @Bean
     public PdlClient pdlClient(SystemUserTokenProvider tokenProvider) {
-        return new PdlClientImpl(createServiceUrl("pdl-api", "default", false), tokenProvider::getSystemUserToken);
+        return new PdlClientImpl(internalDevOrProdIngress("pdl-api"), tokenProvider::getSystemUserToken);
     }
 
     @Bean
@@ -175,4 +175,9 @@ public class ClientConfig {
         return EnvironmentUtils.isProduction().orElseThrow();
     }
 
+    private static String internalDevOrProdIngress(String appName) {
+        return isProduction()
+                ? createProdInternalIngressUrl(appName)
+                : createDevInternalIngressUrl(appName);
+    }
 }
