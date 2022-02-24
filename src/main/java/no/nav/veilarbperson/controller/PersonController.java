@@ -113,7 +113,7 @@ public class PersonController {
             }
             fnr = queryParamFnr;
         } else if (authService.erEksternBruker()) {
-            fnr = Fnr.of(authService.getInnloggerBrukerSubject());
+            fnr = Fnr.of(authService.getInnloggerBrukerUid());
         } else {
             // Systembruker har ikke tilgang
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
