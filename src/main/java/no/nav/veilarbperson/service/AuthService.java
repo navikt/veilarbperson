@@ -65,8 +65,8 @@ public class AuthService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is missing"));
     }
 
-    public String getInnloggerBrukerSubject() {
-        return authContextHolder.getSubject()
+    public String getInnloggerBrukerUid() {
+        return authContextHolder.getUid()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Subject is missing"));
     }
 }
