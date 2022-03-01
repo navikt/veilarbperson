@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.service;
 
+import no.nav.common.utils.StringUtils;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,9 @@ public class KodeverkService {
     }
 
     private String finnBeskrivelse(String kodeverksnavn, String kode) {
+        if (StringUtils.nullOrEmpty(kode)) {
+            return "";
+        }
         Map<String, String> betydninger = kodeverkClient.hentKodeverkBeskrivelser(kodeverksnavn);
         String betydning = betydninger.get(kode);
 
