@@ -48,6 +48,11 @@ spec:
   azure:
     application:
       enabled: true
+  accessPolicy:
+    inbound:
+      rules:
+        - application: paw-proxy
+          namespace: paw
   env:
     - name: VIRKSOMHET_PERSON_V3_URL
       value: https://app-q1.adeo.no/tpsws-aura/ws/Person/v3
