@@ -10,4 +10,5 @@ import java.time.LocalDate;
 public class Sivilstand {
     String sivilstand;
     LocalDate fraDato;
+    String master;
 }

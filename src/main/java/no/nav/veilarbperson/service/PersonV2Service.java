@@ -153,9 +153,10 @@ public class PersonV2Service {
                 .collect(Collectors.toList());
     }
 
-    public Fnr hentPartnerFnr(List<HentPerson.Sivilstand> personsSivilstand) {
-        return ofNullable(getFirstElement(personsSivilstand))
-                .map(HentPerson.Sivilstand::getRelatertVedSivilstand).map(Fnr::of).orElse(null);
+    public List<Fnr> hentPartnerFnr(List<HentPerson.Sivilstand> personsSivilstand) {
+        return personsSivilstand.stream()
+                .map(HentPerson.Sivilstand::getRelatertVedSivilstand).map(Fnr::of)
+                .collect(Collectors.toList());
     }
 
     public void flettPartnerOgBarnInformasjon(List<HentPerson.Sivilstand> personsSivilstand, List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data) {
@@ -169,15 +170,15 @@ public class PersonV2Service {
         }
 
         if (!personsSivilstand.isEmpty()) {
-            Fnr partnerFnr = hentPartnerFnr(personsSivilstand);
-            if (partnerFnr != null) {
-                familiemedlemFnrListe.add(partnerFnr);
+            List<Fnr> partnerFnr = hentPartnerFnr(personsSivilstand);
+            if (partnerFnr.size() > 0) {
+                familiemedlemFnrListe.addAll(partnerFnr);
             }
         }
 
         if (familiemedlemFnrListe.size() > 0) {
             List<Familiemedlem> familiemedlemInfo = hentFamiliemedlemOpplysninger(familiemedlemFnrListe, personV2Data.getBostedsadresse());
-            Fnr partnerFnr = hentPartnerFnr(personsSivilstand);
+            List<Fnr> partnerFnr = hentPartnerFnr(personsSivilstand);
             List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
 
             if (partnerFnr != null) {
