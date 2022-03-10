@@ -46,6 +46,9 @@ spec:
   azure:
     application:
       enabled: true
+      claims:
+        extra:
+          - "NAVident"
   env:
     - name: VIRKSOMHET_PERSON_V3_URL
       value: https://app.adeo.no/tpsws-aura/ws/Person/v3
