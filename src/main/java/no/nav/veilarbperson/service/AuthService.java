@@ -57,13 +57,17 @@ public class AuthService {
     public boolean harLesetilgang(Fnr fnr) {
         AktorId aktorId = aktorregisterClient.hentAktorId(fnr);
 
-        Optional<NavIdent> navIdent = authContextHolder.getNavIdent();
+        if (erEksternBruker()) {
+            return veilarbPep.harTilgangTilPerson(getInnloggetBrukerToken(), ActionId.READ, aktorId);
+        } else if (erInternBruker()) {
+            return veilarbPep.harVeilederTilgangTilPerson(authContextHolder.requireNavIdent(), ActionId.READ, aktorId);
+        } else {
+            if (!erSystemBruker()) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            }
 
-        if (navIdent.isPresent()) {
-            return veilarbPep.harVeilederTilgangTilPerson(navIdent.get(), ActionId.READ, aktorId);
+            return true;
         }
-
-        return veilarbPep.harTilgangTilPerson(getInnloggetBrukerToken(), ActionId.READ, aktorId);
     }
 
     public AktorId getAktorId(Fnr fnr) {
