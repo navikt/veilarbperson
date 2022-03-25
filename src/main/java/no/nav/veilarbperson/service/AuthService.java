@@ -6,13 +6,15 @@ import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktorregister.AktorregisterClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.Fnr;
-import no.nav.common.types.identer.NavIdent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.ParseException;
 import java.util.Optional;
+
+import static java.util.Collections.emptyList;
 
 @Service
 public class AuthService {
@@ -65,9 +67,24 @@ public class AuthService {
             if (!erSystemBruker()) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN);
             }
-
-            return true;
+            return harAADRolleForSystemTilSystemTilgang()
+                    || veilarbPep.harTilgangTilPerson(getInnloggetBrukerToken(), ActionId.READ, aktorId);
         }
+    }
+
+    /*
+    Applikasjoner som er pre-authorized og bruker client credentials flow har et claim "role" der verdien er en liste
+    og inneholder "access_as_application" som standard
+    Ref. https://doc.nais.io/security/auth/azure-ad/access-policy/index.html#custom-roles
+     */
+    private boolean harAADRolleForSystemTilSystemTilgang() {
+        return authContextHolder.getIdTokenClaims().flatMap(claims -> {
+            try {
+                return Optional.ofNullable(claims.getStringListClaim("roles"));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }).orElse(emptyList()).contains("access_as_application");
     }
 
     public AktorId getAktorId(Fnr fnr) {
