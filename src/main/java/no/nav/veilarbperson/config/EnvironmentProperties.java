@@ -27,6 +27,8 @@ public class EnvironmentProperties {
 
     private String naisAadDiscoveryUrl;
 
+    private String naisAadIssuer;
+
     private String naisAadClientId;
 
     private String stsDiscoveryUrl;
