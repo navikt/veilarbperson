@@ -15,7 +15,8 @@ import org.springframework.context.annotation.Import;
         ClientTestConfig.class,
         ControllerTestConfig.class,
         ServiceTestConfig.class,
-        FilterTestConfig.class
+        FilterTestConfig.class,
+        EnvironmentProperties.class
 })
 public class ApplicationTestConfig {
 
