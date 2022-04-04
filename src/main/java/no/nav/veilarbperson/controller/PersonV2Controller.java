@@ -1,6 +1,6 @@
 package no.nav.veilarbperson.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.domain.PersonNavnV2;
@@ -29,7 +29,7 @@ public class PersonV2Controller {
     }
 
     @GetMapping
-    @ApiOperation(value = "Henter informasjon om en person fra PDL")
+    @Operation(summary = "Henter informasjon om en person fra PDL")
     public PersonV2Data hentPerson(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
@@ -37,7 +37,7 @@ public class PersonV2Controller {
     }
 
     @GetMapping("/malform")
-    @ApiOperation(value = "Henter malform fra DKIF tjeneste")
+    @Operation(summary = "Henter malform fra DKIF tjeneste")
     public Malform malform(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
@@ -47,7 +47,7 @@ public class PersonV2Controller {
     }
 
     @GetMapping("/vergeOgFullmakt")
-    @ApiOperation(value = "Henter informasjon om verge og fullmakt for en person fra PDL")
+    @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
     public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
@@ -55,7 +55,7 @@ public class PersonV2Controller {
     }
 
     @GetMapping("/tolk")
-    @ApiOperation(value = "Henter tolk informajon til en person fra PDL")
+    @Operation(summary = "Henter tolk informajon til en person fra PDL")
     public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
@@ -63,7 +63,7 @@ public class PersonV2Controller {
     }
 
     @GetMapping("/navn")
-    @ApiOperation(value = "Henter navn til en person fra PDL")
+    @Operation(summary = "Henter navn til en person fra PDL")
     public PersonNavnV2 hentNavn(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
