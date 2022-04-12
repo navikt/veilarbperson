@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.config;
 
 import no.nav.common.auth.context.UserRole;
+import no.nav.common.auth.oidc.filter.AzureAdUserRoleResolver;
 import no.nav.common.auth.oidc.filter.OidcAuthenticationFilter;
 import no.nav.common.auth.oidc.filter.OidcAuthenticatorConfig;
 import no.nav.common.auth.utils.ServiceUserTokenFinder;
@@ -22,7 +23,7 @@ import static no.nav.common.utils.EnvironmentUtils.requireApplicationName;
 public class FilterConfig {
 
     private final List<String> ALLOWED_SERVICE_USERS = List.of(
-            "srvveilarbaktivitet"
+            "srvveilarbaktivitet","srvveilarbdialog"
     );
 
     private OidcAuthenticatorConfig openAmStsAuthConfig(EnvironmentProperties properties) {
@@ -66,6 +67,13 @@ public class FilterConfig {
                 .withUserRole(UserRole.EKSTERN);
     }
 
+    private OidcAuthenticatorConfig naisAzureAdConfig(EnvironmentProperties properties) {
+        return new OidcAuthenticatorConfig()
+                .withDiscoveryUrl(properties.getNaisAadDiscoveryUrl())
+                .withClientId(properties.getNaisAadClientId())
+                .withUserRoleResolver(new AzureAdUserRoleResolver());
+    }
+
     @Bean
     public FilterRegistrationBean pingFilter() {
         // Veilarbproxy trenger dette endepunktet for å sjekke at tjenesten lever
@@ -96,7 +104,8 @@ public class FilterConfig {
                         azureAdAuthConfig(properties),
                         loginserviceIdportenConfig(properties),
                         openAmStsAuthConfig(properties),
-                        naisStsAuthConfig(properties)
+                        naisStsAuthConfig(properties),
+                        naisAzureAdConfig(properties)
                 )
         );
 

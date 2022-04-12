@@ -25,6 +25,12 @@ public class EnvironmentProperties {
 
     private String loginserviceIdportenDiscoveryUrl;
 
+    private String naisAadDiscoveryUrl;
+
+    private String naisAadIssuer;
+
+    private String naisAadClientId;
+
     private String stsDiscoveryUrl;
 
     private String abacUrl;

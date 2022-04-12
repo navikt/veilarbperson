@@ -14,6 +14,7 @@ spec:
     - https://app-q1.dev.adeo.no/veilarbperson
     - https://app.dev.adeo.no/veilarbperson
     - https://app-q1.adeo.no/veilarbperson
+    - https://app.dev.intern.nav.no/veilarbperson
   liveness:
     path: veilarbperson/internal/isAlive
     initialDelay: 30
@@ -48,6 +49,14 @@ spec:
   azure:
     application:
       enabled: true
+      claims:
+        extra:
+          - "NAVident"
+  accessPolicy:
+    inbound:
+      rules:
+        - application: paw-proxy
+          namespace: paw
   env:
     - name: VIRKSOMHET_PERSON_V3_URL
       value: https://app-q1.adeo.no/tpsws-aura/ws/Person/v3

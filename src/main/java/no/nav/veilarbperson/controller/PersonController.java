@@ -1,6 +1,6 @@
 package no.nav.veilarbperson.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
@@ -34,8 +34,8 @@ public class PersonController {
     private final RegistreringService registreringService;
 
     @GetMapping("/{fodselsnummer}")
-    @ApiOperation(value = "Henter informasjon om en person",
-            notes = "Denne tjenesten gjør kall mot flere baktjenester: " +
+    @Operation(summary = "Henter informasjon om en person",
+            description = "Denne tjenesten gjør kall mot flere baktjenester: " +
                     "Kodeverk, organisasjonenhet_v2, Digitalkontaktinformasjon_v1, Person_v3, Egenansatt_v1")
     public PersonData person(@PathVariable("fodselsnummer") Fnr fnr) {
         authService.stoppHvisEksternBruker();
@@ -51,7 +51,7 @@ public class PersonController {
     }
 
     @GetMapping("/navn")
-    @ApiOperation(value = "Henter navnet til en person")
+    @Operation(summary = "Henter navnet til en person")
     public PersonNavn navn(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         Fnr fodselsnummer = hentIdentForEksternEllerIntern(fnr);
 
@@ -62,7 +62,7 @@ public class PersonController {
     }
 
     @GetMapping("/{fodselsnummer}/malform")
-    @ApiOperation(value = "Henter målform til en person")
+    @Operation(summary = "Henter målform til en person")
     public Malform malform(@PathVariable("fodselsnummer") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
