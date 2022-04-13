@@ -5,11 +5,11 @@ import lombok.SneakyThrows;
 import no.nav.common.auth.utils.TokenUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
-import java.util.Optional;
-
-import static no.nav.common.utils.EnvironmentUtils.getNamespace;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 public class DifiAccessTokenProviderImpl implements DifiAccessTokenProvider {
@@ -38,7 +38,7 @@ public class DifiAccessTokenProviderImpl implements DifiAccessTokenProvider {
                 .Builder()
                 .url(url)
                 .header(AUTHORIZATION, okhttp3.Credentials.basic(sbsServiceUser.username, sbsServiceUser.password))
-                .post(RequestBody.create(null, new byte[0]))
+                .post(RequestBody.create(new byte[0]))
                 .build();
 
         try (Response response = client.newCall(request).execute()) {

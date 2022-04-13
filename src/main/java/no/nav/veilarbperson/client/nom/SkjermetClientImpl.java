@@ -9,7 +9,6 @@ import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.config.CacheConfig;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -19,13 +18,13 @@ import org.springframework.http.HttpHeaders;
 
 import java.util.function.Supplier;
 
+import static no.nav.common.rest.client.RestUtils.MEDIA_TYPE_JSON;
 import static no.nav.common.rest.client.RestUtils.parseJsonResponseOrThrow;
 import static no.nav.common.utils.UrlUtils.joinPaths;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class SkjermetClientImpl implements SkjermetClient {
-    private final MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
 
     private final String skjermedUrl;
 
@@ -45,8 +44,9 @@ public class SkjermetClientImpl implements SkjermetClient {
     public Boolean hentSkjermet(Fnr fodselsnummer) {
 
         Request request = new Request.Builder()
-                .post(RequestBody.create(mediaType,
-                        JsonUtils.toJson(new Personident(fodselsnummer))
+                .post(RequestBody.create(
+                        JsonUtils.toJson(new Personident(fodselsnummer)),
+                        MEDIA_TYPE_JSON
                 ))
                 .url(joinPaths(skjermedUrl, "/skjermet"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
