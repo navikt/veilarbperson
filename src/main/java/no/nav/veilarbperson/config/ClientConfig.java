@@ -8,9 +8,10 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.rest.client.RestClient;
-import no.nav.common.sts.AzureAdServiceTokenProvider;
-import no.nav.common.sts.ServiceToServiceTokenProvider;
 import no.nav.common.sts.SystemUserTokenProvider;
+import no.nav.common.token_client.builder.AzureAdTokenClientBuilder;
+import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
+import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.utils.Credentials;
 import no.nav.common.utils.EnvironmentUtils;
 import no.nav.common.utils.NaisUtils;
@@ -44,6 +45,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.function.Supplier;
 
+import static java.lang.String.format;
 import static no.nav.common.utils.EnvironmentUtils.requireClusterName;
 import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.*;
@@ -114,9 +116,12 @@ public class ClientConfig {
     }
 
     @Bean
-    public SkjermetClient skjermetClient(ServiceToServiceTokenProvider tokenProvider) {
-        Supplier<String> serviceTokenSupplier = () -> tokenProvider
-                .getServiceToken("skjermede-personer-pip", "nom", isProduction() ? "prod-gcp" : "dev-gcp");
+    public SkjermetClient skjermetClient(AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient) {
+        Supplier<String> serviceTokenSupplier = () -> aadMachineToMachineTokenClient
+                .createMachineToMachineToken(
+                        format("api://%s.%s.%s/.default",
+                                isProduction() ? "prod-gcp" : "dev-gcp", "nom", "skjermede-personer-pip"));
+
         return new SkjermetClientImpl(createInternalIngressUrl("skjermede-personer-pip"), serviceTokenSupplier);
     }
 
@@ -126,8 +131,8 @@ public class ClientConfig {
     }
 
     @Bean
-    public PdlClient pdlClient(SystemUserTokenProvider tokenProvider) {
-        return new PdlClientImpl(internalDevOrProdIngress("pdl-api"), tokenProvider::getSystemUserToken);
+    public PdlClient pdlClient() {
+        return new PdlClientImpl(internalDevOrProdIngress("pdl-api"));
     }
 
     @Bean
@@ -148,10 +153,11 @@ public class ClientConfig {
 
     @Bean
     public VeilarbregistreringClient veilarbregistreringClient(
-            ServiceToServiceTokenProvider serviceToServiceTokenProvider
+            AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient
     ) {
-        Supplier<String> serviceTokenSupplier = () -> serviceToServiceTokenProvider
-                .getServiceToken("veilarbregistrering", "paw", requireClusterName());
+        Supplier<String> serviceTokenSupplier = () -> aadMachineToMachineTokenClient
+                .createMachineToMachineToken(
+                        format("api://%s.%s.%s/.default", requireClusterName(), "paw", "veilarbregistrering"));
 
         return new VeilarbregistreringClientImpl(
                 RestClient.baseClient(),
@@ -169,6 +175,20 @@ public class ClientConfig {
     public SbsServiceUser sbsServiceUser() {
         Credentials service_user_sbs = getCredentials("service_user_sbs");
         return new SbsServiceUser(service_user_sbs.username, service_user_sbs.password);
+    }
+
+    @Bean
+    public AzureAdMachineToMachineTokenClient azureAdMachineToMachineTokenClient() {
+        return AzureAdTokenClientBuilder.builder()
+                .withNaisDefaults()
+                .buildMachineToMachineTokenClient();
+    }
+
+    @Bean
+    public AzureAdOnBehalfOfTokenClient azureAdOnBehalfOfTokenClient() {
+        return AzureAdTokenClientBuilder.builder()
+                .withNaisDefaults()
+                .buildOnBehalfOfTokenClient();
     }
 
     private static boolean isProduction() {

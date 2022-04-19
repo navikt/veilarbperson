@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
 /**
  * Ja, her var det en del tester! Grunnen til at mapperen testes opp og ned og i mente er at det er en del annen kode
