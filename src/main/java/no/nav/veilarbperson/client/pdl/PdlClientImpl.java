@@ -12,7 +12,6 @@ import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.utils.FileUtils;
-import no.nav.veilarbperson.utils.RestClientUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -21,10 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 import static no.nav.common.rest.client.RestUtils.MEDIA_TYPE_JSON;
 import static no.nav.common.utils.UrlUtils.joinPaths;
+import static no.nav.veilarbperson.utils.RestClientUtils.createBearerToken;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -34,8 +33,6 @@ public class PdlClientImpl implements PdlClient {
     private final String pdlUrl;
 
     private final OkHttpClient client;
-
-    private final Supplier<String> systemUserTokenSupplier;
 
     private final String hentPersonQuery;
 
@@ -49,10 +46,9 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentTilrettelagtKommunikasjonQuery;
 
-    public PdlClientImpl(String pdlUrl, Supplier<String> systemUserTokenSupplier) {
+    public PdlClientImpl(String pdlUrl) {
         this.pdlUrl = pdlUrl;
         this.client = RestClient.baseClient();
-        this.systemUserTokenSupplier = systemUserTokenSupplier;
         this.hentPersonQuery = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
         this.hentPersonBolkQuery = FileUtils.getResourceFileAsString("graphql/hentPersonBolk.gql");
         this.hentPersonNavnQuery = FileUtils.getResourceFileAsString("graphql/hentPersonNavn.gql");
@@ -62,52 +58,56 @@ public class PdlClientImpl implements PdlClient {
     }
 
     @Override
-    public HentPerson.Person hentPerson(Fnr personIdent, String userToken) {
+    public HentPerson.Person hentPerson(Fnr personIdent, PdlAuth auth) {
         GqlRequest request = new GqlRequest<>(hentPersonQuery, new GqlVariables.HentPerson(personIdent, false));
-        return graphqlRequest(request, userToken, HentPerson.class).hentPerson;
+        return graphqlRequest(request, auth, HentPerson.class).hentPerson;
     }
 
     @Override
-    public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) {
+    public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, PdlAuth auth) {
         GqlRequest request = new GqlRequest<>(hentVergeOgFullmaktQuery, new GqlVariables.HentPerson(personIdent, false));
-        return graphqlRequest(request, userToken, HentPerson.HentVergeOgFullmakt.class).hentPerson;
+        return graphqlRequest(request, auth, HentPerson.HentVergeOgFullmakt.class).hentPerson;
     }
 
     @Override
-    public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken) {
+    public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, PdlAuth auth) {
         GqlRequest request = new GqlRequest<>(hentPersonNavnQuery, new GqlVariables.HentPerson(personIdent, false));
-        return graphqlRequest(request, userToken, HentPerson.HentFullmaktNavn.class).hentPerson;
+        return graphqlRequest(request, auth, HentPerson.HentFullmaktNavn.class).hentPerson;
     }
 
     @Override
-    public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter) {
+    public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, PdlAuth auth) {
         GqlRequest request = new GqlRequest<>(hentPersonBolkQuery, new GqlVariables.HentPersonBolk(personIdenter, false));
-        return graphqlRequest(request, systemUserTokenSupplier.get(), HentPerson.class).hentPersonBolk;
+        return graphqlRequest(request, auth, HentPerson.class).hentPersonBolk;
     }
 
     @Override
-    public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) {
+    public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, PdlAuth auth) {
         GqlRequest request = new GqlRequest<>(hentGeografiskTilknytningQuery, new GqlVariables.HentGeografiskTilknytning(personIdent));
-        return graphqlRequest(request, userToken, HentPerson.class).hentGeografiskTilknytning;
+        return graphqlRequest(request, auth, HentPerson.class).hentGeografiskTilknytning;
     }
 
     @Override
-    public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, String userToken) {
+    public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, PdlAuth auth) {
         GqlRequest request = new GqlRequest<>(hentTilrettelagtKommunikasjonQuery, new GqlVariables.HentTilrettelagtKommunikasjon(personIdent));
-        return graphqlRequest(request, userToken, HentPerson.HentTilrettelagtKommunikasjon.class).hentPerson;
+        return graphqlRequest(request, auth, HentPerson.HentTilrettelagtKommunikasjon.class).hentPerson;
     }
 
     @SneakyThrows
-    public String rawRequest(String gqlRequest, String userToken) {
-        Request request = new Request.Builder()
+    public String rawRequest(String gqlRequest, PdlAuth auth) {
+        Request.Builder builder = new Request.Builder()
                 .url(joinPaths(pdlUrl, "/graphql"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .header(AUTHORIZATION, RestClientUtils.createBearerToken(userToken))
-                .header("Nav-Consumer-Token", RestClientUtils.createBearerToken(systemUserTokenSupplier.get()))
+                .header(AUTHORIZATION, createBearerToken(auth.getAuthToken()))
                 .header("Tema", "GEN")
-                .post(RequestBody.create(MEDIA_TYPE_JSON, gqlRequest))
-                .build();
+                .post(RequestBody.create(gqlRequest, MEDIA_TYPE_JSON));
+
+        auth.getNavConsumerToken().ifPresent(navConsumerToken ->
+                builder.header("Nav-Consumer-Token", createBearerToken(navConsumerToken))
+        );
+
+        Request request = builder.build();
 
         try (Response response = client.newCall(request).execute()) {
             if (response.code() >= 300) {
@@ -131,9 +131,9 @@ public class PdlClientImpl implements PdlClient {
         return HealthCheckUtils.pingUrl(joinPaths(pdlUrl, "/internal/health/liveness"), client);
     }
 
-    private <T> T graphqlRequest(GqlRequest gqlRequest, String userToken, Class<T> gqlResponseDataClass) {
+    private <T> T graphqlRequest(GqlRequest gqlRequest, PdlAuth auth, Class<T> gqlResponseDataClass) {
         try {
-            String gqlResponse = rawRequest(JsonUtils.toJson(gqlRequest), userToken);
+            String gqlResponse = rawRequest(JsonUtils.toJson(gqlRequest), auth);
             return parseGqlJsonResponse(gqlResponse, gqlResponseDataClass);
         } catch (Exception e) {
             log.error("Graphql request feilet", e);

@@ -95,7 +95,7 @@ public class CvJobbprofilServiceTest {
                         .request(new Request.Builder().url("http://local.test").build())
                         .protocol(Protocol.HTTP_1_1)
                         .message("")
-                        .body(ResponseBody.create(MEDIA_TYPE_JSON, pamCvJobbprofilJson))
+                        .body(ResponseBody.create(pamCvJobbprofilJson, MEDIA_TYPE_JSON))
                         .code(200)
                         .build()
         );
@@ -137,7 +137,7 @@ public class CvJobbprofilServiceTest {
                         .request(new Request.Builder().url("http://local.test").build())
                         .protocol(Protocol.HTTP_1_1)
                         .message("")
-                        .body(ResponseBody.create(MEDIA_TYPE_JSON, ""))
+                        .body(ResponseBody.create("", MEDIA_TYPE_JSON))
                         .code(403)
                         .build()
         );
@@ -160,7 +160,7 @@ public class CvJobbprofilServiceTest {
                         .request(new Request.Builder().url("http://local.test").build())
                         .protocol(Protocol.HTTP_1_1)
                         .message("")
-                        .body(ResponseBody.create(MEDIA_TYPE_JSON, "{}"))
+                        .body(ResponseBody.create("{}", MEDIA_TYPE_JSON))
                         .code(200)
                         .build()
         );
@@ -185,7 +185,7 @@ public class CvJobbprofilServiceTest {
                         .request(new Request.Builder().url("http://local.test").build())
                         .protocol(Protocol.HTTP_1_1)
                         .message("")
-                        .body(ResponseBody.create(MEDIA_TYPE_JSON, pamCvJobbprofilJson))
+                        .body(ResponseBody.create(pamCvJobbprofilJson, MEDIA_TYPE_JSON))
                         .code(200)
                         .build()
         );

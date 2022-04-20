@@ -28,7 +28,7 @@ public class PdlClientTestConfig {
 
     public PdlClientImpl configurPdlClient(String responseFile) {
         String apiUrl = configurApiResponse(responseFile);
-        return new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+        return new PdlClientImpl(apiUrl);
     }
 
 }

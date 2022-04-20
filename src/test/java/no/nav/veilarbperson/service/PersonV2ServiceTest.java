@@ -3,12 +3,14 @@ package no.nav.veilarbperson.service;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.featuretoggle.UnleashClient;
+import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
+import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.pdl.domain.*;
@@ -31,7 +33,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.time.format.DateTimeFormatter.*;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Optional.ofNullable;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,21 +53,23 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private VeilarbportefoljeClient veilarbportefoljeClient = mock(VeilarbportefoljeClient.class);
     private UnleashClient unleashClient = mock(UnleashClient.class);
     private AuthService authService = mock(AuthService.class);
+    private SystemUserTokenProvider systemUserTokenProvider = mock(SystemUserTokenProvider.class);
     private PersonV2Service personV2Service;
     private HentPerson.Person person;
 
-    private static final String USER_TOKEN = "USER_TOKEN";
+    private static final PdlAuth PDL_AUTH = new PdlAuth("USER_TOKEN", Optional.of("SYSTEM_TOKEN"));
     private static Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
     List<Fnr> testFnrsTilBarna = new ArrayList<>(List.of(Fnr.of("12345678910"), Fnr.of("12345678911")));
 
     @Before
     public void setup() {
+        when(systemUserTokenProvider.getSystemUserToken()).thenReturn("SYSTEM_USER_TOKEN");
         when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(false);
         when(unleashClient.isEnabled(any())).thenReturn(false);
-        when(pdlClient.hentPersonBolk(any())).thenReturn(hentPersonBolk(testFnrsTilBarna));
+        when(pdlClient.hentPersonBolk(any(), any())).thenReturn(hentPersonBolk(testFnrsTilBarna));
         when(pdlClient.hentPersonNavn(any(), any())).thenReturn(hentPersonNavn(FNR));
         when(kodeverkService.getPoststedForPostnummer(any())).thenReturn("POSTSTED");
         when(kodeverkService.getBeskrivelseForLandkode(any())).thenReturn("LANDKODE");
@@ -76,44 +80,55 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(kodeverkService.getBeskrivelseForTema("DAG")).thenReturn("Dagpenger");
         when(pdlClient.hentTilrettelagtKommunikasjon(any(), any())).thenReturn(hentTilrettelagtKommunikasjon(FNR));
 
-        personV2Service = new PersonV2Service(pdlClient, authService, dkifClient, norg2Client, personClient, egenAnsattClient, veilarbportefoljeClient, unleashClient, skjermetClient, kodeverkService);
+        personV2Service = new PersonV2Service(
+                pdlClient,
+                authService,
+                dkifClient,
+                norg2Client,
+                personClient,
+                egenAnsattClient,
+                veilarbportefoljeClient,
+                unleashClient,
+                skjermetClient,
+                kodeverkService,
+                systemUserTokenProvider);
         person = hentPerson(FNR);
     }
 
     public HentPerson.Person hentPerson(Fnr fnr) {
         PdlClientImpl pdlClient = configurPdlClient("pdl-hentPerson-response.json");
-        return pdlClient.hentPerson(fnr, USER_TOKEN);
+        return pdlClient.hentPerson(fnr, PDL_AUTH);
     }
 
     public HentPerson.PersonNavn hentPersonNavn(Fnr fnr) {
         PdlClientImpl pdlClient = configurPdlClient("pdl-hentPersonNavn-response.json");
-        return pdlClient.hentPersonNavn(fnr, USER_TOKEN);
+        return pdlClient.hentPersonNavn(fnr, PDL_AUTH);
     }
 
     public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> fnrs) {
         String apiUrl = configurApiResponse("pdl-hentPersonBolk-response.json");
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
-        return pdlClient.hentPersonBolk(fnrs);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl);
+        return pdlClient.hentPersonBolk(fnrs, PDL_AUTH);
     }
 
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
         PdlClientImpl pdlClient = configurPdlClient("pdl-hentVergeOgFullmakt-response.json");
-        return pdlClient.hentVergeOgFullmakt(fnr, USER_TOKEN);
+        return pdlClient.hentVergeOgFullmakt(fnr, PDL_AUTH);
     }
 
     public HentPerson.GeografiskTilknytning hentGeografisktilknytning(Fnr fnr) {
         PdlClientImpl pdlClient = configurPdlClient("pdl-hentGeografiskTilknytning-response.json");
-        return pdlClient.hentGeografiskTilknytning(fnr, USER_TOKEN);
+        return pdlClient.hentGeografiskTilknytning(fnr, PDL_AUTH);
     }
 
     public HentPerson.Person hentFamiliemedlem(Fnr fnr) {
         PdlClientImpl pdlClient = configurPdlClient("pdl-hentPersonMedIngenBarn-responsen.json");
-        return pdlClient.hentPerson(fnr, USER_TOKEN);
+        return pdlClient.hentPerson(fnr, PDL_AUTH);
     }
 
     public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr fnr) {
         PdlClientImpl pdlClient = configurPdlClient("pdl-hentTilrettelagtKommunikasjon-response.json");
-        return pdlClient.hentTilrettelagtKommunikasjon(fnr, USER_TOKEN);
+        return pdlClient.hentTilrettelagtKommunikasjon(fnr, PDL_AUTH);
     }
 
     @Test
@@ -447,7 +462,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void flettMotpartsPersonNavnTilFullmakt() {
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
         VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
-        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, USER_TOKEN);
+        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, PDL_AUTH);
 
         List<VergeOgFullmaktData.Fullmakt> fullmaktListe =  vergeOgFullmaktData.getFullmakt();
 
@@ -464,7 +479,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentSpraakTolkInfoTest() {
-        TilrettelagtKommunikasjonData tilrettelagtKommunikasjonData = personV2Service.hentSpraakTolkInfo(FNR, "USER_TOKEN");
+        TilrettelagtKommunikasjonData tilrettelagtKommunikasjonData = personV2Service.hentSpraakTolkInfo(FNR);
         assertEquals("Engelsk", tilrettelagtKommunikasjonData.getTalespraak());
         assertEquals("Norsk", tilrettelagtKommunikasjonData.getTegnspraak());
     }

@@ -33,7 +33,7 @@ public class PersonV2Controller {
     public PersonV2Data hentPerson(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentFlettetPerson(fnr, authService.getInnloggetBrukerToken());
+        return personV2Service.hentFlettetPerson(fnr);
     }
 
     @GetMapping("/malform")
@@ -51,7 +51,7 @@ public class PersonV2Controller {
     public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentVergeEllerFullmakt(fnr, authService.getInnloggetBrukerToken());
+        return personV2Service.hentVergeEllerFullmakt(fnr);
     }
 
     @GetMapping("/tolk")
@@ -59,7 +59,7 @@ public class PersonV2Controller {
     public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentSpraakTolkInfo(fnr, authService.getInnloggetBrukerToken());
+        return personV2Service.hentSpraakTolkInfo(fnr);
     }
 
     @GetMapping("/navn")
@@ -67,6 +67,6 @@ public class PersonV2Controller {
     public PersonNavnV2 hentNavn(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentNavn(fnr, authService.getInnloggetBrukerToken());
+        return personV2Service.hentNavn(fnr);
     }
 }
