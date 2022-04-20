@@ -16,14 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/person")
 @AllArgsConstructor
 public class PersonController {
-
-    private final List<String> allowedUsers = List.of("srvveilarbaktivitet");
 
     private final PersonService personService;
 

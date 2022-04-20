@@ -3,24 +3,21 @@ package no.nav.veilarbperson.config;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.abac.Pep;
 import no.nav.common.abac.VeilarbPepFactory;
-import no.nav.common.abac.audit.AuditLogFilterUtils;
 import no.nav.common.abac.audit.SpringAuditRequestInfoSupplier;
-import no.nav.common.abac.constants.NavAttributter;
 import no.nav.common.auth.context.AuthContextHolder;
+import no.nav.common.auth.context.AuthContextHolderThreadLocal;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.featuretoggle.UnleashClientImpl;
 import no.nav.common.sts.NaisSystemUserTokenProvider;
-import no.nav.common.sts.ServiceToServiceTokenProvider;
 import no.nav.common.sts.SystemUserTokenProvider;
-import no.nav.common.sts.utils.AzureAdServiceTokenProviderBuilder;
 import no.nav.common.utils.Credentials;
 import no.nav.common.utils.NaisUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import no.nav.common.auth.context.AuthContextHolderThreadLocal;
+
 import static no.nav.common.utils.NaisUtils.getCredentials;
 
 @Slf4j
@@ -68,12 +65,4 @@ public class ApplicationConfig {
     public UnleashClient unleashClient(EnvironmentProperties properties) {
         return new UnleashClientImpl(properties.getUnleashUrl(), APPLICATION_NAME);
     }
-
-    @Bean
-    public ServiceToServiceTokenProvider serviceToServiceTokenProvider() {
-        return AzureAdServiceTokenProviderBuilder.builder()
-                .withEnvironmentDefaults()
-                .build();
-    }
-
 }

@@ -7,6 +7,7 @@ import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.selftest.SelfTestChecks;
 import no.nav.common.rest.client.RestClient;
+import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
@@ -19,6 +20,7 @@ import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
+import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
@@ -29,7 +31,6 @@ import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import okhttp3.Response;
-import org.mockito.Mockito;
 import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,7 @@ import java.util.Map;
 
 import static no.nav.veilarbperson.utils.TestData.TEST_AKTOR_ID;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
+import static org.mockito.Mockito.mock;
 
 @Configuration
 @Import({WireMockConfiguration.class})
@@ -250,32 +252,32 @@ public class ClientTestConfig {
     public PdlClient pdlClient() {
         return new PdlClient() {
             @Override
-            public HentPerson.Person hentPerson(Fnr personIdent, String userToken) {
+            public HentPerson.Person hentPerson(Fnr personIdent, PdlAuth auth) {
                 return null;
             }
 
             @Override
-            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken) {
+            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, PdlAuth auth) {
                 return null;
             }
 
             @Override
-            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) {
+            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, PdlAuth auth) {
                 return null;
             }
 
             @Override
-            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdent) {
+            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, PdlAuth auth) {
                 return null;
             }
 
             @Override
-            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) {
+            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, PdlAuth auth) {
                 return null;
             }
 
             @Override
-            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, String userToken) {
+            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, PdlAuth auth) {
                 return null;
             }
 
@@ -303,17 +305,22 @@ public class ClientTestConfig {
 
     @Bean
     public UnleashClient unleashClient() {
-        return Mockito.mock(UnleashClient.class);
+        return mock(UnleashClient.class);
     }
 
     @Bean
     public SelfTestChecks selfTestChecks() {
-        return Mockito.mock(SelfTestChecks.class);
+        return mock(SelfTestChecks.class);
     }
 
     @Bean
     public VeilarbregistreringClient veilarbregistreringClient() {
         return new VeilarbregistreringClientImpl(
                 RestClient.baseClient(), "http://localhost:" + WIREMOCK_PORT, () -> "");
+    }
+
+    @Bean
+    public AzureAdOnBehalfOfTokenClient azureAdOnBehalfOfTokenClient() {
+        return mock(AzureAdOnBehalfOfTokenClient.class);
     }
 }

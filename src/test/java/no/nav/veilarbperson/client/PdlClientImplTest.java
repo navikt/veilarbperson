@@ -3,10 +3,7 @@ package no.nav.veilarbperson.client;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import no.nav.common.json.JsonUtils;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.pdl.GqlVariables;
-import no.nav.veilarbperson.client.pdl.GqlRequest;
-import no.nav.veilarbperson.client.pdl.HentPerson;
-import no.nav.veilarbperson.client.pdl.PdlClientImpl;
+import no.nav.veilarbperson.client.pdl.*;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
@@ -17,14 +14,15 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PdlClientImplTest {
 
-    private static Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
-    private static String USER_TOKEN = "USER_TOKEN";
+    private static final Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
+    private static final PdlAuth PDL_AUTH = new PdlAuth("USER_TOKEN", Optional.of("SYSTEM_USER_TOKEN"));
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
@@ -42,9 +40,9 @@ public class PdlClientImplTest {
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl);
 
-        pdlClient.hentPerson(FNR, "USER_TOKEN");
+        pdlClient.hentPerson(FNR, PDL_AUTH);
     }
 
     @Test
@@ -58,9 +56,9 @@ public class PdlClientImplTest {
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl);
 
-        HentPerson.Person person = pdlClient.hentPerson(FNR, USER_TOKEN);
+        HentPerson.Person person = pdlClient.hentPerson(FNR, PDL_AUTH);
 
         HentPerson.Navn navn = person.getNavn().get(0);
         assertEquals("NATURLIG", navn.getFornavn());
@@ -169,9 +167,9 @@ public class PdlClientImplTest {
                         .withBody(hentVergeOgFullmaktResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl);
 
-        HentPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(FNR, USER_TOKEN);
+        HentPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(FNR, PDL_AUTH);
 
         HentPerson.VergemaalEllerFremtidsfullmakt vergemaal = vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt().get(0);
         HentPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
@@ -200,10 +198,10 @@ public class PdlClientImplTest {
                         .withBody(hentPersonErrorResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl);
 
         assertThrows(ResponseStatusException.class, () -> {
-            pdlClient.hentPerson(FNR, "USER_TOKEN");
+            pdlClient.hentPerson(FNR, PDL_AUTH);
         });
     }
 
@@ -222,9 +220,9 @@ public class PdlClientImplTest {
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> "SYSTEM_USER_TOKEN");
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl);
 
-        String response = pdlClient.rawRequest(jsonRequest, "USER_TOKEN");
+        String response = pdlClient.rawRequest(jsonRequest, PDL_AUTH);
         assertEquals(hentPersonResponseJson, response);
     }
 

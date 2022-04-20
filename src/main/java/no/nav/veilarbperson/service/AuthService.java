@@ -5,9 +5,11 @@ import no.nav.common.abac.Pep;
 import no.nav.common.abac.domain.request.ActionId;
 import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktorregister.AktorregisterClient;
+import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.config.EnvironmentProperties;
+import no.nav.veilarbperson.utils.DownstreamApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -30,15 +32,19 @@ public class AuthService {
 
     private final EnvironmentProperties environmentProperties;
 
+    private final AzureAdOnBehalfOfTokenClient aadOboTokenClient;
+
     @Autowired
     public AuthService(Pep veilarbPep,
                        AktorregisterClient aktorregisterClient,
                        AuthContextHolder authContextHolder,
-                       EnvironmentProperties environmentProperties) {
+                       EnvironmentProperties environmentProperties,
+                       AzureAdOnBehalfOfTokenClient aadOboTokenClient) {
         this.veilarbPep = veilarbPep;
         this.aktorregisterClient = aktorregisterClient;
         this.authContextHolder = authContextHolder;
         this.environmentProperties = environmentProperties;
+        this.aadOboTokenClient = aadOboTokenClient;
     }
 
     public void stoppHvisEksternBruker() {
@@ -89,6 +95,23 @@ public class AuthService {
     private boolean harAADRolleForSystemTilSystemTilgang() {
         return getIssuerClaim().map(issuer -> issuer.equals(environmentProperties.getNaisAadIssuer())).orElse(false)
                 && getRolesClaim().contains("access_as_application");
+    }
+
+    public String getAadOboTokenForTjeneste(DownstreamApi api) {
+        String scope = "api://" + api.cluster + "." + api.namespace + "." + api.serviceName + "/.default";
+        return aadOboTokenClient.exchangeOnBehalfOfToken(scope, getInnloggetBrukerToken());
+    }
+
+    public boolean erAadOboToken() {
+        return harIssuer(environmentProperties.getNaisAadIssuer()) && harClaim("oid") && harClaim("NAVident");
+    }
+
+    private boolean harIssuer(String issuer) {
+        return getIssuerClaim().map(issuer::equals).orElse(false);
+    }
+
+    private boolean harClaim(String claim) {
+        return authContextHolder.getIdTokenClaims().map(claimsSet -> claimsSet.getClaim(claim)).isPresent();
     }
 
     private Optional<String> getIssuerClaim() {
