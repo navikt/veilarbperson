@@ -1,7 +1,7 @@
 package no.nav.veilarbperson.config;
 
 import no.nav.common.abac.Pep;
-import no.nav.common.client.aktorregister.AktorregisterClient;
+import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.health.selftest.SelfTestCheck;
 import no.nav.common.health.selftest.SelfTestChecks;
@@ -24,7 +24,7 @@ public class SelftTestConfig {
 
     @Bean
     public SelfTestChecks selfTestChecks(
-            AktorregisterClient aktorregisterClient,
+            AktorOppslagClient aktorOppslagClient,
             Pep veilarbPep,
             DkifClient dkifClient,
             EgenAnsattClient egenAnsattClient,
@@ -37,7 +37,7 @@ public class SelftTestConfig {
             VeilarbregistreringClient veilarbregistreringClient
     ) {
         return new SelfTestChecks(List.of(
-                new SelfTestCheck("Aktorregister", true, aktorregisterClient),
+                new SelfTestCheck("AktorOppslagClient", true, aktorOppslagClient),
                 new SelfTestCheck("ABAC", true, veilarbPep.getAbacClient()),
                 new SelfTestCheck("Digitalkontakinformasjon (DKIF)", false, dkifClient),
                 new SelfTestCheck("EgenAnsatt_v1 (SOAP) ", false, egenAnsattClient),
