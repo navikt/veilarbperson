@@ -1,7 +1,7 @@
 package no.nav.veilarbperson.config;
 
+import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.BrukerIdenter;
-import no.nav.common.client.aktorregister.AktorregisterClient;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.health.HealthCheckResult;
@@ -57,8 +57,8 @@ public class ClientTestConfig {
     }
 
     @Bean
-    public AktorregisterClient aktorregisterClient() {
-        return new AktorregisterClient() {
+    public AktorOppslagClient aktorOppslagClient() {
+        return new AktorOppslagClient() {
             @Override
             public HealthCheckResult checkHealth() {
                 return HealthCheckResult.healthy();
@@ -87,11 +87,6 @@ public class ClientTestConfig {
             @Override
             public BrukerIdenter hentIdenter(EksternBrukerId brukerId) {
                 return null;
-            }
-
-            @Override
-            public List<AktorId> hentAktorIder(Fnr fnr) {
-                return List.of(new AktorId(fnr.get()), new AktorId("1000010101001"));
             }
         };
     }
@@ -138,14 +133,11 @@ public class ClientTestConfig {
 
     @Bean
     public DifiCient difiCient() {
-        return new DifiCient() {
-            @Override
-            public HarLoggetInnRespons harLoggetInnSiste18mnd(Fnr fnr) {
-                HarLoggetInnRespons harLoggetInnRespons = new HarLoggetInnRespons();
-                harLoggetInnRespons.setHarbruktnivaa4(true);
+        return fnr -> {
+            HarLoggetInnRespons harLoggetInnRespons = new HarLoggetInnRespons();
+            harLoggetInnRespons.setHarbruktnivaa4(true);
 //                harLoggetInnRespons.setPersonidentifikator(fnr);
-                return harLoggetInnRespons;
-            }
+            return harLoggetInnRespons;
         };
     }
 

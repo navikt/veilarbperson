@@ -4,7 +4,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.common.abac.Pep;
 import no.nav.common.abac.domain.request.ActionId;
 import no.nav.common.auth.context.AuthContextHolder;
-import no.nav.common.client.aktorregister.AktorregisterClient;
+import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.Fnr;
@@ -26,7 +26,7 @@ public class AuthService {
 
     private final Pep veilarbPep;
 
-    private final AktorregisterClient aktorregisterClient;
+    private final AktorOppslagClient aktorOppslagClient;
 
     private final AuthContextHolder authContextHolder;
 
@@ -36,12 +36,12 @@ public class AuthService {
 
     @Autowired
     public AuthService(Pep veilarbPep,
-                       AktorregisterClient aktorregisterClient,
+                       AktorOppslagClient aktorOppslagClient,
                        AuthContextHolder authContextHolder,
                        EnvironmentProperties environmentProperties,
                        AzureAdOnBehalfOfTokenClient aadOboTokenClient) {
         this.veilarbPep = veilarbPep;
-        this.aktorregisterClient = aktorregisterClient;
+        this.aktorOppslagClient = aktorOppslagClient;
         this.authContextHolder = authContextHolder;
         this.environmentProperties = environmentProperties;
         this.aadOboTokenClient = aadOboTokenClient;
@@ -72,7 +72,7 @@ public class AuthService {
     }
 
     public boolean harLesetilgang(Fnr fnr) {
-        AktorId aktorId = aktorregisterClient.hentAktorId(fnr);
+        AktorId aktorId = aktorOppslagClient.hentAktorId(fnr);
 
         if (erEksternBruker()) {
             return veilarbPep.harTilgangTilPerson(getInnloggetBrukerToken(), ActionId.READ, aktorId);
@@ -129,7 +129,7 @@ public class AuthService {
     }
 
     public AktorId getAktorId(Fnr fnr) {
-        return aktorregisterClient.hentAktorId(fnr);
+        return aktorOppslagClient.hentAktorId(fnr);
     }
 
     public String getInnloggetBrukerToken() {
