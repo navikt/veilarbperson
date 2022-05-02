@@ -1,8 +1,9 @@
 package no.nav.veilarbperson.config;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.common.client.aktoroppslag.AktorregisterHttpClient;
-import no.nav.common.client.aktorregister.AktorregisterClient;
+import no.nav.common.client.aktoroppslag.AktorOppslagClient;
+import no.nav.common.client.aktoroppslag.CachedAktorOppslagClient;
+import no.nav.common.client.aktoroppslag.PdlAktorOppslagClient;
 import no.nav.common.client.norg2.CachedNorg2Client;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
@@ -61,10 +62,17 @@ public class ClientConfig {
 
 
     @Bean
-    public AktorregisterClient aktorregisterClient(EnvironmentProperties properties, SystemUserTokenProvider tokenProvider) {
-        return new AktorregisterHttpClient(
-                properties.getAktorregisterUrl(), APPLICATION_NAME, tokenProvider::getSystemUserToken
-        );
+    public AktorOppslagClient aktorOppslagClient(SystemUserTokenProvider systemUserTokenProvider) {
+        String pdlUrl = isProduction()
+                ? createProdInternalIngressUrl("pdl-api")
+                : createDevInternalIngressUrl("pdl-api-q1");
+
+        no.nav.common.client.pdl.PdlClientImpl pdlClient = new no.nav.common.client.pdl.PdlClientImpl(
+                pdlUrl,
+                systemUserTokenProvider::getSystemUserToken,
+                systemUserTokenProvider::getSystemUserToken);
+
+        return new CachedAktorOppslagClient(new PdlAktorOppslagClient(pdlClient));
     }
 
     @Bean
