@@ -54,7 +54,7 @@ jobs:
 
   deploy-dev:
     name: Deploy application to dev
-    if: github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/Tc-81_Visning_av_sivilstand_i_Personalia' # Endre tilbake etter deploy
     needs: test-build-and-push
     runs-on: ubuntu-latest
     steps:
