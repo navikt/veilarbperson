@@ -151,19 +151,7 @@ public class PersonV2Service {
                 .map(familiemedlem -> mapFamiliemedlem(familiemedlem, bostedsadresse))
                 .collect(Collectors.toList());
     }
-
-//    public HentPerson.Familiemedlem hentRelatertvedSivilstandopplysninger(Fnr relatertFnr) {
-//        String token = systemUserTokenProvider.getSystemUserToken();
-//        PdlAuth auth = new PdlAuth(token, Optional.of(token));
-//        List<HentPerson.Familiemedlem> relatertInfo = pdlClient.hentPersonBolk(List.of(relatertFnr), auth)
-//                .stream()
-//                .filter(medlemInfo -> medlemInfo.getCode().equals("ok"))
-//                .map(HentPerson.PersonFraBolk::getPerson)
-//                .collect(Collectors.toList());
-//
-//        return getFirstElement(relatertInfo);
-//    }
-
+    
     private boolean erSkjermet(Fnr fnr) {
         return (unleashClient.isEnabled(SKAL_BRUKE_SKJERMET_API_FOR_EGEN_ANSATT))
                 ? skjermetClient.hentSkjermet(fnr)
