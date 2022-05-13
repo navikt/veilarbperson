@@ -3,41 +3,42 @@
     "hentPerson": {
       "navn": [
         {
-          "fornavn": "NATURLIG",
-          "mellomnavn": "GLITRENDE",
-          "etternavn": "STAFFELI",
-          "forkortetNavn": "NATURLIG STAFFELI"
+          "fornavn": "DØLL",
+          "mellomnavn": null,
+          "etternavn": "BOLLE",
+          "forkortetNavn": "BOLLE DØLL"
         }
       ],
       "foedsel": [
         {
-          "foedselsdato": "1981-12-13"
+          "foedselsdato": "1981-05-05"
         }
       ],
       "kjoenn": [],
       "folkeregisteridentifikator": [
         {
-          "identifikasjonsnummer": "0123456789",
+          "identifikasjonsnummer": "01234567899",
           "status": "I_BRUK",
           "type": "FNR"
-        },
-        {
-          "identifikasjonsnummer": "0123456781",
-          "status": "IKKE_I_BRUK",
-          "type": "FNR"
         }
       ],
-      "doedsfall": [
-        {
-          "doedsdato": "2020-06-01"
-        }
-      ],
+      "doedsfall": [],
       "sivilstand": [
         {
-          "type": "GIFT",
-          "gyldigFraOgMed": "2020-06-01",
-          "relatertVedSivilstand": "2134567890",
+          "type": "SEPARERT_PARTNER",
+          "gyldigFraOgMed": "2018-02-26",
+          "relatertVedSivilstand": "27057612970",
+          "bekreftelsesdato": null,
+          "folkeregistermetadata": {
+            "ajourholdstidspunkt": "2022-04-22T14:51:20",
+            "gyldighetstidspunkt": "2018-02-26T00:00",
+            "opphoerstidspunkt": null,
+            "kilde": "Dolly",
+            "aarsak": null,
+            "sekvens": null
+          },
           "metadata": {
+            "opplysningsId": "188b37bb-58c5-431c-bf51-32ba904b7ff2",
             "master": "FREG",
             "endringer": [
               {
@@ -47,22 +48,40 @@
                 "systemkilde": "FREG",
                 "kilde": "Dolly"
               }
-            ]
+            ],
+            "historisk": false
+          }
+        },
+        {
+          "type": "GIFT",
+          "gyldigFraOgMed": "2022-03-07",
+          "relatertVedSivilstand": "2134567890",
+          "bekreftelsesdato": null,
+          "folkeregistermetadata": null,
+          "metadata": {
+            "opplysningsId": "82fdf9e9-9b5c-4fd9-9d59-a0b66dd99e6c",
+            "master": "PDL",
+            "endringer": [
+              {
+                "type": "OPPRETT",
+                "registrert": "2022-04-22T15:06:42",
+                "registrertAv": "Z99",
+                "systemkilde": "pdl-web",
+                "kilde": "Bruker selv"
+              },
+              {
+                "type": "KORRIGER",
+                "registrert": "2022-05-12T15:38:50",
+                "registrertAv": "Z99",
+                "systemkilde": "pdl-web",
+                "kilde": "Giftinformasjonssentralen, NORGE"
+              }
+            ],
+            "historisk": false
           }
         }
       ],
-      "forelderBarnRelasjon": [
-        {
-          "minRolleForPerson": "MOR",
-          "relatertPersonsRolle": "BARN",
-          "relatertPersonsIdent": "12345678910"
-        },
-        {
-          "minRolleForPerson": "MOR",
-          "relatertPersonsRolle": "BARN",
-          "relatertPersonsIdent": "12345678911"
-        }
-      ],
+      "forelderBarnRelasjon": [],
       "statsborgerskap": [
         {
           "land": "NORGE",
@@ -70,32 +89,7 @@
           "gyldigTilOgMed": "2010-12-30"
         }
       ],
-      "sikkerhetstiltak": [
-        {
-          "tiltakstype": "FYUS",
-          "beskrivelse": "Fysisk utestengelse",
-          "kontaktperson": {
-            "personident": "Z99",
-            "enhet": "0106"
-          },
-          "gyldigFraOgMed": "2022-05-12",
-          "gyldigTilOgMed": "2022-08-05",
-          "metadata": {
-            "endringer": [
-              {
-                "kilde": "Dolly",
-                "registrert": "2022-05-13T11:36:24",
-                "registrertAv": "srvdolly",
-                "systemkilde": "srvdolly",
-                "type": "OPPRETT"
-              }
-            ],
-            "master": "PDL",
-            "opplysningsId": "efc0a89a-0d75-4f38-9bb9-94dac9388618",
-            "historisk": false
-          }
-        }
-      ],
+      "sikkerhetstiltak": [],
       "bostedsadresse": [
         {
           "gyldigFraOgMed": "2021-01-17T11:58:57",
@@ -107,8 +101,7 @@
             "husbokstav": "A",
             "kommunenummer": "0570",
             "adressenavn": "ARENDALSGATE",
-            "tilleggsnavn": "ARENDAL",
-            "poststed": "OSLO"
+            "tilleggsnavn": "ARENDAL"
           },
           "matrikkeladresse": null,
           "utenlandskAdresse": {
@@ -235,4 +228,3 @@
     }
   }
 }
-
