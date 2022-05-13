@@ -2,9 +2,9 @@ package no.nav.veilarbperson.utils;
 
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPerson;
+import no.nav.veilarbperson.client.person.domain.RelasjonsBosted;
 import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.*;
-import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.client.pdl.domain.Telefon;
 import no.nav.veilarbperson.service.AuthService;
@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Optional.ofNullable;
+import static no.nav.veilarbperson.client.person.domain.RelasjonsBosted.ANNET_BOSTED;
+import static no.nav.veilarbperson.client.person.domain.RelasjonsBosted.SAMME_BOSTED;
+import static no.nav.veilarbperson.client.person.domain.RelasjonsBosted.UKJENT_BOSTED;
 
 public class PersonV2DataMapper {
 
@@ -39,10 +42,9 @@ public class PersonV2DataMapper {
                         .map(HentPerson.Adressebeskyttelse::getGradering)
                         .map(Diskresjonskoder::mapTilTallkode).orElse(null))
                 .setTelefon(mapTelefonNrFraPdl(person.getTelefonnummer()))
-                .setSivilstand(ofNullable(sivilstandMapper(getFirstElement(person.getSivilstand()))).orElse(null))
-                .setBostedsadresse(ofNullable(getFirstElement(person.getBostedsadresse())).orElse(null))
-                .setOppholdsadresse(ofNullable(getFirstElement(person.getOppholdsadresse())).orElse(null))
-                .setKontaktadresser(ofNullable(person.getKontaktadresse()).orElse(null))
+                .setBostedsadresse(getFirstElement(person.getBostedsadresse()))
+                .setOppholdsadresse(getFirstElement(person.getOppholdsadresse()))
+                .setKontaktadresser(person.getKontaktadresse())
                 .setSikkerhetstiltak(ofNullable(getFirstElement(person.getSikkerhetstiltak())).map(HentPerson.Sikkerhetstiltak::getBeskrivelse).orElse(null));
     }
 
@@ -82,75 +84,101 @@ public class PersonV2DataMapper {
                 || (AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND).equals(gradering);
         boolean ukjentGradering = AdressebeskyttelseGradering.UKJENT.equals(gradering);
         boolean harVeilederLeseTilgang = authService.harLesetilgang(medlemFnr);
-        boolean harSammeBosted = harFamiliamedlemSammeBostedSomPerson(getFirstElement(familiemedlem.getBostedsadresse()), personsBostedsadresse);
+        RelasjonsBosted harSammeBosted = erSammeAdresse(getFirstElement(familiemedlem.getBostedsadresse()), personsBostedsadresse);
+        boolean harSammeBostedBool = SAMME_BOSTED.equals(harSammeBosted);
         Familiemedlem medlem = new Familiemedlem().setFodselsnummer(medlemFnr).setFodselsdato(fodselsdato);
 
-        if ((harAdressebeskyttelse || ukjentGradering) && !harVeilederLeseTilgang) {
-            return medlem
-                    .setKjonn(kjonn)
-                    .setGradering(gradering);
-        } else if (erEgenAnsatt && !harVeilederLeseTilgang) {
-            return medlem
-                    .setKjonn(kjonn)
-                    .setErEgenAnsatt(true)
-                    .setHarSammeBosted(harSammeBosted);
-        } else {
+        if (harVeilederLeseTilgang) {
             return medlem
                     .setKjonn(kjonn)
                     .setGradering(gradering)
                     .setErEgenAnsatt(erEgenAnsatt)
                     .setHarVeilederTilgang(harVeilederLeseTilgang)
-                    .setHarSammeBosted(harSammeBosted)
+                    .setHarSammeBosted(harSammeBostedBool)
+                    .setRelasjonsBosted(harSammeBosted)
                     .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
-                    .setMellomnavn(ofNullable(navn).map(HentPerson.Navn::getMellomnavn).orElse(null))
-                    .setEtternavn(ofNullable(navn).map(HentPerson.Navn::getEtternavn).orElse(null))
-                    .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null))
-                    .setKjonn(ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
                     .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));
+        } else {
+            if ((harAdressebeskyttelse || ukjentGradering)) {
+                return medlem
+                        .setKjonn(kjonn)
+                        .setGradering(gradering);
+            } else if (erEgenAnsatt) {
+                return medlem
+                        .setKjonn(kjonn)
+                        .setErEgenAnsatt(erEgenAnsatt)
+                        .setHarSammeBosted(harSammeBostedBool)
+                        .setRelasjonsBosted(harSammeBosted);
+            } else {
+                return medlem
+                        .setKjonn(kjonn)
+                        .setHarVeilederTilgang(harVeilederLeseTilgang)
+                        .setHarSammeBosted(harSammeBostedBool)
+                        .setRelasjonsBosted(harSammeBosted)
+                        .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
+                        .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));
+            }
         }
     }
 
     /* Sammeligner persons bostesadresse med familiemedlems bostedsadresse for å se om de har samme bosted */
-    public static boolean harFamiliamedlemSammeBostedSomPerson(Bostedsadresse medlemsBostedsAdresse, Bostedsadresse personsBostedsAdresse) {
-        Bostedsadresse.Vegadresse medlemsVegadresse = ofNullable(medlemsBostedsAdresse).map(Bostedsadresse::getVegadresse).orElse(null);
-        Bostedsadresse.Matrikkeladresse medlemsMatrikkeladresse = ofNullable(medlemsBostedsAdresse).map(Bostedsadresse::getMatrikkeladresse).orElse(null);
+    public static RelasjonsBosted erSammeAdresse(Bostedsadresse adresse1,
+                                         Bostedsadresse adresse2) {
+        Bostedsadresse.Vegadresse medlemsVegadresse = ofNullable(adresse1)
+                .map(Bostedsadresse::getVegadresse).orElse(null);
+        Bostedsadresse.Matrikkeladresse medlemsMatrikkeladresse = ofNullable(adresse1)
+                .map(Bostedsadresse::getMatrikkeladresse).orElse(null);
 
-        Bostedsadresse.Vegadresse personsVegadresse = ofNullable(personsBostedsAdresse).map(Bostedsadresse::getVegadresse).orElse(null);
-        Bostedsadresse.Matrikkeladresse personsMatrikkeladresse = ofNullable(personsBostedsAdresse).map(Bostedsadresse::getMatrikkeladresse).orElse(null);
+        Bostedsadresse.Vegadresse personsVegadresse = ofNullable(adresse2)
+                .map(Bostedsadresse::getVegadresse).orElse(null);
+        Bostedsadresse.Matrikkeladresse personsMatrikkeladresse = ofNullable(adresse2)
+                .map(Bostedsadresse::getMatrikkeladresse).orElse(null);
 
         if (personsVegadresse != null && medlemsVegadresse != null) {
-            return Objects.equals(personsVegadresse, medlemsVegadresse);
+            if(Objects.equals(personsVegadresse, medlemsVegadresse)) {
+                return SAMME_BOSTED;
+            } else {
+                return ANNET_BOSTED;
+            }
         } else if (personsMatrikkeladresse != null && medlemsMatrikkeladresse != null) {
-            return Objects.equals(personsMatrikkeladresse, medlemsMatrikkeladresse);
+            if (Objects.equals(personsMatrikkeladresse, medlemsMatrikkeladresse)){
+                return SAMME_BOSTED;
+            } else {
+                return ANNET_BOSTED;
+            }
         }
 
-        return false;
+        return UKJENT_BOSTED;
     }
 
-    public static Sivilstand sivilstandMapper(HentPerson.Sivilstand sivilstand) {
-        return (sivilstand != null)
-               ? new Sivilstand()
-                    .setSivilstand(sivilstand.getType())
-                    .setFraDato(sivilstand.getGyldigFraOgMed())
-               : null;
+    public static Sivilstand sivilstandMapper(HentPerson.Sivilstand sivilstand, Optional<Familiemedlem> relatertPerson) {
+        Optional<HentPerson.Metadata.Endringer> endring = finnForsteEndring(sivilstand.getMetadata().getEndringer());
+        LocalDateTime opprettetDato = endring.map(HentPerson.Metadata.Endringer::getRegistrert).orElse(null);
+
+        return new Sivilstand()
+                .setSivilstand(sivilstand.getType())
+                .setFraDato(sivilstand.getGyldigFraOgMed())
+                .setSkjermet(relatertPerson.map(Familiemedlem::getErEgenAnsatt).orElse(null))
+                .setGradering(relatertPerson.map(Familiemedlem::getGradering).orElse(null))
+                .setRelasjonsBosted(relatertPerson.map(Familiemedlem::getRelasjonsBosted).orElse(null))
+                .setMaster(sivilstand.getMetadata().getMaster())
+                .setRegistrertDato(opprettetDato);
     }
 
     public static List<Telefon> mapTelefonNrFraPdl(List<HentPerson.Telefonnummer> telefonnummer) {
         return (!telefonnummer.isEmpty())
                 ? telefonnummer.stream()
-                    .map(PersonV2DataMapper::telefonNummerMapper)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList())
+                .map(PersonV2DataMapper::telefonNummerMapper)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList())
                 : new ArrayList<>();
     }
 
-    public static HentPerson.Metadata.Endringer filtrerGjelendeEndringsInfo(List<HentPerson.Metadata.Endringer> endringer) {
-        return ofNullable(endringer)
+    public static Optional<HentPerson.Metadata.Endringer> finnForsteEndring(List<HentPerson.Metadata.Endringer> endringer) {
+        return endringer
                 .stream()
-                .flatMap(Collection::stream)
                 .filter(endring -> endring.getType().equals("OPPRETT"))
-                .findAny()
-                .orElse(null);
+                .findAny();
     }
 
     /* Slår sammen landkode og nummer og så lager et telefonnummer */
@@ -158,19 +186,19 @@ public class PersonV2DataMapper {
         String telefonnr = telefonnummer.getNummer();
         String master = telefonnummer.getMetadata().getMaster();
         String landkode = ofNullable(telefonnummer.getLandskode()).orElse("");
-        HentPerson.Metadata.Endringer endringsInfo = filtrerGjelendeEndringsInfo(telefonnummer.getMetadata().getEndringer());
-        String registrert = ofNullable(endringsInfo.getRegistrert())
+        Optional<HentPerson.Metadata.Endringer> endring = finnForsteEndring(telefonnummer.getMetadata().getEndringer());
+        String registrert = endring.map(HentPerson.Metadata.Endringer::getRegistrert)
                 .map(dato -> LocalDateTime.parse(dato.toString(), ISO_LOCAL_DATE_TIME))
                 .map(PersonV2DataMapper::formateDateFromLocalDateTime)
                 .orElse(null);
 
-        return (telefonnr!=null)
-                 ? new Telefon()
-                        .setPrioritet(telefonnummer.getPrioritet())
-                        .setTelefonNr(landkode + telefonnr)
-                        .setRegistrertDato(registrert)
-                        .setMaster(master)
-                 : null;
+        return (telefonnr != null)
+                ? new Telefon()
+                .setPrioritet(telefonnummer.getPrioritet())
+                .setTelefonNr(landkode + telefonnr)
+                .setRegistrertDato(registrert)
+                .setMaster(master)
+                : null;
     }
 
     public static String formateDateFromLocalDateTime(LocalDateTime localDateTime) {
