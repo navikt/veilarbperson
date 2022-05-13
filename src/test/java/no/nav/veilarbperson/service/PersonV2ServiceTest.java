@@ -2,12 +2,10 @@ package no.nav.veilarbperson.service;
 
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
-import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlAuth;
@@ -15,7 +13,6 @@ import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.PersonV2Data;
@@ -47,11 +44,8 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private DkifClient dkifClient = mock(DkifClient.class);
     private PersonClient personClient = mock(PersonClient.class);
     private PdlClient pdlClient = mock(PdlClient.class);
-    private EgenAnsattClient egenAnsattClient = mock(EgenAnsattClient.class);
     private KodeverkService kodeverkService = mock(KodeverkService.class);
     private SkjermetClient skjermetClient = mock(SkjermetClient.class);
-    private VeilarbportefoljeClient veilarbportefoljeClient = mock(VeilarbportefoljeClient.class);
-    private UnleashClient unleashClient = mock(UnleashClient.class);
     private AuthService authService = mock(AuthService.class);
     private SystemUserTokenProvider systemUserTokenProvider = mock(SystemUserTokenProvider.class);
     private PersonV2Service personV2Service;
@@ -67,8 +61,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
-        when(egenAnsattClient.erEgenAnsatt(any())).thenReturn(false);
-        when(unleashClient.isEnabled(any())).thenReturn(false);
         when(pdlClient.hentPersonBolk(any(), any())).thenReturn(hentPersonBolk(testFnrsTilBarna));
         when(pdlClient.hentPersonNavn(any(), any())).thenReturn(hentPersonNavn(FNR));
         when(kodeverkService.getPoststedForPostnummer(any())).thenReturn("POSTSTED");
@@ -86,9 +78,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 dkifClient,
                 norg2Client,
                 personClient,
-                egenAnsattClient,
-                veilarbportefoljeClient,
-                unleashClient,
                 skjermetClient,
                 kodeverkService,
                 systemUserTokenProvider);
@@ -270,7 +259,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         person = hentPerson(FNR);
 
         //flett partner info når veileder har ikke lese tilgang
-        when(egenAnsattClient.erEgenAnsatt(Fnr.of("2134567890"))).thenReturn(true);
+        when(skjermetClient.hentSkjermet(Fnr.of("2134567890"))).thenReturn(true);
         when(authService.harLesetilgang(Fnr.of("2134567890"))).thenReturn(false);
         personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
 
@@ -281,7 +270,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals(LocalDate.of(1982,12,14), partner.getFodselsdato());
 
         //flett partner info når veileder har lese tilgang
-        when(egenAnsattClient.erEgenAnsatt(Fnr.of("2134567890"))).thenReturn(true);
+        when(skjermetClient.hentSkjermet(Fnr.of("2134567890"))).thenReturn(true);
         when(authService.harLesetilgang(Fnr.of("2134567890"))).thenReturn(true);
         personV2Service.flettPartnerOgBarnInformasjon(person.getSivilstand(), person.getForelderBarnRelasjon(), personV2Data);
 
@@ -294,7 +283,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void flettPartnerInfoSomErEgenAnsattTestMedNyttAPI_UtenLeseTilgang() {
-        when(unleashClient.isEnabled(any())).thenReturn(true);
         PersonV2Data personV2Data = getPersonV2Data();
         person = hentPerson(FNR);
 
@@ -314,7 +302,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void flettPartnerInfoSomErEgenAnsattTestMedNyttAPI_UtenLeseTilgang_SomErEgenAnsatt() {
         Fnr partnersFnr = Fnr.of("2134567890");
-        when(unleashClient.isEnabled(any())).thenReturn(true);
         PersonV2Data personV2Data = getPersonV2Data();
         person = hentPerson(FNR);
 
@@ -335,7 +322,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void flettPartnerInfoTestMedNyttAPI_MedLeseTilgang() {
-        when(unleashClient.isEnabled(any())).thenReturn(true);
         PersonV2Data personV2Data = getPersonV2Data();
         person = hentPerson(FNR);
 
