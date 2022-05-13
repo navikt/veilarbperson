@@ -9,11 +9,11 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Sivilstand {
+public class TpsSivilstand {
     String sivilstand;
     String fraDato;
 
-    public Sivilstand copy() {
-        return new Sivilstand(sivilstand, fraDato);
+    public TpsSivilstand copy() {
+        return new TpsSivilstand(sivilstand, fraDato);
     }
 }
