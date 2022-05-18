@@ -74,7 +74,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(systemUserTokenProvider.getSystemUserToken()).thenReturn("SYSTEM_USER_TOKEN");
         when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
-//        when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);
         when(personClient.hentPerson(FNR)).thenReturn(new TpsPerson().setBarn(Collections.emptyList()));
 
         personV2Service = new PersonV2Service(
@@ -122,10 +121,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         return pdlClient.hentPerson(fnr, PDL_AUTH);
     }
 
-//    public HentPerson.Person hentPersonMedToSivilstander(Fnr fnr) {
-//        configurePdlResponse("pdl-hentPersonMedToSivilstander-response.json", fnr.get());
-//        return pdlClient.hentPerson(fnr, PDL_AUTH);
-//    }
 
     public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr fnr) {
         configurePdlResponse("pdl-hentTilrettelagtKommunikasjon-response.json", fnr.get());
@@ -271,7 +266,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         PersonV2Data personV2Data = new PersonV2Data();
         person = hentPerson(FNR);
 
-        // flett sivilstandinfo når veileder ikke har lesetilgang
+        // flett sivilstandinfo når relatert person ikke har gradering/adressebeskyttelse
         when(egenAnsattClient.erEgenAnsatt(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
@@ -281,7 +276,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertNotNull(sivilstand.getRelasjonsBosted());
         assertNull(sivilstand.getGradering());
 
-        // flett partnerinfo når veileder har lesetilgang
+        // flett partnerinfo når relatert person har gradering/adressebeskyttelse
         when(egenAnsattClient.erEgenAnsatt(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         givenThat(
