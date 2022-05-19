@@ -28,7 +28,7 @@ jobs:
   test-build-and-push:
     name: Test, build and push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/Tc-81_Visning_av_sivilstand_i_Personalia' || github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master'
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -54,7 +54,7 @@ jobs:
 
   deploy-dev:
     name: Deploy application to dev
-    if: github.ref == 'refs/heads/Tc-81_Visning_av_sivilstand_i_Personalia' # Endre tilbake etter deploy
+    if: github.ref == 'refs/heads/dev'
     needs: test-build-and-push
     runs-on: ubuntu-latest
     steps:
