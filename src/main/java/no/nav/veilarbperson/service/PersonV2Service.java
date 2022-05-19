@@ -143,15 +143,14 @@ public class PersonV2Service {
         PdlAuth auth = new PdlAuth(token, Optional.of(token));
         List<HentPerson.PersonFraBolk> familiemedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr, auth);
 
-        return ofNullable(familiemedlemInfo)
+        return familiemedlemInfo
                 .stream()
-                .flatMap(Collection::stream)
                 .filter(medlemInfo -> medlemInfo.getCode().equals("ok"))
                 .map(HentPerson.PersonFraBolk::getPerson)
                 .map(familiemedlem -> mapFamiliemedlem(familiemedlem, bostedsadresse))
                 .collect(Collectors.toList());
     }
-    
+
     private boolean erSkjermet(Fnr fnr) {
         return (unleashClient.isEnabled(SKAL_BRUKE_SKJERMET_API_FOR_EGEN_ANSATT))
                 ? skjermetClient.hentSkjermet(fnr)

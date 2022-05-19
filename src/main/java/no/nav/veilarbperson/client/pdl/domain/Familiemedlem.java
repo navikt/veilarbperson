@@ -20,7 +20,7 @@ public class Familiemedlem {
     LocalDate dodsdato;
     Boolean erEgenAnsatt;
     boolean harVeilederTilgang;
-    AdressebeskyttelseGradering gradering;       //diskresjonskode
+    String gradering;       //diskresjonskode
     boolean harSammeBosted;  // Kan fjernes når List<Familiemedlem> barn er endret til å bruke RelasjonsBosted;
     RelasjonsBosted relasjonsBosted;
 }

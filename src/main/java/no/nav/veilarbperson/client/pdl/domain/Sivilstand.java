@@ -13,7 +13,7 @@ public class Sivilstand {
     String sivilstand;
     LocalDate fraDato;
     Boolean skjermet;
-    AdressebeskyttelseGradering gradering;       //diskresjonskode
+    String gradering;       //diskresjonskode
     RelasjonsBosted relasjonsBosted;
     String master;
     LocalDateTime registrertDato;

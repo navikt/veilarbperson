@@ -73,25 +73,28 @@ public class PersonV2DataMapper {
                                                     AuthService authService) {
         HentPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
         Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
-        String kjonn = ofNullable(getFirstElement(familiemedlem.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null);
-        LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null);
-        AdressebeskyttelseGradering gradering = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
+        String kjonn = ofNullable(getFirstElement(familiemedlem.getKjoenn()))
+                .map(HentPerson.Kjoenn::getKjoenn).orElse(null);
+        LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedsel()))
+                .map(HentPerson.Foedsel::getFoedselsdato).orElse(null);
+        String graderingskode = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
                 .map(HentPerson.Adressebeskyttelse::getGradering)
-                .map(AdressebeskyttelseGradering::mapGradering)
-                .orElse(AdressebeskyttelseGradering.UGRADERT);
+                .orElse(null);
+        AdressebeskyttelseGradering gradering = AdressebeskyttelseGradering.mapGradering(graderingskode);
         boolean harAdressebeskyttelse = (AdressebeskyttelseGradering.FORTROLIG).equals(gradering)
                 || (AdressebeskyttelseGradering.STRENGT_FORTROLIG).equals(gradering)
                 || (AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND).equals(gradering);
         boolean ukjentGradering = AdressebeskyttelseGradering.UKJENT.equals(gradering);
         boolean harVeilederLeseTilgang = authService.harLesetilgang(medlemFnr);
-        RelasjonsBosted harSammeBosted = erSammeAdresse(getFirstElement(familiemedlem.getBostedsadresse()), personsBostedsadresse);
+        RelasjonsBosted harSammeBosted = erSammeAdresse(getFirstElement(familiemedlem.getBostedsadresse()),
+                personsBostedsadresse);
         boolean harSammeBostedBool = SAMME_BOSTED.equals(harSammeBosted);
         Familiemedlem medlem = new Familiemedlem().setFodselsnummer(medlemFnr).setFodselsdato(fodselsdato);
 
         if (harVeilederLeseTilgang) {
             return medlem
                     .setKjonn(kjonn)
-                    .setGradering(gradering)
+                    .setGradering(graderingskode)
                     .setErEgenAnsatt(erEgenAnsatt)
                     .setHarVeilederTilgang(harVeilederLeseTilgang)
                     .setHarSammeBosted(harSammeBostedBool)
@@ -102,7 +105,7 @@ public class PersonV2DataMapper {
             if ((harAdressebeskyttelse || ukjentGradering)) {
                 return medlem
                         .setKjonn(kjonn)
-                        .setGradering(gradering);
+                        .setGradering(graderingskode);
             } else if (erEgenAnsatt) {
                 return medlem
                         .setKjonn(kjonn)
@@ -123,7 +126,7 @@ public class PersonV2DataMapper {
 
     /* Sammeligner persons bostesadresse med familiemedlems bostedsadresse for å se om de har samme bosted */
     public static RelasjonsBosted erSammeAdresse(Bostedsadresse adresse1,
-                                         Bostedsadresse adresse2) {
+                                                 Bostedsadresse adresse2) {
         Bostedsadresse.Vegadresse medlemsVegadresse = ofNullable(adresse1)
                 .map(Bostedsadresse::getVegadresse).orElse(null);
         Bostedsadresse.Matrikkeladresse medlemsMatrikkeladresse = ofNullable(adresse1)
@@ -135,13 +138,13 @@ public class PersonV2DataMapper {
                 .map(Bostedsadresse::getMatrikkeladresse).orElse(null);
 
         if (personsVegadresse != null && medlemsVegadresse != null) {
-            if(Objects.equals(personsVegadresse, medlemsVegadresse)) {
+            if (Objects.equals(personsVegadresse, medlemsVegadresse)) {
                 return SAMME_BOSTED;
             } else {
                 return ANNET_BOSTED;
             }
         } else if (personsMatrikkeladresse != null && medlemsMatrikkeladresse != null) {
-            if (Objects.equals(personsMatrikkeladresse, medlemsMatrikkeladresse)){
+            if (Objects.equals(personsMatrikkeladresse, medlemsMatrikkeladresse)) {
                 return SAMME_BOSTED;
             } else {
                 return ANNET_BOSTED;
