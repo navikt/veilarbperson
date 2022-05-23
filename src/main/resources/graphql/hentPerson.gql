@@ -27,6 +27,16 @@ query($ident: ID!, $historikk: Boolean!) {
             type
             gyldigFraOgMed
             relatertVedSivilstand
+            metadata {
+                master
+                endringer {
+                    type,
+                    registrert,
+                    registrertAv,
+                    systemkilde,
+                    kilde
+                }
+            }
         }
         forelderBarnRelasjon {
             minRolleForPerson

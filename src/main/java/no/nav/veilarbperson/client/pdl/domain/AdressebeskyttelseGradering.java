@@ -8,17 +8,14 @@ public enum AdressebeskyttelseGradering {
     STRENGT_FORTROLIG_UTLAND;
 
     public static AdressebeskyttelseGradering mapGradering(String gradering) {
-        switch (gradering) {
-            case "UGRADERT":
-                return UGRADERT;
-            case "FORTROLIG":
-                return FORTROLIG;
-            case "STRENGT_FORTROLIG":
-                return STRENGT_FORTROLIG;
-            case "STRENGT_FORTROLIG_UTLAND":
-                return STRENGT_FORTROLIG_UTLAND;
-            default:
+        if (gradering == null) {
+            return UGRADERT;
+        } else {
+            try {
+                return AdressebeskyttelseGradering.valueOf(gradering);
+            } catch (IllegalArgumentException e) {
                 return UKJENT;
+            }
         }
     }
 }

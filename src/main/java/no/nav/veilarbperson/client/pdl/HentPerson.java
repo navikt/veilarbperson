@@ -136,7 +136,9 @@ public class HentPerson {
         String type;
         LocalDate gyldigFraOgMed;
         String relatertVedSivilstand;
+        private Metadata metadata;
     }
+
 
     @Data
     public static class Sikkerhetstiltak {

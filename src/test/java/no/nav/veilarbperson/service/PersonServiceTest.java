@@ -10,7 +10,7 @@ import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.person.domain.Sivilstand;
+import no.nav.veilarbperson.client.person.domain.TpsSivilstand;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.PersonData;
@@ -78,7 +78,7 @@ public class PersonServiceTest {
     public void personSkalInneholdeSivilstandDersomDetEksisterer() {
         final TpsPerson forventetPerson = lagPerson();
         final String kodeverksverdi = "GIFT";
-        forventetPerson.setSivilstand(new Sivilstand().setSivilstand(kodeverksverdi));
+        forventetPerson.setSivilstand(new TpsSivilstand().setSivilstand(kodeverksverdi));
         when(personClient.hentPerson(any())).thenReturn(forventetPerson);
         when(kodeverkService.getBeskrivelseForSivilstand(anyString())).thenReturn(kodeverksverdi);
 
@@ -90,7 +90,7 @@ public class PersonServiceTest {
 
     private TpsPerson lagPerson() {
         final TpsPerson person = new TpsPerson();
-        person.setSivilstand(new Sivilstand());
+        person.setSivilstand(new TpsSivilstand());
         person.setGeografiskTilknytning("");
         return person;
     }

@@ -23,7 +23,7 @@ public class TpsPerson  {
     String kontonummer;
     String geografiskTilknytning;
     String statsborgerskap;
-    Sivilstand sivilstand;
+    TpsSivilstand sivilstand;
     Familiemedlem partner;
     Bostedsadresse bostedsadresse;
     MidlertidigAdresseNorge midlertidigAdresseNorge;

@@ -32,7 +32,7 @@ public class PersonData {
     String epost;
     String statsborgerskap;
     String sikkerhetstiltak;
-    Sivilstand sivilstand;
+    TpsSivilstand sivilstand;
     Familiemedlem partner;
     Bostedsadresse bostedsadresse;
     MidlertidigAdresseNorge midlertidigAdresseNorge;
