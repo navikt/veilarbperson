@@ -19,8 +19,11 @@ import okhttp3.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static no.nav.common.rest.client.RestUtils.MEDIA_TYPE_JSON;
 import static no.nav.common.utils.UrlUtils.joinPaths;
 import static no.nav.veilarbperson.utils.RestClientUtils.createBearerToken;
@@ -78,7 +81,9 @@ public class PdlClientImpl implements PdlClient {
     @Override
     public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, PdlAuth auth) {
         GqlRequest request = new GqlRequest<>(hentPersonBolkQuery, new GqlVariables.HentPersonBolk(personIdenter, false));
-        return graphqlRequest(request, auth, HentPerson.class).hentPersonBolk;
+        return (!personIdenter.isEmpty())
+                ? graphqlRequest(request, auth, HentPerson.class).hentPersonBolk
+                : emptyList();
     }
 
     @Override

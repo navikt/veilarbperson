@@ -3,7 +3,6 @@ package no.nav.veilarbperson.utils.mappers;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlAuth;
-import no.nav.veilarbperson.client.pdl.PdlClientImpl;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
@@ -26,8 +25,8 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
     private static Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
 
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
-        PdlClientImpl pdlClient = configurPdlClient("pdl-hentVergeOgFullmakt-response.json");
-        return pdlClient.hentVergeOgFullmakt(fnr, new PdlAuth("USER_TOKEN", Optional.of("SYSTEM_TOKEN")));
+        configurePdlResponse("pdl-hentVergeOgFullmakt-response.json");
+        return getPdlClient().hentVergeOgFullmakt(fnr, new PdlAuth("USER_TOKEN", Optional.of("SYSTEM_TOKEN")));
     }
 
     @Test

@@ -32,8 +32,7 @@ public class PersonV2Data {
     String statsborgerskap;
     String sikkerhetstiltak;
     List<Familiemedlem> barn;
-    Sivilstand sivilstand;
-    Familiemedlem partner;
+    List<Sivilstand> sivilstandliste;
     Bostedsadresse bostedsadresse;
     Oppholdsadresse oppholdsadresse;
     List<Kontaktadresse> kontaktadresser;

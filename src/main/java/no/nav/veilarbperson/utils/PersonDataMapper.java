@@ -3,7 +3,7 @@ package no.nav.veilarbperson.utils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.veilarbperson.client.person.domain.Bostedsadresse;
-import no.nav.veilarbperson.client.person.domain.Sivilstand;
+import no.nav.veilarbperson.client.person.domain.TpsSivilstand;
 import no.nav.veilarbperson.client.person.domain.*;
 import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.domain.PersonNavn;
@@ -28,7 +28,7 @@ public class PersonDataMapper {
                 ? person.getBarn().stream().map(Familiemedlem::copy).collect(Collectors.toList())
                 : Collections.emptyList();
 
-        Sivilstand sivilstandCopy = person.getSivilstand() != null
+        TpsSivilstand sivilstandCopy = person.getSivilstand() != null
                 ? person.getSivilstand().copy()
                 : null;
 
@@ -350,9 +350,9 @@ public class PersonDataMapper {
                 .orElse(null);
     }
 
-    private static Sivilstand kanskjeSivilstand(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
+    private static TpsSivilstand kanskjeSivilstand(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person person) {
         return ofNullable(person.getSivilstand())
-                .map(wsSivilstand -> new Sivilstand(
+                .map(wsSivilstand -> new TpsSivilstand(
                         wsSivilstand.getSivilstand().getValue(),
                         datoTilString(wsSivilstand.getFomGyldighetsperiode().toGregorianCalendar()))
                 )
