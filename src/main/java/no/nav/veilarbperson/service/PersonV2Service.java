@@ -204,15 +204,31 @@ public class PersonV2Service {
         personV2Data.setEgenAnsatt(personinfo.egenAnsatt);
     }
 
-    private void flettGeografiskEnhet(Fnr fodselsnummer, PdlAuth auth, PersonV2Data personV2Data) {
-        String geografiskTilknytning = ofNullable(pdlClient.hentGeografiskTilknytning(fodselsnummer, auth))
-                .map(HentPerson.GeografiskTilknytning::getGtKommune).orElse(null);
+    private String hentGeografiskTilknytning(Fnr fnr, PdlAuth auth) {
+        HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(fnr, auth);
+
+        switch (geografiskTilknytning.getGtType()) {
+            case "KOMMUNE":
+                return geografiskTilknytning.getGtKommune();
+            case"BYDEL":
+                return geografiskTilknytning.getGtBydel();
+            case "UTLAND":
+                return geografiskTilknytning.getGtLand();
+            default:  // type == UDEFINERT
+                return null;
+        }
+    }
+
+    private void flettGeografiskEnhet(Fnr fnr, PdlAuth auth, PersonV2Data personV2Data) {
+        String geografiskTilknytning = hentGeografiskTilknytning(fnr, auth);
 
         personV2Data.setGeografiskTilknytning(geografiskTilknytning);
 
+        // Sjekk at geografiskTilknytning er satt og at det ikke er en tre-bokstavs landkode (ISO 3166 Alpha-3, for utenlandske brukere så blir landskode brukt istedenfor nummer)
         if (geografiskTilknytning != null && geografiskTilknytning.matches("\\d+")) {
             try {
-                Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning));
+                Norg2Client.Diskresjonskode diskresjonskode = ofNullable(personV2Data.getDiskresjonskode()).map(Diskresjonskode::fraTall).map(disk -> disk.norgKode).orElse(null);
+                Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning, diskresjonskode, personV2Data.isEgenAnsatt()));
                 personV2Data.setGeografiskEnhet(enhet);
             } catch (Exception e) {
                 log.error("Klarte ikke å flette inn geografisk enhet", e);

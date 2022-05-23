@@ -26,10 +26,10 @@ public class PdlClientTestConfig {
         return new PdlClientImpl(getPdlApiUrl());
     }
 
-    public void configurePdlResponse(String responseFile, String... personer) {
+    public void configurePdlResponse(String responseFile, String... requestinnhold) {
         String hentPersonResponseJson = TestUtils.readTestResourceFile(responseFile);
 
-        StringValuePattern pattern = Arrays.stream(personer).map(WireMock::containing).reduce(WireMock::or).orElse(
+        StringValuePattern pattern = Arrays.stream(requestinnhold).map(WireMock::containing).reduce(WireMock::or).orElse(
                 new AnythingPattern());
 
         givenThat(post(WireMock.urlEqualTo("/graphql"))
