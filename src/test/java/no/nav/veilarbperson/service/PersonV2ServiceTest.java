@@ -53,11 +53,8 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private DkifClient dkifClient = mock(DkifClient.class);
     private PersonClient personClient = mock(PersonClient.class);
     private PdlClient pdlClient;
-    private EgenAnsattClient egenAnsattClient = mock(EgenAnsattClient.class);
     private KodeverkService kodeverkService = mock(KodeverkService.class);
     private SkjermetClient skjermetClient = mock(SkjermetClient.class);
-    private VeilarbportefoljeClient veilarbportefoljeClient = mock(VeilarbportefoljeClient.class);
-    private UnleashClient unleashClient = mock(UnleashClient.class);
     private AuthService authService = mock(AuthService.class);
     private SystemUserTokenProvider systemUserTokenProvider = mock(SystemUserTokenProvider.class);
     private PersonV2Service personV2Service;
@@ -83,9 +80,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 dkifClient,
                 norg2Client,
                 personClient,
-                egenAnsattClient,
-                veilarbportefoljeClient,
-                unleashClient,
                 skjermetClient,
                 kodeverkService,
                 systemUserTokenProvider);
@@ -269,7 +263,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         person = hentPerson(FNR);
 
         // flett sivilstandinfo når relatert person ikke har gradering/adressebeskyttelse
-        when(egenAnsattClient.erEgenAnsatt(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
+        when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
 
@@ -279,7 +273,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertNull(sivilstand.getGradering());
 
         // flett partnerinfo når relatert person har gradering/adressebeskyttelse
-        when(egenAnsattClient.erEgenAnsatt(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
+        when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         givenThat(
                 post(WireMock.urlEqualTo("/graphql"))
@@ -301,7 +295,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void flettPartnerInfoSomErEgenAnsattTestMedNyttSkjermetAPI_UtenLeseTilgang_SomIkkeErSkjermet() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
-        when(unleashClient.isEnabled(any())).thenReturn(true);
         PersonV2Data personV2Data = new PersonV2Data();
         person = hentPerson(FNR);
 
@@ -318,7 +311,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void flettPartnerInfoSomErEgenAnsattTestMedNyttSkjermetAPI_UtenLeseTilgang_SomErSkjermet() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
-        when(unleashClient.isEnabled(any())).thenReturn(true);
         person = hentPerson(FNR);
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(person);
 
@@ -335,7 +327,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void flettSivilstandinfoTest_MedLesetilgang() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
-        when(unleashClient.isEnabled(any())).thenReturn(true);
         PersonV2Data personV2Data = new PersonV2Data();
         person = hentPerson(FNR);
 

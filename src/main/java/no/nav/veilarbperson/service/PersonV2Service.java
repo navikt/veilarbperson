@@ -2,21 +2,17 @@ package no.nav.veilarbperson.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.common.utils.EnvironmentUtils;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
-import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
-import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.HentPerson;
+import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
-import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.DownstreamApi;
 import no.nav.veilarbperson.utils.PersonDataMapper;
@@ -27,34 +23,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.*;
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.erSammeAdresse;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.sivilstandMapper;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
 
 @Slf4j
 @Service
 public class PersonV2Service {
-    private static final String SKAL_BRUKE_SKJERMET_API_FOR_EGEN_ANSATT = "veilarbperson.skjermet_api.enabled";
-
     private final PdlClient pdlClient;
     private final AuthService authService;
     private final DkifClient dkifClient;
     private final Norg2Client norg2Client;
     private final PersonClient personClient;
-    private final EgenAnsattClient egenAnsattClient;
-    private final VeilarbportefoljeClient veilarbportefoljeClient;
-    private final UnleashClient unleashClient;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
     private final SystemUserTokenProvider systemUserTokenProvider;
@@ -65,9 +52,6 @@ public class PersonV2Service {
                            DkifClient dkifClient,
                            Norg2Client norg2Client,
                            PersonClient personClient,
-                           EgenAnsattClient egenAnsattClient,
-                           VeilarbportefoljeClient veilarbportefoljeClient,
-                           UnleashClient unleashClient,
                            SkjermetClient skjermetClient,
                            KodeverkService kodeverkService,
                            SystemUserTokenProvider systemUserTokenProvider) {
@@ -76,9 +60,6 @@ public class PersonV2Service {
         this.dkifClient = dkifClient;
         this.norg2Client = norg2Client;
         this.personClient = personClient;
-        this.egenAnsattClient = egenAnsattClient;
-        this.veilarbportefoljeClient = veilarbportefoljeClient;
-        this.unleashClient = unleashClient;
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
         this.systemUserTokenProvider = systemUserTokenProvider;
@@ -113,17 +94,7 @@ public class PersonV2Service {
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
         flettInnKontonummer(personV2Data);
 
-        if (unleashClient.isEnabled(SKAL_BRUKE_SKJERMET_API_FOR_EGEN_ANSATT)) {
-            flettInnEgenAnsatt(personV2Data, fodselsnummer);
-        } else {
-            try {
-                flettPersoninfoFraPortefolje(personV2Data, fodselsnummer);
-            } catch (Exception e) {
-                log.warn("Bruker fallbackløsning for egenAnsatt-sjekk", e);
-                personV2Data.setEgenAnsatt(egenAnsattClient.erEgenAnsatt(fodselsnummer));
-            }
-        }
-
+        flettInnEgenAnsatt(personV2Data, fodselsnummer);
         flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
         flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data);
         flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
@@ -152,9 +123,7 @@ public class PersonV2Service {
     }
 
     private boolean erSkjermet(Fnr fnr) {
-        return (unleashClient.isEnabled(SKAL_BRUKE_SKJERMET_API_FOR_EGEN_ANSATT))
-                ? skjermetClient.hentSkjermet(fnr)
-                : egenAnsattClient.erEgenAnsatt(fnr);
+        return skjermetClient.hentSkjermet(fnr);
     }
 
     public Familiemedlem mapFamiliemedlem(HentPerson.Familiemedlem familiemedlem, Bostedsadresse bostedsadresse) {
@@ -199,18 +168,13 @@ public class PersonV2Service {
         personV2Data.setEgenAnsatt(egenAnsatt);
     }
 
-    private void flettPersoninfoFraPortefolje(PersonV2Data personV2Data, Fnr fodselsnummer) {
-        Personinfo personinfo = veilarbportefoljeClient.hentPersonInfo(fodselsnummer);
-        personV2Data.setEgenAnsatt(personinfo.egenAnsatt);
-    }
-
     private String hentGeografiskTilknytning(Fnr fnr, PdlAuth auth) {
         HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(fnr, auth);
 
         if (geografiskTilknytning == null) {
             return null;
         }
-        
+
         switch (geografiskTilknytning.getGtType()) {
             case "KOMMUNE":
                 return geografiskTilknytning.getGtKommune();
