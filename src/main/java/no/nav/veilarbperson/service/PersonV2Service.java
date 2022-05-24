@@ -207,6 +207,10 @@ public class PersonV2Service {
     private String hentGeografiskTilknytning(Fnr fnr, PdlAuth auth) {
         HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(fnr, auth);
 
+        if (geografiskTilknytning == null) {
+            return null;
+        }
+        
         switch (geografiskTilknytning.getGtType()) {
             case "KOMMUNE":
                 return geografiskTilknytning.getGtKommune();
