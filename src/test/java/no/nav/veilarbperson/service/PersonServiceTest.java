@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,7 +48,7 @@ public class PersonServiceTest {
 
     @Before
     public void setup() {
-        when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
+        when(norg2Client.hentTilhorendeEnhet(anyString(), any(), anyBoolean())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentPerson(any())).thenReturn(lagPerson());
         when(personClient.hentSikkerhetstiltak(any())).thenReturn(null);

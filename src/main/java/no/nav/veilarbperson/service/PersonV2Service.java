@@ -2,21 +2,17 @@ package no.nav.veilarbperson.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.common.utils.EnvironmentUtils;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
-import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
-import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.HentPerson;
+import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
-import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.DownstreamApi;
 import no.nav.veilarbperson.utils.PersonDataMapper;
@@ -27,18 +23,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.*;
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.erSammeAdresse;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.sivilstandMapper;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
 
@@ -176,15 +168,35 @@ public class PersonV2Service {
         personV2Data.setEgenAnsatt(egenAnsatt);
     }
 
-    private void flettGeografiskEnhet(Fnr fodselsnummer, PdlAuth auth, PersonV2Data personV2Data) {
-        String geografiskTilknytning = ofNullable(pdlClient.hentGeografiskTilknytning(fodselsnummer, auth))
-                .map(HentPerson.GeografiskTilknytning::getGtKommune).orElse(null);
+    private String hentGeografiskTilknytning(Fnr fnr, PdlAuth auth) {
+        HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(fnr, auth);
+
+        if (geografiskTilknytning == null) {
+            return null;
+        }
+
+        switch (geografiskTilknytning.getGtType()) {
+            case "KOMMUNE":
+                return geografiskTilknytning.getGtKommune();
+            case"BYDEL":
+                return geografiskTilknytning.getGtBydel();
+            case "UTLAND":
+                return geografiskTilknytning.getGtLand();
+            default:  // type == UDEFINERT
+                return null;
+        }
+    }
+
+    private void flettGeografiskEnhet(Fnr fnr, PdlAuth auth, PersonV2Data personV2Data) {
+        String geografiskTilknytning = hentGeografiskTilknytning(fnr, auth);
 
         personV2Data.setGeografiskTilknytning(geografiskTilknytning);
 
+        // Sjekk at geografiskTilknytning er satt og at det ikke er en tre-bokstavs landkode (ISO 3166 Alpha-3, for utenlandske brukere så blir landskode brukt istedenfor nummer)
         if (geografiskTilknytning != null && geografiskTilknytning.matches("\\d+")) {
             try {
-                Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning));
+                Norg2Client.Diskresjonskode diskresjonskode = ofNullable(personV2Data.getDiskresjonskode()).map(Diskresjonskode::fraTall).map(disk -> disk.norgKode).orElse(null);
+                Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning, diskresjonskode, personV2Data.isEgenAnsatt()));
                 personV2Data.setGeografiskEnhet(enhet);
             } catch (Exception e) {
                 log.error("Klarte ikke å flette inn geografisk enhet", e);
