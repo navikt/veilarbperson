@@ -43,6 +43,7 @@ import static java.util.Optional.ofNullable;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -72,7 +73,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void setup() {
         pdlClient = getPdlClient();
         when(systemUserTokenProvider.getSystemUserToken()).thenReturn("SYSTEM_USER_TOKEN");
-        when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
+        when(norg2Client.hentTilhorendeEnhet(anyString(), any(), anyBoolean())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentPerson(FNR)).thenReturn(new TpsPerson().setBarn(Collections.emptyList()));
 
@@ -107,7 +108,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     }
 
     public HentPerson.GeografiskTilknytning hentGeografisktilknytning(Fnr fnr) {
-        configurePdlResponse("pdl-hentGeografiskTilknytning-response.json", fnr.get());
+        configurePdlResponse("pdl-hentGeografiskTilknytning-response.json", "hentGeografiskTilknytning");
         return pdlClient.hentGeografiskTilknytning(fnr, PDL_AUTH);
     }
 
@@ -154,6 +155,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void hentOpplysningerTilBarnaMedKodeOkFraPdlTest() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
         configurePdlResponse("pdl-hentPersonBolk-response.json", fnrBarn1, fnrBarn2);
+        hentGeografisktilknytning(FNR); // Må ha med fnr fordi dette flettes
         List<Familiemedlem> barn = personV2Service.hentFlettetPerson(FNR).getBarn();
 
         assertEquals(1, barn.size());
@@ -163,16 +165,16 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void hentDiskresjonsKodeTilAdressebeskyttetPersonTest() {
         HentPerson.Adressebeskyttelse adressebeskyttelse = PersonV2DataMapper.getFirstElement(person.getAdressebeskyttelse());
         String gradering = adressebeskyttelse.getGradering();
-        String diskresjonskode = Diskresjonskoder.mapTilTallkode(gradering);
+        String diskresjonskode = Diskresjonskode.mapKodeTilTall(gradering);
 
-        assertEquals(Diskresjonskoder.UGRADERT.toString(), gradering);
-        assertEquals("0", diskresjonskode);
+        assertEquals(Diskresjonskode.UGRADERT.toString(), gradering);
+        assertEquals(null, diskresjonskode);
 
         String kode6Bruker = "STRENGT_FORTROLIG";
-        assertEquals("6", Diskresjonskoder.mapTilTallkode(kode6Bruker));
+        assertEquals("6", Diskresjonskode.mapKodeTilTall(kode6Bruker));
 
         String kode7Bruker = "FORTROLIG";
-        assertEquals("7", Diskresjonskoder.mapTilTallkode(kode7Bruker));
+        assertEquals("7", Diskresjonskode.mapKodeTilTall(kode7Bruker));
     }
 
     @Test
@@ -293,7 +295,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         sivilstand = personV2Data.getSivilstandliste().get(0);
         assertNull(sivilstand.getSkjermet());
         assertNull(sivilstand.getRelasjonsBosted());
-        assertEquals(AdressebeskyttelseGradering.FORTROLIG, sivilstand.getGradering());
+        assertEquals(AdressebeskyttelseGradering.FORTROLIG.name(), sivilstand.getGradering());
     }
 
     @Test
@@ -345,7 +347,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals("GIFT", sivilstand.getSivilstand());
         assertEquals(LocalDate.of(2020, 6, 1), sivilstand.getFraDato());
         assertFalse(sivilstand.getSkjermet());
-        assertEquals(AdressebeskyttelseGradering.UGRADERT, sivilstand.getGradering());
+        assertEquals(AdressebeskyttelseGradering.UGRADERT.name(), sivilstand.getGradering());
         assertEquals(RelasjonsBosted.UKJENT_BOSTED, sivilstand.getRelasjonsBosted());
         assertEquals("FREG", sivilstand.getMaster());
         assertEquals(LocalDateTime.parse("2022-04-22T14:51:20"), sivilstand.getRegistrertDato());

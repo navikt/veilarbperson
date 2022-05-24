@@ -40,7 +40,7 @@ public class PersonV2DataMapper {
                         .map(Fnr::of).orElse(null))
                 .setDiskresjonskode(ofNullable(getFirstElement(person.getAdressebeskyttelse()))
                         .map(HentPerson.Adressebeskyttelse::getGradering)
-                        .map(Diskresjonskoder::mapTilTallkode).orElse(null))
+                        .map(Diskresjonskode::mapKodeTilTall).orElse(null))
                 .setTelefon(mapTelefonNrFraPdl(person.getTelefonnummer()))
                 .setBostedsadresse(getFirstElement(person.getBostedsadresse()))
                 .setOppholdsadresse(getFirstElement(person.getOppholdsadresse()))
