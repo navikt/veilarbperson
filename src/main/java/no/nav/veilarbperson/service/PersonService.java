@@ -92,7 +92,7 @@ public class PersonService {
         // Sjekk at geografiskTilknytning er satt og at det er en ISO 3166 kode (for utenlandske brukere så blir landskode brukt istedenfor)
         if (geografiskTilknytning != null && geografiskTilknytning.matches("\\d+")) {
             try {
-                Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning));
+                Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning, null, false));
                 personData.setGeografiskEnhet(enhet);
             } catch (Exception e) {
                 log.error("Klarte ikke å flette inn geografisk enhet", e);

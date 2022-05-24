@@ -43,6 +43,7 @@ import static java.util.Optional.ofNullable;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,11 +53,8 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private DkifClient dkifClient = mock(DkifClient.class);
     private PersonClient personClient = mock(PersonClient.class);
     private PdlClient pdlClient;
-    private EgenAnsattClient egenAnsattClient = mock(EgenAnsattClient.class);
     private KodeverkService kodeverkService = mock(KodeverkService.class);
     private SkjermetClient skjermetClient = mock(SkjermetClient.class);
-    private VeilarbportefoljeClient veilarbportefoljeClient = mock(VeilarbportefoljeClient.class);
-    private UnleashClient unleashClient = mock(UnleashClient.class);
     private AuthService authService = mock(AuthService.class);
     private SystemUserTokenProvider systemUserTokenProvider = mock(SystemUserTokenProvider.class);
     private PersonV2Service personV2Service;
@@ -72,7 +70,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void setup() {
         pdlClient = getPdlClient();
         when(systemUserTokenProvider.getSystemUserToken()).thenReturn("SYSTEM_USER_TOKEN");
-        when(norg2Client.hentTilhorendeEnhet(anyString())).thenReturn(new Enhet());
+        when(norg2Client.hentTilhorendeEnhet(anyString(), any(), anyBoolean())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentPerson(FNR)).thenReturn(new TpsPerson().setBarn(Collections.emptyList()));
 
@@ -82,9 +80,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 dkifClient,
                 norg2Client,
                 personClient,
-                egenAnsattClient,
-                veilarbportefoljeClient,
-                unleashClient,
                 skjermetClient,
                 kodeverkService,
                 systemUserTokenProvider);
@@ -107,7 +102,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     }
 
     public HentPerson.GeografiskTilknytning hentGeografisktilknytning(Fnr fnr) {
-        configurePdlResponse("pdl-hentGeografiskTilknytning-response.json", fnr.get());
+        configurePdlResponse("pdl-hentGeografiskTilknytning-response.json", "hentGeografiskTilknytning");
         return pdlClient.hentGeografiskTilknytning(fnr, PDL_AUTH);
     }
 
@@ -154,6 +149,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void hentOpplysningerTilBarnaMedKodeOkFraPdlTest() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
         configurePdlResponse("pdl-hentPersonBolk-response.json", fnrBarn1, fnrBarn2);
+        hentGeografisktilknytning(FNR); // Må ha med fnr fordi dette flettes
         List<Familiemedlem> barn = personV2Service.hentFlettetPerson(FNR).getBarn();
 
         assertEquals(1, barn.size());
@@ -163,16 +159,16 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void hentDiskresjonsKodeTilAdressebeskyttetPersonTest() {
         HentPerson.Adressebeskyttelse adressebeskyttelse = PersonV2DataMapper.getFirstElement(person.getAdressebeskyttelse());
         String gradering = adressebeskyttelse.getGradering();
-        String diskresjonskode = Diskresjonskoder.mapTilTallkode(gradering);
+        String diskresjonskode = Diskresjonskode.mapKodeTilTall(gradering);
 
-        assertEquals(Diskresjonskoder.UGRADERT.toString(), gradering);
-        assertEquals("0", diskresjonskode);
+        assertEquals(Diskresjonskode.UGRADERT.toString(), gradering);
+        assertEquals(null, diskresjonskode);
 
         String kode6Bruker = "STRENGT_FORTROLIG";
-        assertEquals("6", Diskresjonskoder.mapTilTallkode(kode6Bruker));
+        assertEquals("6", Diskresjonskode.mapKodeTilTall(kode6Bruker));
 
         String kode7Bruker = "FORTROLIG";
-        assertEquals("7", Diskresjonskoder.mapTilTallkode(kode7Bruker));
+        assertEquals("7", Diskresjonskode.mapKodeTilTall(kode7Bruker));
     }
 
     @Test
@@ -267,7 +263,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         person = hentPerson(FNR);
 
         // flett sivilstandinfo når relatert person ikke har gradering/adressebeskyttelse
-        when(egenAnsattClient.erEgenAnsatt(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
+        when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
 
@@ -277,7 +273,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertNull(sivilstand.getGradering());
 
         // flett partnerinfo når relatert person har gradering/adressebeskyttelse
-        when(egenAnsattClient.erEgenAnsatt(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
+        when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         givenThat(
                 post(WireMock.urlEqualTo("/graphql"))
@@ -293,13 +289,12 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         sivilstand = personV2Data.getSivilstandliste().get(0);
         assertNull(sivilstand.getSkjermet());
         assertNull(sivilstand.getRelasjonsBosted());
-        assertEquals(AdressebeskyttelseGradering.FORTROLIG, sivilstand.getGradering());
+        assertEquals(AdressebeskyttelseGradering.FORTROLIG.name(), sivilstand.getGradering());
     }
 
     @Test
     public void flettPartnerInfoSomErEgenAnsattTestMedNyttSkjermetAPI_UtenLeseTilgang_SomIkkeErSkjermet() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
-        when(unleashClient.isEnabled(any())).thenReturn(true);
         PersonV2Data personV2Data = new PersonV2Data();
         person = hentPerson(FNR);
 
@@ -316,7 +311,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void flettPartnerInfoSomErEgenAnsattTestMedNyttSkjermetAPI_UtenLeseTilgang_SomErSkjermet() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
-        when(unleashClient.isEnabled(any())).thenReturn(true);
         person = hentPerson(FNR);
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(person);
 
@@ -333,7 +327,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void flettSivilstandinfoTest_MedLesetilgang() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
-        when(unleashClient.isEnabled(any())).thenReturn(true);
         PersonV2Data personV2Data = new PersonV2Data();
         person = hentPerson(FNR);
 
@@ -345,7 +338,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals("GIFT", sivilstand.getSivilstand());
         assertEquals(LocalDate.of(2020, 6, 1), sivilstand.getFraDato());
         assertFalse(sivilstand.getSkjermet());
-        assertEquals(AdressebeskyttelseGradering.UGRADERT, sivilstand.getGradering());
+        assertEquals(AdressebeskyttelseGradering.UGRADERT.name(), sivilstand.getGradering());
         assertEquals(RelasjonsBosted.UKJENT_BOSTED, sivilstand.getRelasjonsBosted());
         assertEquals("FREG", sivilstand.getMaster());
         assertEquals(LocalDateTime.parse("2022-04-22T14:51:20"), sivilstand.getRegistrertDato());
