@@ -195,8 +195,8 @@ public class PersonV2Service {
         // Sjekk at geografiskTilknytning er satt og at det ikke er en tre-bokstavs landkode (ISO 3166 Alpha-3, for utenlandske brukere så blir landskode brukt istedenfor nummer)
         if (geografiskTilknytning != null && geografiskTilknytning.matches("\\d+")) {
             try {
-                Norg2Client.Diskresjonskode diskresjonskode = ofNullable(personV2Data.getDiskresjonskode()).map(Diskresjonskode::fraTall).map(disk -> disk.norgKode).orElse(null);
-                Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning, diskresjonskode, personV2Data.isEgenAnsatt()));
+                // Henter geografisk enhet, derfor settes ikke diskresjonskode og skjermet
+                Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning, null, false));
                 personV2Data.setGeografiskEnhet(enhet);
             } catch (Exception e) {
                 log.error("Klarte ikke å flette inn geografisk enhet", e);
