@@ -79,7 +79,7 @@ public class ApplicationConfig {
                 isProduction() ? "prod-fss" : "dev-fss", "teamdokumenthandtering", "regoppslag");
         String url = isProduction()
                 ? createProdInternalIngressUrl("regoppslag")
-                : createDevInternalIngressUrl("regoppslag-q1");
+                : createDevInternalIngressUrl("regoppslag");
 
         return new RegoppslagClientImpl(url,
                 () -> tokenClient.createMachineToMachineToken(tokenScope));
