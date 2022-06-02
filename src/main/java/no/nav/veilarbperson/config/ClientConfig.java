@@ -199,7 +199,7 @@ public class ClientConfig {
                 .buildOnBehalfOfTokenClient();
     }
 
-    private static boolean isProduction() {
+    public static boolean isProduction() {
         return EnvironmentUtils.isProduction().orElseThrow();
     }
 
