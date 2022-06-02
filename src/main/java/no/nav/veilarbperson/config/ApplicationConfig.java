@@ -11,6 +11,7 @@ import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.featuretoggle.UnleashClientImpl;
 import no.nav.common.sts.NaisSystemUserTokenProvider;
 import no.nav.common.sts.SystemUserTokenProvider;
+import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.utils.Credentials;
 import no.nav.common.utils.NaisUtils;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
@@ -23,6 +24,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.createDevInternalIngressUrl;
 import static no.nav.common.utils.UrlUtils.createProdInternalIngressUrl;
+import static no.nav.common.utils.UrlUtils.createServiceUrl;
 import static no.nav.veilarbperson.config.ClientConfig.isProduction;
 
 @Slf4j
@@ -72,11 +74,14 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public RegoppslagClient regoppslagClient(SystemUserTokenProvider systemUserTokenProvider) {
+    public RegoppslagClient regoppslagClient(AzureAdMachineToMachineTokenClient tokenClient) {
+        String tokenScope = String.format("api://%s.%s.%s/.default",
+                isProduction() ? "prod-fss" : "dev-fss", "teamdokumenthandtering", "regoppslag");
         String url = isProduction()
                 ? createProdInternalIngressUrl("regoppslag")
                 : createDevInternalIngressUrl("regoppslag-q1");
 
-        return new RegoppslagClientImpl(url, systemUserTokenProvider);
+        return new RegoppslagClientImpl(url,
+                () -> tokenClient.createMachineToMachineToken(tokenScope));
     }
 }
