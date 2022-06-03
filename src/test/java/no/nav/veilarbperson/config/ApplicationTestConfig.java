@@ -4,6 +4,7 @@ import no.nav.common.abac.Pep;
 import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.auth.context.AuthContextHolderThreadLocal;
 import no.nav.common.sts.SystemUserTokenProvider;
+import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.mock.AbacClientMock;
 import no.nav.veilarbperson.mock.PepMock;
 import org.springframework.context.annotation.Bean;
@@ -37,4 +38,8 @@ public class ApplicationTestConfig {
         return mock(SystemUserTokenProvider.class);
     }
 
+    @Bean
+    public RegoppslagClient RegoppslagClient(){
+        return mock(RegoppslagClient.class);
+    }
 }

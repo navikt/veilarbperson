@@ -1,7 +1,10 @@
 package no.nav.veilarbperson.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
+import no.nav.veilarbperson.client.regoppslag.RegoppslagResponseDTO;
 import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.TilrettelagtKommunikasjonData;
@@ -9,24 +12,19 @@ import no.nav.veilarbperson.domain.VergeOgFullmaktData;
 import no.nav.veilarbperson.domain.Malform;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonV2Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v2/person")
 public class PersonV2Controller {
 
     private final PersonV2Service personV2Service;
     private final AuthService authService;
-
-    @Autowired
-    public PersonV2Controller(PersonV2Service personV2Service, AuthService authService) {
-        this.personV2Service = personV2Service;
-        this.authService = authService;
-    }
+    private final RegoppslagClient regoppslagClient;
 
     @GetMapping
     @Operation(summary = "Henter informasjon om en person fra PDL")
@@ -68,5 +66,12 @@ public class PersonV2Controller {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
         return personV2Service.hentNavn(fnr);
+    }
+    @GetMapping("/postadresse")
+    @Operation(summary = "Henter postadresse til en person fra PDL")
+    public RegoppslagResponseDTO hentPostadresse(@RequestParam("fnr") Fnr fnr) {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(fnr);
+        return regoppslagClient.hentPostadresse(fnr);
     }
 }
