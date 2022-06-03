@@ -14,9 +14,12 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static no.nav.veilarbperson.utils.PersonV2DataMapper.hentGjeldeneNavn;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PdlClientImplTest {
@@ -224,6 +227,53 @@ public class PdlClientImplTest {
 
         String response = pdlClient.rawRequest(jsonRequest, PDL_AUTH);
         assertEquals(hentPersonResponseJson, response);
+    }
+
+    @Test
+    public void prioriteringAvUlikeKilderForNavn() {
+        String pdlNavn = "pdl_F";
+        String fregNavn = "freg_F";
+        String annetNavn = "annet_F";
+        HentPerson.MetadataNavn pdlMeta = new HentPerson.MetadataNavn()
+                .setMaster(HentPerson.PdlNavnMaster.PDL);
+        HentPerson.MetadataNavn fregMeta = new HentPerson.MetadataNavn()
+                .setMaster(HentPerson.PdlNavnMaster.FREG);
+        HentPerson.MetadataNavn annetMeta = new HentPerson.MetadataNavn()
+                .setMaster(HentPerson.PdlNavnMaster.UVIST);
+
+        List<HentPerson.Navn> pdl_freg_og_annet = List.of(
+                new HentPerson.Navn().setFornavn(pdlNavn).setMetadata(pdlMeta),
+                new HentPerson.Navn().setFornavn(fregNavn).setMetadata(fregMeta),
+                new HentPerson.Navn().setFornavn(annetNavn).setMetadata(annetMeta)
+        );
+
+        List<HentPerson.Navn> freg_og_annet = List.of(
+                new HentPerson.Navn().setFornavn(fregNavn).setMetadata(fregMeta),
+                new HentPerson.Navn().setFornavn(annetNavn).setMetadata(annetMeta)
+        );
+
+        List<HentPerson.Navn> kun_annet = List.of(
+                new HentPerson.Navn().setFornavn(annetNavn).setMetadata(annetMeta)
+        );
+
+        assertThat(hentGjeldeneNavn(pdl_freg_og_annet).get().getFornavn()).isEqualTo(pdlNavn);
+        assertThat(hentGjeldeneNavn(freg_og_annet).get().getFornavn()).isEqualTo(fregNavn);
+        assertThat(hentGjeldeneNavn(kun_annet).get().getFornavn()).isEqualTo(annetNavn);
+    }
+
+    @Test
+    public void prioriteringAvSammeKildeForNavn_skalVelgeForsteIListen() {
+        String pdlNavn1 = "pdl_1";
+        String pdlNavn2 = "pdl_2";
+
+        HentPerson.MetadataNavn pdlMeta = new HentPerson.MetadataNavn()
+                .setMaster(HentPerson.PdlNavnMaster.PDL);
+        List<HentPerson.Navn> navn = List.of(
+                new HentPerson.Navn().setFornavn(pdlNavn1).setMetadata(pdlMeta),
+                new HentPerson.Navn().setFornavn(pdlNavn2).setMetadata(pdlMeta)
+        );
+
+        assertThat(hentGjeldeneNavn(navn).get().getFornavn()).isEqualTo(pdlNavn1);
     }
 
 }

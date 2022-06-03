@@ -6,7 +6,10 @@
           "fornavn": "OLA",
           "mellomnavn": null,
           "etternavn": "NORDMANN",
-          "forkortetNavn": "NORDMANN OLA"
+          "forkortetNavn": "NORDMANN OLA",
+          "metadata": {
+            "master": "FREG"
+          }
         }
       ]
     }

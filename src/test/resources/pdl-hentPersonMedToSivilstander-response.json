@@ -6,7 +6,10 @@
           "fornavn": "DØLL",
           "mellomnavn": null,
           "etternavn": "BOLLE",
-          "forkortetNavn": "BOLLE DØLL"
+          "forkortetNavn": "BOLLE DØLL",
+          "metadata": {
+            "master": "FREG"
+          }
         }
       ],
       "foedsel": [

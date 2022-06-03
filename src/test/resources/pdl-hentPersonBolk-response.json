@@ -9,7 +9,10 @@
               "fornavn": "KREATIV",
               "mellomnavn": "GLITRENDE",
               "etternavn": "STAFFELI",
-              "forkortetNavn": "KREATIV STAFFELI"
+              "forkortetNavn": "KREATIV STAFFELI",
+              "metadata": {
+                "master": "FREG"
+              }
             }
           ],
           "foedsel": [
@@ -59,7 +62,10 @@
               "fornavn": "FORFJAMSET",
               "mellomnavn": "GLITRENDE",
               "etternavn": "STAFFELI",
-              "forkortetNavn": "FORFJAMSET STAFFELI"
+              "forkortetNavn": "FORFJAMSET STAFFELI",
+              "metadata": {
+                "master": "FREG"
+              }
             }
           ],
           "foedsel": [
