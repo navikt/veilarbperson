@@ -7,29 +7,12 @@ import no.nav.common.rest.client.RestUtils
 import okhttp3.Response
 
 object JsonUtils {
-
     val objectMapper: ObjectMapper =
         no.nav.common.json.JsonUtils.getMapper().registerModule(KotlinModule.Builder().build())
 
     @JvmStatic
     fun init() {
         // noop, trigger evaluering av objectMapper og registrering av KotlinModule
-    }
-
-    @JvmStatic
-    fun createNoDataStr(noDataMsg: String?): String {
-        return createJsonStr("ingenData", noDataMsg)
-    }
-
-    fun createJsonStr(fieldName: String?, value: String?): String {
-        val error = JsonNodeFactory.instance.objectNode()
-        error.put(fieldName, value)
-        return error.toString()
-    }
-
-    @JvmStatic
-    fun <T> fromJson(json: String, valueClass: Class<T>): T {
-        return objectMapper.readValue(json, valueClass)
     }
 }
 
