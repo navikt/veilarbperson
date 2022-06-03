@@ -14,6 +14,7 @@ import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.utils.Credentials;
 import no.nav.common.utils.NaisUtils;
+import no.nav.veilarbperson.client.regoppslag.JsonUtils;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClientImpl;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -21,10 +22,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import javax.annotation.PostConstruct;
+
 import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.createDevInternalIngressUrl;
 import static no.nav.common.utils.UrlUtils.createProdInternalIngressUrl;
-import static no.nav.common.utils.UrlUtils.createServiceUrl;
 import static no.nav.veilarbperson.config.ClientConfig.isProduction;
 
 @Slf4j
@@ -83,5 +85,10 @@ public class ApplicationConfig {
 
         return new RegoppslagClientImpl(url,
                 () -> tokenClient.createMachineToMachineToken(tokenScope));
+    }
+
+    @PostConstruct
+    public void initJsonUtils() {
+        JsonUtils.init();
     }
 }

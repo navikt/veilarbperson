@@ -12,14 +12,13 @@ object JsonUtils {
 
     @JvmStatic
     fun init() {
-        // noop, trigger evaluering av objectMapper og registrering av KotlinModule
     }
 }
 
 inline fun <reified T> Response.deserializeJson(): T? {
     return RestUtils.getBodyStr(this)
-            .map { JsonUtils.objectMapper.readValue(it, T::class.java) }
-            .orElse(null)
+        .map { JsonUtils.objectMapper.readValue(it, T::class.java) }
+        .orElse(null)
 }
 
 inline fun <reified T> Response.deserializeJsonOrThrow(): T {
