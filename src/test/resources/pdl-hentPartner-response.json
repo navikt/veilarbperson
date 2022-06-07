@@ -6,7 +6,10 @@
               "fornavn": "TYKKMAGET",
               "mellomnavn": null,
               "etternavn": "GASELLE",
-              "forkortetNavn": "TYKKMAGET GASELLE"
+              "forkortetNavn": "TYKKMAGET GASELLE",
+              "metadata": {
+                "master": "FREG"
+              }
             }
           ],
           "foedsel": [

@@ -6,7 +6,10 @@
           "fornavn": "FORNAVN",
           "mellomnavn": "MELLOMNAVN",
           "etternavn": "ETTERNAVN",
-          "forkortetNavn": "FORNAVN ETTERNAVN"
+          "forkortetNavn": "FORNAVN ETTERNAVN",
+          "metadata": {
+            "master": "FREG"
+          }
         }
       ],
       "foedsel": [

@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.client.pdl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.veilarbperson.client.pdl.domain.*;
@@ -64,6 +65,7 @@ public class HentPerson {
         private String mellomnavn;
         private String etternavn;
         private String forkortetNavn;
+        private MetadataNavn metadata;
     }
 
     @Data
@@ -72,6 +74,32 @@ public class HentPerson {
         private String nummer;
         private String prioritet;
         private Metadata metadata;
+    }
+
+    @Data
+    public static class MetadataNavn {
+        private PdlNavnMaster master;
+    }
+
+    public enum PdlNavnMaster {
+        PDL(1),
+        FREG(2),
+        UVIST(3);
+
+        public final int prioritet;
+
+        PdlNavnMaster(int i) {
+            prioritet = i;
+        }
+
+        @JsonCreator
+        public static PdlNavnMaster fromString(String string) {
+            try {
+                return PdlNavnMaster.valueOf(string);
+            } catch (IllegalArgumentException e) {
+                return UVIST;
+            }
+        }
     }
 
     @Data

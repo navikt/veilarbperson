@@ -25,12 +25,12 @@ import static no.nav.veilarbperson.client.person.domain.RelasjonsBosted.UKJENT_B
 public class PersonV2DataMapper {
 
     public static PersonV2Data toPersonV2Data(HentPerson.Person person) {
-
+        Optional<HentPerson.Navn> navn = hentGjeldeneNavn(person.getNavn());
         return new PersonV2Data()
-                .setFornavn(ofNullable(getFirstElement(person.getNavn())).map(HentPerson.Navn::getFornavn).orElse(null))
-                .setMellomnavn(ofNullable(getFirstElement(person.getNavn())).map(HentPerson.Navn::getMellomnavn).orElse(null))
-                .setEtternavn(ofNullable(getFirstElement(person.getNavn())).map(HentPerson.Navn::getEtternavn).orElse(null))
-                .setForkortetNavn(ofNullable(getFirstElement(person.getNavn())).map(HentPerson.Navn::getForkortetNavn).orElse(null))
+                .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
+                .setMellomnavn(navn.map(HentPerson.Navn::getMellomnavn).orElse(null))
+                .setEtternavn(navn.map(HentPerson.Navn::getEtternavn).orElse(null))
+                .setForkortetNavn(navn.map(HentPerson.Navn::getForkortetNavn).orElse(null))
                 .setKjonn(ofNullable(getFirstElement(person.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
                 .setFodselsdato(ofNullable(getFirstElement(person.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null))
                 .setStatsborgerskap(ofNullable(getFirstElement(person.getStatsborgerskap())).map(HentPerson.Statsborgerskap::getLand).orElse(null))
@@ -53,13 +53,13 @@ public class PersonV2DataMapper {
     }
 
     public static PersonNavnV2 navnMapper(List<HentPerson.Navn> personNavn) {
-        HentPerson.Navn navn = getFirstElement(personNavn);
+        Optional<HentPerson.Navn> navn = hentGjeldeneNavn(personNavn);
 
         return new PersonNavnV2()
-                .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
-                .setMellomnavn(ofNullable(navn).map(HentPerson.Navn::getMellomnavn).orElse(null))
-                .setEtternavn(ofNullable(navn).map(HentPerson.Navn::getEtternavn).orElse(null))
-                .setForkortetNavn(ofNullable(navn).map(HentPerson.Navn::getForkortetNavn).orElse(null));
+                .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
+                .setMellomnavn(navn.map(HentPerson.Navn::getMellomnavn).orElse(null))
+                .setEtternavn(navn.map(HentPerson.Navn::getEtternavn).orElse(null))
+                .setForkortetNavn(navn.map(HentPerson.Navn::getForkortetNavn).orElse(null));
     }
 
     public static Fnr hentFamiliemedlemFnr(HentPerson.Familiemedlem familiemedlem) {
@@ -71,7 +71,7 @@ public class PersonV2DataMapper {
                                                     boolean erEgenAnsatt,
                                                     Bostedsadresse personsBostedsadresse,
                                                     AuthService authService) {
-        HentPerson.Navn navn = getFirstElement(familiemedlem.getNavn());
+        Optional<HentPerson.Navn> navn = hentGjeldeneNavn(familiemedlem.getNavn());
         Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
         String kjonn = ofNullable(getFirstElement(familiemedlem.getKjoenn()))
                 .map(HentPerson.Kjoenn::getKjoenn).orElse(null);
@@ -99,7 +99,7 @@ public class PersonV2DataMapper {
                     .setHarVeilederTilgang(harVeilederLeseTilgang)
                     .setHarSammeBosted(harSammeBostedBool)
                     .setRelasjonsBosted(harSammeBosted)
-                    .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
+                    .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
                     .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));
         } else {
             if ((harAdressebeskyttelse || ukjentGradering)) {
@@ -118,7 +118,7 @@ public class PersonV2DataMapper {
                         .setHarVeilederTilgang(harVeilederLeseTilgang)
                         .setHarSammeBosted(harSammeBostedBool)
                         .setRelasjonsBosted(harSammeBosted)
-                        .setFornavn(ofNullable(navn).map(HentPerson.Navn::getFornavn).orElse(null))
+                        .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
                         .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));
             }
         }
@@ -212,5 +212,9 @@ public class PersonV2DataMapper {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
         LocalDateTime dateTime = LocalDateTime.parse(sistOppdatert, dateTimeFormatter);
         return PersonV2DataMapper.formateDateFromLocalDateTime(dateTime);
+    }
+
+    public static Optional<HentPerson.Navn> hentGjeldeneNavn(List<HentPerson.Navn> response) {
+        return response.stream().min(Comparator.comparing(n -> n.getMetadata().getMaster().prioritet));
     }
 }

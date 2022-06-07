@@ -5,6 +5,9 @@ query($ident: ID!, $historikk: Boolean!) {
             mellomnavn
             etternavn
             forkortetNavn
+            metadata {
+                master
+            }
         }
         foedsel {
             foedselsdato
