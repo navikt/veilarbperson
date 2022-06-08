@@ -132,7 +132,20 @@ public class HentPerson {
         private String minRolleForPerson;
         private String relatertPersonsRolle;
         private String relatertPersonsIdent;
+        private RelasjonUtenIdent relatertPersonUtenFolkeregisteridentifikator;
     }
+
+    @Data
+    public static class RelasjonUtenIdent {
+        private NavnUtenRelasjon navn;
+        private LocalDate foedselsdato;
+    }
+
+    @Data
+    public static class NavnUtenRelasjon {
+        private String fornavn;
+    }
+
 
     @Data
     public static class Foedsel {

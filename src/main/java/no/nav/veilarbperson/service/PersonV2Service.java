@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static no.nav.veilarbperson.client.person.domain.RelasjonsBosted.UKJENT_BOSTED;
 import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.sivilstandMapper;
@@ -138,6 +139,16 @@ public class PersonV2Service {
         );
     }
 
+    private Familiemedlem mapFamiliemedlemUtenFnr(HentPerson.RelasjonUtenIdent personUtenFnr) {
+        return new Familiemedlem()
+                .setFornavn(personUtenFnr.getNavn().getFornavn())
+                .setFodselsdato(personUtenFnr.getFoedselsdato())
+                .setDodsdato(null)
+                .setErEgenAnsatt(false)
+                .setHarVeilederTilgang(true)
+                .setRelasjonsBosted(UKJENT_BOSTED);
+    }
+
     public List<Fnr> hentBarnaFnr(List<HentPerson.ForelderBarnRelasjon> familierelasjoner) {
         return familierelasjoner.stream()
                 .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
@@ -150,7 +161,20 @@ public class PersonV2Service {
     public void flettBarn(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data) {
         List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
         List<Familiemedlem> barnInfo = hentFamiliemedlemOpplysninger(barnFnrListe, personV2Data.getBostedsadresse());
+        List<Familiemedlem> barnUtenFnrInfo = hentBarnUtenFnr(forelderBarnRelasjoner);
+        barnInfo.addAll(barnUtenFnrInfo);
+
         personV2Data.setBarn(barnInfo);
+    }
+
+    private List<Familiemedlem> hentBarnUtenFnr(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner) {
+        return forelderBarnRelasjoner.stream()
+                .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
+                .filter(barn -> barn.getRelatertPersonsIdent() == null)
+                .map(HentPerson.ForelderBarnRelasjon::getRelatertPersonUtenFolkeregisteridentifikator)
+                .filter(Objects::nonNull)
+                .map(this::mapFamiliemedlemUtenFnr)
+                .collect(Collectors.toList());
     }
 
     public void flettSivilstand(List<HentPerson.Sivilstand> sivilstands, PersonV2Data personV2Data) {
