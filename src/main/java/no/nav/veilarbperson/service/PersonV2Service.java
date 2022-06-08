@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -141,6 +142,7 @@ public class PersonV2Service {
         return familierelasjoner.stream()
                 .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
                 .map(HentPerson.ForelderBarnRelasjon::getRelatertPersonsIdent)
+                .filter(Objects::nonNull)
                 .map(Fnr::of)
                 .collect(Collectors.toList());
     }
