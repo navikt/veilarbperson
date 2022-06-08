@@ -45,6 +45,12 @@ query($ident: ID!, $historikk: Boolean!) {
             minRolleForPerson
             relatertPersonsRolle
             relatertPersonsIdent
+            relatertPersonUtenFolkeregisteridentifikator {
+                navn {
+                    fornavn
+                }
+                foedselsdato
+            }
         }
         telefonnummer {
             landskode

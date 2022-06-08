@@ -73,8 +73,6 @@ public class PersonV2DataMapper {
                                                     AuthService authService) {
         Optional<HentPerson.Navn> navn = hentGjeldeneNavn(familiemedlem.getNavn());
         Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
-        String kjonn = ofNullable(getFirstElement(familiemedlem.getKjoenn()))
-                .map(HentPerson.Kjoenn::getKjoenn).orElse(null);
         LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedsel()))
                 .map(HentPerson.Foedsel::getFoedselsdato).orElse(null);
         String graderingskode = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
@@ -88,35 +86,27 @@ public class PersonV2DataMapper {
         boolean harVeilederLeseTilgang = authService.harLesetilgang(medlemFnr);
         RelasjonsBosted harSammeBosted = erSammeAdresse(getFirstElement(familiemedlem.getBostedsadresse()),
                 personsBostedsadresse);
-        boolean harSammeBostedBool = SAMME_BOSTED.equals(harSammeBosted);
-        Familiemedlem medlem = new Familiemedlem().setFodselsnummer(medlemFnr).setFodselsdato(fodselsdato);
+        Familiemedlem medlem = new Familiemedlem().setFodselsdato(fodselsdato);
 
         if (harVeilederLeseTilgang) {
             return medlem
-                    .setKjonn(kjonn)
                     .setGradering(graderingskode)
                     .setErEgenAnsatt(erEgenAnsatt)
                     .setHarVeilederTilgang(harVeilederLeseTilgang)
-                    .setHarSammeBosted(harSammeBostedBool)
                     .setRelasjonsBosted(harSammeBosted)
                     .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
                     .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));
         } else {
             if ((harAdressebeskyttelse || ukjentGradering)) {
                 return medlem
-                        .setKjonn(kjonn)
                         .setGradering(graderingskode);
             } else if (erEgenAnsatt) {
                 return medlem
-                        .setKjonn(kjonn)
                         .setErEgenAnsatt(erEgenAnsatt)
-                        .setHarSammeBosted(harSammeBostedBool)
                         .setRelasjonsBosted(harSammeBosted);
             } else {
                 return medlem
-                        .setKjonn(kjonn)
                         .setHarVeilederTilgang(harVeilederLeseTilgang)
-                        .setHarSammeBosted(harSammeBostedBool)
                         .setRelasjonsBosted(harSammeBosted)
                         .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
                         .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));

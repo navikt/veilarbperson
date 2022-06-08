@@ -11,16 +11,10 @@ import java.time.LocalDate;
 @Accessors(chain = true)
 public class Familiemedlem {
     String fornavn;
-    String mellomnavn;
-    String etternavn;
-    String forkortetNavn;
-    Fnr fodselsnummer;
     LocalDate fodselsdato;
-    String kjonn;
     LocalDate dodsdato;
     Boolean erEgenAnsatt;
     boolean harVeilederTilgang;
     String gradering;       //diskresjonskode
-    boolean harSammeBosted;  // Kan fjernes når List<Familiemedlem> barn er endret til å bruke RelasjonsBosted;
     RelasjonsBosted relasjonsBosted;
 }
