@@ -9,7 +9,10 @@
               "fornavn": "FORFJAMSET",
               "mellomnavn": "GLITRENDE",
               "etternavn": "STAFFELI",
-              "forkortetNavn": "FORFJAMSET STAFFELI"
+              "forkortetNavn": "FORFJAMSET STAFFELI",
+              "metadata": {
+                "master": "FREG"
+              }
             }
           ],
           "foedsel": [

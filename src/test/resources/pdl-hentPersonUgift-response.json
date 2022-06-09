@@ -6,7 +6,10 @@
           "fornavn": "NATURLIG",
           "mellomnavn": "GLITRENDE",
           "etternavn": "STAFFELI",
-          "forkortetNavn": "NATURLIG STAFFELI"
+          "forkortetNavn": "NATURLIG STAFFELI",
+          "metadata": {
+            "master": "FREG"
+          }
         }
       ],
       "foedsel": [

@@ -24,11 +24,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static no.nav.veilarbperson.client.person.domain.RelasjonsBosted.UKJENT_BOSTED;
 import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.sivilstandMapper;
@@ -137,10 +139,21 @@ public class PersonV2Service {
         );
     }
 
+    private Familiemedlem mapFamiliemedlemUtenFnr(HentPerson.RelatertPersonUtenFolkeregisteridentifikator personUtenFnr) {
+        return new Familiemedlem()
+                .setFornavn(personUtenFnr.getNavn().getFornavn())
+                .setFodselsdato(personUtenFnr.getFoedselsdato())
+                .setDodsdato(null)
+                .setErEgenAnsatt(false)
+                .setHarVeilederTilgang(true)
+                .setRelasjonsBosted(UKJENT_BOSTED);
+    }
+
     public List<Fnr> hentBarnaFnr(List<HentPerson.ForelderBarnRelasjon> familierelasjoner) {
         return familierelasjoner.stream()
                 .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
                 .map(HentPerson.ForelderBarnRelasjon::getRelatertPersonsIdent)
+                .filter(Objects::nonNull)
                 .map(Fnr::of)
                 .collect(Collectors.toList());
     }
@@ -148,7 +161,20 @@ public class PersonV2Service {
     public void flettBarn(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data) {
         List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
         List<Familiemedlem> barnInfo = hentFamiliemedlemOpplysninger(barnFnrListe, personV2Data.getBostedsadresse());
+        List<Familiemedlem> barnUtenFnrInfo = hentBarnUtenFnr(forelderBarnRelasjoner);
+        barnInfo.addAll(barnUtenFnrInfo);
+
         personV2Data.setBarn(barnInfo);
+    }
+
+    private List<Familiemedlem> hentBarnUtenFnr(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner) {
+        return forelderBarnRelasjoner.stream()
+                .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
+                .filter(barn -> barn.getRelatertPersonsIdent() == null)
+                .map(HentPerson.ForelderBarnRelasjon::getRelatertPersonUtenFolkeregisteridentifikator)
+                .filter(Objects::nonNull)
+                .map(this::mapFamiliemedlemUtenFnr)
+                .collect(Collectors.toList());
     }
 
     public void flettSivilstand(List<HentPerson.Sivilstand> sivilstands, PersonV2Data personV2Data) {
@@ -315,8 +341,8 @@ public class PersonV2Service {
         HentPerson.HentSpraakTolk spraakTolkInfo = pdlClient.hentTilrettelagtKommunikasjon(fnr, auth);
 
         if (spraakTolkInfo.getTilrettelagtKommunikasjon().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Fant ikke tilrettelagtkommunikasjon til person i PDL");
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                    "Ingen tilrettelagtkommunikasjon for person i PDL");
         }
 
         HentPerson.TilrettelagtKommunikasjon tilrettelagtKommunikasjon = getFirstElement(spraakTolkInfo.getTilrettelagtKommunikasjon());
@@ -337,7 +363,7 @@ public class PersonV2Service {
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(fnr, auth);
 
         if (vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person har ikke verge eller fullmakt i PDL");
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke verge eller fullmakt i PDL");
         }
 
         VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
