@@ -10,6 +10,7 @@ spec:
   port: 8080
   webproxy: true
   ingresses:
+    - https://veilarbperson.prod-fss-pub.nais.io
     - https://veilarbperson.nais.adeo.no
     - https://app.adeo.no/veilarbperson
   liveness:
@@ -54,6 +55,9 @@ spec:
       rules:
         - application: paw-proxy
           namespace: paw
+        - application: veilarbpersonflate
+          namespace: poao
+          cluster: prod-gcp
   env:
     - name: VIRKSOMHET_PERSON_V3_URL
       value: https://app.adeo.no/tpsws-aura/ws/Person/v3
