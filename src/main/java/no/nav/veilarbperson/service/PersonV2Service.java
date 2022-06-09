@@ -139,7 +139,7 @@ public class PersonV2Service {
         );
     }
 
-    private Familiemedlem mapFamiliemedlemUtenFnr(HentPerson.RelasjonUtenIdent personUtenFnr) {
+    private Familiemedlem mapFamiliemedlemUtenFnr(HentPerson.RelatertPersonUtenFolkeregisteridentifikator personUtenFnr) {
         return new Familiemedlem()
                 .setFornavn(personUtenFnr.getNavn().getFornavn())
                 .setFodselsdato(personUtenFnr.getFoedselsdato())
