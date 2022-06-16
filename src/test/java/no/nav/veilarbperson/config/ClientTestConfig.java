@@ -1,9 +1,7 @@
 package no.nav.veilarbperson.config;
 
-import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.BrukerIdenter;
-import no.nav.common.client.aktorregister.AktorregisterClient;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.featuretoggle.UnleashClient;
@@ -14,7 +12,6 @@ import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
-import no.nav.common.utils.EnvironmentUtils;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.dkif.DkifClient;
@@ -34,15 +31,12 @@ import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
-import no.nav.veilarbperson.service.AuthService;
-import no.nav.veilarbperson.utils.DownstreamApi;
 import okhttp3.Response;
 import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 
 import java.util.Collections;
 import java.util.List;
