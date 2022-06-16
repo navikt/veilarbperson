@@ -12,7 +12,6 @@ import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +29,6 @@ public class SelftTestConfig {
             EgenAnsattClient egenAnsattClient,
             KodeverkClient kodeverkClient,
             PersonClient personClient,
-            VeilarbportefoljeClient veilarbportefoljeClient,
             SkjermetClient skjermetClient,
             Norg2Client norg2Client,
             PdlClient pdlClient,
@@ -43,7 +41,6 @@ public class SelftTestConfig {
                 new SelfTestCheck("EgenAnsatt_v1 (SOAP) ", false, egenAnsattClient),
                 new SelfTestCheck("Felles kodeverk", false, kodeverkClient),
                 new SelfTestCheck("Person_v3 (SOAP)", true, personClient),
-                new SelfTestCheck("Veilarbportefolje", false, veilarbportefoljeClient),
                 new SelfTestCheck("Norg2", false, norg2Client),
                 new SelfTestCheck("PDL", true, pdlClient),
                 new SelfTestCheck("skjermede-personer", true, skjermetClient),

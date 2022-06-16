@@ -41,6 +41,7 @@ import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClientImpl
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import no.nav.veilarbperson.service.AuthService;
+import no.nav.veilarbperson.utils.DownstreamApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -81,6 +82,7 @@ public class ClientConfig {
     }
 
     @Bean
+    @Deprecated
     public VeilarbportefoljeClient veilarbportefoljeClient(AuthService authService) {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(VEILARBPORTEFOLJE, true)
@@ -94,8 +96,8 @@ public class ClientConfig {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(VEILARBOPPFOLGING, true)
                 : createNaisPreprodIngressUrl(VEILARBOPPFOLGING, "q1", true);
-
-        return new VeilarboppfolgingClientImpl(url, authService::getInnloggetBrukerToken);
+        DownstreamApi veilarboppfolgingApi = new DownstreamApi(EnvironmentUtils.requireClusterName(), "pto", VEILARBOPPFOLGING);
+        return new VeilarboppfolgingClientImpl(url, authService.contextAwareUserTokenSupplier(veilarboppfolgingApi));
     }
 
     @Bean
@@ -114,6 +116,7 @@ public class ClientConfig {
     }
 
     @Bean
+    @Deprecated
     public EgenAnsattClient egenAnsattClient(EnvironmentProperties properties, StsConfig stsConfig) {
         return new EgenAnsattClientImpl(properties.getEgenAnsattV1Endpoint(), stsConfig);
     }
@@ -154,7 +157,7 @@ public class ClientConfig {
     @Bean
     public DifiCient difiCient(String xNavApikey, DifiAccessTokenProviderImpl difiAccessTokenProvider) {
         String apiGwSuffix = isProduction() ? "" : "-q1";
-        String url = "https://api-gw"+ apiGwSuffix + ".adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa";
+        String url = "https://api-gw" + apiGwSuffix + ".adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa";
 
         return new DifiClientImpl(difiAccessTokenProvider, xNavApikey, url);
     }

@@ -26,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,6 +47,7 @@ public class PersonV2Service {
     private final PersonClient personClient;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
+    private final Supplier<String> userTokenProviderPdl;
     private final SystemUserTokenProvider systemUserTokenProvider;
 
     @Autowired
@@ -65,6 +67,7 @@ public class PersonV2Service {
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
         this.systemUserTokenProvider = systemUserTokenProvider;
+        this.userTokenProviderPdl = authService.contextAwareUserTokenSupplier(new DownstreamApi(EnvironmentUtils.requireClusterName(), "pdl", "pdl-api"));
     }
 
     public HentPerson.Person hentPerson(Fnr personIdent) {
@@ -72,13 +75,8 @@ public class PersonV2Service {
     }
 
     private PdlAuth getPdlAuth() {
-        if (authService.erAadOboToken()) {
-            DownstreamApi pdlDownstreamApi =
-                    new DownstreamApi(EnvironmentUtils.requireClusterName(), "pdl", "pdl-api");
-            return new PdlAuth(authService.getAadOboTokenForTjeneste(pdlDownstreamApi), Optional.empty());
-        }
         return new PdlAuth(
-                authService.getInnloggetBrukerToken(),
+                userTokenProviderPdl.get(),
                 Optional.of(systemUserTokenProvider.getSystemUserToken())
         );
     }
