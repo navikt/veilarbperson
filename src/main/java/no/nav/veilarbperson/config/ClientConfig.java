@@ -1,7 +1,6 @@
 package no.nav.veilarbperson.config;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.CachedAktorOppslagClient;
 import no.nav.common.client.aktoroppslag.PdlAktorOppslagClient;
@@ -46,7 +45,6 @@ import no.nav.veilarbperson.utils.DownstreamApi;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 import java.util.function.Supplier;
 
@@ -54,7 +52,6 @@ import static java.lang.String.format;
 import static no.nav.common.utils.EnvironmentUtils.requireClusterName;
 import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.*;
-import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
 
 @Slf4j
 @Configuration
