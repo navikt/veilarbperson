@@ -324,12 +324,6 @@ public class ClientTestConfig {
         return mock(AzureAdOnBehalfOfTokenClient.class);
     }
 
-    @Bean
-    @Primary
-    public Supplier<String> userTokenProviderDefault() {
-        return () -> "test_Primary";
-    }
-
     @Bean("veilarboppfolging")
     public Supplier<String> userTokenProviderVeilarboppfolging() {
         return () -> "test_veilarboppfolging";

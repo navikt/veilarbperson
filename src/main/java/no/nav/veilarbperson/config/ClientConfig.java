@@ -204,12 +204,6 @@ public class ClientConfig {
                 .buildOnBehalfOfTokenClient();
     }
 
-    @Bean
-    @Primary
-    public Supplier<String> userTokenProviderDefault(AuthContextHolder authContextHolder) {
-        return authContextHolder::requireIdTokenString;
-    }
-
     @Bean("veilarboppfolging")
     public Supplier<String> userTokenProviderVeilarboppfolging(AuthService authService) {
         return authService.contextAwareUserTokenSupplier(new DownstreamApi(EnvironmentUtils.requireClusterName(), "pto", VEILARBOPPFOLGING));
