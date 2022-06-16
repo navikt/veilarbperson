@@ -23,6 +23,7 @@ import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.PdlClient;
+import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
@@ -41,7 +42,6 @@ import org.springframework.context.annotation.Import;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static no.nav.veilarbperson.utils.TestData.TEST_AKTOR_ID;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
@@ -317,14 +317,8 @@ public class ClientTestConfig {
     public AzureAdOnBehalfOfTokenClient azureAdOnBehalfOfTokenClient() {
         return mock(AzureAdOnBehalfOfTokenClient.class);
     }
-
-    @Bean("veilarboppfolging")
-    public Supplier<String> userTokenProviderVeilarboppfolging() {
-        return () -> "test_veilarboppfolging";
-    }
-
-    @Bean("pdl")
-    public Supplier<String> userTokenProviderPdl() {
-        return () -> "test_pdl";
+    @Bean
+    public UserTokenProviderPdl userTokenProviderPdl() {
+        return new UserTokenProviderPdl(() -> "test");
     }
 }

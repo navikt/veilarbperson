@@ -15,9 +15,9 @@ import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
+import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -58,7 +58,7 @@ public class PersonV2Service {
                            SkjermetClient skjermetClient,
                            KodeverkService kodeverkService,
                            SystemUserTokenProvider systemUserTokenProvider,
-                           @Qualifier("pdl") Supplier<String> userTokenProviderPdl
+                           UserTokenProviderPdl userTokenProviderPdl
     ) {
         this.pdlClient = pdlClient;
         this.authService = authService;
@@ -68,7 +68,7 @@ public class PersonV2Service {
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
         this.systemUserTokenProvider = systemUserTokenProvider;
-        this.userTokenProviderPdl = userTokenProviderPdl;
+        this.userTokenProviderPdl = userTokenProviderPdl.get();
     }
 
     public HentPerson.Person hentPerson(Fnr personIdent) {

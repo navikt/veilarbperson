@@ -42,7 +42,7 @@ import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.utils.DownstreamApi;
-import org.springframework.beans.factory.annotation.Qualifier;
+import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -92,11 +92,13 @@ public class ClientConfig {
     }
 
     @Bean
-    public VeilarboppfolgingClient veilarboppfolgingClient(@Qualifier("veilarboppfolging") Supplier<String> veilarboppfolgingToken) {
+    public VeilarboppfolgingClient veilarboppfolgingClient(AuthService authService) {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(VEILARBOPPFOLGING, true)
                 : createNaisPreprodIngressUrl(VEILARBOPPFOLGING, "q1", true);
-        return new VeilarboppfolgingClientImpl(url, veilarboppfolgingToken);
+        return new VeilarboppfolgingClientImpl(url, authService.contextAwareUserTokenSupplier(
+                new DownstreamApi(EnvironmentUtils.requireClusterName(), "pto", VEILARBOPPFOLGING))
+        );
     }
 
     @Bean
@@ -201,14 +203,9 @@ public class ClientConfig {
                 .buildOnBehalfOfTokenClient();
     }
 
-    @Bean("veilarboppfolging")
-    public Supplier<String> userTokenProviderVeilarboppfolging(AuthService authService) {
-        return authService.contextAwareUserTokenSupplier(new DownstreamApi(EnvironmentUtils.requireClusterName(), "pto", VEILARBOPPFOLGING));
-    }
-
-    @Bean("pdl")
-    public Supplier<String> userTokenProviderPdl(AuthService authService) {
-        return authService.contextAwareUserTokenSupplier(new DownstreamApi(EnvironmentUtils.requireClusterName(), "pdl", "pdl-api"));
+    @Bean
+    public UserTokenProviderPdl userTokenProviderPdl(AuthService authService) {
+        return new UserTokenProviderPdl(authService, requireClusterName());
     }
 
     public static boolean isProduction() {
