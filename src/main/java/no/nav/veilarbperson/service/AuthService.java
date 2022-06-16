@@ -126,6 +126,14 @@ public class AuthService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Subject is missing"));
     }
 
+    public boolean erAADToken() {
+        String azureAdIssuer = environmentProperties.getNaisAadIssuer();
+        String tokenIssuer = authContextHolder.getIdTokenClaims()
+                .map(JWTClaimsSet::getIssuer)
+                .orElseThrow();
+        return azureAdIssuer.equals(tokenIssuer);
+    }
+
     public Supplier<String> contextAwareUserTokenSupplier(DownstreamApi receivingApp) {
         final String azureAdIssuer = environmentProperties.getNaisAadIssuer();
         String token = authContextHolder.requireIdTokenString();

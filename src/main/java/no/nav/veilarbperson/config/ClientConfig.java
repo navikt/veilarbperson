@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.config;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.CachedAktorOppslagClient;
 import no.nav.common.client.aktoroppslag.PdlAktorOppslagClient;
@@ -42,8 +43,10 @@ import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.utils.DownstreamApi;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import java.util.function.Supplier;
 
@@ -92,12 +95,11 @@ public class ClientConfig {
     }
 
     @Bean
-    public VeilarboppfolgingClient veilarboppfolgingClient(AuthService authService) {
+    public VeilarboppfolgingClient veilarboppfolgingClient(@Qualifier("veilarboppfolging") Supplier<String> veilarboppfolgingToken) {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(VEILARBOPPFOLGING, true)
                 : createNaisPreprodIngressUrl(VEILARBOPPFOLGING, "q1", true);
-        DownstreamApi veilarboppfolgingApi = new DownstreamApi(EnvironmentUtils.requireClusterName(), "pto", VEILARBOPPFOLGING);
-        return new VeilarboppfolgingClientImpl(url, authService.contextAwareUserTokenSupplier(veilarboppfolgingApi));
+        return new VeilarboppfolgingClientImpl(url, veilarboppfolgingToken);
     }
 
     @Bean
@@ -200,6 +202,22 @@ public class ClientConfig {
         return AzureAdTokenClientBuilder.builder()
                 .withNaisDefaults()
                 .buildOnBehalfOfTokenClient();
+    }
+
+    @Bean
+    @Primary
+    public Supplier<String> userTokenProviderDefault(AuthContextHolder authContextHolder) {
+        return authContextHolder::requireIdTokenString;
+    }
+
+    @Bean("veilarboppfolging")
+    public Supplier<String> userTokenProviderVeilarboppfolging(AuthService authService) {
+        return authService.contextAwareUserTokenSupplier(new DownstreamApi(EnvironmentUtils.requireClusterName(), "pto", VEILARBOPPFOLGING));
+    }
+
+    @Bean("pdl")
+    public Supplier<String> userTokenProviderPdl(AuthService authService) {
+        return authService.contextAwareUserTokenSupplier(new DownstreamApi(EnvironmentUtils.requireClusterName(), "pdl", "pdl-api"));
     }
 
     public static boolean isProduction() {

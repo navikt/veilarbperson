@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.config;
 
+import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.BrukerIdenter;
 import no.nav.common.client.aktorregister.AktorregisterClient;
@@ -13,6 +14,7 @@ import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
+import no.nav.common.utils.EnvironmentUtils;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.dkif.DkifClient;
@@ -32,16 +34,20 @@ import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
 import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
+import no.nav.veilarbperson.service.AuthService;
+import no.nav.veilarbperson.utils.DownstreamApi;
 import okhttp3.Response;
 import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static no.nav.veilarbperson.utils.TestData.TEST_AKTOR_ID;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
@@ -316,5 +322,21 @@ public class ClientTestConfig {
     @Bean
     public AzureAdOnBehalfOfTokenClient azureAdOnBehalfOfTokenClient() {
         return mock(AzureAdOnBehalfOfTokenClient.class);
+    }
+
+    @Bean
+    @Primary
+    public Supplier<String> userTokenProviderDefault() {
+        return () -> "test_Primary";
+    }
+
+    @Bean("veilarboppfolging")
+    public Supplier<String> userTokenProviderVeilarboppfolging() {
+        return () -> "test_veilarboppfolging";
+    }
+
+    @Bean("pdl")
+    public Supplier<String> userTokenProviderPdl() {
+        return () -> "test_pdl";
     }
 }

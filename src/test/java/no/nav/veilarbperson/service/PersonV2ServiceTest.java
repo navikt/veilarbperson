@@ -27,6 +27,7 @@ import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.TestUtils;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -82,7 +83,8 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 personClient,
                 skjermetClient,
                 kodeverkService,
-                systemUserTokenProvider);
+                systemUserTokenProvider,
+                () -> "TEST");
         person = hentPerson(FNR);
     }
 
