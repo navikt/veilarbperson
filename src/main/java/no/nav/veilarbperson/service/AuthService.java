@@ -136,8 +136,8 @@ public class AuthService {
 
     public Supplier<String> contextAwareUserTokenSupplier(DownstreamApi receivingApp) {
         final String azureAdIssuer = environmentProperties.getNaisAadIssuer();
-        String token = authContextHolder.requireIdTokenString();
         return () -> {
+            String token = authContextHolder.requireIdTokenString();
             String tokenIssuer = authContextHolder.getIdTokenClaims()
                     .map(JWTClaimsSet::getIssuer)
                     .orElseThrow();
