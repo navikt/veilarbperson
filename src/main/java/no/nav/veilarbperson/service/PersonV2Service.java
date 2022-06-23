@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
-import no.nav.common.utils.EnvironmentUtils;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
@@ -14,9 +13,9 @@ import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.domain.*;
-import no.nav.veilarbperson.utils.DownstreamApi;
 import no.nav.veilarbperson.utils.PersonDataMapper;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
+import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,6 +46,7 @@ public class PersonV2Service {
     private final PersonClient personClient;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
+    private final Supplier<String> userTokenProviderPdl;
     private final SystemUserTokenProvider systemUserTokenProvider;
 
     @Autowired
@@ -56,7 +57,9 @@ public class PersonV2Service {
                            PersonClient personClient,
                            SkjermetClient skjermetClient,
                            KodeverkService kodeverkService,
-                           SystemUserTokenProvider systemUserTokenProvider) {
+                           SystemUserTokenProvider systemUserTokenProvider,
+                           UserTokenProviderPdl userTokenProviderPdl
+    ) {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.dkifClient = dkifClient;
@@ -65,6 +68,7 @@ public class PersonV2Service {
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
         this.systemUserTokenProvider = systemUserTokenProvider;
+        this.userTokenProviderPdl = userTokenProviderPdl.get();
     }
 
     public HentPerson.Person hentPerson(Fnr personIdent) {
@@ -72,13 +76,14 @@ public class PersonV2Service {
     }
 
     private PdlAuth getPdlAuth() {
-        if (authService.erAadOboToken()) {
-            DownstreamApi pdlDownstreamApi =
-                    new DownstreamApi(EnvironmentUtils.requireClusterName(), "pdl", "pdl-api");
-            return new PdlAuth(authService.getAadOboTokenForTjeneste(pdlDownstreamApi), Optional.empty());
+        if (authService.erAADToken()) {
+            return new PdlAuth(
+                    userTokenProviderPdl.get(),
+                    Optional.empty()
+            );
         }
         return new PdlAuth(
-                authService.getInnloggetBrukerToken(),
+                userTokenProviderPdl.get(),
                 Optional.of(systemUserTokenProvider.getSystemUserToken())
         );
     }
@@ -204,7 +209,7 @@ public class PersonV2Service {
         switch (geografiskTilknytning.getGtType()) {
             case "KOMMUNE":
                 return geografiskTilknytning.getGtKommune();
-            case"BYDEL":
+            case "BYDEL":
                 return geografiskTilknytning.getGtBydel();
             case "UTLAND":
                 return geografiskTilknytning.getGtLand();

@@ -2,7 +2,6 @@ package no.nav.veilarbperson.config;
 
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.BrukerIdenter;
-import no.nav.common.client.aktorregister.AktorregisterClient;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.featuretoggle.UnleashClient;
@@ -24,6 +23,7 @@ import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.PdlClient;
+import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
@@ -316,5 +316,9 @@ public class ClientTestConfig {
     @Bean
     public AzureAdOnBehalfOfTokenClient azureAdOnBehalfOfTokenClient() {
         return mock(AzureAdOnBehalfOfTokenClient.class);
+    }
+    @Bean
+    public UserTokenProviderPdl userTokenProviderPdl() {
+        return new UserTokenProviderPdl(() -> "test");
     }
 }

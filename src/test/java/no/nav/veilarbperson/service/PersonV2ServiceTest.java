@@ -3,21 +3,19 @@ package no.nav.veilarbperson.service;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
-import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.PdlClient;
+import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.domain.RelasjonsBosted;
 import no.nav.veilarbperson.client.person.domain.TpsPerson;
-import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.PersonV2Data;
@@ -73,6 +71,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(norg2Client.hentTilhorendeEnhet(anyString(), any(), anyBoolean())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentPerson(FNR)).thenReturn(new TpsPerson().setBarn(Collections.emptyList()));
+        UserTokenProviderPdl tokenProvider = new UserTokenProviderPdl(() -> "test");
 
         personV2Service = new PersonV2Service(
                 pdlClient,
@@ -82,7 +81,8 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 personClient,
                 skjermetClient,
                 kodeverkService,
-                systemUserTokenProvider);
+                systemUserTokenProvider,
+                tokenProvider);
         person = hentPerson(FNR);
     }
 
