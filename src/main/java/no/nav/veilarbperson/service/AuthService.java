@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static java.util.Collections.emptyList;
 
@@ -97,23 +98,6 @@ public class AuthService {
                 && getRolesClaim().contains("access_as_application");
     }
 
-    public String getAadOboTokenForTjeneste(DownstreamApi api) {
-        String scope = "api://" + api.cluster + "." + api.namespace + "." + api.serviceName + "/.default";
-        return aadOboTokenClient.exchangeOnBehalfOfToken(scope, getInnloggetBrukerToken());
-    }
-
-    public boolean erAadOboToken() {
-        return harIssuer(environmentProperties.getNaisAadIssuer()) && harClaim("oid") && harClaim("NAVident");
-    }
-
-    private boolean harIssuer(String issuer) {
-        return getIssuerClaim().map(issuer::equals).orElse(false);
-    }
-
-    private boolean harClaim(String claim) {
-        return authContextHolder.getIdTokenClaims().map(claimsSet -> claimsSet.getClaim(claim)).isPresent();
-    }
-
     private Optional<String> getIssuerClaim() {
         return authContextHolder.getIdTokenClaims().map(JWTClaimsSet::getIssuer);
     }
@@ -140,5 +124,31 @@ public class AuthService {
     public String getInnloggerBrukerUid() {
         return authContextHolder.getUid()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Subject is missing"));
+    }
+
+    public boolean erAADToken() {
+        String azureAdIssuer = environmentProperties.getNaisAadIssuer();
+        String tokenIssuer = authContextHolder.getIdTokenClaims()
+                .map(JWTClaimsSet::getIssuer)
+                .orElseThrow();
+        return azureAdIssuer.equals(tokenIssuer);
+    }
+
+    public Supplier<String> contextAwareUserTokenSupplier(DownstreamApi receivingApp) {
+        final String azureAdIssuer = environmentProperties.getNaisAadIssuer();
+        return () -> {
+            String token = authContextHolder.requireIdTokenString();
+            String tokenIssuer = authContextHolder.getIdTokenClaims()
+                    .map(JWTClaimsSet::getIssuer)
+                    .orElseThrow();
+            return azureAdIssuer.equals(tokenIssuer)
+                    ? getAadOboTokenForTjeneste(token, receivingApp)
+                    : token;
+        };
+    }
+
+    private String getAadOboTokenForTjeneste(String token, DownstreamApi api) {
+        String scope = "api://" + api.cluster + "." + api.namespace + "." + api.serviceName + "/.default";
+        return aadOboTokenClient.exchangeOnBehalfOfToken(scope, token);
     }
 }

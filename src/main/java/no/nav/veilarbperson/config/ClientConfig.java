@@ -41,6 +41,8 @@ import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClientImpl
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import no.nav.veilarbperson.service.AuthService;
+import no.nav.veilarbperson.utils.DownstreamApi;
+import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -50,7 +52,6 @@ import static java.lang.String.format;
 import static no.nav.common.utils.EnvironmentUtils.requireClusterName;
 import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.*;
-import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
 
 @Slf4j
 @Configuration
@@ -81,6 +82,7 @@ public class ClientConfig {
     }
 
     @Bean
+    @Deprecated
     public VeilarbportefoljeClient veilarbportefoljeClient(AuthService authService) {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(VEILARBPORTEFOLJE, true)
@@ -94,8 +96,9 @@ public class ClientConfig {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(VEILARBOPPFOLGING, true)
                 : createNaisPreprodIngressUrl(VEILARBOPPFOLGING, "q1", true);
-
-        return new VeilarboppfolgingClientImpl(url, authService::getInnloggetBrukerToken);
+        return new VeilarboppfolgingClientImpl(url, authService.contextAwareUserTokenSupplier(
+                new DownstreamApi(EnvironmentUtils.requireClusterName(), "pto", VEILARBOPPFOLGING))
+        );
     }
 
     @Bean
@@ -114,6 +117,7 @@ public class ClientConfig {
     }
 
     @Bean
+    @Deprecated
     public EgenAnsattClient egenAnsattClient(EnvironmentProperties properties, StsConfig stsConfig) {
         return new EgenAnsattClientImpl(properties.getEgenAnsattV1Endpoint(), stsConfig);
     }
@@ -154,7 +158,7 @@ public class ClientConfig {
     @Bean
     public DifiCient difiCient(String xNavApikey, DifiAccessTokenProviderImpl difiAccessTokenProvider) {
         String apiGwSuffix = isProduction() ? "" : "-q1";
-        String url = "https://api-gw"+ apiGwSuffix + ".adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa";
+        String url = "https://api-gw" + apiGwSuffix + ".adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa";
 
         return new DifiClientImpl(difiAccessTokenProvider, xNavApikey, url);
     }
@@ -197,6 +201,11 @@ public class ClientConfig {
         return AzureAdTokenClientBuilder.builder()
                 .withNaisDefaults()
                 .buildOnBehalfOfTokenClient();
+    }
+
+    @Bean
+    public UserTokenProviderPdl userTokenProviderPdl(AuthService authService) {
+        return new UserTokenProviderPdl(authService, requireClusterName());
     }
 
     public static boolean isProduction() {
