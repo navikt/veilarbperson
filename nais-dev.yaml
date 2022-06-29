@@ -63,6 +63,8 @@ spec:
           cluster: dev-gcp
         - application: veilarbvedtaksstotte
           namespace: pto
+        - application: veilarboppgave
+          namespace: pto
   env:
     - name: VIRKSOMHET_PERSON_V3_URL
       value: https://app-q1.adeo.no/tpsws-aura/ws/Person/v3

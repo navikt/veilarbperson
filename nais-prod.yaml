@@ -60,6 +60,8 @@ spec:
           cluster: prod-gcp
         - application: veilarbvedtaksstotte
           namespace: pto
+        - application: veilarboppgave
+          namespace: pto
 
   env:
     - name: VIRKSOMHET_PERSON_V3_URL
