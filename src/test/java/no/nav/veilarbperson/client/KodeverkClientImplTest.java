@@ -47,6 +47,7 @@ public class KodeverkClientImplTest {
 
         Map<String, String> kodeverkBeskrivelser = kodeverkClient.hentKodeverkBeskrivelser(KODEVERK_LANDKODER);
         assertEquals("BULGARIA", kodeverkBeskrivelser.get("BGR"));
+        assertEquals("JUGOSLAVIA", kodeverkBeskrivelser.get("YUG"));
     }
 
     @Test
