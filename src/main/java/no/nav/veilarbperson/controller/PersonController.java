@@ -68,7 +68,9 @@ public class PersonController {
 
     @GetMapping("/geografisktilknytning")
     public GeografiskTilknytning geografisktilknytning(@RequestParam(value = "fnr", required = false) Fnr fnr) {
-        throw new ResponseStatusException(HttpStatus.GONE, "Bytt til v2 endepunkt");
+        Fnr fodselsnummer = hentIdentForEksternEllerIntern(fnr);
+        authService.sjekkLesetilgang(fodselsnummer);
+        return personV2Service.hentGeografiskTilknytning(fodselsnummer);
     }
 
     @GetMapping("/cv_jobbprofil")
@@ -83,4 +85,23 @@ public class PersonController {
         return registreringService.hentRegistrering(fnr);
     }
 
+    // TODO: Det er hårete å måtte skille på ekstern og intern
+    //  Lag istedenfor en egen controller for interne operasjoner og en annen for eksterne
+    private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {
+        Fnr fnr;
+
+        if (authService.erInternBruker()) {
+            if (queryParamFnr == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler fnr");
+            }
+            fnr = queryParamFnr;
+        } else if (authService.erEksternBruker()) {
+            fnr = Fnr.of(authService.getInnloggerBrukerUid());
+        } else {
+            // Systembruker har ikke tilgang
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        return fnr;
+    }
 }
