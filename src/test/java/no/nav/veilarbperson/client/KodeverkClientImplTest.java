@@ -65,4 +65,21 @@ public class KodeverkClientImplTest {
         assertEquals("SUNDEBRU", kodeverkBeskrivelser.get("4971"));
     }
 
+    @Test
+    public void testFindingMostRecentValue() {
+        String kodeverkJson = TestUtils.readTestResourceFile("kodeverk-spraak.json");
+        String apiUrl = "http://localhost:" + wireMockRule.port();
+        KodeverkClientImpl kodeverkClient = new KodeverkClientImpl(apiUrl);
+
+        givenThat(get(anyUrl())
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody(kodeverkJson))
+        );
+        Map<String, String> kodeverkBeskrivelser = kodeverkClient.hentKodeverkBeskrivelser(KODEVERK_SPRAAK);
+        assertEquals("Hindi", kodeverkBeskrivelser.get("HI"));
+        assertEquals("Pushto", kodeverkBeskrivelser.get("PS"));
+        assertEquals("Portugesisk", kodeverkBeskrivelser.get("PT"));
+    }
+
 }
