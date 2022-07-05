@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagResponseDTO;
+import no.nav.veilarbperson.domain.GeografiskTilknytning;
 import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.TilrettelagtKommunikasjonData;
@@ -12,10 +13,12 @@ import no.nav.veilarbperson.domain.VergeOgFullmaktData;
 import no.nav.veilarbperson.domain.Malform;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonV2Service;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
@@ -67,6 +70,7 @@ public class PersonV2Controller {
         authService.sjekkLesetilgang(fnr);
         return personV2Service.hentNavn(fnr);
     }
+
     @GetMapping("/postadresse")
     @Operation(summary = "Henter postadresse til en person fra PDL")
     public RegoppslagResponseDTO hentPostadresse(@RequestParam("fnr") Fnr fnr) {
@@ -74,4 +78,32 @@ public class PersonV2Controller {
         authService.sjekkLesetilgang(fnr);
         return regoppslagClient.hentPostadresse(fnr);
     }
+
+    @GetMapping("/geografisktilknytning")
+    public GeografiskTilknytning geografisktilknytning(@RequestParam(value = "fnr", required = false) Fnr fnr) {
+        Fnr fodselsnummer = hentIdentForEksternEllerIntern(fnr);
+        authService.sjekkLesetilgang(fodselsnummer);
+        return personV2Service.hentGeografiskTilknytning(fodselsnummer);
+    }
+
+    // TODO: Det er hårete å måtte skille på ekstern og intern
+    //  Lag istedenfor en egen controller for interne operasjoner og en annen for eksterne
+    private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {
+        Fnr fnr;
+
+        if (authService.erInternBruker()) {
+            if (queryParamFnr == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler fnr");
+            }
+            fnr = queryParamFnr;
+        } else if (authService.erEksternBruker()) {
+            fnr = Fnr.of(authService.getInnloggerBrukerUid());
+        } else {
+            // Systembruker har ikke tilgang
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        return fnr;
+    }
+
 }

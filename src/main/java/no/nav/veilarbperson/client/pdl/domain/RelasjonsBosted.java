@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.client.person.domain;
+package no.nav.veilarbperson.client.pdl.domain;
 
 public enum RelasjonsBosted {
     SAMME_BOSTED,

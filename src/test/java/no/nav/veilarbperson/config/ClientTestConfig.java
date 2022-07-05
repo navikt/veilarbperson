@@ -16,7 +16,6 @@ import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
-import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
@@ -25,11 +24,9 @@ import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.person.domain.TpsPerson;
+import no.nav.veilarbperson.client.person.TpsPerson;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
-import no.nav.veilarbperson.client.veilarbportefolje.Personinfo;
-import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import okhttp3.Response;
@@ -144,21 +141,6 @@ public class ClientTestConfig {
     }
 
     @Bean
-    public EgenAnsattClient egenAnsattClient() {
-        return new EgenAnsattClient() {
-            @Override
-            public boolean erEgenAnsatt(Fnr ident) {
-                return false;
-            }
-
-            @Override
-            public HealthCheckResult checkHealth() {
-                return HealthCheckResult.healthy();
-            }
-        };
-    }
-
-    @Bean
     public SkjermetClient skjermetClient() {
         return new SkjermetClient() {
             @Override
@@ -193,33 +175,8 @@ public class ClientTestConfig {
         return new PersonClient() {
             @Override
             public TpsPerson hentPerson(Fnr ident) {
-                return new TpsPerson()
-                        .setFornavn("Test")
-                        .setEtternavn("Testersen")
-                        .setSammensattNavn("Test Testersen")
-                        .setFodselsnummer(ident);
+                return new TpsPerson().setKontonummer("123456789");
             }
-
-            @Override
-            public String hentSikkerhetstiltak(Fnr ident) {
-                return "sikkerhetstiltak";
-            }
-
-            @Override
-            public HealthCheckResult checkHealth() {
-                return HealthCheckResult.healthy();
-            }
-        };
-    }
-
-    @Bean
-    public VeilarbportefoljeClient veilarbportefoljeClient() {
-        return new VeilarbportefoljeClient() {
-            @Override
-            public Personinfo hentPersonInfo(Fnr fodselsnummer) {
-                return new Personinfo();
-            }
-
             @Override
             public HealthCheckResult checkHealth() {
                 return HealthCheckResult.healthy();

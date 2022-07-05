@@ -2,7 +2,7 @@ package no.nav.veilarbperson.utils;
 
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPerson;
-import no.nav.veilarbperson.client.person.domain.RelasjonsBosted;
+import no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted;
 import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.PersonNavnV2;
@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Optional.ofNullable;
-import static no.nav.veilarbperson.client.person.domain.RelasjonsBosted.ANNET_BOSTED;
-import static no.nav.veilarbperson.client.person.domain.RelasjonsBosted.SAMME_BOSTED;
-import static no.nav.veilarbperson.client.person.domain.RelasjonsBosted.UKJENT_BOSTED;
+import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.ANNET_BOSTED;
+import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.SAMME_BOSTED;
+import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.UKJENT_BOSTED;
 
 public class PersonV2DataMapper {
 
