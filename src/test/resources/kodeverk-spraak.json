@@ -12,6 +12,16 @@
         }
       }
     ],
+    "TST": {
+      "gyldigFra": "1900-01-01",
+      "gyldigTil": "9999-12-31",
+      "beskrivelser": {
+        "nb": {
+          "term": "Test",
+          "tekst": "Test"
+        }
+      }
+    },
     "PS": [
       {
         "gyldigFra": "1900-01-01",
