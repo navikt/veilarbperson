@@ -2,8 +2,11 @@ package no.nav.veilarbperson.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
+import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
@@ -13,7 +16,7 @@ import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.domain.*;
-import no.nav.veilarbperson.utils.PersonDataMapper;
+import no.nav.veilarbperson.client.person.PersonDataMapper;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
@@ -30,8 +33,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static no.nav.veilarbperson.client.person.domain.RelasjonsBosted.UKJENT_BOSTED;
-import static no.nav.veilarbperson.utils.Mappers.fraNorg2Enhet;
+import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.UKJENT_BOSTED;
+import static no.nav.veilarbperson.client.person.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.sivilstandMapper;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
@@ -39,6 +42,7 @@ import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFull
 @Slf4j
 @Service
 public class PersonV2Service {
+    private static final String UNLEASH_NIVAA4_DISABLED = "veilarbperson.nivaa4.disabled";
     private final PdlClient pdlClient;
     private final AuthService authService;
     private final DkifClient dkifClient;
@@ -48,18 +52,21 @@ public class PersonV2Service {
     private final KodeverkService kodeverkService;
     private final Supplier<String> userTokenProviderPdl;
     private final SystemUserTokenProvider systemUserTokenProvider;
+    private final DifiCient difiCient;
+    private final UnleashClient unleashClient;
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient,
+                           DifiCient difiCient,
                            AuthService authService,
                            DkifClient dkifClient,
                            Norg2Client norg2Client,
                            PersonClient personClient,
+                           UnleashClient unleashClient,
                            SkjermetClient skjermetClient,
                            KodeverkService kodeverkService,
-                           SystemUserTokenProvider systemUserTokenProvider,
-                           UserTokenProviderPdl userTokenProviderPdl
-    ) {
+                           UserTokenProviderPdl userTokenProviderPdl,
+                           SystemUserTokenProvider systemUserTokenProvider) {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.dkifClient = dkifClient;
@@ -69,6 +76,8 @@ public class PersonV2Service {
         this.kodeverkService = kodeverkService;
         this.systemUserTokenProvider = systemUserTokenProvider;
         this.userTokenProviderPdl = userTokenProviderPdl.get();
+        this.difiCient = difiCient;
+        this.unleashClient = unleashClient;
     }
 
     public HentPerson.Person hentPerson(Fnr personIdent) {
@@ -88,8 +97,8 @@ public class PersonV2Service {
         );
     }
 
-    public PersonData hentPersonDataFraTps(Fnr personIdent) {
-        return PersonDataMapper.tilPersonData(personClient.hentPerson(personIdent));
+    public PersonDataTPS hentPersonDataFraTps(Fnr personIdent) {
+        return PersonDataMapper.tilPersonDataTPS(personClient.hentPerson(personIdent));
     }
 
     public PersonV2Data hentFlettetPerson(Fnr fodselsnummer) {
@@ -112,8 +121,8 @@ public class PersonV2Service {
     }
 
     public void flettInnKontonummer(PersonV2Data person) {
-        PersonData personDataFraTps = hentPersonDataFraTps(person.getFodselsnummer());
-        person.setKontonummer(personDataFraTps.getKontonummer());
+        PersonDataTPS personDataTPSFraTps = hentPersonDataFraTps(person.getFodselsnummer());
+        person.setKontonummer(personDataTPSFraTps.getKontonummer());
     }
 
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse) {
@@ -197,6 +206,11 @@ public class PersonV2Service {
     private void flettInnEgenAnsatt(PersonV2Data personV2Data, Fnr fodselsnummer) {
         Boolean egenAnsatt = skjermetClient.hentSkjermet(fodselsnummer);
         personV2Data.setEgenAnsatt(egenAnsatt);
+    }
+
+    public GeografiskTilknytning hentGeografiskTilknytning(Fnr fodselsnummer) {
+        PdlAuth auth = getPdlAuth();
+        return new GeografiskTilknytning(hentGeografiskTilknytning(fodselsnummer, auth));
     }
 
     private String hentGeografiskTilknytning(Fnr fnr, PdlAuth auth) {
@@ -424,5 +438,15 @@ public class PersonV2Service {
         }
 
         return PersonV2DataMapper.navnMapper(personNavn.getNavn());
+    }
+
+    public HarLoggetInnRespons hentHarNivaa4(Fnr fodselsnummer) {
+        if (unleashClient.isEnabled(UNLEASH_NIVAA4_DISABLED)) {
+            return new HarLoggetInnRespons()
+                    .setErRegistrertIdPorten(true)
+                    .setHarbruktnivaa4(true)
+                    .setPersonidentifikator(fodselsnummer);
+        }
+        return difiCient.harLoggetInnSiste18mnd(fodselsnummer);
     }
 }
