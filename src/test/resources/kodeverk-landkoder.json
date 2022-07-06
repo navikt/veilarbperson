@@ -1,6 +1,18 @@
 {
   "betydninger": {
-    "YUG": [],
+    "YUG": [
+      {
+        "gyldigFra": "1944-01-01",
+        "gyldigTil": "2003-11-30",
+        "beskrivelser": {
+          "nb": {
+            "term": "JUGOSLAVIA",
+            "tekst": "JUGOSLAVIA"
+          }
+        }
+      }
+    ],
+    "EXA": [],
     "BGR": [
       {
         "gyldigFra": "1900-01-01",

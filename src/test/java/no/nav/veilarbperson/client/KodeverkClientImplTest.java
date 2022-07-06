@@ -47,6 +47,7 @@ public class KodeverkClientImplTest {
 
         Map<String, String> kodeverkBeskrivelser = kodeverkClient.hentKodeverkBeskrivelser(KODEVERK_LANDKODER);
         assertEquals("BULGARIA", kodeverkBeskrivelser.get("BGR"));
+        assertEquals("JUGOSLAVIA", kodeverkBeskrivelser.get("YUG"));
     }
 
     @Test
@@ -63,6 +64,24 @@ public class KodeverkClientImplTest {
 
         Map<String, String> kodeverkBeskrivelser = kodeverkClient.hentKodeverkBeskrivelser(KODEVERK_POSTNUMMER);
         assertEquals("SUNDEBRU", kodeverkBeskrivelser.get("4971"));
+    }
+
+    @Test
+    public void testFindingMostRecentValue() {
+        String kodeverkJson = TestUtils.readTestResourceFile("kodeverk-spraak.json");
+        String apiUrl = "http://localhost:" + wireMockRule.port();
+        KodeverkClientImpl kodeverkClient = new KodeverkClientImpl(apiUrl);
+
+        givenThat(get(anyUrl())
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody(kodeverkJson))
+        );
+        Map<String, String> kodeverkBeskrivelser = kodeverkClient.hentKodeverkBeskrivelser(KODEVERK_SPRAAK);
+        assertEquals("Hindi", kodeverkBeskrivelser.get("HI"));
+        assertEquals("Pushto", kodeverkBeskrivelser.get("PS"));
+        assertEquals("Portugesisk", kodeverkBeskrivelser.get("PT"));
+        assertEquals("Test", kodeverkBeskrivelser.get("TST"));
     }
 
 }
