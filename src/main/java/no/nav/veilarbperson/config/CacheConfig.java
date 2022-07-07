@@ -36,7 +36,7 @@ public class CacheConfig {
     @Bean
     public Cache nomskjermedepersonerCache() {
         return new CaffeineCache(NOM_SKJERMEDE_PERSONER_CACHE_NAME, Caffeine.newBuilder()
-                .expireAfterWrite(10, TimeUnit.MINUTES)
+                .expireAfterWrite(30, TimeUnit.MINUTES)
                 .maximumSize(500_000)
                 .build());
     }
