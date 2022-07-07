@@ -8,6 +8,8 @@ import no.nav.common.client.norg2.CachedNorg2Client;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
+import no.nav.common.metrics.InfluxClient;
+import no.nav.common.metrics.MetricsClient;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.token_client.builder.AzureAdTokenClientBuilder;
@@ -186,6 +188,11 @@ public class ClientConfig {
     @Bean
     public UserTokenProviderPdl userTokenProviderPdl(AuthService authService) {
         return new UserTokenProviderPdl(authService, requireClusterName());
+    }
+
+    @Bean
+    public MetricsClient influxMetricsClient() {
+        return new InfluxClient();
     }
 
     public static boolean isProduction() {

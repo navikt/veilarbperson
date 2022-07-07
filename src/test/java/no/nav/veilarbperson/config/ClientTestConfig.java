@@ -7,6 +7,7 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.selftest.SelfTestChecks;
+import no.nav.common.metrics.MetricsClient;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
@@ -274,8 +275,15 @@ public class ClientTestConfig {
     public AzureAdOnBehalfOfTokenClient azureAdOnBehalfOfTokenClient() {
         return mock(AzureAdOnBehalfOfTokenClient.class);
     }
+
     @Bean
     public UserTokenProviderPdl userTokenProviderPdl() {
         return new UserTokenProviderPdl(() -> "test");
     }
+
+    @Bean
+    public MetricsClient metricsClient() {
+        return mock(MetricsClient.class);
+    }
+
 }
