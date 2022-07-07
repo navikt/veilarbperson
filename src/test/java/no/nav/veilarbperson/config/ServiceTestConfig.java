@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @Import({
         AuthService.class,
-        PersonService.class,
         KodeverkService.class,
         PersonV2Service.class,
         CvJobbprofilService.class,

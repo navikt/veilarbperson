@@ -8,6 +8,8 @@ import no.nav.common.client.norg2.CachedNorg2Client;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
 import no.nav.common.cxf.StsConfig;
+import no.nav.common.metrics.InfluxClient;
+import no.nav.common.metrics.MetricsClient;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.token_client.builder.AzureAdTokenClientBuilder;
@@ -22,8 +24,6 @@ import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.difi.SbsServiceUser;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifClientImpl;
-import no.nav.veilarbperson.client.egenansatt.EgenAnsattClient;
-import no.nav.veilarbperson.client.egenansatt.EgenAnsattClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClientImpl;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
@@ -36,8 +36,6 @@ import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.PersonClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl;
-import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClient;
-import no.nav.veilarbperson.client.veilarbportefolje.VeilarbportefoljeClientImpl;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import no.nav.veilarbperson.service.AuthService;
@@ -82,16 +80,6 @@ public class ClientConfig {
     }
 
     @Bean
-    @Deprecated
-    public VeilarbportefoljeClient veilarbportefoljeClient(AuthService authService) {
-        String url = isProduction()
-                ? createNaisAdeoIngressUrl(VEILARBPORTEFOLJE, true)
-                : createNaisPreprodIngressUrl(VEILARBPORTEFOLJE, "q1", true);
-
-        return new VeilarbportefoljeClientImpl(url, authService::getInnloggetBrukerToken);
-    }
-
-    @Bean
     public VeilarboppfolgingClient veilarboppfolgingClient(AuthService authService) {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(VEILARBOPPFOLGING, true)
@@ -114,12 +102,6 @@ public class ClientConfig {
                 : createDevAdeoIngressUrl(PAM_CV_API, true);
 
         return new PamClientImpl(url, systemUserTokenProvider::getSystemUserToken);
-    }
-
-    @Bean
-    @Deprecated
-    public EgenAnsattClient egenAnsattClient(EnvironmentProperties properties, StsConfig stsConfig) {
-        return new EgenAnsattClientImpl(properties.getEgenAnsattV1Endpoint(), stsConfig);
     }
 
     @Bean
@@ -206,6 +188,11 @@ public class ClientConfig {
     @Bean
     public UserTokenProviderPdl userTokenProviderPdl(AuthService authService) {
         return new UserTokenProviderPdl(authService, requireClusterName());
+    }
+
+    @Bean
+    public MetricsClient influxMetricsClient() {
+        return new InfluxClient();
     }
 
     public static boolean isProduction() {
