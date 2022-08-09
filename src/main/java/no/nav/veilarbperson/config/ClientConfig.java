@@ -64,7 +64,7 @@ public class ClientConfig {
     public AktorOppslagClient aktorOppslagClient(SystemUserTokenProvider systemUserTokenProvider) {
         String pdlUrl = isProduction()
                 ? createProdInternalIngressUrl("pdl-api")
-                : createDevInternalIngressUrl("pdl-api-q1");
+                : createDevInternalIngressUrl("pdl-api");
 
         no.nav.common.client.pdl.PdlClientImpl pdlClient = new no.nav.common.client.pdl.PdlClientImpl(
                 pdlUrl,
