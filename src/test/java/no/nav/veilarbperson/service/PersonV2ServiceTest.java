@@ -40,6 +40,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Optional.ofNullable;
+import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.UKJENT_BOSTED;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,6 +65,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private String fnrRelatertSivilstand = "2134567890";
     private String fnrBarn1 = "12345678910";
     private String fnrBarn2 = "12345678911";
+    private String fnrBarnOpphoert = "111";
     List<Fnr> testFnrsTilBarna = new ArrayList<>(List.of(Fnr.of(fnrBarn1), Fnr.of(fnrBarn2)));
 
     @Before
@@ -151,12 +153,19 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentOpplysningerTilBarnaMedKodeOkFraPdlTest() {
-        configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
-        configurePdlResponse("pdl-hentPersonBolk-response.json", fnrBarn1, fnrBarn2);
-        hentGeografisktilknytning(FNR); // Må ha med fnr fordi dette flettes
+        configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrBarnOpphoert);
         List<Familiemedlem> barn = personV2Service.hentFlettetPerson(FNR).getBarn();
 
         assertEquals(1, barn.size());
+    }
+
+    @Test
+    public void hentOpplysningerTilBarnOpphortFraPdlTest() {
+        configurePdlResponse("pdl-hentPersonBolkOpphoert-response.json", fnrBarnOpphoert);
+        var adresse = hentPerson(FNR).getBostedsadresse().get(0);
+        var barn = personV2Service.hentFamiliemedlemOpplysninger(List.of(Fnr.of(fnrBarnOpphoert)), adresse);
+
+        assertEquals(0, barn.size());
     }
 
     @Test
@@ -309,7 +318,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         Sivilstand sivilstand = personV2Data.getSivilstandliste().get(0);
         assertNull(sivilstand.getSkjermet());
         assertNull(sivilstand.getGradering());
-        assertEquals(RelasjonsBosted.UKJENT_BOSTED, sivilstand.getRelasjonsBosted());
+        assertEquals(UKJENT_BOSTED, sivilstand.getRelasjonsBosted());
     }
 
     @Test
@@ -343,7 +352,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals(LocalDate.of(2020, 6, 1), sivilstand.getFraDato());
         assertFalse(sivilstand.getSkjermet());
         assertEquals(AdressebeskyttelseGradering.UGRADERT.name(), sivilstand.getGradering());
-        assertEquals(RelasjonsBosted.UKJENT_BOSTED, sivilstand.getRelasjonsBosted());
+        assertEquals(UKJENT_BOSTED, sivilstand.getRelasjonsBosted());
         assertEquals("FREG", sivilstand.getMaster());
         assertEquals(LocalDateTime.parse("2022-04-22T14:51:20"), sivilstand.getRegistrertDato());
     }
@@ -380,7 +389,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         assertEquals("GIFT", sivilstands.get(1).getSivilstand());
         assertEquals(LocalDate.of(2022, 3, 7), sivilstands.get(1).getFraDato());
-        assertEquals(RelasjonsBosted.UKJENT_BOSTED, sivilstands.get(1).getRelasjonsBosted());
+        assertEquals(UKJENT_BOSTED, sivilstands.get(1).getRelasjonsBosted());
         assertEquals("PDL", sivilstands.get(1).getMaster());
     }
 
