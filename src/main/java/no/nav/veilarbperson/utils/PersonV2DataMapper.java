@@ -63,6 +63,11 @@ public class PersonV2DataMapper {
     }
 
     public static Fnr hentFamiliemedlemFnr(HentPerson.Familiemedlem familiemedlem) {
+        if  ("opphoert".equals(familiemedlem.getFolkeregisterpersonstatus().stream()
+                .findFirst().map( HentPerson.Folkeregisterpersonstatus::getForenkletStatus)
+                .orElse(null))) {
+            return null;
+        }
         return ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
                 .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null);
     }
