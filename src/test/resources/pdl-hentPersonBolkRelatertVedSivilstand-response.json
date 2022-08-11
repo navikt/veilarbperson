@@ -32,6 +32,11 @@
               "type": "FNR"
             }
           ],
+          "folkeregisterpersonstatus": [
+            {
+              "forenkletStatus": "bosattEtterFolkeregisterloven"
+            }
+          ],
           "doedsfall": [],
           "adressebeskyttelse": [
             {
