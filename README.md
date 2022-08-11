@@ -22,4 +22,3 @@ sett gjeldende input variabler i Variables feltet i Altair.
 For hentPerson operasjonen input variabler kan være "ident" og "historikk". 
 For ex:-
 { "ident": "TESTFNR", "historikk": false }
-
