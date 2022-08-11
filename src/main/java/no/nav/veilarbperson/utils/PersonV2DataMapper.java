@@ -68,8 +68,8 @@ public class PersonV2DataMapper {
     }
 
     public static boolean harGyldigIdent(HentPerson.Familiemedlem familiemedlem) {
-        return !"opphoert".equals(familiemedlem.getFolkeregisterpersonstatus().stream()
-                .findFirst().map( HentPerson.Folkeregisterpersonstatus::getForenkletStatus)
+        return !"opphoert".equals(ofNullable(getFirstElement(familiemedlem.getFolkeregisterpersonstatus()))
+                        .map( HentPerson.Folkeregisterpersonstatus::getForenkletStatus)
                 .orElse(null));
     }
 

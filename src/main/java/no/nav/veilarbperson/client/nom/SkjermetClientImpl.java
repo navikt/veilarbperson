@@ -42,7 +42,6 @@ public class SkjermetClientImpl implements SkjermetClient {
     @SneakyThrows
     @Cacheable(CacheConfig.NOM_SKJERMEDE_PERSONER_CACHE_NAME)
     public Boolean hentSkjermet(Fnr fodselsnummer) {
-        System.out.println("Skjerming");
         Request request = new Request.Builder()
                 .post(RequestBody.create(
                         JsonUtils.toJson(new Personident(fodselsnummer)),
