@@ -49,7 +49,6 @@ public class HentPerson {
         private List<Foedsel> foedsel;
         private List<Kjoenn> kjoenn;
         private List<Folkeregisteridentifikator> folkeregisteridentifikator;
-        private List<Folkeregisterpersonstatus> folkeregisterpersonstatus;
         private List<Doedsfall> doedsfall;
         private List<Adressebeskyttelse> adressebeskyttelse;
         private List<Bostedsadresse> bostedsadresse;
@@ -158,11 +157,6 @@ public class HentPerson {
         private String identifikasjonsnummer;
         private String status;
         private String type;
-    }
-
-    @Data
-    public static class Folkeregisterpersonstatus {
-        private String forenkletStatus;
     }
 
     @Data
