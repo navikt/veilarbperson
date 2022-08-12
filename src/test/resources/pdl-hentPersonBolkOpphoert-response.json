@@ -2,14 +2,14 @@
   "data": {
     "hentPersonBolk": [
       {
-        "ident": "2134567890",
+        "ident": "111",
         "person": {
           "navn": [
             {
-              "fornavn": "FORFJAMSET",
+              "fornavn": "KREATIV",
               "mellomnavn": "GLITRENDE",
               "etternavn": "STAFFELI",
-              "forkortetNavn": "FORFJAMSET STAFFELI",
+              "forkortetNavn": "KREATIV STAFFELI",
               "metadata": {
                 "master": "FREG"
               }
@@ -17,34 +17,32 @@
           ],
           "foedsel": [
             {
-              "foedselsdato": "1982-12-14"
+              "foedselsdato": "1980-12-13"
             }
           ],
           "kjoenn": [
             {
-              "kjoenn": "MANN"
+              "kjoenn": "KVINNE"
             }
           ],
           "folkeregisteridentifikator": [
             {
-              "identifikasjonsnummer": "2134567890",
+              "identifikasjonsnummer": "111",
               "status": "I_BRUK",
               "type": "FNR"
             }
           ],
           "folkeregisterpersonstatus": [
             {
-              "forenkletStatus": "bosattEtterFolkeregisterloven"
+              "forenkletStatus": "opphoert"
             }
           ],
           "doedsfall": [],
-          "adressebeskyttelse": [
-            {
-              "gradering": "UGRADERT"
-            }
-          ],
+          "adressebeskyttelse": [],
           "bostedsadresse": [
             {
+              "gyldigFraOgMed": "2021-01-17T11:58:57",
+              "gyldigTilOgMed": "2021-01-18T11:58:57",
               "vegadresse": {
                 "matrikkelId": "123456789",
                 "postnummer": "0560",
@@ -54,6 +52,19 @@
                 "adressenavn": "ARENDALSGATE",
                 "tilleggsnavn": "ARENDAL",
                 "poststed": "OSLO"
+              },
+              "matrikkeladresse": null,
+              "utenlandskAdresse": {
+                "adressenavnNummer": "adressenavnNummer",
+                "bygningEtasjeLeilighet": "bygningEtasjeLeilighet",
+                "postboksNummerNavn": "postboksNummerNavn",
+                "postkode": "postkode",
+                "bySted": "bySted",
+                "regionDistriktOmraade": "regionDistriktOmraade",
+                "landkode": "landkode"
+              },
+              "ukjentBosted": {
+                "bostedskommune": "bostedskommune"
               }
             }
           ]

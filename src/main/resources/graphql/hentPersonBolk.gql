@@ -22,6 +22,9 @@ query($identer: [ID!]!, $historikk: Boolean!) {
                 status
                 type
             }
+            folkeregisterpersonstatus(historikk: $historikk) {
+                forenkletStatus
+            }
             doedsfall {
                 doedsdato
             }
