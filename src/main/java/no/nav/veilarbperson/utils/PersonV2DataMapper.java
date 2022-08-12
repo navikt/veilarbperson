@@ -67,12 +67,6 @@ public class PersonV2DataMapper {
                 .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null);
     }
 
-    public static boolean harGyldigIdent(HentPerson.Familiemedlem familiemedlem) {
-        return !"opphoert".equals(ofNullable(getFirstElement(familiemedlem.getFolkeregisterpersonstatus()))
-                        .map( HentPerson.Folkeregisterpersonstatus::getForenkletStatus)
-                .orElse(null));
-    }
-
     public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem,
                                                     boolean erEgenAnsatt,
                                                     Bostedsadresse personsBostedsadresse,
