@@ -134,6 +134,7 @@ public class PersonV2Service {
                 .stream()
                 .filter(medlemInfo -> medlemInfo.getCode().equals("ok"))
                 .map(HentPerson.PersonFraBolk::getPerson)
+                .filter(PersonV2DataMapper::harGyldigIdent)
                 .map(familiemedlem -> mapFamiliemedlem(familiemedlem, bostedsadresse))
                 .collect(Collectors.toList());
     }
