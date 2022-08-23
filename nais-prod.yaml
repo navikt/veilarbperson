@@ -62,6 +62,9 @@ spec:
           namespace: pto
         - application: veilarboppgave
           namespace: pto
+        - application: mulighetsrommet-api
+          namespace: team-mulighetsrommet
+          cluster: prod-gcp
 
   env:
     - name: VIRKSOMHET_PERSON_V3_URL
