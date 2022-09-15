@@ -29,8 +29,7 @@ public class PersonV2Data {
     Enhet geografiskEnhet;
     List<Telefon> telefon;
     Epost epost;
-    List<String> statsborgerskapLandKoder;
-    List<String> statsborgerskap;
+    String statsborgerskap;
     String sikkerhetstiltak;
     List<Familiemedlem> barn;
     List<Sivilstand> sivilstandliste;

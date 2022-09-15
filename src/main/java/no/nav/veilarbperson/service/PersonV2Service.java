@@ -285,7 +285,8 @@ public class PersonV2Service {
         postnrIOppholdsMatrikkelAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIOppholdsMatrikkeladresse);
         landkodeIBostedsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setLandkodeIBostedsUtenlandskadresse);
         landkodeIOppholdsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setLandkodeIOppholdsUtenlandskadresse);
-        personV2Data.setStatsborgerskap(personV2Data.getStatsborgerskapLandKoder().stream().map(kodeverkService::getBeskrivelseForLandkode).collect(Collectors.toList()));
+        ofNullable(personV2Data.getStatsborgerskap()).map(kodeverkService::getBeskrivelseForLandkode).ifPresent(
+                personV2Data::setStatsborgerskap);
 
         List<Kontaktadresse> kontaktadresseList = personV2Data.getKontaktadresser();
 
