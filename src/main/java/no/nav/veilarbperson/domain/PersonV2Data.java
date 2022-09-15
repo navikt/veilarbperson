@@ -29,7 +29,8 @@ public class PersonV2Data {
     Enhet geografiskEnhet;
     List<Telefon> telefon;
     Epost epost;
-    String statsborgerskap;
+    List<String> statsborgerskapKoder;
+    List<String> statsborgerskap;
     String sikkerhetstiltak;
     List<Familiemedlem> barn;
     List<Sivilstand> sivilstandliste;
@@ -42,6 +43,7 @@ public class PersonV2Data {
         telefon = new ArrayList<>();
         barn = new ArrayList<>();
         kontaktadresser = new ArrayList<>();
+        statsborgerskap = new ArrayList<>();
     }
 
     public void setPoststedIBostedsVegadresse(String poststed) {
