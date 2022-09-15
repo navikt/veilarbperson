@@ -13,12 +13,12 @@ import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.PdlClient;
+import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.client.person.PersonDataMapper;
+import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
-import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -285,8 +285,7 @@ public class PersonV2Service {
         postnrIOppholdsMatrikkelAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIOppholdsMatrikkeladresse);
         landkodeIBostedsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setLandkodeIBostedsUtenlandskadresse);
         landkodeIOppholdsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setLandkodeIOppholdsUtenlandskadresse);
-        ofNullable(personV2Data.getStatsborgerskap()).map(kodeverkService::getBeskrivelseForLandkode).ifPresent(
-                personV2Data::setStatsborgerskap);
+        personV2Data.setStatsborgerskap(personV2Data.getStatsborgerskapLandKoder().stream().map(kodeverkService::getBeskrivelseForLandkode).collect(Collectors.toList()));
 
         List<Kontaktadresse> kontaktadresseList = personV2Data.getKontaktadresser();
 
