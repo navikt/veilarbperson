@@ -29,7 +29,8 @@ public class PersonV2Data {
     Enhet geografiskEnhet;
     List<Telefon> telefon;
     Epost epost;
-    String statsborgerskap;
+    List<String> statsborgerskapLandKoder;
+    List<String> statsborgerskap;
     String sikkerhetstiltak;
     List<Familiemedlem> barn;
     List<Sivilstand> sivilstandliste;
@@ -105,7 +106,7 @@ public class PersonV2Data {
     }
 
     public void setLandkodeIOppholdsUtenlandskadresse(String landkode) {
-         ofNullable(oppholdsadresse)
+        ofNullable(oppholdsadresse)
                 .map(Oppholdsadresse::getUtenlandskAdresse)
                 .ifPresent(utenlandskadresse -> utenlandskadresse.withLandkode(landkode));
     }
