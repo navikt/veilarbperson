@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PdlClientImplTest {
 
     private static final Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
-    private static final PdlAuth PDL_AUTH = new PdlAuth("USER_TOKEN", Optional.of("SYSTEM_USER_TOKEN"));
+    private static final String PDL_AUTH = "USER_TOKEN";
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
@@ -36,7 +36,6 @@ public class PdlClientImplTest {
         String apiUrl = "http://localhost:" + wireMockRule.port();
 
         givenThat(post(urlEqualTo("/graphql"))
-                .withHeader("Nav-Consumer-Token", equalTo("Bearer SYSTEM_USER_TOKEN"))
                 .withHeader("Authorization", equalTo("Bearer USER_TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
