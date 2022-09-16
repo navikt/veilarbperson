@@ -54,24 +54,21 @@ import static no.nav.common.utils.UrlUtils.*;
 @Slf4j
 @Configuration
 public class ClientConfig {
-
-    private static final String VEILARBPORTEFOLJE = "veilarbportefolje";
     private static final String VEILARBOPPFOLGING = "veilarboppfolging";
     private static final String PAM_CV_API = "pam-cv-api";
 
 
     @Bean
-    public AktorOppslagClient aktorOppslagClient(SystemUserTokenProvider systemUserTokenProvider) {
-        String pdlUrl = isProduction()
-                ? createProdInternalIngressUrl("pdl-api")
-                : createDevInternalIngressUrl("pdl-api");
+    public AktorOppslagClient aktorOppslagClient(AzureAdMachineToMachineTokenClient tokenClient) {
+        String tokenScop = String.format("api://%s-fss.pdl.pdl-api/.default",
+                isProduction() ? "prod" : "dev"
+        );
 
-        no.nav.common.client.pdl.PdlClientImpl pdlClient = new no.nav.common.client.pdl.PdlClientImpl(
-                pdlUrl,
-                systemUserTokenProvider::getSystemUserToken,
-                systemUserTokenProvider::getSystemUserToken);
+        PdlAktorOppslagClient pdlClient = new PdlAktorOppslagClient(
+                createServiceUrl("pdl-api", "pdl", false),
+                () -> tokenClient.createMachineToMachineToken(tokenScop));
 
-        return new CachedAktorOppslagClient(new PdlAktorOppslagClient(pdlClient));
+        return new CachedAktorOppslagClient(pdlClient);
     }
 
     @Bean
