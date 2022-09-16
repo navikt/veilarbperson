@@ -130,7 +130,7 @@ public class PdlClientImpl implements PdlClient {
         return HealthCheckUtils.pingUrl(joinPaths(pdlUrl, "/internal/health/liveness"), client);
     }
 
-    private <T> T graphqlRequest(GqlRequest gqlRequest, String userToken, Class<T> gqlResponseDataClass) {
+    private <T> T graphqlRequest(GqlRequest<?> gqlRequest, String userToken, Class<T> gqlResponseDataClass) {
         try {
             String gqlResponse = rawRequest(JsonUtils.toJson(gqlRequest), userToken);
             return parseGqlJsonResponse(gqlResponse, gqlResponseDataClass);
