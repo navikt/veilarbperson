@@ -7,8 +7,8 @@ import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
-import no.nav.veilarbperson.client.dkif.DkifClient;
-import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
+import no.nav.veilarbperson.client.digdir.DigdirClient;
+import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 
 public class PersonV2ServiceTest extends PdlClientTestConfig {
     private Norg2Client norg2Client = mock(Norg2Client.class);
-    private DkifClient dkifClient = mock(DkifClient.class);
+    private DigdirClient digdirClient = mock(DigdirClient.class);
     private PersonClient personClient = mock(PersonClient.class);
     private PdlClient pdlClient;
     private KodeverkService kodeverkService = mock(KodeverkService.class);
@@ -72,7 +72,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         pdlClient = getPdlClient();
         when(systemUserTokenProvider.getSystemUserToken()).thenReturn("SYSTEM_USER_TOKEN");
         when(norg2Client.hentTilhorendeEnhet(anyString(), any(), anyBoolean())).thenReturn(new Enhet());
-        when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
+        when(digdirClient.hentKontaktInfo(any())).thenReturn(new DigdirKontaktinfo());
         when(personClient.hentPerson(FNR)).thenReturn(new TpsPerson().setKontonummer("123456789"));
         UserTokenProviderPdl tokenProvider = new UserTokenProviderPdl(() -> "test");
 
@@ -80,7 +80,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 pdlClient,
                 mock(DifiCient.class),
                 authService,
-                dkifClient,
+                digdirClient,
                 norg2Client,
                 personClient,
                 mock(UnleashClient.class),

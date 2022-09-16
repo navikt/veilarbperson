@@ -15,8 +15,8 @@ import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
-import no.nav.veilarbperson.client.dkif.DkifClient;
-import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
+import no.nav.veilarbperson.client.digdir.DigdirClient;
+import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
@@ -116,11 +116,11 @@ public class ClientTestConfig {
     }
 
     @Bean
-    public DkifClient dkifClient() {
-        return new DkifClient() {
+    public DigdirClient dkifClient() {
+        return new DigdirClient() {
             @Override
-            public DkifKontaktinfo hentKontaktInfo(Fnr fnr) {
-                return new DkifKontaktinfo();
+            public DigdirKontaktinfo hentKontaktInfo(Fnr fnr) {
+                return new DigdirKontaktinfo();
             }
 
             @Override

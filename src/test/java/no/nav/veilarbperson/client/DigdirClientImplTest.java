@@ -1,9 +1,9 @@
 package no.nav.veilarbperson.client;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import no.nav.veilarbperson.client.dkif.DkifClient;
-import no.nav.veilarbperson.client.dkif.DkifClientImpl;
-import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
+import no.nav.veilarbperson.client.digdir.DigdirClient;
+import no.nav.veilarbperson.client.digdir.DigdirClientImpl;
+import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.pdl.domain.Epost;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.TestUtils;
@@ -15,7 +15,7 @@ import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DkifClientImplTest {
+public class DigdirClientImplTest {
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
@@ -24,7 +24,7 @@ public class DkifClientImplTest {
     public void skal_hente_kontaktinfo() {
         String kodeverkJson = TestUtils.readTestResourceFile("dkif-kontaktinfo.json");
         String apiUrl = "http://localhost:" + wireMockRule.port();
-        DkifClient dkifClient = new DkifClientImpl(apiUrl, () -> "TOKEN");
+        DigdirClient digdirClient = new DigdirClientImpl(apiUrl, () -> "TOKEN");
 
         givenThat(get(anyUrl())
                 .withHeader("Nav-Personidenter", equalTo(TEST_FNR.get()))
@@ -34,7 +34,7 @@ public class DkifClientImplTest {
                         .withBody(kodeverkJson))
         );
 
-            DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(TEST_FNR);
+            DigdirKontaktinfo kontaktinfo = digdirClient.hentKontaktInfo(TEST_FNR);
             assertEquals(kontaktinfo.getPersonident(), TEST_FNR.get());
             assertTrue(kontaktinfo.isKanVarsles());
             assertFalse(kontaktinfo.isReservert());

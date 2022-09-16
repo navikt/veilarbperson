@@ -1,9 +1,9 @@
-package no.nav.veilarbperson.client.dkif;
+package no.nav.veilarbperson.client.digdir;
 
 import lombok.Data;
 
 @Data
-public class DkifKontaktinfo {
+public class DigdirKontaktinfo {
     String personident;
     boolean kanVarsles;
     boolean reservert;

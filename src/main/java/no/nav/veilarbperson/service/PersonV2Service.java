@@ -7,8 +7,8 @@ import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
-import no.nav.veilarbperson.client.dkif.DkifClient;
-import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
+import no.nav.veilarbperson.client.digdir.DigdirClient;
+import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -44,7 +44,7 @@ public class PersonV2Service {
     private static final String UNLEASH_NIVAA4_DISABLED = "veilarbperson.nivaa4.disabled";
     private final PdlClient pdlClient;
     private final AuthService authService;
-    private final DkifClient dkifClient;
+    private final DigdirClient digdirClient;
     private final Norg2Client norg2Client;
     private final PersonClient personClient;
     private final SkjermetClient skjermetClient;
@@ -58,7 +58,7 @@ public class PersonV2Service {
     public PersonV2Service(PdlClient pdlClient,
                            DifiCient difiCient,
                            AuthService authService,
-                           DkifClient dkifClient,
+                           DigdirClient digdirClient,
                            Norg2Client norg2Client,
                            PersonClient personClient,
                            UnleashClient unleashClient,
@@ -68,7 +68,7 @@ public class PersonV2Service {
                            SystemUserTokenProvider systemUserTokenProvider) {
         this.pdlClient = pdlClient;
         this.authService = authService;
-        this.dkifClient = dkifClient;
+        this.digdirClient = digdirClient;
         this.norg2Client = norg2Client;
         this.personClient = personClient;
         this.skjermetClient = skjermetClient;
@@ -304,7 +304,7 @@ public class PersonV2Service {
 
     private void flettDigitalKontaktinformasjon(Fnr fnr, PersonV2Data personV2Data) {
         try {
-            DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);
+            DigdirKontaktinfo kontaktinfo = digdirClient.hentKontaktInfo(fnr);
             String epostSisteOppdatert = kontaktinfo.getEpostSistOppdatert();
             String formatertEpostSisteOppdatert = epostSisteOppdatert != null ? PersonV2DataMapper.parseDateFromDateTime(
                     epostSisteOppdatert) : null;
@@ -405,7 +405,7 @@ public class PersonV2Service {
 
     public String hentMalform(Fnr fnr) {
         try {
-            DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);
+            DigdirKontaktinfo kontaktinfo = digdirClient.hentKontaktInfo(fnr);
             return kontaktinfo.getSpraak();
         } catch (Exception e) {
             log.warn("Kunne ikke hente malform fra KRR", e);
