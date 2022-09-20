@@ -24,7 +24,7 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
 
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
         configurePdlResponse("pdl-hentVergeOgFullmakt-response.json");
-        return getPdlClient().hentVergeOgFullmakt(fnr, "USER_TOKEN");
+        return getPdlClient().hentVergeOgFullmakt(fnr);
     }
 
     @Test

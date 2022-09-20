@@ -12,7 +12,6 @@ import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
-import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted;
@@ -74,7 +73,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(norg2Client.hentTilhorendeEnhet(anyString(), any(), anyBoolean())).thenReturn(new Enhet());
         when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
         when(personClient.hentPerson(FNR)).thenReturn(new TpsPerson().setKontonummer("123456789"));
-        UserTokenProviderPdl tokenProvider = new UserTokenProviderPdl(() -> "test");
 
         personV2Service = new PersonV2Service(
                 pdlClient,
@@ -86,45 +84,44 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 mock(UnleashClient.class),
                 skjermetClient,
                 kodeverkService,
-                tokenProvider,
                 systemUserTokenProvider);
         person = hentPerson(FNR);
     }
 
     public HentPerson.Person hentPerson(Fnr fnr) {
         configurePdlResponse("pdl-hentPerson-response.json", fnr.get());
-        return pdlClient.hentPerson(fnr, PDL_AUTH);
+        return pdlClient.hentPerson(fnr);
     }
 
     public HentPerson.PersonNavn hentPersonNavn(Fnr fnr) {
         configurePdlResponse("pdl-hentPersonNavn-response.json", fnr.get());
-        return pdlClient.hentPersonNavn(fnr, PDL_AUTH);
+        return pdlClient.hentPersonNavn(fnr);
     }
 
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
         configurePdlResponse("pdl-hentVergeOgFullmakt-response.json", fnr.get());
-        return pdlClient.hentVergeOgFullmakt(fnr, PDL_AUTH);
+        return pdlClient.hentVergeOgFullmakt(fnr);
     }
 
     public HentPerson.GeografiskTilknytning hentGeografisktilknytning(Fnr fnr) {
         configurePdlResponse("pdl-hentGeografiskTilknytning-response.json", "hentGeografiskTilknytning");
-        return pdlClient.hentGeografiskTilknytning(fnr, PDL_AUTH);
+        return pdlClient.hentGeografiskTilknytning(fnr);
     }
 
     public HentPerson.Person hentPersonUtenBarnOgSivilstand(Fnr fnr) {
         configurePdlResponse("pdl-hentPersonMedIngenBarn-responsen.json", fnr.get());
-        return pdlClient.hentPerson(fnr, PDL_AUTH);
+        return pdlClient.hentPerson(fnr);
     }
 
     public HentPerson.Person hentPersonSomErUgift(Fnr fnr) {
         configurePdlResponse("pdl-hentPersonUgift-response.json", fnr.get());
-        return pdlClient.hentPerson(fnr, PDL_AUTH);
+        return pdlClient.hentPerson(fnr);
     }
 
 
     public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr fnr) {
         configurePdlResponse("pdl-hentTilrettelagtKommunikasjon-response.json", fnr.get());
-        return pdlClient.hentTilrettelagtKommunikasjon(fnr, PDL_AUTH);
+        return pdlClient.hentTilrettelagtKommunikasjon(fnr);
     }
 
     @Test
@@ -378,7 +375,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", "27057612970");
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", "2134567890");
         PersonV2Data personV2Data = new PersonV2Data();
-        person = pdlClient.hentPerson(Fnr.of("01234567899"), PDL_AUTH);
+        person = pdlClient.hentPerson(Fnr.of("01234567899"));
 
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
@@ -467,7 +464,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void flettBeskrivelseFraKodeverkTest() {
         mockKodeverk();
-        person = pdlClient.hentPerson(Fnr.of("0123456789"), PDL_AUTH);
+        person = pdlClient.hentPerson(Fnr.of("0123456789"));
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(person);
 
         personV2Service.flettKodeverk(personV2Data);
@@ -515,7 +512,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         configurePdlResponse("pdl-hentPersonNavn-response.json", "motpartsPersonident2");
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
         VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
-        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, PDL_AUTH);
+        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData);
 
         List<VergeOgFullmaktData.Fullmakt> fullmaktListe =  vergeOgFullmaktData.getFullmakt();
 
@@ -541,7 +538,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentSikkerhetstiltakTest() {
-        person = pdlClient.hentPerson(Fnr.of("0123456789"), PDL_AUTH);
+        person = pdlClient.hentPerson(Fnr.of("0123456789"));
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(person);
 
         assertEquals("Fysisk utestengelse", personV2Data.getSikkerhetstiltak());
