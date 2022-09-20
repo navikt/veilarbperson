@@ -92,12 +92,14 @@ public class ClientConfig {
 
 
     @Bean
-    public PamClient pamClient(SystemUserTokenProvider systemUserTokenProvider) {
+    public PamClient pamClient(AzureAdMachineToMachineTokenClient tokenClient) {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(PAM_CV_API, true)
                 : createDevAdeoIngressUrl(PAM_CV_API, true);
-
-        return new PamClientImpl(url, systemUserTokenProvider::getSystemUserToken);
+        String tokenScop = String.format("api://%s.teampam.pam-cv-api/.default",
+                isProduction() ? "prod-fss" : "dev-fss"
+        );
+        return new PamClientImpl(url, () -> tokenClient.createMachineToMachineToken(tokenScop));
     }
 
     @Bean
