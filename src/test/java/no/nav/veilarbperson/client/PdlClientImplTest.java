@@ -42,7 +42,7 @@ public class PdlClientImplTest {
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
         pdlClient.hentPerson(FNR);
     }
@@ -58,7 +58,7 @@ public class PdlClientImplTest {
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
         HentPerson.Person person = pdlClient.hentPerson(FNR);
 
@@ -169,7 +169,7 @@ public class PdlClientImplTest {
                         .withBody(hentVergeOgFullmaktResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
         HentPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(FNR);
 
@@ -200,7 +200,7 @@ public class PdlClientImplTest {
                         .withBody(hentPersonErrorResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
         assertThrows(ResponseStatusException.class, () -> {
             pdlClient.hentPerson(FNR);
@@ -222,7 +222,7 @@ public class PdlClientImplTest {
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
         String response = pdlClient.rawRequest(jsonRequest, PDL_AUTH);
         assertEquals(hentPersonResponseJson, response);

@@ -121,11 +121,14 @@ public class ClientConfig {
     }
 
     @Bean
-    public PdlClient pdlClient(AuthService authService) {
+    public PdlClient pdlClient(AuthService authService, AzureAdMachineToMachineTokenClient tokenClient) {
         String cluster = isProduction() ? "prod-fss" : "dev-fss";
+        String tokenScop = String.format("api://%s-fss.pdl.pdl-api/.default", cluster);
+
         return new PdlClientImpl(
                 internalDevOrProdIngress("pdl-api"),
-                () -> authService.getAadOboTokenForTjeneste(new DownstreamApi(cluster, "pdl", "pdl-api"))
+                () -> authService.getAadOboTokenForTjeneste(new DownstreamApi(cluster, "pdl", "pdl-api")),
+                () -> tokenClient.createMachineToMachineToken(tokenScop)
         );
     }
 
