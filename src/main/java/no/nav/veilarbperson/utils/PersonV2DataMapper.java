@@ -2,15 +2,12 @@ package no.nav.veilarbperson.utils;
 
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPerson;
-import no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted;
-import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.domain.PersonNavnV2;
-import no.nav.veilarbperson.client.pdl.domain.Telefon;
+import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.service.AuthService;
 
 import java.time.LocalDate;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -18,9 +15,7 @@ import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Optional.ofNullable;
-import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.ANNET_BOSTED;
-import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.SAMME_BOSTED;
-import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.UKJENT_BOSTED;
+import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.*;
 
 public class PersonV2DataMapper {
 
@@ -69,7 +64,7 @@ public class PersonV2DataMapper {
 
     public static boolean harGyldigIdent(HentPerson.Familiemedlem familiemedlem) {
         return !"opphoert".equals(ofNullable(getFirstElement(familiemedlem.getFolkeregisterpersonstatus()))
-                        .map( HentPerson.Folkeregisterpersonstatus::getForenkletStatus)
+                .map(HentPerson.Folkeregisterpersonstatus::getForenkletStatus)
                 .orElse(null));
     }
 

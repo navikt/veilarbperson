@@ -105,7 +105,7 @@ public class PersonV2Data {
     }
 
     public void setLandkodeIOppholdsUtenlandskadresse(String landkode) {
-         ofNullable(oppholdsadresse)
+        ofNullable(oppholdsadresse)
                 .map(Oppholdsadresse::getUtenlandskAdresse)
                 .ifPresent(utenlandskadresse -> utenlandskadresse.withLandkode(landkode));
     }

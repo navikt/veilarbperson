@@ -5,6 +5,8 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.matching.AnythingPattern;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
+import no.nav.veilarbperson.service.AuthService;
+import no.nav.veilarbperson.utils.DownstreamApi;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
 
@@ -23,7 +25,7 @@ public class PdlClientTestConfig {
     }
 
     public PdlClientImpl getPdlClient() {
-        return new PdlClientImpl(getPdlApiUrl());
+        return new PdlClientImpl(getPdlApiUrl(), () -> "USER_TOKEN", () -> "SYSTEM_TOKEN");
     }
 
     public void configurePdlResponse(String responseFile, String... requestinnhold) {

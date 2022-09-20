@@ -2,7 +2,6 @@ package no.nav.veilarbperson.utils.mappers;
 
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPerson;
-import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
@@ -15,7 +14,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +24,7 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
 
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
         configurePdlResponse("pdl-hentVergeOgFullmakt-response.json");
-        return getPdlClient().hentVergeOgFullmakt(fnr, new PdlAuth("USER_TOKEN", Optional.of("SYSTEM_TOKEN")));
+        return getPdlClient().hentVergeOgFullmakt(fnr);
     }
 
     @Test

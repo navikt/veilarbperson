@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PdlClientImplTest {
 
     private static final Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
-    private static final PdlAuth PDL_AUTH = new PdlAuth("USER_TOKEN", Optional.of("SYSTEM_USER_TOKEN"));
+    private static final String PDL_AUTH = "USER_TOKEN";
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(0);
@@ -36,16 +36,15 @@ public class PdlClientImplTest {
         String apiUrl = "http://localhost:" + wireMockRule.port();
 
         givenThat(post(urlEqualTo("/graphql"))
-                .withHeader("Nav-Consumer-Token", equalTo("Bearer SYSTEM_USER_TOKEN"))
                 .withHeader("Authorization", equalTo("Bearer USER_TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
-        pdlClient.hentPerson(FNR, PDL_AUTH);
+        pdlClient.hentPerson(FNR);
     }
 
     @Test
@@ -59,9 +58,9 @@ public class PdlClientImplTest {
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
-        HentPerson.Person person = pdlClient.hentPerson(FNR, PDL_AUTH);
+        HentPerson.Person person = pdlClient.hentPerson(FNR);
 
         HentPerson.Navn navn = person.getNavn().get(0);
         assertEquals("NATURLIG", navn.getFornavn());
@@ -75,13 +74,13 @@ public class PdlClientImplTest {
         assertEquals("FNR", identifikator.getType());
 
         HentPerson.Sivilstand sivilstand = person.getSivilstand().get(0);
-        assertEquals(LocalDate.of(2020,06,01), sivilstand.getGyldigFraOgMed());
+        assertEquals(LocalDate.of(2020, 06, 01), sivilstand.getGyldigFraOgMed());
         assertEquals("GIFT", sivilstand.getType());
 
         assertTrue(person.getKjoenn().isEmpty());
 
         HentPerson.Foedsel foedsel = person.getFoedsel().get(0);
-        assertEquals(LocalDate.of(1981,12,13), foedsel.getFoedselsdato());
+        assertEquals(LocalDate.of(1981, 12, 13), foedsel.getFoedselsdato());
 
         HentPerson.ForelderBarnRelasjon familierelasjoner = person.getForelderBarnRelasjon().get(0);
         assertEquals("MOR", familierelasjoner.getMinRolleForPerson());
@@ -119,7 +118,7 @@ public class PdlClientImplTest {
 
         Kontaktadresse kontaktAdresse = person.getKontaktadresse().get(0);
 
-        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.of(2021,01,15), LocalTime.of(11,58,57));
+        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.of(2021, 01, 15), LocalTime.of(11, 58, 57));
         assertEquals(localDateTime, kontaktAdresse.getGyldigFraOgMed());
         assertNull(kontaktAdresse.getGyldigTilOgMed());
 
@@ -170,9 +169,9 @@ public class PdlClientImplTest {
                         .withBody(hentVergeOgFullmaktResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
-        HentPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(FNR, PDL_AUTH);
+        HentPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(FNR);
 
         HentPerson.VergemaalEllerFremtidsfullmakt vergemaal = vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt().get(0);
         HentPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
@@ -201,10 +200,10 @@ public class PdlClientImplTest {
                         .withBody(hentPersonErrorResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
         assertThrows(ResponseStatusException.class, () -> {
-            pdlClient.hentPerson(FNR, PDL_AUTH);
+            pdlClient.hentPerson(FNR);
         });
     }
 
@@ -223,7 +222,7 @@ public class PdlClientImplTest {
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
         String response = pdlClient.rawRequest(jsonRequest, PDL_AUTH);
         assertEquals(hentPersonResponseJson, response);

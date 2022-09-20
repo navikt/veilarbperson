@@ -41,16 +41,6 @@ public class FilterConfig {
                 .withUserRole(UserRole.SYSTEM);
     }
 
-    private OidcAuthenticatorConfig openAmAuthConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(properties.getOpenAmDiscoveryUrl())
-                .withClientId(properties.getVeilarbloginOpenAmClientId())
-                .withIdTokenCookieName(OPEN_AM_ID_TOKEN_COOKIE_NAME)
-                .withRefreshTokenCookieName(REFRESH_TOKEN_COOKIE_NAME)
-                .withRefreshUrl(properties.getOpenAmRefreshUrl())
-                .withUserRole(UserRole.INTERN);
-    }
-
     private OidcAuthenticatorConfig azureAdAuthConfig(EnvironmentProperties properties) {
         return new OidcAuthenticatorConfig()
                 .withDiscoveryUrl(properties.getAadDiscoveryUrl())
@@ -75,7 +65,7 @@ public class FilterConfig {
     }
 
     @Bean
-    public FilterRegistrationBean pingFilter() {
+    public FilterRegistrationBean<PingFilter> pingFilter() {
         // Veilarbproxy trenger dette endepunktet for å sjekke at tjenesten lever
         // /internal kan ikke brukes siden det blir stoppet før det kommer frem
 
@@ -87,7 +77,7 @@ public class FilterConfig {
     }
 
     @Bean
-    public FilterRegistrationBean logFilterRegistrationBean() {
+    public FilterRegistrationBean<LogFilter>  logFilterRegistrationBean() {
         FilterRegistrationBean<LogFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new LogFilter(requireApplicationName(), isDevelopment().orElse(false)));
         registration.setOrder(2);
@@ -100,7 +90,6 @@ public class FilterConfig {
         FilterRegistrationBean<OidcAuthenticationFilter> registration = new FilterRegistrationBean<>();
         OidcAuthenticationFilter authenticationFilter = new OidcAuthenticationFilter(
                 fromConfigs(
-                        openAmAuthConfig(properties),
                         azureAdAuthConfig(properties),
                         loginserviceIdportenConfig(properties),
                         openAmStsAuthConfig(properties),
@@ -116,7 +105,7 @@ public class FilterConfig {
     }
 
     @Bean
-    public FilterRegistrationBean setStandardHeadersFilterRegistrationBean() {
+    public FilterRegistrationBean<SetStandardHttpHeadersFilter> setStandardHeadersFilterRegistrationBean() {
         FilterRegistrationBean<SetStandardHttpHeadersFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new SetStandardHttpHeadersFilter());
         registration.setOrder(4);

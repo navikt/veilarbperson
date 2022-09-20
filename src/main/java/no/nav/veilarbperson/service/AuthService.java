@@ -126,29 +126,8 @@ public class AuthService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Subject is missing"));
     }
 
-    public boolean erAADToken() {
-        String azureAdIssuer = environmentProperties.getNaisAadIssuer();
-        String tokenIssuer = authContextHolder.getIdTokenClaims()
-                .map(JWTClaimsSet::getIssuer)
-                .orElseThrow();
-        return azureAdIssuer.equals(tokenIssuer);
-    }
-
-    public Supplier<String> contextAwareUserTokenSupplier(DownstreamApi receivingApp) {
-        final String azureAdIssuer = environmentProperties.getNaisAadIssuer();
-        return () -> {
-            String token = authContextHolder.requireIdTokenString();
-            String tokenIssuer = authContextHolder.getIdTokenClaims()
-                    .map(JWTClaimsSet::getIssuer)
-                    .orElseThrow();
-            return azureAdIssuer.equals(tokenIssuer)
-                    ? getAadOboTokenForTjeneste(token, receivingApp)
-                    : token;
-        };
-    }
-
-    private String getAadOboTokenForTjeneste(String token, DownstreamApi api) {
+    public String getAadOboTokenForTjeneste(DownstreamApi api) {
         String scope = "api://" + api.cluster + "." + api.namespace + "." + api.serviceName + "/.default";
-        return aadOboTokenClient.exchangeOnBehalfOfToken(scope, token);
+        return aadOboTokenClient.exchangeOnBehalfOfToken(scope, authContextHolder.requireIdTokenString());
     }
 }
