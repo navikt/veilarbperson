@@ -289,7 +289,7 @@ public class PersonV2Service {
                 .stream()
                 .map(kodeverkService::getBeskrivelseForLandkode)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+                .toList());
 
         List<Kontaktadresse> kontaktadresseList = personV2Data.getKontaktadresser();
 

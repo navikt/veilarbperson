@@ -21,10 +21,6 @@ public class PersonV2DataMapper {
 
     public static PersonV2Data toPersonV2Data(HentPerson.Person person) {
         Optional<HentPerson.Navn> navn = hentGjeldeneNavn(person.getNavn());
-        List<String> statsborgerskapKoder = new ArrayList<>();
-        if (person.getStatsborgerskap() != null) {
-            statsborgerskapKoder = person.getStatsborgerskap().stream().map(HentPerson.Statsborgerskap::getLand).collect(Collectors.toList());
-        }
         return new PersonV2Data()
                 .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
                 .setMellomnavn(navn.map(HentPerson.Navn::getMellomnavn).orElse(null))
@@ -32,7 +28,7 @@ public class PersonV2DataMapper {
                 .setForkortetNavn(navn.map(HentPerson.Navn::getForkortetNavn).orElse(null))
                 .setKjonn(ofNullable(getFirstElement(person.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
                 .setFodselsdato(ofNullable(getFirstElement(person.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null))
-                .setStatsborgerskapKoder(statsborgerskapKoder)
+                .setStatsborgerskapKoder(ofNullable(person.getStatsborgerskap()).map(statsborgerskap -> statsborgerskap.stream().map(HentPerson.Statsborgerskap::getLand).toList()).orElse(Collections.emptyList()))
                 .setDodsdato(ofNullable(getFirstElement(person.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null))
                 .setFodselsnummer(ofNullable(getFirstElement(person.getFolkeregisteridentifikator()))
                         .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer)
