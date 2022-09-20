@@ -3,7 +3,6 @@ package no.nav.veilarbperson.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.featuretoggle.UnleashClient;
-import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
@@ -12,7 +11,6 @@ import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
-import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.PersonDataMapper;
@@ -27,7 +25,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,8 +46,6 @@ public class PersonV2Service {
     private final PersonClient personClient;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
-    private final Supplier<String> userTokenProviderPdl;
-    private final SystemUserTokenProvider systemUserTokenProvider;
     private final DifiCient difiCient;
     private final UnleashClient unleashClient;
 
@@ -63,9 +58,7 @@ public class PersonV2Service {
                            PersonClient personClient,
                            UnleashClient unleashClient,
                            SkjermetClient skjermetClient,
-                           KodeverkService kodeverkService,
-                           UserTokenProviderPdl userTokenProviderPdl,
-                           SystemUserTokenProvider systemUserTokenProvider) {
+                           KodeverkService kodeverkService) {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.digdirClient = digdirClient;
@@ -73,14 +66,12 @@ public class PersonV2Service {
         this.personClient = personClient;
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
-        this.systemUserTokenProvider = systemUserTokenProvider;
-        this.userTokenProviderPdl = userTokenProviderPdl.get();
         this.difiCient = difiCient;
         this.unleashClient = unleashClient;
     }
 
     public HentPerson.Person hentPerson(Fnr personIdent) {
-        return pdlClient.hentPerson(personIdent, userTokenProviderPdl.get());
+        return pdlClient.hentPerson(personIdent);
     }
 
     public PersonDataTPS hentPersonDataFraTps(Fnr personIdent) {
@@ -88,7 +79,7 @@ public class PersonV2Service {
     }
 
     public PersonV2Data hentFlettetPerson(Fnr fodselsnummer) {
-        HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer, userTokenProviderPdl.get()))
+        HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Fant ikke person i hentPerson operasjonen i PDL"));
 
@@ -99,7 +90,7 @@ public class PersonV2Service {
         flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
         flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data);
         flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
-        flettGeografiskEnhet(fodselsnummer, userTokenProviderPdl.get(), personV2Data);
+        flettGeografiskEnhet(fodselsnummer, personV2Data);
         flettKodeverk(personV2Data);
 
         return personV2Data;
@@ -111,8 +102,7 @@ public class PersonV2Service {
     }
 
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse) {
-        String token = systemUserTokenProvider.getSystemUserToken();
-        List<HentPerson.PersonFraBolk> familiemedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr, token);
+        List<HentPerson.PersonFraBolk> familiemedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr);
 
         return familiemedlemInfo
                 .stream()
@@ -193,12 +183,8 @@ public class PersonV2Service {
         personV2Data.setEgenAnsatt(egenAnsatt);
     }
 
-    public GeografiskTilknytning hentGeografiskTilknytning(Fnr fodselsnummer) {
-        return new GeografiskTilknytning(hentGeografiskTilknytning(fodselsnummer, userTokenProviderPdl.get()));
-    }
-
-    private String hentGeografiskTilknytning(Fnr fnr, String userToken) {
-        HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(fnr, userToken);
+    public GeografiskTilknytning hentGeografiskTilknytning(Fnr fnr) {
+        HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(fnr);
 
         if (geografiskTilknytning == null) {
             return null;
@@ -206,18 +192,20 @@ public class PersonV2Service {
 
         switch (geografiskTilknytning.getGtType()) {
             case "KOMMUNE":
-                return geografiskTilknytning.getGtKommune();
+                return new GeografiskTilknytning(geografiskTilknytning.getGtKommune());
             case "BYDEL":
-                return geografiskTilknytning.getGtBydel();
+                return new GeografiskTilknytning(geografiskTilknytning.getGtBydel());
             case "UTLAND":
-                return geografiskTilknytning.getGtLand();
+                return new GeografiskTilknytning(geografiskTilknytning.getGtLand());
             default:  // type == UDEFINERT
                 return null;
         }
     }
 
-    private void flettGeografiskEnhet(Fnr fnr, String userToken, PersonV2Data personV2Data) {
-        String geografiskTilknytning = hentGeografiskTilknytning(fnr, userToken);
+    private void flettGeografiskEnhet(Fnr fnr, PersonV2Data personV2Data) {
+        String geografiskTilknytning = Optional.ofNullable(hentGeografiskTilknytning(fnr))
+                .map(GeografiskTilknytning::getGeografiskTilknytning)
+                .orElse(null);
 
         personV2Data.setGeografiskTilknytning(geografiskTilknytning);
 
@@ -340,8 +328,7 @@ public class PersonV2Service {
     }
 
     public TilrettelagtKommunikasjonData hentSpraakTolkInfo(Fnr fnr) {
-        String userToken = userTokenProviderPdl.get();
-        HentPerson.HentSpraakTolk spraakTolkInfo = pdlClient.hentTilrettelagtKommunikasjon(fnr, userToken);
+        HentPerson.HentSpraakTolk spraakTolkInfo = pdlClient.hentTilrettelagtKommunikasjon(fnr);
 
         if (spraakTolkInfo.getTilrettelagtKommunikasjon().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT,
@@ -362,8 +349,7 @@ public class PersonV2Service {
     }
 
     public VergeOgFullmaktData hentVergeEllerFullmakt(Fnr fnr) {
-        String userToken = userTokenProviderPdl.get();
-        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(fnr, userToken);
+        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(fnr);
 
         if (vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke verge eller fullmakt i PDL");
@@ -371,7 +357,7 @@ public class PersonV2Service {
 
         VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
 
-        flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, userToken);
+        flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData);
         flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
 
         return vergeOgFullmaktData;
@@ -390,9 +376,9 @@ public class PersonV2Service {
         );
     }
 
-    public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData, String userToken) {
+    public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData) {
         vergeOgFullmaktData.getFullmakt().forEach(fullmakt -> {
-            HentPerson.PersonNavn fullmaktNavn = pdlClient.hentPersonNavn(Fnr.of(fullmakt.getMotpartsPersonident()), userToken);
+            HentPerson.PersonNavn fullmaktNavn = pdlClient.hentPersonNavn(Fnr.of(fullmakt.getMotpartsPersonident()));
 
             if (fullmaktNavn.getNavn().isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke motpartspersonnavn til fullmakt");
@@ -414,7 +400,7 @@ public class PersonV2Service {
     }
 
     public PersonNavnV2 hentNavn(Fnr fnr) {
-        HentPerson.PersonNavn personNavn = pdlClient.hentPersonNavn(fnr, userTokenProviderPdl.get());
+        HentPerson.PersonNavn personNavn = pdlClient.hentPersonNavn(fnr);
 
         if (personNavn.getNavn().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke navn til person");

@@ -22,7 +22,6 @@ import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
-import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.TpsPerson;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
@@ -203,32 +202,32 @@ public class ClientTestConfig {
     public PdlClient pdlClient() {
         return new PdlClient() {
             @Override
-            public HentPerson.Person hentPerson(Fnr personIdent, String userToken) {
+            public HentPerson.Person hentPerson(Fnr personIdent) {
                 return null;
             }
 
             @Override
-            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken) {
+            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent) {
                 return null;
             }
 
             @Override
-            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken) {
+            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent) {
                 return null;
             }
 
             @Override
-            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, String userToken) {
+            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter) {
                 return null;
             }
 
             @Override
-            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken) {
+            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent) {
                 return null;
             }
 
             @Override
-            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, String userToken) {
+            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent) {
                 return null;
             }
 
@@ -273,11 +272,6 @@ public class ClientTestConfig {
     @Bean
     public AzureAdOnBehalfOfTokenClient azureAdOnBehalfOfTokenClient() {
         return mock(AzureAdOnBehalfOfTokenClient.class);
-    }
-
-    @Bean
-    public UserTokenProviderPdl userTokenProviderPdl() {
-        return new UserTokenProviderPdl(() -> "test");
     }
 
     @Bean
