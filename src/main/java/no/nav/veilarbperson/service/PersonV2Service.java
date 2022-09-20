@@ -3,7 +3,6 @@ package no.nav.veilarbperson.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.featuretoggle.UnleashClient;
-import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
@@ -47,7 +46,6 @@ public class PersonV2Service {
     private final PersonClient personClient;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
-    private final SystemUserTokenProvider systemUserTokenProvider;
     private final DifiCient difiCient;
     private final UnleashClient unleashClient;
 
@@ -60,8 +58,7 @@ public class PersonV2Service {
                            PersonClient personClient,
                            UnleashClient unleashClient,
                            SkjermetClient skjermetClient,
-                           KodeverkService kodeverkService,
-                           SystemUserTokenProvider systemUserTokenProvider) {
+                           KodeverkService kodeverkService) {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.dkifClient = dkifClient;
@@ -69,7 +66,6 @@ public class PersonV2Service {
         this.personClient = personClient;
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
-        this.systemUserTokenProvider = systemUserTokenProvider;
         this.difiCient = difiCient;
         this.unleashClient = unleashClient;
     }
@@ -106,7 +102,6 @@ public class PersonV2Service {
     }
 
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse) {
-        String token = systemUserTokenProvider.getSystemUserToken();
         List<HentPerson.PersonFraBolk> familiemedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr);
 
         return familiemedlemInfo

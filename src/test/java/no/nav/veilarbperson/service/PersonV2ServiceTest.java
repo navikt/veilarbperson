@@ -83,8 +83,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 personClient,
                 mock(UnleashClient.class),
                 skjermetClient,
-                kodeverkService,
-                systemUserTokenProvider);
+                kodeverkService);
         person = hentPerson(FNR);
     }
 
