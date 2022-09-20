@@ -11,7 +11,6 @@ import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
-import no.nav.veilarbperson.client.pdl.PdlAuth;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import no.nav.veilarbperson.client.pdl.domain.*;
@@ -60,7 +59,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private SystemUserTokenProvider systemUserTokenProvider = mock(SystemUserTokenProvider.class);
     private PersonV2Service personV2Service;
     private HentPerson.Person person;
-    private static final PdlAuth PDL_AUTH = new PdlAuth("USER_TOKEN", Optional.of("SYSTEM_TOKEN"));
+    private static final String PDL_AUTH = "USER_TOKEN";
     private static Fnr FNR = Fnr.of("0123456789");
     private String fnrRelatertSivilstand = "2134567890";
     private String fnrBarn1 = "12345678910";

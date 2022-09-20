@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import no.nav.common.auth.context.AuthContextHolderThreadLocal
 import no.nav.common.auth.context.UserRole
-import no.nav.common.sts.SystemUserTokenProvider
 import no.nav.common.test.auth.AuthTestUtils.createAuthContext
 import no.nav.common.utils.fn.UnsafeSupplier
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient
@@ -15,7 +14,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
 
 class RegoppslagClientTest {
 
@@ -23,15 +21,13 @@ class RegoppslagClientTest {
 
     private val wireMockRule = WireMockRule()
 
-    val systemUserTokenProvider: SystemUserTokenProvider = Mockito.mock(SystemUserTokenProvider::class.java)
-
     @Rule
     fun getWireMockRule() = wireMockRule
 
     @Before
     fun setup() {
         val wiremockUrl = "http://localhost:" + getWireMockRule().port()
-        regoppslagClient = RegoppslagClientImpl(wiremockUrl, systemUserTokenProvider)
+        regoppslagClient = RegoppslagClientImpl(wiremockUrl) { "M2M_TOKEN" }
     }
 
     @Test
@@ -61,8 +57,6 @@ class RegoppslagClientTest {
                 }
             """.trimIndent()
 
-        Mockito.`when`(systemUserTokenProvider.getSystemUserToken()).thenReturn("M2M_TOKEN")
-
         WireMock.givenThat(
             WireMock.post(WireMock.urlEqualTo("/rest/postadresse"))
                 .withRequestBody(WireMock.equalToJson(forventetRequest))
@@ -77,7 +71,8 @@ class RegoppslagClientTest {
             AuthContextHolderThreadLocal
                 .instance()
                 .withContext(createAuthContext(UserRole.INTERN, "SUBJECT"), UnsafeSupplier {
-                    regoppslagClient.hentPostadresse((TEST_FNR)
+                    regoppslagClient.hentPostadresse(
+                        (TEST_FNR)
                     )
                 })
 
