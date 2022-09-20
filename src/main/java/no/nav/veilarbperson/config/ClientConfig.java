@@ -40,7 +40,6 @@ import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.utils.DownstreamApi;
-import no.nav.veilarbperson.client.pdl.UserTokenProviderPdl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -81,7 +80,7 @@ public class ClientConfig {
         String url = isProduction()
                 ? createNaisAdeoIngressUrl(VEILARBOPPFOLGING, true)
                 : createNaisPreprodIngressUrl(VEILARBOPPFOLGING, "q1", true);
-        return new VeilarboppfolgingClientImpl(url, authService.contextAwareUserTokenSupplier(
+        return new VeilarboppfolgingClientImpl(url, () -> authService.getAadOboTokenForTjeneste(
                 new DownstreamApi(EnvironmentUtils.requireClusterName(), "pto", VEILARBOPPFOLGING))
         );
     }
@@ -122,8 +121,15 @@ public class ClientConfig {
     }
 
     @Bean
-    public PdlClient pdlClient() {
-        return new PdlClientImpl(internalDevOrProdIngress("pdl-api"));
+    public PdlClient pdlClient(AuthService authService, AzureAdMachineToMachineTokenClient tokenClient) {
+        String cluster = isProduction() ? "prod-fss" : "dev-fss";
+        String tokenScop = String.format("api://%s.pdl.pdl-api/.default", cluster);
+
+        return new PdlClientImpl(
+                internalDevOrProdIngress("pdl-api"),
+                () -> authService.getAadOboTokenForTjeneste(new DownstreamApi(cluster, "pdl", "pdl-api")),
+                () -> tokenClient.createMachineToMachineToken(tokenScop)
+        );
     }
 
     @Bean
@@ -180,11 +186,6 @@ public class ClientConfig {
         return AzureAdTokenClientBuilder.builder()
                 .withNaisDefaults()
                 .buildOnBehalfOfTokenClient();
-    }
-
-    @Bean
-    public UserTokenProviderPdl userTokenProviderPdl(AuthService authService) {
-        return new UserTokenProviderPdl(authService, requireClusterName());
     }
 
     @Bean

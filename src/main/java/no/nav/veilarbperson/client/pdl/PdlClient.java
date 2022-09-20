@@ -7,15 +7,15 @@ import java.util.List;
 
 public interface PdlClient extends HealthCheck {
 
-    HentPerson.Person hentPerson(Fnr personIdent, String userToken);
+    HentPerson.Person hentPerson(Fnr personIdent);
 
-    HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent, String userToken);
+    HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent);
 
-    HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String userToken);
+    HentPerson.PersonNavn hentPersonNavn(Fnr personIdent);
 
-    List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, String userToken);
+    List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter);
 
-    HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String userToken);
+    HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent);
 
-    HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent, String userToken);
+    HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent);
 }
