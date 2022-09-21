@@ -29,7 +29,7 @@ public class DigdirClientImpl implements DigdirClient {
     private final Supplier<String> systemUserTokenProvider;
     private final OkHttpClient client;
 
-    public DigdirClientImpl(String digdirUrl, Supplier<String>  systemUserTokenProvider) {
+    public DigdirClientImpl(String digdirUrl, Supplier<String> systemUserTokenProvider) {
         this.digdirUrl = digdirUrl;
         this.systemUserTokenProvider = systemUserTokenProvider;
         this.client = RestClient.baseClient();
@@ -40,7 +40,7 @@ public class DigdirClientImpl implements DigdirClient {
     @Override
     public DigdirKontaktinfo hentKontaktInfo(Fnr fnr) {
         Request request = new Request.Builder()
-                .url(joinPaths(digdirUrl, "/api/v1/personer/kontaktinformasjon?inkluderSikkerDigitalPost=false"))
+                .url(joinPaths(digdirUrl, "/rest/v1/person?inkluderSikkerDigitalPost=false"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
                 .header("Nav-Personidenter", fnr.get())
@@ -48,22 +48,14 @@ public class DigdirClientImpl implements DigdirClient {
 
         try (Response response = client.newCall(request).execute()) {
             RestUtils.throwIfNotSuccessful(response);
-            Optional<String> json = RestUtils.getBodyStr(response);
-
-            if (json.isEmpty()) {
-                throw new IllegalStateException("Digdir body is missing");
-            }
-
-            ObjectMapper mapper = JsonUtils.getMapper();
-            JsonNode node = mapper.readTree(json.get());
-
-            return mapper.treeToValue(node.get("kontaktinfo").get(fnr.get()), DigdirKontaktinfo.class);
+            return RestUtils.parseJsonResponse(response, DigdirKontaktinfo.class)
+                    .orElseThrow(() -> new IllegalStateException("Digdir body is missing"));
         }
     }
 
     @Override
     public HealthCheckResult checkHealth() {
-        return HealthCheckUtils.pingUrl(joinPaths(digdirUrl, "/api/ping"), client);
+        return HealthCheckUtils.pingUrl(joinPaths(digdirUrl, "/rest/ping"), client);
     }
 
 }

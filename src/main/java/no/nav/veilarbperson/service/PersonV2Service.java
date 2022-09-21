@@ -22,6 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,6 +34,7 @@ import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.UKJENT_BOSTED;
 import static no.nav.veilarbperson.client.person.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
+import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseZonedDateToDateString;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.sivilstandMapper;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
 
@@ -293,20 +296,15 @@ public class PersonV2Service {
     private void flettDigitalKontaktinformasjon(Fnr fnr, PersonV2Data personV2Data) {
         try {
             DigdirKontaktinfo kontaktinfo = digdirClient.hentKontaktInfo(fnr);
-            String epostSisteOppdatert = kontaktinfo.getEpostSistOppdatert();
-            String formatertEpostSisteOppdatert = epostSisteOppdatert != null ? PersonV2DataMapper.parseDateFromDateTime(
-                    epostSisteOppdatert) : null;
-
+            String epostSisteOppdatert = parseZonedDateToDateString(kontaktinfo.getEpostadresseOppdatert());
+            String mobilSisteOppdatert = parseZonedDateToDateString(kontaktinfo.getMobiltelefonnummerOppdatert());
             Epost epost = kontaktinfo.getEpostadresse() != null
-                    ? new Epost().setEpostAdresse(kontaktinfo.getEpostadresse()).setEpostSistOppdatert(
-                    formatertEpostSisteOppdatert).setMaster("KRR")
+                    ? new Epost().setEpostAdresse(kontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert).setMaster("KRR")
                     : null;
 
             personV2Data.setEpost(epost);
             personV2Data.setMalform(kontaktinfo.getSpraak());
-            leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(),
-                    kontaktinfo.getMobilSistOppdatert(),
-                    personV2Data.getTelefon());
+            leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), mobilSisteOppdatert, personV2Data.getTelefon());
         } catch (Exception e) {
             log.warn("Kunne ikke flette digitalkontaktinfo fra KRR", e);
         }
@@ -316,13 +314,11 @@ public class PersonV2Service {
     public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, String sistOppdatert, List<Telefon> telefonListe) {
         boolean ikkeKrrTelefonIListe = telefonNummerFraKrr != null
                 && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
-        String registrertDato = sistOppdatert != null ? PersonV2DataMapper.parseDateFromDateTime(sistOppdatert) : null;
-
         if (ikkeKrrTelefonIListe) {
             telefonListe.add(new Telefon()
                     .setPrioritet(telefonListe.size() + 1 + "")
                     .setTelefonNr(telefonNummerFraKrr)
-                    .setRegistrertDato(registrertDato)
+                    .setRegistrertDato(sistOppdatert)
                     .setMaster("KRR"));
         }
     }

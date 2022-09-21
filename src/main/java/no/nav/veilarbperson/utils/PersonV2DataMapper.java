@@ -9,6 +9,7 @@ import no.nav.veilarbperson.service.AuthService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -203,6 +204,14 @@ public class PersonV2DataMapper {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
         LocalDateTime dateTime = LocalDateTime.parse(sistOppdatert, dateTimeFormatter);
         return PersonV2DataMapper.formateDateFromLocalDateTime(dateTime);
+    }
+
+    public static String parseZonedDateToDateString(ZonedDateTime dato) {
+        if(dato == null){
+            return null;
+        }
+        final DateTimeFormatter frontendformat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return dato.format(frontendformat);
     }
 
     public static Optional<HentPerson.Navn> hentGjeldeneNavn(List<HentPerson.Navn> response) {

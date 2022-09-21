@@ -425,7 +425,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void leggKrrTelefonNrIListeTest() {
         String telefonNrFraKrr = "+4622222222";
-        String registrertDato = "2018-10-01T11:38:22,000+00:00";
+        String registrertDato = "2018-10-01";
         List<Telefon> telefonListeFraPdl = PersonV2DataMapper.mapTelefonNrFraPdl(person.getTelefonnummer());
         personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl);  //Legger telefonnummere fra PDL og KRR som er ulike, til en liste
 

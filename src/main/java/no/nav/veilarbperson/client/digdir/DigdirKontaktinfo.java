@@ -1,15 +1,19 @@
 package no.nav.veilarbperson.client.digdir;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
+import java.time.ZonedDateTime;
+
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DigdirKontaktinfo {
     String personident;
-    boolean kanVarsles;
-    boolean reservert;
+    Boolean kanVarsles;
+    Boolean reservert;
     String epostadresse;
-    String epostSistOppdatert;
+    ZonedDateTime epostadresseOppdatert;
     String mobiltelefonnummer;
-    String mobilSistOppdatert;
+    ZonedDateTime mobiltelefonnummerOppdatert;
     String spraak;
 }
