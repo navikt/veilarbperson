@@ -43,7 +43,7 @@ public class DigdirClientImpl implements DigdirClient {
                 .url(joinPaths(digdirUrl, "/rest/v1/person?inkluderSikkerDigitalPost=false"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
-                .header("Nav-Personidenter", fnr.get())
+                .header("Nav-Personident", fnr.get())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {

@@ -27,7 +27,7 @@ public class DigdirClientImplTest {
         DigdirClient digdirClient = new DigdirClientImpl(apiUrl, () -> "TOKEN");
 
         givenThat(get(anyUrl())
-                .withHeader("Nav-Personidenter", equalTo(TEST_FNR.get()))
+                .withHeader("Nav-Personident", equalTo(TEST_FNR.get()))
                 .withHeader("Authorization", equalTo("Bearer TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
