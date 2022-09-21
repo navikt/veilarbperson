@@ -91,7 +91,7 @@ public class ClientConfig {
         String url = isProduction() ?
                 createProdInternalIngressUrl("digdir-krr-proxy")
                 : createDevInternalIngressUrl("digdir-krr-proxy");
-        String tokenScope = String.format("api://%s.team-rocket.digdir-krr-proxy/.default", isProduction() ? "prod-gcp" : "dev:gcp");
+        String tokenScope = String.format("api://%s.team-rocket.digdir-krr-proxy/.default", isProduction() ? "prod-gcp" : "dev-gcp");
         return new DigdirClientImpl(url, () -> tokenClient.createMachineToMachineToken(tokenScope));
     }
 
