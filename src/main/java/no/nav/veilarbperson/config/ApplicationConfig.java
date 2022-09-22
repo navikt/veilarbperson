@@ -83,8 +83,7 @@ public class ApplicationConfig {
                 ? createProdInternalIngressUrl("regoppslag")
                 : createDevInternalIngressUrl("regoppslag");
 
-        return new RegoppslagClientImpl(url,
-                () -> tokenClient.createMachineToMachineToken(tokenScope));
+        return new RegoppslagClientImpl(url, () -> tokenClient.createMachineToMachineToken(tokenScope));
     }
 
     @PostConstruct
