@@ -25,6 +25,8 @@ import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.difi.SbsServiceUser;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirClientImpl;
+import no.nav.veilarbperson.client.dkif.DkifClient;
+import no.nav.veilarbperson.client.dkif.DkifClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClientImpl;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
@@ -87,6 +89,11 @@ public class ClientConfig {
     }
 
     @Bean
+    public DkifClient dkifClient(SystemUserTokenProvider systemUserTokenProvider) {
+        return new DkifClientImpl(createServiceUrl("dkif", "default", false), systemUserTokenProvider);
+    }
+
+    @Bean
     public DigdirClient digdirClient(MachineToMachineTokenClient tokenClient) {
         String url = isProduction() ?
                 createProdInternalIngressUrl("digdir-krr-proxy")
@@ -94,7 +101,6 @@ public class ClientConfig {
         String tokenScope = String.format("api://%s.team-rocket.digdir-krr-proxy/.default", isProduction() ? "prod-gcp" : "dev-gcp");
         return new DigdirClientImpl(url, () -> tokenClient.createMachineToMachineToken(tokenScope));
     }
-
 
     @Bean
     public PamClient pamClient(SystemUserTokenProvider systemUserTokenProvider) {

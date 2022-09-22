@@ -1,11 +1,8 @@
 package no.nav.veilarbperson.client.digdir;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.HealthCheckUtils;
-import no.nav.common.json.JsonUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
 import no.nav.common.types.identer.Fnr;
@@ -15,7 +12,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.cache.annotation.Cacheable;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import static no.nav.common.utils.UrlUtils.joinPaths;
