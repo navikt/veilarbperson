@@ -57,6 +57,10 @@ spec:
   accessPolicy:
     inbound:
       rules:
+        - application: veilarbdialog
+          namespace: pto
+        - application: veilarbaktivitet
+          namespace: pto
         - application: paw-proxy
           namespace: paw
         - application: veilarbpersonflate
