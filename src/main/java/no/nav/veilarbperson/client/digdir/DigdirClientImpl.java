@@ -51,7 +51,12 @@ public class DigdirClientImpl implements DigdirClient {
 
     @Override
     public HealthCheckResult checkHealth() {
-        return HealthCheckUtils.pingUrl(joinPaths(digdirUrl, "/rest/ping"), client);
+        Request request = new Request.Builder()
+                .url(joinPaths(digdirUrl, "/rest/ping"))
+                .header(AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
+                .build();
+
+        return HealthCheckUtils.pingUrl(request, client);
     }
 
 }
