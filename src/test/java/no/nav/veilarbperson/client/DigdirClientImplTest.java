@@ -39,11 +39,11 @@ public class DigdirClientImplTest {
         assertEquals(kontaktinfo.getPersonident(), TEST_FNR.get());
         assertTrue(kontaktinfo.getKanVarsles());
         assertFalse(kontaktinfo.getReservert());
-        assertEquals(kontaktinfo.getEpostadresse(), "noreply@nav.no");
-        assertEquals(kontaktinfo.getMobiltelefonnummer(), "11111111");
-        assertEquals(epostSistOppdatert, "01.01.2018");
-        assertEquals(parseZonedDateToDateString(kontaktinfo.getMobiltelefonnummerOppdatert()), "03.12.2011");
-        assertEquals(kontaktinfo.getSpraak(), "NB");
+        assertEquals("noreply@nav.no", kontaktinfo.getEpostadresse());
+        assertEquals("11111111", kontaktinfo.getMobiltelefonnummer());
+        assertEquals("01.01.2018", epostSistOppdatert);
+        assertEquals("03.12.2011", parseZonedDateToDateString(kontaktinfo.getMobiltelefonnummerOppdatert()));
+        assertEquals("NB", kontaktinfo.getSpraak());
 
         Epost epost = new Epost()
                 .setEpostAdresse(kontaktinfo.getEpostadresse())
