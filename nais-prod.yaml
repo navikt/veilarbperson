@@ -11,6 +11,7 @@ spec:
   webproxy: true
   ingresses:
     - https://veilarbperson.prod-fss-pub.nais.io
+    - https://veilarbperson.intern.nav.no
     - https://veilarbperson.nais.adeo.no
     - https://app.adeo.no/veilarbperson
   liveness:
