@@ -35,7 +35,7 @@ public class PersonV2Controller {
     }
 
     @GetMapping("/malform")
-    @Operation(summary = "Henter malform fra DKIF tjeneste")
+    @Operation(summary = "Henter malform fra DIGDIR tjeneste")
     public Malform malform(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);

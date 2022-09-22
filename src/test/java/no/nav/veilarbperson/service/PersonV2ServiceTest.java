@@ -7,8 +7,9 @@ import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.digdir.DigdirClient;
+import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.dkif.DkifClient;
-import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -39,6 +40,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.UKJENT_BOSTED;
+import static no.nav.veilarbperson.utils.PersonV2DataMapper.frontendDatoformat;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,22 +50,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PersonV2ServiceTest extends PdlClientTestConfig {
-    private Norg2Client norg2Client = mock(Norg2Client.class);
-    private DkifClient dkifClient = mock(DkifClient.class);
-    private PersonClient personClient = mock(PersonClient.class);
+    private final Norg2Client norg2Client = mock(Norg2Client.class);
+    private final DigdirClient digdirClient = mock(DigdirClient.class);
+    private final PersonClient personClient = mock(PersonClient.class);
     private PdlClient pdlClient;
-    private KodeverkService kodeverkService = mock(KodeverkService.class);
-    private SkjermetClient skjermetClient = mock(SkjermetClient.class);
-    private AuthService authService = mock(AuthService.class);
-    private SystemUserTokenProvider systemUserTokenProvider = mock(SystemUserTokenProvider.class);
+    private final KodeverkService kodeverkService = mock(KodeverkService.class);
+    private final SkjermetClient skjermetClient = mock(SkjermetClient.class);
+    private final AuthService authService = mock(AuthService.class);
+    private final SystemUserTokenProvider systemUserTokenProvider = mock(SystemUserTokenProvider.class);
     private PersonV2Service personV2Service;
     private HentPerson.Person person;
-    private static final String PDL_AUTH = "USER_TOKEN";
-    private static Fnr FNR = Fnr.of("0123456789");
-    private String fnrRelatertSivilstand = "2134567890";
-    private String fnrBarn1 = "12345678910";
-    private String fnrBarn2 = "12345678911";
-    private String fnrBarnOpphoert = "111";
+    private static final Fnr FNR = Fnr.of("0123456789");
+    private final String fnrRelatertSivilstand = "2134567890";
+    private final String fnrBarn1 = "12345678910";
+    private final String fnrBarn2 = "12345678911";
+    private final String fnrBarnOpphoert = "111";
     List<Fnr> testFnrsTilBarna = new ArrayList<>(List.of(Fnr.of(fnrBarn1), Fnr.of(fnrBarn2)));
 
     @Before
@@ -71,14 +72,15 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         pdlClient = getPdlClient();
         when(systemUserTokenProvider.getSystemUserToken()).thenReturn("SYSTEM_USER_TOKEN");
         when(norg2Client.hentTilhorendeEnhet(anyString(), any(), anyBoolean())).thenReturn(new Enhet());
-        when(dkifClient.hentKontaktInfo(any())).thenReturn(new DkifKontaktinfo());
+        when(digdirClient.hentKontaktInfo(any())).thenReturn(new DigdirKontaktinfo());
         when(personClient.hentPerson(FNR)).thenReturn(new TpsPerson().setKontonummer("123456789"));
 
         personV2Service = new PersonV2Service(
                 pdlClient,
                 mock(DifiCient.class),
                 authService,
-                dkifClient,
+                mock(DkifClient.class),
+                digdirClient,
                 norg2Client,
                 personClient,
                 mock(UnleashClient.class),
@@ -425,7 +427,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void leggKrrTelefonNrIListeTest() {
         String telefonNrFraKrr = "+4622222222";
-        String registrertDato = "2018-10-01T11:38:22,000+00:00";
+        String registrertDato = "2018-10-01";
         List<Telefon> telefonListeFraPdl = PersonV2DataMapper.mapTelefonNrFraPdl(person.getTelefonnummer());
         personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl);  //Legger telefonnummere fra PDL og KRR som er ulike, til en liste
 
@@ -556,13 +558,13 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         String telefonRegistrertDatoIKrr = "2018-09-01T11:38:22,000+00:00";
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
         LocalDateTime dateTime = LocalDateTime.parse(telefonRegistrertDatoIKrr, dateTimeFormatter);
-        String registrertDato = PersonV2DataMapper.formateDateFromLocalDateTime(dateTime);
+        String registrertDato = dateTime.format(frontendDatoformat);
         assertEquals("01.09.2018", registrertDato);
 
         LocalDateTime telefonRegistrertDatoIPdl = person.getTelefonnummer().get(0).getMetadata().getEndringer().get(0).getRegistrert();
 
         LocalDateTime dateTime1 = LocalDateTime.parse(telefonRegistrertDatoIPdl.toString(), ISO_LOCAL_DATE_TIME);
-        String registrertDato1 = PersonV2DataMapper.formateDateFromLocalDateTime(dateTime1);
+        String registrertDato1 = dateTime1.format(frontendDatoformat);
         assertEquals("08.09.2021", registrertDato1);
     }
 

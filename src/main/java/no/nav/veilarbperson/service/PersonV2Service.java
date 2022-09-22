@@ -6,6 +6,8 @@ import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
+import no.nav.veilarbperson.client.digdir.DigdirClient;
+import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
@@ -22,6 +24,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,6 +36,7 @@ import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.UKJENT_BOSTED;
 import static no.nav.veilarbperson.client.person.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
+import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseZonedDateToDateString;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.sivilstandMapper;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
 
@@ -39,9 +44,11 @@ import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFull
 @Service
 public class PersonV2Service {
     private static final String UNLEASH_NIVAA4_DISABLED = "veilarbperson.nivaa4.disabled";
+    private static final String UNLEASH_NY_DIGDIR_KRR = "veilarbperson.digdir_krr_proxy";
     private final PdlClient pdlClient;
     private final AuthService authService;
     private final DkifClient dkifClient;
+    private final DigdirClient digdirClient;
     private final Norg2Client norg2Client;
     private final PersonClient personClient;
     private final SkjermetClient skjermetClient;
@@ -54,6 +61,7 @@ public class PersonV2Service {
                            DifiCient difiCient,
                            AuthService authService,
                            DkifClient dkifClient,
+                           DigdirClient digdirClient,
                            Norg2Client norg2Client,
                            PersonClient personClient,
                            UnleashClient unleashClient,
@@ -62,6 +70,7 @@ public class PersonV2Service {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.dkifClient = dkifClient;
+        this.digdirClient = digdirClient;
         this.norg2Client = norg2Client;
         this.personClient = personClient;
         this.skjermetClient = skjermetClient;
@@ -89,7 +98,11 @@ public class PersonV2Service {
         flettInnEgenAnsatt(personV2Data, fodselsnummer);
         flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
         flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data);
-        flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
+        if (unleashClient.isEnabled(UNLEASH_NY_DIGDIR_KRR)) {
+            flettDigitalKontaktinformasjonDigdir(fodselsnummer, personV2Data);
+        } else {
+            flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
+        }
         flettGeografiskEnhet(fodselsnummer, personV2Data);
         flettKodeverk(personV2Data);
 
@@ -299,7 +312,8 @@ public class PersonV2Service {
             String epostSisteOppdatert = kontaktinfo.getEpostSistOppdatert();
             String formatertEpostSisteOppdatert = epostSisteOppdatert != null ? PersonV2DataMapper.parseDateFromDateTime(
                     epostSisteOppdatert) : null;
-
+            String formatertMobilSisteOppdatert = kontaktinfo.getMobilSistOppdatert() != null ? PersonV2DataMapper.parseDateFromDateTime(
+                    kontaktinfo.getMobilSistOppdatert()) : null;
             Epost epost = kontaktinfo.getEpostadresse() != null
                     ? new Epost().setEpostAdresse(kontaktinfo.getEpostadresse()).setEpostSistOppdatert(
                     formatertEpostSisteOppdatert).setMaster("KRR")
@@ -308,8 +322,25 @@ public class PersonV2Service {
             personV2Data.setEpost(epost);
             personV2Data.setMalform(kontaktinfo.getSpraak());
             leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(),
-                    kontaktinfo.getMobilSistOppdatert(),
+                    formatertMobilSisteOppdatert,
                     personV2Data.getTelefon());
+        } catch (Exception e) {
+            log.warn("Kunne ikke flette digitalkontaktinfo fra KRR", e);
+        }
+    }
+
+    private void flettDigitalKontaktinformasjonDigdir(Fnr fnr, PersonV2Data personV2Data) {
+        try {
+            DigdirKontaktinfo kontaktinfo = digdirClient.hentKontaktInfo(fnr);
+            String epostSisteOppdatert = parseZonedDateToDateString(kontaktinfo.getEpostadresseOppdatert());
+            String mobilSisteOppdatert = parseZonedDateToDateString(kontaktinfo.getMobiltelefonnummerOppdatert());
+            Epost epost = kontaktinfo.getEpostadresse() != null
+                    ? new Epost().setEpostAdresse(kontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert).setMaster("KRR")
+                    : null;
+
+            personV2Data.setEpost(epost);
+            personV2Data.setMalform(kontaktinfo.getSpraak());
+            leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), mobilSisteOppdatert, personV2Data.getTelefon());
         } catch (Exception e) {
             log.warn("Kunne ikke flette digitalkontaktinfo fra KRR", e);
         }
@@ -319,13 +350,11 @@ public class PersonV2Service {
     public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, String sistOppdatert, List<Telefon> telefonListe) {
         boolean ikkeKrrTelefonIListe = telefonNummerFraKrr != null
                 && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
-        String registrertDato = sistOppdatert != null ? PersonV2DataMapper.parseDateFromDateTime(sistOppdatert) : null;
-
         if (ikkeKrrTelefonIListe) {
             telefonListe.add(new Telefon()
                     .setPrioritet(telefonListe.size() + 1 + "")
                     .setTelefonNr(telefonNummerFraKrr)
-                    .setRegistrertDato(registrertDato)
+                    .setRegistrertDato(sistOppdatert)
                     .setMaster("KRR"));
         }
     }
@@ -394,6 +423,10 @@ public class PersonV2Service {
 
     public String hentMalform(Fnr fnr) {
         try {
+            if (unleashClient.isEnabled(UNLEASH_NY_DIGDIR_KRR)) {
+                DigdirKontaktinfo kontaktinfo = digdirClient.hentKontaktInfo(fnr);
+                return kontaktinfo.getSpraak();
+            }
             DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);
             return kontaktinfo.getSpraak();
         } catch (Exception e) {

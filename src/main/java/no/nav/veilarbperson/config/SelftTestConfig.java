@@ -6,7 +6,7 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.health.selftest.SelfTestCheck;
 import no.nav.common.health.selftest.SelfTestChecks;
 import no.nav.common.health.selftest.SelfTestMeterBinder;
-import no.nav.veilarbperson.client.dkif.DkifClient;
+import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -24,7 +24,7 @@ public class SelftTestConfig {
     public SelfTestChecks selfTestChecks(
             AktorOppslagClient aktorOppslagClient,
             Pep veilarbPep,
-            DkifClient dkifClient,
+            DigdirClient digdirClient,
             KodeverkClient kodeverkClient,
             PersonClient personClient,
             SkjermetClient skjermetClient,
@@ -35,7 +35,7 @@ public class SelftTestConfig {
         return new SelfTestChecks(List.of(
                 new SelfTestCheck("AktorOppslagClient", true, aktorOppslagClient),
                 new SelfTestCheck("ABAC", true, veilarbPep.getAbacClient()),
-                new SelfTestCheck("Digitalkontakinformasjon (DKIF)", false, dkifClient),
+                new SelfTestCheck("Digitalkontakinformasjon (DIGDIR)", false, digdirClient),
                 new SelfTestCheck("Felles kodeverk", false, kodeverkClient),
                 new SelfTestCheck("Person_v3 (SOAP)", true, personClient),
                 new SelfTestCheck("Norg2", false, norg2Client),
