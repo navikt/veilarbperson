@@ -11,6 +11,7 @@ spec:
   webproxy: true
   ingresses:
     - https://veilarbperson.dev-fss-pub.nais.io
+    - https://veilarbperson.dev.intern.nav.no
     - https://veilarbperson-q1.nais.preprod.local
     - https://app-q1.dev.adeo.no/veilarbperson
     - https://app.dev.adeo.no/veilarbperson
@@ -56,6 +57,10 @@ spec:
   accessPolicy:
     inbound:
       rules:
+        - application: veilarbdialog
+          namespace: pto
+        - application: veilarbaktivitet
+          namespace: pto
         - application: paw-proxy
           namespace: paw
         - application: veilarbpersonflate

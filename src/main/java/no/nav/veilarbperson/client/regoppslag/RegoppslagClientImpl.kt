@@ -34,7 +34,7 @@ class RegoppslagClientImpl(
     }
 
     override fun checkHealth(): HealthCheckResult {
-        return HealthCheckUtils.pingUrl(UrlUtils.joinPaths(reguppslagUrl, "isReady"), client)
+        return HealthCheckUtils.pingUrl(UrlUtils.joinPaths(reguppslagUrl, "/actuator/health/readiness"), client)
     }
 
 }

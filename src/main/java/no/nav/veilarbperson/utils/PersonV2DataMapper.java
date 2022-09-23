@@ -9,6 +9,7 @@ import no.nav.veilarbperson.service.AuthService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.*;
 
 public class PersonV2DataMapper {
+    public static final DateTimeFormatter frontendDatoformat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public static PersonV2Data toPersonV2Data(HentPerson.Person person) {
         Optional<HentPerson.Navn> navn = hentGjeldeneNavn(person.getNavn());
@@ -183,7 +185,7 @@ public class PersonV2DataMapper {
         Optional<HentPerson.Metadata.Endringer> endring = finnForsteEndring(telefonnummer.getMetadata().getEndringer());
         String registrert = endring.map(HentPerson.Metadata.Endringer::getRegistrert)
                 .map(dato -> LocalDateTime.parse(dato.toString(), ISO_LOCAL_DATE_TIME))
-                .map(PersonV2DataMapper::formateDateFromLocalDateTime)
+                .map(dato -> dato.format(frontendDatoformat))
                 .orElse(null);
 
         return (telefonnr != null)
@@ -195,14 +197,17 @@ public class PersonV2DataMapper {
                 : null;
     }
 
-    public static String formateDateFromLocalDateTime(LocalDateTime localDateTime) {
-        return DateTimeFormatter.ofPattern("dd.MM.yyyy").format(localDateTime);
-    }
-
     public static String parseDateFromDateTime(String sistOppdatert) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,000+00:00");
         LocalDateTime dateTime = LocalDateTime.parse(sistOppdatert, dateTimeFormatter);
-        return PersonV2DataMapper.formateDateFromLocalDateTime(dateTime);
+        return dateTime.format(frontendDatoformat);
+    }
+
+    public static String parseZonedDateToDateString(ZonedDateTime dato) {
+        if(dato == null){
+            return null;
+        }
+        return dato.format(frontendDatoformat);
     }
 
     public static Optional<HentPerson.Navn> hentGjeldeneNavn(List<HentPerson.Navn> response) {
