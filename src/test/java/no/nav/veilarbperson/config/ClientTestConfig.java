@@ -17,8 +17,6 @@ import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
-import no.nav.veilarbperson.client.dkif.DkifClient;
-import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
@@ -107,21 +105,6 @@ public class ClientTestConfig {
             @Override
             public Enhet hentTilhorendeEnhet(String s, Diskresjonskode diskresjonskode, boolean b) {
                 return null;
-            }
-
-            @Override
-            public HealthCheckResult checkHealth() {
-                return HealthCheckResult.healthy();
-            }
-        };
-    }
-
-    @Bean
-    public DkifClient dkifClient() {
-        return new DkifClient() {
-            @Override
-            public DkifKontaktinfo hentKontaktInfo(Fnr fnr) {
-                return new DkifKontaktinfo();
             }
 
             @Override

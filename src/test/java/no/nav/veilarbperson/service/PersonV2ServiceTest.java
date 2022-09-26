@@ -9,7 +9,6 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
-import no.nav.veilarbperson.client.dkif.DkifClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -79,7 +78,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 pdlClient,
                 mock(DifiCient.class),
                 authService,
-                mock(DkifClient.class),
                 digdirClient,
                 norg2Client,
                 personClient,
