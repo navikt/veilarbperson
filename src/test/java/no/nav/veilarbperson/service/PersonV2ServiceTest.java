@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.featuretoggle.UnleashClient;
-import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
@@ -56,7 +55,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private final KodeverkService kodeverkService = mock(KodeverkService.class);
     private final SkjermetClient skjermetClient = mock(SkjermetClient.class);
     private final AuthService authService = mock(AuthService.class);
-    private final SystemUserTokenProvider systemUserTokenProvider = mock(SystemUserTokenProvider.class);
     private PersonV2Service personV2Service;
     private HentPerson.Person person;
     private static final Fnr FNR = Fnr.of("0123456789");
@@ -69,7 +67,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Before
     public void setup() {
         pdlClient = getPdlClient();
-        when(systemUserTokenProvider.getSystemUserToken()).thenReturn("SYSTEM_USER_TOKEN");
         when(norg2Client.hentTilhorendeEnhet(anyString(), any(), anyBoolean())).thenReturn(new Enhet());
         when(digdirClient.hentKontaktInfo(any())).thenReturn(new DigdirKontaktinfo());
         when(personClient.hentPerson(FNR)).thenReturn(new TpsPerson().setKontonummer("123456789"));

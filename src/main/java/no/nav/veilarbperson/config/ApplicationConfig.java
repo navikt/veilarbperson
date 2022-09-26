@@ -9,8 +9,6 @@ import no.nav.common.auth.context.AuthContextHolderThreadLocal;
 import no.nav.common.cxf.StsConfig;
 import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.featuretoggle.UnleashClientImpl;
-import no.nav.common.sts.NaisSystemUserTokenProvider;
-import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.utils.Credentials;
 import no.nav.common.utils.NaisUtils;
@@ -24,7 +22,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.annotation.PostConstruct;
 
-import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.createDevInternalIngressUrl;
 import static no.nav.common.utils.UrlUtils.createProdInternalIngressUrl;
 import static no.nav.veilarbperson.config.ClientConfig.isProduction;
@@ -45,16 +42,6 @@ public class ApplicationConfig {
                 .username(serviceUser.username)
                 .password(serviceUser.password)
                 .build();
-    }
-
-    @Bean
-    public Credentials serviceUserCredentials() {
-        return getCredentials("service_user");
-    }
-
-    @Bean
-    public SystemUserTokenProvider systemUserTokenProvider(EnvironmentProperties properties, Credentials serviceUserCredentials) {
-        return new NaisSystemUserTokenProvider(properties.getStsDiscoveryUrl(), serviceUserCredentials.username, serviceUserCredentials.password);
     }
 
     @Bean
