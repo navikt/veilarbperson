@@ -21,23 +21,11 @@ import static no.nav.common.utils.EnvironmentUtils.requireApplicationName;
 
 @Configuration
 public class FilterConfig {
-
-    private final List<String> ALLOWED_SERVICE_USERS = List.of(
-            "srvveilarbaktivitet","srvveilarbdialog"
-    );
-
     private OidcAuthenticatorConfig openAmStsAuthConfig(EnvironmentProperties properties) {
         return new OidcAuthenticatorConfig()
                 .withDiscoveryUrl(properties.getOpenAmDiscoveryUrl())
                 .withClientId(properties.getVeilarbloginOpenAmClientId())
                 .withIdTokenFinder(new ServiceUserTokenFinder())
-                .withUserRole(UserRole.SYSTEM);
-    }
-
-    private OidcAuthenticatorConfig naisStsAuthConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(properties.getNaisStsDiscoveryUrl())
-                .withClientIds(ALLOWED_SERVICE_USERS)
                 .withUserRole(UserRole.SYSTEM);
     }
 
@@ -86,14 +74,13 @@ public class FilterConfig {
     }
 
     @Bean
-    public FilterRegistrationBean authenticationFilterRegistrationBean(EnvironmentProperties properties) {
+    public FilterRegistrationBean<OidcAuthenticationFilter> authenticationFilterRegistrationBean(EnvironmentProperties properties) {
         FilterRegistrationBean<OidcAuthenticationFilter> registration = new FilterRegistrationBean<>();
         OidcAuthenticationFilter authenticationFilter = new OidcAuthenticationFilter(
                 fromConfigs(
                         azureAdAuthConfig(properties),
                         loginserviceIdportenConfig(properties),
                         openAmStsAuthConfig(properties),
-                        naisStsAuthConfig(properties),
                         naisAzureAdConfig(properties)
                 )
         );
