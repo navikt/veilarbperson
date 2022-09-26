@@ -139,7 +139,7 @@ public class ClientConfig {
         String tokenScop = String.format("api://%s.pdl.pdl-api/.default", cluster);
 
         return new PdlClientImpl(
-                internalDevOrProdIngress("pdl-api"),
+                createServiceUrl("pdl-api", "pdl", true),
                 () -> authService.getAadOboTokenForTjeneste(new DownstreamApi(cluster, "pdl", "pdl-api")),
                 () -> tokenClient.createMachineToMachineToken(tokenScop)
         );
