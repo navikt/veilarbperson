@@ -17,7 +17,6 @@ public class CacheConfig {
     public static final String NOM_SKJERMEDE_PERSONER_CACHE_NAME = "nom_skjermede_personer_cache";
     public static final String TPS_PERSON_CACHE_NAME = "tps_person_cache";
     public static final String SIKKERHETSTILTAK_CACHE_NAME = "sikkerhetstiltak_cache";
-    public static final String DKIF_KONTAKTINFO_CACHE_NAME = "dkif_kontaktinfo_cache";
     public static final String DIGDIR_KONTAKTINFO_CACHE_NAME = "digdir_kontaktinfo_cache";
     public static final String DIFI_HAR_NIVA_4_CACHE_NAME = "difi_har_niva_4_cache";
     public static final String KODEVERK_BETYDNING_CACHE_NAME = "kodeverk_betydning_cache";
@@ -43,11 +42,6 @@ public class CacheConfig {
     @Bean
     public Cache sikkerhetstiltakCache() {
         return litenCache(SIKKERHETSTILTAK_CACHE_NAME);
-    }
-
-    @Bean
-    public Cache dkifKontaktinfoCache() {
-        return litenCache(DKIF_KONTAKTINFO_CACHE_NAME);
     }
 
     @Bean

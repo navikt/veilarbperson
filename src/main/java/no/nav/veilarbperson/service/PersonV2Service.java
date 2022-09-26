@@ -8,8 +8,6 @@ import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
-import no.nav.veilarbperson.client.dkif.DkifClient;
-import no.nav.veilarbperson.client.dkif.DkifKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -24,8 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,10 +40,8 @@ import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFull
 @Service
 public class PersonV2Service {
     private static final String UNLEASH_NIVAA4_DISABLED = "veilarbperson.nivaa4.disabled";
-    private static final String UNLEASH_NY_DIGDIR_KRR = "veilarbperson.digdir_krr_proxy";
     private final PdlClient pdlClient;
     private final AuthService authService;
-    private final DkifClient dkifClient;
     private final DigdirClient digdirClient;
     private final Norg2Client norg2Client;
     private final PersonClient personClient;
@@ -60,7 +54,6 @@ public class PersonV2Service {
     public PersonV2Service(PdlClient pdlClient,
                            DifiCient difiCient,
                            AuthService authService,
-                           DkifClient dkifClient,
                            DigdirClient digdirClient,
                            Norg2Client norg2Client,
                            PersonClient personClient,
@@ -69,7 +62,6 @@ public class PersonV2Service {
                            KodeverkService kodeverkService) {
         this.pdlClient = pdlClient;
         this.authService = authService;
-        this.dkifClient = dkifClient;
         this.digdirClient = digdirClient;
         this.norg2Client = norg2Client;
         this.personClient = personClient;
@@ -98,11 +90,7 @@ public class PersonV2Service {
         flettInnEgenAnsatt(personV2Data, fodselsnummer);
         flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
         flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data);
-        if (unleashClient.isEnabled(UNLEASH_NY_DIGDIR_KRR)) {
-            flettDigitalKontaktinformasjonDigdir(fodselsnummer, personV2Data);
-        } else {
-            flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
-        }
+        flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
         flettGeografiskEnhet(fodselsnummer, personV2Data);
         flettKodeverk(personV2Data);
 
@@ -308,29 +296,6 @@ public class PersonV2Service {
 
     private void flettDigitalKontaktinformasjon(Fnr fnr, PersonV2Data personV2Data) {
         try {
-            DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);
-            String epostSisteOppdatert = kontaktinfo.getEpostSistOppdatert();
-            String formatertEpostSisteOppdatert = epostSisteOppdatert != null ? PersonV2DataMapper.parseDateFromDateTime(
-                    epostSisteOppdatert) : null;
-            String formatertMobilSisteOppdatert = kontaktinfo.getMobilSistOppdatert() != null ? PersonV2DataMapper.parseDateFromDateTime(
-                    kontaktinfo.getMobilSistOppdatert()) : null;
-            Epost epost = kontaktinfo.getEpostadresse() != null
-                    ? new Epost().setEpostAdresse(kontaktinfo.getEpostadresse()).setEpostSistOppdatert(
-                    formatertEpostSisteOppdatert).setMaster("KRR")
-                    : null;
-
-            personV2Data.setEpost(epost);
-            personV2Data.setMalform(kontaktinfo.getSpraak());
-            leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(),
-                    formatertMobilSisteOppdatert,
-                    personV2Data.getTelefon());
-        } catch (Exception e) {
-            log.warn("Kunne ikke flette digitalkontaktinfo fra KRR", e);
-        }
-    }
-
-    private void flettDigitalKontaktinformasjonDigdir(Fnr fnr, PersonV2Data personV2Data) {
-        try {
             DigdirKontaktinfo kontaktinfo = digdirClient.hentKontaktInfo(fnr);
             String epostSisteOppdatert = parseZonedDateToDateString(kontaktinfo.getEpostadresseOppdatert());
             String mobilSisteOppdatert = parseZonedDateToDateString(kontaktinfo.getMobiltelefonnummerOppdatert());
@@ -423,11 +388,7 @@ public class PersonV2Service {
 
     public String hentMalform(Fnr fnr) {
         try {
-            if (unleashClient.isEnabled(UNLEASH_NY_DIGDIR_KRR)) {
-                DigdirKontaktinfo kontaktinfo = digdirClient.hentKontaktInfo(fnr);
-                return kontaktinfo.getSpraak();
-            }
-            DkifKontaktinfo kontaktinfo = dkifClient.hentKontaktInfo(fnr);
+            DigdirKontaktinfo kontaktinfo = digdirClient.hentKontaktInfo(fnr);
             return kontaktinfo.getSpraak();
         } catch (Exception e) {
             log.warn("Kunne ikke hente malform fra KRR", e);

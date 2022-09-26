@@ -11,7 +11,6 @@ import no.nav.common.cxf.StsConfig;
 import no.nav.common.metrics.InfluxClient;
 import no.nav.common.metrics.MetricsClient;
 import no.nav.common.rest.client.RestClient;
-import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.token_client.builder.AzureAdTokenClientBuilder;
 import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
@@ -25,8 +24,6 @@ import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.difi.SbsServiceUser;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirClientImpl;
-import no.nav.veilarbperson.client.dkif.DkifClient;
-import no.nav.veilarbperson.client.dkif.DkifClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClientImpl;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
@@ -86,11 +83,6 @@ public class ClientConfig {
         return new VeilarboppfolgingClientImpl(url, () -> authService.getAadOboTokenForTjeneste(
                 new DownstreamApi(EnvironmentUtils.requireClusterName(), "pto", VEILARBOPPFOLGING))
         );
-    }
-
-    @Bean
-    public DkifClient dkifClient(SystemUserTokenProvider systemUserTokenProvider) {
-        return new DkifClientImpl(createServiceUrl("dkif", "default", false), systemUserTokenProvider);
     }
 
     @Bean
