@@ -157,9 +157,10 @@ public class ClientConfig {
     public VeilarbregistreringClient veilarbregistreringClient(
             AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient
     ) {
+        String cluster = isProduction() ? "prod-fss" : "dev-gcp";
         Supplier<String> serviceTokenSupplier = () -> aadMachineToMachineTokenClient
                 .createMachineToMachineToken(
-                        format("api://%s.%s.%s/.default", requireClusterName(), "paw", "veilarbregistrering"));
+                        format("api://%s.%s.%s/.default", cluster, "paw", "veilarbregistrering"));
 
         return new VeilarbregistreringClientImpl(
                 RestClient.baseClient(),
