@@ -21,13 +21,6 @@ import static no.nav.common.utils.EnvironmentUtils.requireApplicationName;
 
 @Configuration
 public class FilterConfig {
-    private OidcAuthenticatorConfig openAmStsAuthConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(properties.getOpenAmDiscoveryUrl())
-                .withClientId(properties.getVeilarbloginOpenAmClientId())
-                .withIdTokenFinder(new ServiceUserTokenFinder())
-                .withUserRole(UserRole.SYSTEM);
-    }
 
     private OidcAuthenticatorConfig azureAdAuthConfig(EnvironmentProperties properties) {
         return new OidcAuthenticatorConfig()

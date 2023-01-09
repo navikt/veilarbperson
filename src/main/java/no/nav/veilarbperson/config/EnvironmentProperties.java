@@ -11,15 +11,11 @@ public class EnvironmentProperties {
 
     private String openAmDiscoveryUrl;
 
-    private String veilarbloginOpenAmClientId;
-
     private String openAmRefreshUrl;
 
     private String naisStsDiscoveryUrl;
 
     private String aadDiscoveryUrl;
-
-    private String veilarbloginAadClientId;
 
     private String loginserviceIdportenAudience;
 
