@@ -4,7 +4,6 @@ import no.nav.common.auth.context.UserRole;
 import no.nav.common.auth.oidc.filter.AzureAdUserRoleResolver;
 import no.nav.common.auth.oidc.filter.OidcAuthenticationFilter;
 import no.nav.common.auth.oidc.filter.OidcAuthenticatorConfig;
-import no.nav.common.auth.utils.ServiceUserTokenFinder;
 import no.nav.common.log.LogFilter;
 import no.nav.common.rest.filter.SetStandardHttpHeadersFilter;
 import no.nav.veilarbperson.utils.PingFilter;
@@ -12,7 +11,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
 
 import static no.nav.common.auth.Constants.*;
 import static no.nav.common.auth.oidc.filter.OidcAuthenticator.fromConfigs;
@@ -21,14 +19,6 @@ import static no.nav.common.utils.EnvironmentUtils.requireApplicationName;
 
 @Configuration
 public class FilterConfig {
-
-    private OidcAuthenticatorConfig azureAdAuthConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(properties.getAadDiscoveryUrl())
-                .withClientId(properties.getVeilarbloginAadClientId())
-                .withIdTokenCookieName(AZURE_AD_ID_TOKEN_COOKIE_NAME)
-                .withUserRole(UserRole.INTERN);
-    }
 
     private OidcAuthenticatorConfig loginserviceIdportenConfig(EnvironmentProperties properties) {
         return new OidcAuthenticatorConfig()

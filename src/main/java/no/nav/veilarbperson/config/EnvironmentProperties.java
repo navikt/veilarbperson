@@ -14,9 +14,7 @@ public class EnvironmentProperties {
     private String openAmRefreshUrl;
 
     private String naisStsDiscoveryUrl;
-
-    private String aadDiscoveryUrl;
-
+    
     private String loginserviceIdportenAudience;
 
     private String loginserviceIdportenDiscoveryUrl;
