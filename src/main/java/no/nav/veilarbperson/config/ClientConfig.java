@@ -46,7 +46,6 @@ import org.springframework.context.annotation.Configuration;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
-import static no.nav.common.utils.EnvironmentUtils.requireClusterName;
 import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.*;
 
@@ -157,14 +156,15 @@ public class ClientConfig {
     public VeilarbregistreringClient veilarbregistreringClient(
             AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient
     ) {
-        String cluster = isProduction() ? "prod-fss" : "dev-gcp";
+        String cluster = isProduction() ? "prod-gcp" : "dev-gcp";
+        String appname = isProduction() ? "veilarbregistrering-gcp" : "veilarbregistrering";
         Supplier<String> serviceTokenSupplier = () -> aadMachineToMachineTokenClient
                 .createMachineToMachineToken(
                         format("api://%s.%s.%s/.default", cluster, "paw", "veilarbregistrering"));
 
         return new VeilarbregistreringClientImpl(
                 RestClient.baseClient(),
-                createInternalIngressUrl("veilarbregistrering"),
+                createInternalIngressUrl(appname),
                 serviceTokenSupplier
         );
     }
