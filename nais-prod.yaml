@@ -76,6 +76,8 @@ spec:
       value: https://app.adeo.no/tpsws-aura/ws/Person/v3
     - name: VIRKSOMHET_EGENANSATT_V1_URL
       value: https://app.adeo.no/tpsws-aura/ws/EgenAnsatt/v1
+    - name: VEILARBREGISTRERING_URL
+      value: https://veilarbregistrering-gcp.intern.nav.no
   envFrom:
     - configmap: pto-config
     - configmap: loginservice-idporten

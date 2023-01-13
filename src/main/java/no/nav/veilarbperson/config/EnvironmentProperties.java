@@ -35,6 +35,8 @@ public class EnvironmentProperties {
 
     private String personV3Endpoint;
 
+    private String veilarbregistreringUrl;
+
     private String soapStsUrl;
 
     private String pdlUrl;
