@@ -35,6 +35,8 @@ public class EnvironmentProperties {
 
     private String personV3Endpoint;
 
+    private String krrUrl;
+
     private String krrScope;
 
     private String skjermedePersonerPipScope;

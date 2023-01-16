@@ -86,10 +86,7 @@ public class ClientConfig {
 
     @Bean
     public DigdirClient digdirClient(EnvironmentProperties properties, MachineToMachineTokenClient tokenClient) {
-        String url = isProduction() ?
-                createProdInternalIngressUrl("digdir-krr-proxy")
-                : createDevInternalIngressUrl("digdir-krr-proxy");
-        return new DigdirClientImpl(url, () -> tokenClient.createMachineToMachineToken(properties.getKrrScope()));
+        return new DigdirClientImpl(properties.getKrrUrl(), () -> tokenClient.createMachineToMachineToken(properties.getKrrScope()));
     }
 
     @Bean
