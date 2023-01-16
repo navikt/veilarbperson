@@ -85,7 +85,7 @@ spec:
     - name: VEILARBREGISTRERING_URL
       value: https://veilarbregistrering-gcp.intern.nav.no
     - name: VEILARBREGISTRERING_SCOPE
-      value: api://dev-gcp.paw.veilarbregistrering/.default
+      value: api://prod-gcp.paw.veilarbregistrering/.default
   envFrom:
     - configmap: pto-config
     - configmap: loginservice-idporten
