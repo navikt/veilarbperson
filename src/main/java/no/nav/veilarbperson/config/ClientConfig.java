@@ -46,7 +46,6 @@ import org.springframework.context.annotation.Configuration;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
-import static no.nav.common.utils.EnvironmentUtils.requireClusterName;
 import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.*;
 
@@ -86,12 +85,8 @@ public class ClientConfig {
     }
 
     @Bean
-    public DigdirClient digdirClient(MachineToMachineTokenClient tokenClient) {
-        String url = isProduction() ?
-                createProdInternalIngressUrl("digdir-krr-proxy")
-                : createDevInternalIngressUrl("digdir-krr-proxy");
-        String tokenScope = String.format("api://%s.team-rocket.digdir-krr-proxy/.default", isProduction() ? "prod-gcp" : "dev-gcp");
-        return new DigdirClientImpl(url, () -> tokenClient.createMachineToMachineToken(tokenScope));
+    public DigdirClient digdirClient(EnvironmentProperties properties, MachineToMachineTokenClient tokenClient) {
+        return new DigdirClientImpl(properties.getKrrUrl(), () -> tokenClient.createMachineToMachineToken(properties.getKrrScope()));
     }
 
     @Bean
@@ -111,11 +106,9 @@ public class ClientConfig {
     }
 
     @Bean
-    public SkjermetClient skjermetClient(AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient) {
+    public SkjermetClient skjermetClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient) {
         Supplier<String> serviceTokenSupplier = () -> aadMachineToMachineTokenClient
-                .createMachineToMachineToken(
-                        format("api://%s.%s.%s/.default",
-                                isProduction() ? "prod-gcp" : "dev-gcp", "nom", "skjermede-personer-pip"));
+                .createMachineToMachineToken(properties.getSkjermedePersonerPipScope());
 
         return new SkjermetClientImpl(createInternalIngressUrl("skjermede-personer-pip"), serviceTokenSupplier);
     }
@@ -155,15 +148,15 @@ public class ClientConfig {
 
     @Bean
     public VeilarbregistreringClient veilarbregistreringClient(
+            EnvironmentProperties properties,
             AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient
     ) {
         Supplier<String> serviceTokenSupplier = () -> aadMachineToMachineTokenClient
-                .createMachineToMachineToken(
-                        format("api://%s.%s.%s/.default", requireClusterName(), "paw", "veilarbregistrering"));
+                .createMachineToMachineToken(properties.getVeilarbregistreringScope());
 
         return new VeilarbregistreringClientImpl(
                 RestClient.baseClient(),
-                createInternalIngressUrl("veilarbregistrering"),
+                properties.getVeilarbregistreringUrl(),
                 serviceTokenSupplier
         );
     }

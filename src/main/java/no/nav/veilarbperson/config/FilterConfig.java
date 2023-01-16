@@ -4,7 +4,6 @@ import no.nav.common.auth.context.UserRole;
 import no.nav.common.auth.oidc.filter.AzureAdUserRoleResolver;
 import no.nav.common.auth.oidc.filter.OidcAuthenticationFilter;
 import no.nav.common.auth.oidc.filter.OidcAuthenticatorConfig;
-import no.nav.common.auth.utils.ServiceUserTokenFinder;
 import no.nav.common.log.LogFilter;
 import no.nav.common.rest.filter.SetStandardHttpHeadersFilter;
 import no.nav.veilarbperson.utils.PingFilter;
@@ -12,7 +11,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
 
 import static no.nav.common.auth.Constants.*;
 import static no.nav.common.auth.oidc.filter.OidcAuthenticator.fromConfigs;
@@ -21,33 +19,6 @@ import static no.nav.common.utils.EnvironmentUtils.requireApplicationName;
 
 @Configuration
 public class FilterConfig {
-
-    private final List<String> ALLOWED_SERVICE_USERS = List.of(
-            "srvveilarbaktivitet","srvveilarbdialog"
-    );
-
-    private OidcAuthenticatorConfig openAmStsAuthConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(properties.getOpenAmDiscoveryUrl())
-                .withClientId(properties.getVeilarbloginOpenAmClientId())
-                .withIdTokenFinder(new ServiceUserTokenFinder())
-                .withUserRole(UserRole.SYSTEM);
-    }
-
-    private OidcAuthenticatorConfig naisStsAuthConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(properties.getNaisStsDiscoveryUrl())
-                .withClientIds(ALLOWED_SERVICE_USERS)
-                .withUserRole(UserRole.SYSTEM);
-    }
-
-    private OidcAuthenticatorConfig azureAdAuthConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(properties.getAadDiscoveryUrl())
-                .withClientId(properties.getVeilarbloginAadClientId())
-                .withIdTokenCookieName(AZURE_AD_ID_TOKEN_COOKIE_NAME)
-                .withUserRole(UserRole.INTERN);
-    }
 
     private OidcAuthenticatorConfig loginserviceIdportenConfig(EnvironmentProperties properties) {
         return new OidcAuthenticatorConfig()
@@ -86,14 +57,11 @@ public class FilterConfig {
     }
 
     @Bean
-    public FilterRegistrationBean authenticationFilterRegistrationBean(EnvironmentProperties properties) {
+    public FilterRegistrationBean<OidcAuthenticationFilter> authenticationFilterRegistrationBean(EnvironmentProperties properties) {
         FilterRegistrationBean<OidcAuthenticationFilter> registration = new FilterRegistrationBean<>();
         OidcAuthenticationFilter authenticationFilter = new OidcAuthenticationFilter(
                 fromConfigs(
-                        azureAdAuthConfig(properties),
                         loginserviceIdportenConfig(properties),
-                        openAmStsAuthConfig(properties),
-                        naisStsAuthConfig(properties),
                         naisAzureAdConfig(properties)
                 )
         );

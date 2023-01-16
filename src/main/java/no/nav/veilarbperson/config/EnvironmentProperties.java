@@ -11,16 +11,10 @@ public class EnvironmentProperties {
 
     private String openAmDiscoveryUrl;
 
-    private String veilarbloginOpenAmClientId;
-
     private String openAmRefreshUrl;
 
     private String naisStsDiscoveryUrl;
-
-    private String aadDiscoveryUrl;
-
-    private String veilarbloginAadClientId;
-
+    
     private String loginserviceIdportenAudience;
 
     private String loginserviceIdportenDiscoveryUrl;
@@ -40,6 +34,16 @@ public class EnvironmentProperties {
     private String egenAnsattV1Endpoint;
 
     private String personV3Endpoint;
+
+    private String krrUrl;
+
+    private String krrScope;
+
+    private String skjermedePersonerPipScope;
+
+    private String veilarbregistreringUrl;
+
+    private String veilarbregistreringScope;
 
     private String soapStsUrl;
 
