@@ -154,7 +154,6 @@ public class ClientConfig {
             EnvironmentProperties properties,
             AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient
     ) {
-        String cluster = isProduction() ? "prod-gcp" : "dev-gcp";
         Supplier<String> serviceTokenSupplier = () -> aadMachineToMachineTokenClient
                 .createMachineToMachineToken(properties.getVeilarbregistreringScope());
 
