@@ -76,8 +76,14 @@ spec:
       value: https://app.adeo.no/tpsws-aura/ws/Person/v3
     - name: VIRKSOMHET_EGENANSATT_V1_URL
       value: https://app.adeo.no/tpsws-aura/ws/EgenAnsatt/v1
+    - name: KONTAKT_OG_RESERVASJONSREGISTERET_SCOPE
+      value: api://prod-gcp.team-rocket.digdir-krr-proxy/.default
+    - name:  SKJERMEDE_PERSONER_PIP_SCOPE
+      value: api://prod-gcp.nom.skjermede-personer-pip/.default
     - name: VEILARBREGISTRERING_URL
       value: https://veilarbregistrering-gcp.intern.nav.no
+    - name: VEILARBREGISTRERING_SCOPE
+      value: api://dev-gcp.paw.veilarbregistrering/.default
   envFrom:
     - configmap: pto-config
     - configmap: loginservice-idporten

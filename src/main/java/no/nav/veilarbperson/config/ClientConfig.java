@@ -85,12 +85,11 @@ public class ClientConfig {
     }
 
     @Bean
-    public DigdirClient digdirClient(MachineToMachineTokenClient tokenClient) {
+    public DigdirClient digdirClient(EnvironmentProperties properties, MachineToMachineTokenClient tokenClient) {
         String url = isProduction() ?
                 createProdInternalIngressUrl("digdir-krr-proxy")
                 : createDevInternalIngressUrl("digdir-krr-proxy");
-        String tokenScope = String.format("api://%s.team-rocket.digdir-krr-proxy/.default", isProduction() ? "prod-gcp" : "dev-gcp");
-        return new DigdirClientImpl(url, () -> tokenClient.createMachineToMachineToken(tokenScope));
+        return new DigdirClientImpl(url, () -> tokenClient.createMachineToMachineToken(properties.getKrrScope()));
     }
 
     @Bean
@@ -110,11 +109,9 @@ public class ClientConfig {
     }
 
     @Bean
-    public SkjermetClient skjermetClient(AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient) {
+    public SkjermetClient skjermetClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient) {
         Supplier<String> serviceTokenSupplier = () -> aadMachineToMachineTokenClient
-                .createMachineToMachineToken(
-                        format("api://%s.%s.%s/.default",
-                                isProduction() ? "prod-gcp" : "dev-gcp", "nom", "skjermede-personer-pip"));
+                .createMachineToMachineToken(properties.getSkjermedePersonerPipScope());
 
         return new SkjermetClientImpl(createInternalIngressUrl("skjermede-personer-pip"), serviceTokenSupplier);
     }
@@ -159,8 +156,7 @@ public class ClientConfig {
     ) {
         String cluster = isProduction() ? "prod-gcp" : "dev-gcp";
         Supplier<String> serviceTokenSupplier = () -> aadMachineToMachineTokenClient
-                .createMachineToMachineToken(
-                        format("api://%s.%s.%s/.default", cluster, "paw", "veilarbregistrering"));
+                .createMachineToMachineToken(properties.getVeilarbregistreringScope());
 
         return new VeilarbregistreringClientImpl(
                 RestClient.baseClient(),

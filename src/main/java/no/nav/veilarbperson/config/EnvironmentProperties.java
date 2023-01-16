@@ -35,7 +35,13 @@ public class EnvironmentProperties {
 
     private String personV3Endpoint;
 
+    private String krrScope;
+
+    private String skjermedePersonerPipScope;
+
     private String veilarbregistreringUrl;
+
+    private String veilarbregistreringScope;
 
     private String soapStsUrl;
 
