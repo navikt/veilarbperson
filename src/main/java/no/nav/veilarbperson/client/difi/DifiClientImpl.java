@@ -2,6 +2,7 @@ package no.nav.veilarbperson.client.difi;
 
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
 import no.nav.common.types.identer.Fnr;
@@ -15,6 +16,7 @@ import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Slf4j
 public class DifiClientImpl implements  DifiCient {
 
     private final DifiAccessTokenProvider difiAccessTokenProvider;
@@ -51,6 +53,7 @@ public class DifiClientImpl implements  DifiCient {
                         .setPersonidentifikator(fnr);
             }
 
+            log.error(String.valueOf(RestUtils.getBodyStr(response)));
             RestUtils.throwIfNotSuccessful(response);
             HarLoggetInnRespons harLoggetInnRespons = RestUtils.parseJsonResponseOrThrow(response, HarLoggetInnRespons.class);
 
