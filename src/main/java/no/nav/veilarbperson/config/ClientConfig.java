@@ -132,8 +132,9 @@ public class ClientConfig {
 
     @Bean
     public DifiAccessTokenProviderImpl accessTokenRepository(SbsServiceUser sbsServiceUser) {
-        String apiGwSuffix = isProduction() ? "" : "-q1";
-        String url = "https://api-gw" + apiGwSuffix + ".adeo.no/ekstern/difi/idporten-oidc-provider/token";
+//        String apiGwSuffix = isProduction() ? "" : "-q1";
+//        String url = "https://api-gw" + apiGwSuffix + ".adeo.no/ekstern/difi/idporten-oidc-provider/token";
+        String url = "https://maskinporten.no/token";
 
         return new DifiAccessTokenProviderImpl(sbsServiceUser, url);
     }
