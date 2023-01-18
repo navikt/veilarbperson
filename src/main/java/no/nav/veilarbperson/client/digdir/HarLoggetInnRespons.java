@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.client.difi;
+package no.nav.veilarbperson.client.digdir;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

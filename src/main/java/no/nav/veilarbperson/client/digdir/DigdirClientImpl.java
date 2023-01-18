@@ -49,6 +49,35 @@ public class DigdirClientImpl implements DigdirClient {
         }
     }
 
+    @Cacheable(CacheConfig.DIFI_HAR_NIVA_4_CACHE_NAME)
+    @SneakyThrows
+    @Override
+    public HarLoggetInnRespons harLoggetInnSiste18mnd(Fnr fnr) {
+        Request request = new Request.Builder()
+                .url(joinPaths(digdirUrl,"/rest/v1/sikkerhetsnivaa"))
+                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
+                .header("Nav-Personident", fnr.get())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if(response.code() == 404) {
+                //brukere som ikke er registret som idporten brukere returnerer 404
+                return new HarLoggetInnRespons()
+                        .setHarbruktnivaa4(false)
+                        .setErRegistrertIdPorten(false)
+                        .setPersonidentifikator(fnr);
+            }
+
+            RestUtils.throwIfNotSuccessful(response);
+            HarLoggetInnRespons harLoggetInnRespons = RestUtils.parseJsonResponseOrThrow(response, HarLoggetInnRespons.class);
+
+            harLoggetInnRespons.setErRegistrertIdPorten(true);
+
+            return harLoggetInnRespons;
+        }
+    }
+
     @Override
     public HealthCheckResult checkHealth() {
         Request request = new Request.Builder()

@@ -7,6 +7,7 @@ import com.nimbusds.jwt.PlainJWT;
 import no.nav.common.json.JsonUtils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.*;
+import no.nav.veilarbperson.client.digdir.HarLoggetInnRespons;
 import org.junit.Rule;
 import org.junit.Test;
 

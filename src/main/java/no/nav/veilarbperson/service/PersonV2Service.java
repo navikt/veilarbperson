@@ -4,8 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.difi.DifiCient;
-import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
+import no.nav.veilarbperson.client.digdir.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
@@ -47,12 +46,10 @@ public class PersonV2Service {
     private final PersonClient personClient;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
-    private final DifiCient difiCient;
     private final UnleashClient unleashClient;
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient,
-                           DifiCient difiCient,
                            AuthService authService,
                            DigdirClient digdirClient,
                            Norg2Client norg2Client,
@@ -67,7 +64,6 @@ public class PersonV2Service {
         this.personClient = personClient;
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
-        this.difiCient = difiCient;
         this.unleashClient = unleashClient;
     }
 
@@ -413,6 +409,6 @@ public class PersonV2Service {
                     .setHarbruktnivaa4(true)
                     .setPersonidentifikator(fodselsnummer);
         }
-        return difiCient.harLoggetInnSiste18mnd(fodselsnummer);
+        return digdirClient.harLoggetInnSiste18mnd(fodselsnummer);
     }
 }

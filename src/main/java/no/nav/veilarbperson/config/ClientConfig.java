@@ -18,9 +18,6 @@ import no.nav.common.token_client.client.MachineToMachineTokenClient;
 import no.nav.common.utils.Credentials;
 import no.nav.common.utils.EnvironmentUtils;
 import no.nav.common.utils.NaisUtils;
-import no.nav.veilarbperson.client.difi.DifiAccessTokenProviderImpl;
-import no.nav.veilarbperson.client.difi.DifiCient;
-import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.difi.SbsServiceUser;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirClientImpl;
@@ -45,7 +42,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.function.Supplier;
 
-import static java.lang.String.format;
 import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.*;
 
@@ -128,23 +124,6 @@ public class ClientConfig {
                 () -> authService.getAadOboTokenForTjeneste(new DownstreamApi(cluster, "pdl", "pdl-api")),
                 () -> tokenClient.createMachineToMachineToken(tokenScop)
         );
-    }
-
-    @Bean
-    public DifiAccessTokenProviderImpl accessTokenRepository(SbsServiceUser sbsServiceUser) {
-//        String apiGwSuffix = isProduction() ? "" : "-q1";
-//        String url = "https://api-gw" + apiGwSuffix + ".adeo.no/ekstern/difi/idporten-oidc-provider/token";
-        String url = "https://maskinporten.no/token";
-
-        return new DifiAccessTokenProviderImpl(sbsServiceUser, url);
-    }
-
-    @Bean
-    public DifiCient difiCient(String xNavApikey, DifiAccessTokenProviderImpl difiAccessTokenProvider) {
-        String apiGwSuffix = isProduction() ? "" : "-q1";
-        String url = "https://api-gw" + apiGwSuffix + ".adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa";
-
-        return new DifiClientImpl(difiAccessTokenProvider, xNavApikey, url);
     }
 
     @Bean

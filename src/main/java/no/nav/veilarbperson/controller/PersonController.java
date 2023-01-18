@@ -3,7 +3,7 @@ package no.nav.veilarbperson.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
+import no.nav.veilarbperson.client.digdir.HarLoggetInnRespons;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.CvJobbprofilService;
