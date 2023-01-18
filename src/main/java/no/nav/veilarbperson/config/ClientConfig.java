@@ -19,7 +19,7 @@ import no.nav.common.utils.Credentials;
 import no.nav.common.utils.EnvironmentUtils;
 import no.nav.common.utils.NaisUtils;
 import no.nav.veilarbperson.client.difi.DifiAccessTokenProviderImpl;
-import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.DifiClient;
 import no.nav.veilarbperson.client.difi.DifiClientImpl;
 import no.nav.veilarbperson.client.difi.SbsServiceUser;
 import no.nav.veilarbperson.client.digdir.DigdirClient;

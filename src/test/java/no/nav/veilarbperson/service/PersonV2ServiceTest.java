@@ -5,7 +5,7 @@ import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.DifiClient;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
@@ -73,7 +73,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         personV2Service = new PersonV2Service(
                 pdlClient,
-                mock(DifiCient.class),
+                mock(DifiClient.class),
                 authService,
                 digdirClient,
                 norg2Client,

@@ -15,7 +15,7 @@ import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class DifiClientImpl implements  DifiCient {
+public class DifiClientImpl implements DifiClient {
 
     private final DifiAccessTokenProvider difiAccessTokenProvider;
     private final OkHttpClient client;
