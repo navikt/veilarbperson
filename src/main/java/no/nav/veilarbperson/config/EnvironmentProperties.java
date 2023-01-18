@@ -31,15 +31,31 @@ public class EnvironmentProperties {
 
     private String norg2Url;
 
+    private String difiAuthlevelUrl;
+
     private String egenAnsattV1Endpoint;
 
-    private String personV3Endpoint;
+    private String kodeverkUrl;
 
     private String krrUrl;
 
     private String krrScope;
 
+    private String pamCvApiUrl;
+
+    private String pamCvApiScope;
+
+    private String pdlApiUrl;
+
+    private String pdlApiScope;
+
+    private String personV3Endpoint;
+
+    private String skjermedePersonerPipUrl;
+
     private String skjermedePersonerPipScope;
+
+    private String veilarboppfolgingUrl;
 
     private String veilarbregistreringUrl;
 

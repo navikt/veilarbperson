@@ -45,7 +45,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.function.Supplier;
 
-import static java.lang.String.format;
 import static no.nav.common.utils.NaisUtils.getCredentials;
 import static no.nav.common.utils.UrlUtils.*;
 
@@ -57,14 +56,9 @@ public class ClientConfig {
 
 
     @Bean
-    public AktorOppslagClient aktorOppslagClient(AzureAdMachineToMachineTokenClient tokenClient) {
-        String tokenScop = String.format("api://%s-fss.pdl.pdl-api/.default",
-                isProduction() ? "prod" : "dev"
-        );
-
-        PdlAktorOppslagClient pdlClient = new PdlAktorOppslagClient(
-                createServiceUrl("pdl-api", "pdl", false),
-                () -> tokenClient.createMachineToMachineToken(tokenScop));
+    public AktorOppslagClient aktorOppslagClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient tokenClient) {
+        PdlAktorOppslagClient pdlClient = new PdlAktorOppslagClient(properties.getPdlUrl(),
+                () -> tokenClient.createMachineToMachineToken(properties.getPdlApiScope()));
 
         return new CachedAktorOppslagClient(pdlClient);
     }
@@ -75,29 +69,23 @@ public class ClientConfig {
     }
 
     @Bean
-    public VeilarboppfolgingClient veilarboppfolgingClient(AuthService authService) {
-        String url = isProduction()
-                ? createNaisAdeoIngressUrl(VEILARBOPPFOLGING, true)
-                : createNaisPreprodIngressUrl(VEILARBOPPFOLGING, "q1", true);
-        return new VeilarboppfolgingClientImpl(url, () -> authService.getAadOboTokenForTjeneste(
-                new DownstreamApi(EnvironmentUtils.requireClusterName(), "pto", VEILARBOPPFOLGING))
-        );
+    public VeilarboppfolgingClient veilarboppfolgingClient(EnvironmentProperties properties, AuthService authService) {
+        return new VeilarboppfolgingClientImpl(properties.getVeilarboppfolgingUrl(),
+                () -> authService.getAadOboTokenForTjeneste(new DownstreamApi(EnvironmentUtils.requireClusterName(),
+                        "pto",
+                        VEILARBOPPFOLGING)));
     }
 
     @Bean
     public DigdirClient digdirClient(EnvironmentProperties properties, MachineToMachineTokenClient tokenClient) {
-        return new DigdirClientImpl(properties.getKrrUrl(), () -> tokenClient.createMachineToMachineToken(properties.getKrrScope()));
+        return new DigdirClientImpl(properties.getKrrUrl(),
+                () -> tokenClient.createMachineToMachineToken(properties.getKrrScope()));
     }
 
     @Bean
-    public PamClient pamClient(AzureAdMachineToMachineTokenClient tokenClient) {
-        String url = isProduction()
-                ? createNaisAdeoIngressUrl(PAM_CV_API, true)
-                : createDevAdeoIngressUrl(PAM_CV_API, true);
-        String tokenScop = String.format("api://%s.teampam.pam-cv-api/.default",
-                isProduction() ? "prod-fss" : "dev-fss"
-        );
-        return new PamClientImpl(url, () -> tokenClient.createMachineToMachineToken(tokenScop));
+    public PamClient pamClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient tokenClient) {
+        return new PamClientImpl(properties.getPamCvApiUrl(),
+                () -> tokenClient.createMachineToMachineToken(properties.getPamCvApiScope()));
     }
 
     @Bean
@@ -106,28 +94,23 @@ public class ClientConfig {
     }
 
     @Bean
-    public SkjermetClient skjermetClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient) {
-        Supplier<String> serviceTokenSupplier = () -> aadMachineToMachineTokenClient
-                .createMachineToMachineToken(properties.getSkjermedePersonerPipScope());
-
-        return new SkjermetClientImpl(createInternalIngressUrl("skjermede-personer-pip"), serviceTokenSupplier);
+    public SkjermetClient skjermetClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient tokenClient) {
+        return new SkjermetClientImpl(properties.getSkjermedePersonerPipUrl(),
+                () -> tokenClient.createMachineToMachineToken(properties.getSkjermedePersonerPipScope()));
     }
 
     @Bean
-    public KodeverkClient kodeverkClient() {
-        return new KodeverkClientImpl(createServiceUrl("kodeverk", "default", false));
+    public KodeverkClient kodeverkClient(EnvironmentProperties properties) {
+        return new KodeverkClientImpl(properties.getKodeverkUrl());
     }
 
     @Bean
-    public PdlClient pdlClient(AuthService authService, AzureAdMachineToMachineTokenClient tokenClient) {
+    public PdlClient pdlClient(EnvironmentProperties properties, AuthService authService, AzureAdMachineToMachineTokenClient tokenClient) {
         String cluster = isProduction() ? "prod-fss" : "dev-fss";
-        String tokenScop = String.format("api://%s.pdl.pdl-api/.default", cluster);
 
-        return new PdlClientImpl(
-                createServiceUrl("pdl-api", "pdl", false),
+        return new PdlClientImpl(properties.getPdlApiUrl(),
                 () -> authService.getAadOboTokenForTjeneste(new DownstreamApi(cluster, "pdl", "pdl-api")),
-                () -> tokenClient.createMachineToMachineToken(tokenScop)
-        );
+                () -> tokenClient.createMachineToMachineToken(properties.getPdlApiScope()));
     }
 
     @Bean
@@ -139,26 +122,15 @@ public class ClientConfig {
     }
 
     @Bean
-    public DifiCient difiCient(String xNavApikey, DifiAccessTokenProviderImpl difiAccessTokenProvider) {
-        String apiGwSuffix = isProduction() ? "" : "-q1";
-        String url = "https://api-gw" + apiGwSuffix + ".adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa";
-
-        return new DifiClientImpl(difiAccessTokenProvider, xNavApikey, url);
+    public DifiClient difiClient(EnvironmentProperties properties, String xNavApikey, DifiAccessTokenProviderImpl difiAccessTokenProvider) {
+        return new DifiClientImpl(difiAccessTokenProvider, xNavApikey, properties.getDifiAuthlevelUrl());
     }
 
     @Bean
-    public VeilarbregistreringClient veilarbregistreringClient(
-            EnvironmentProperties properties,
-            AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient
-    ) {
-        Supplier<String> serviceTokenSupplier = () -> aadMachineToMachineTokenClient
-                .createMachineToMachineToken(properties.getVeilarbregistreringScope());
-
-        return new VeilarbregistreringClientImpl(
-                RestClient.baseClient(),
+    public VeilarbregistreringClient veilarbregistreringClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient) {
+        return new VeilarbregistreringClientImpl(RestClient.baseClient(),
                 properties.getVeilarbregistreringUrl(),
-                serviceTokenSupplier
-        );
+                () -> aadMachineToMachineTokenClient.createMachineToMachineToken(properties.getVeilarbregistreringScope()));
     }
 
     @Bean
@@ -174,16 +146,12 @@ public class ClientConfig {
 
     @Bean
     public AzureAdMachineToMachineTokenClient azureAdMachineToMachineTokenClient() {
-        return AzureAdTokenClientBuilder.builder()
-                .withNaisDefaults()
-                .buildMachineToMachineTokenClient();
+        return AzureAdTokenClientBuilder.builder().withNaisDefaults().buildMachineToMachineTokenClient();
     }
 
     @Bean
     public AzureAdOnBehalfOfTokenClient azureAdOnBehalfOfTokenClient() {
-        return AzureAdTokenClientBuilder.builder()
-                .withNaisDefaults()
-                .buildOnBehalfOfTokenClient();
+        return AzureAdTokenClientBuilder.builder().withNaisDefaults().buildOnBehalfOfTokenClient();
     }
 
     @Bean
@@ -193,11 +161,5 @@ public class ClientConfig {
 
     public static boolean isProduction() {
         return EnvironmentUtils.isProduction().orElseThrow();
-    }
-
-    private static String internalDevOrProdIngress(String appName) {
-        return isProduction()
-                ? createProdInternalIngressUrl(appName)
-                : createDevInternalIngressUrl(appName);
     }
 }
