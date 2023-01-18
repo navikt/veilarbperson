@@ -2,6 +2,7 @@ package no.nav.veilarbperson.client.difi;
 
 import com.nimbusds.jwt.JWTParser;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.common.auth.utils.TokenUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
@@ -12,6 +13,7 @@ import okhttp3.Response;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+@Slf4j
 public class DifiAccessTokenProviderImpl implements DifiAccessTokenProvider {
     private volatile String token;
     private final SbsServiceUser sbsServiceUser;
@@ -42,6 +44,7 @@ public class DifiAccessTokenProviderImpl implements DifiAccessTokenProvider {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
+            log.error(String.valueOf(RestUtils.getBodyStr(response)));
             RestUtils.throwIfNotSuccessful(response);
             Token tokenResponse = RestUtils.parseJsonResponseOrThrow(response, Token.class);
             return tokenResponse.access_token;

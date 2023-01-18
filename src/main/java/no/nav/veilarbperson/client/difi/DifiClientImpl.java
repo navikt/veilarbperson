@@ -53,7 +53,6 @@ public class DifiClientImpl implements  DifiCient {
                         .setPersonidentifikator(fnr);
             }
 
-            log.error(String.valueOf(RestUtils.getBodyStr(response)));
             RestUtils.throwIfNotSuccessful(response);
             HarLoggetInnRespons harLoggetInnRespons = RestUtils.parseJsonResponseOrThrow(response, HarLoggetInnRespons.class);
 
