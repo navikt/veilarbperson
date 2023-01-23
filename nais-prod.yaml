@@ -86,6 +86,10 @@ spec:
       value: https://veilarbregistrering.intern.nav.no
     - name: VEILARBREGISTRERING_SCOPE
       value: api://prod-gcp.paw.veilarbregistrering/.default
+    - name: POAO_TILGANG_URL
+      value: https://poao-tilgang.intern.nav.no
+    - name: POAO_TILGANG_SCOPE
+      value: api://prod-gcp.poao.poao-tilgang/.default
   envFrom:
     - configmap: pto-config
     - configmap: loginservice-idporten

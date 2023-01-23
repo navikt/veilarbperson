@@ -14,7 +14,7 @@ public class EnvironmentProperties {
     private String openAmRefreshUrl;
 
     private String naisStsDiscoveryUrl;
-    
+
     private String loginserviceIdportenAudience;
 
     private String loginserviceIdportenDiscoveryUrl;
@@ -50,5 +50,9 @@ public class EnvironmentProperties {
     private String pdlUrl;
 
     private String unleashUrl;
+
+	private String poaoTilgangUrl;
+
+	private String poaoTilgangScope;
 
 }
