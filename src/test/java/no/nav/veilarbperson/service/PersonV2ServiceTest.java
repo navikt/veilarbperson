@@ -3,7 +3,6 @@ package no.nav.veilarbperson.service;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiCient;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
@@ -78,7 +77,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 digdirClient,
                 norg2Client,
                 personClient,
-                mock(UnleashClient.class),
+                mock(UnleashService.class),
                 skjermetClient,
                 kodeverkService);
         person = hentPerson(FNR);
