@@ -83,7 +83,7 @@ spec:
     - name:  SKJERMEDE_PERSONER_PIP_SCOPE
       value: api://prod-gcp.nom.skjermede-personer-pip/.default
     - name: VEILARBREGISTRERING_URL
-      value: https://veilarbregistrering-gcp.intern.nav.no
+      value: https://veilarbregistrering.intern.nav.no
     - name: VEILARBREGISTRERING_SCOPE
       value: api://prod-gcp.paw.veilarbregistrering/.default
   envFrom:
