@@ -92,7 +92,7 @@ public class KodeverkClientImpl implements KodeverkClient {
 
                 JsonNode betydningBeskrivelserNode = betydningNyeste.get("beskrivelser");
                 JsonNode beskrivelseNbNode = betydningBeskrivelserNode.get("nb");
-                String beskrivelseNb = beskrivelseNbNode.get("tekst").asText();
+                String beskrivelseNb = beskrivelseNbNode.get("term").asText();
 
                 betydningerMap.put(betydningName, beskrivelseNb);
             });
