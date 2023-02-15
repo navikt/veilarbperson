@@ -51,6 +51,7 @@ spec:
   azure:
     application:
       enabled: true
+      AllUsers: true
       claims:
         extra:
           - "NAVident"
