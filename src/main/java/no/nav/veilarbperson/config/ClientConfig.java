@@ -43,17 +43,12 @@ import no.nav.veilarbperson.utils.DownstreamApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.function.Supplier;
-
 import static no.nav.common.utils.NaisUtils.getCredentials;
-import static no.nav.common.utils.UrlUtils.*;
 
 @Slf4j
 @Configuration
 public class ClientConfig {
     private static final String VEILARBOPPFOLGING = "veilarboppfolging";
-    private static final String PAM_CV_API = "pam-cv-api";
-
 
     @Bean
     public AktorOppslagClient aktorOppslagClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient tokenClient) {

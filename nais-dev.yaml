@@ -83,24 +83,28 @@ spec:
       value: https://digdir-krr-proxy.dev.intern.nav.no
     - name: KONTAKT_OG_RESERVASJONSREGISTERET_SCOPE
       value: api://dev-gcp.team-rocket.digdir-krr-proxy/.default
-    - name: PAM_CV_API_URL
-      value: https://pam-cv-api.dev.adeo.no/pam-cv-api
     - name: PAM_CV_API_SCOPE
       value: api://dev-fss.teampam.pam-cv-api/.default
-    - name: PDL_API_URL
-      value: http://pdl-api.pdl.svc.nais.local
+    - name: PAM_CV_API_URL
+      value: https://pam-cv-api.dev.adeo.no/pam-cv-api
     - name: PDL_API_SCOPE
       value: api://dev-fss.pdl.pdl-api/.default
-    - name: SKJERMEDE_PERSONER_PIP_URL
-      value: https://skjermede-personer-pip.dev.intern.nav.no
+    - name: PDL_API_URL
+      value: http://pdl-api.pdl.svc.nais.local
+    - name: REGOPPSLAG_SCOPE
+      value: api://dev-fss.teamdokumenthandtering.regoppslag/.default
+    - name: REGOPPSLAG_URL
+      value: https://regoppslag.dev.intern.nav.no
     - name: SKJERMEDE_PERSONER_PIP_SCOPE
       value: api://dev-gcp.nom.skjermede-personer-pip/.default
+    - name: SKJERMEDE_PERSONER_PIP_URL
+      value: https://skjermede-personer-pip.dev.intern.nav.no
     - name: VEILARBOPPFOLGING_URL
       value: https://veilarboppfolging-q1.nais.preprod.local/veilarboppfolging
-    - name: VEILARBREGISTRERING_URL
-      value: https://veilarbregistrering.dev.intern.nav.no
     - name: VEILARBREGISTRERING_SCOPE
       value: api://dev-gcp.paw.veilarbregistrering/.default
+    - name: VEILARBREGISTRERING_URL
+      value: https://veilarbregistrering.dev.intern.nav.no
     - name: VIRKSOMHET_PERSON_V3_URL
       value: https://app-q1.adeo.no/tpsws-aura/ws/Person/v3
     - name: VIRKSOMHET_EGENANSATT_V1_URL

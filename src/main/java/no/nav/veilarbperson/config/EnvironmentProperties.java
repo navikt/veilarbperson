@@ -8,28 +8,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 @ConfigurationProperties(prefix = "app.env")
 public class EnvironmentProperties {
-
-    private String openAmDiscoveryUrl;
-
-    private String openAmRefreshUrl;
-
-    private String naisStsDiscoveryUrl;
-    
-    private String loginserviceIdportenAudience;
-
-    private String loginserviceIdportenDiscoveryUrl;
-
-    private String naisAadDiscoveryUrl;
-
-    private String naisAadIssuer;
-
-    private String naisAadClientId;
-
     private String stsDiscoveryUrl;
 
     private String abacUrl;
-
-    private String norg2Url;
 
     private String difiAuthlevelUrl;
 
@@ -37,34 +18,55 @@ public class EnvironmentProperties {
 
     private String kodeverkUrl;
 
-    private String krrUrl;
-
     private String krrScope;
 
-    private String pamCvApiUrl;
+    private String krrUrl;
+
+    private String loginserviceIdportenAudience;
+
+    private String loginserviceIdportenDiscoveryUrl;
+
+    private String naisAadClientId;
+
+    private String naisAadDiscoveryUrl;
+
+    private String naisAadIssuer;
+
+    private String naisStsDiscoveryUrl;
+
+    private String norg2Url;
+
+    private String openAmDiscoveryUrl;
+
+    private String openAmRefreshUrl;
 
     private String pamCvApiScope;
 
-    private String pdlApiUrl;
+    private String pamCvApiUrl;
 
     private String pdlApiScope;
 
-    private String personV3Endpoint;
-
-    private String skjermedePersonerPipUrl;
-
-    private String skjermedePersonerPipScope;
-
-    private String veilarboppfolgingUrl;
-
-    private String veilarbregistreringUrl;
-
-    private String veilarbregistreringScope;
-
-    private String soapStsUrl;
+    private String pdlApiUrl;
 
     private String pdlUrl;
 
+    private String personV3Endpoint;
+
+    private String regoppslagScope;
+
+    private String regoppslagUrl;
+
+    private String skjermedePersonerPipScope;
+
+    private String skjermedePersonerPipUrl;
+
+    private String soapStsUrl;
+
     private String unleashUrl;
 
+    private String veilarboppfolgingUrl;
+
+    private String veilarbregistreringScope;
+
+    private String veilarbregistreringUrl;
 }
