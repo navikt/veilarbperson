@@ -69,4 +69,9 @@ public class PepMock implements Pep {
     public boolean harTilgangTilEnhetMedSperre(String s, EnhetId enhetId) {
         return false;
     }
+
+	@Override
+	public boolean harTilgangTilEnhetMedSperre(NavIdent navident, EnhetId enhetId) {
+		return false;
+	}
 }

@@ -51,6 +51,7 @@ spec:
   azure:
     application:
       enabled: true
+      allowAllUsers: true
       claims:
         extra:
           - "NAVident"
@@ -91,6 +92,10 @@ spec:
       value: api://dev-fss.pdl.pdl-api/.default
     - name: PDL_API_URL
       value: http://pdl-api.pdl.svc.nais.local
+    - name: POAO_TILGANG_URL
+      value: https://poao-tilgang.dev.intern.nav.no
+    - name: POAO_TILGANG_SCOPE
+      value: api://dev-gcp.poao.poao-tilgang/.default
     - name: REGOPPSLAG_SCOPE
       value: api://dev-fss.teamdokumenthandtering.regoppslag/.default
     - name: REGOPPSLAG_URL

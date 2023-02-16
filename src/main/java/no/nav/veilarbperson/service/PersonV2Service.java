@@ -2,7 +2,6 @@ package no.nav.veilarbperson.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiClient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
@@ -39,7 +38,6 @@ import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFull
 @Slf4j
 @Service
 public class PersonV2Service {
-    private static final String UNLEASH_NIVAA4_DISABLED = "veilarbperson.nivaa4.disabled";
     private final PdlClient pdlClient;
     private final AuthService authService;
     private final DigdirClient digdirClient;
@@ -48,7 +46,7 @@ public class PersonV2Service {
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
     private final DifiClient difiClient;
-    private final UnleashClient unleashClient;
+    private final UnleashService unleashService;
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient,
@@ -57,7 +55,7 @@ public class PersonV2Service {
                            DigdirClient digdirClient,
                            Norg2Client norg2Client,
                            PersonClient personClient,
-                           UnleashClient unleashClient,
+                           UnleashService unleashService,
                            SkjermetClient skjermetClient,
                            KodeverkService kodeverkService) {
         this.pdlClient = pdlClient;
@@ -68,7 +66,7 @@ public class PersonV2Service {
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
         this.difiClient = difiClient;
-        this.unleashClient = unleashClient;
+        this.unleashService = unleashService;
     }
 
     public HentPerson.Person hentPerson(Fnr personIdent) {
@@ -407,7 +405,7 @@ public class PersonV2Service {
     }
 
     public HarLoggetInnRespons hentHarNivaa4(Fnr fodselsnummer) {
-        if (unleashClient.isEnabled(UNLEASH_NIVAA4_DISABLED)) {
+        if (unleashService.sjekkNivaa4()) {
             return new HarLoggetInnRespons()
                     .setErRegistrertIdPorten(true)
                     .setHarbruktnivaa4(true)

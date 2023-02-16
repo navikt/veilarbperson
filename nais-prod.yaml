@@ -48,6 +48,7 @@ spec:
   azure:
     application:
       enabled: true
+      allowAllUsers: true
       claims:
         extra:
           - "NAVident"
@@ -88,6 +89,10 @@ spec:
       value: api://prod-fss.pdl.pdl-api/.default
     - name: PDL_API_URL
       value: http://pdl-api.pdl.svc.nais.local
+    - name: POAO_TILGANG_URL
+      value: https://poao-tilgang.intern.nav.no
+    - name: POAO_TILGANG_SCOPE
+      value: api://prod-gcp.poao.poao-tilgang/.default
     - name: REGOPPSLAG_SCOPE
       value: api://prod-fss.teamdokumenthandtering.regoppslag/.default
     - name: REGOPPSLAG_URL
@@ -101,7 +106,7 @@ spec:
     - name: VEILARBREGISTRERING_SCOPE
       value: api://prod-gcp.paw.veilarbregistrering/.default
     - name: VEILARBREGISTRERING_URL
-      value: https://veilarbregistrering-gcp.intern.nav.no
+      value: https://veilarbregistrering.intern.nav.no
     - name: VIRKSOMHET_PERSON_V3_URL
       value: https://app.adeo.no/tpsws-aura/ws/Person/v3
     - name: VIRKSOMHET_EGENANSATT_V1_URL

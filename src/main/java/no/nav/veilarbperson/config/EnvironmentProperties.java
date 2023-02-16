@@ -50,6 +50,10 @@ public class EnvironmentProperties {
 
     private String pdlUrl;
 
+	private String poaoTilgangScope;
+
+    private String poaoTilgangUrl;
+
     private String personV3Endpoint;
 
     private String regoppslagScope;
@@ -69,4 +73,5 @@ public class EnvironmentProperties {
     private String veilarbregistreringScope;
 
     private String veilarbregistreringUrl;
+
 }
