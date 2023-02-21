@@ -39,7 +39,6 @@ import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import no.nav.veilarbperson.service.AuthService;
-import no.nav.veilarbperson.utils.DownstreamApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -48,8 +47,6 @@ import static no.nav.common.utils.NaisUtils.getCredentials;
 @Slf4j
 @Configuration
 public class ClientConfig {
-    private static final String VEILARBOPPFOLGING = "veilarboppfolging";
-
     @Bean
     public AktorOppslagClient aktorOppslagClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient tokenClient) {
         PdlAktorOppslagClient pdlClient = new PdlAktorOppslagClient(properties.getPdlUrl(),
@@ -66,9 +63,7 @@ public class ClientConfig {
     @Bean
     public VeilarboppfolgingClient veilarboppfolgingClient(EnvironmentProperties properties, AuthService authService) {
         return new VeilarboppfolgingClientImpl(properties.getVeilarboppfolgingUrl(),
-                () -> authService.getAadOboTokenForTjeneste(new DownstreamApi(EnvironmentUtils.requireClusterName(),
-                        "pto",
-                        VEILARBOPPFOLGING)));
+                () -> authService.getAadOboTokenForTjeneste(properties.getVeilarboppfolgingScope()));
     }
 
     @Bean
@@ -101,19 +96,14 @@ public class ClientConfig {
 
     @Bean
     public PdlClient pdlClient(EnvironmentProperties properties, AuthService authService, AzureAdMachineToMachineTokenClient tokenClient) {
-        String cluster = isProduction() ? "prod-fss" : "dev-fss";
-
         return new PdlClientImpl(properties.getPdlApiUrl(),
-                () -> authService.getAadOboTokenForTjeneste(new DownstreamApi(cluster, "pdl", "pdl-api")),
+                () -> authService.getAadOboTokenForTjeneste(properties.getPdlApiScope()),
                 () -> tokenClient.createMachineToMachineToken(properties.getPdlApiScope()));
     }
 
     @Bean
-    public DifiAccessTokenProviderImpl accessTokenRepository(SbsServiceUser sbsServiceUser) {
-        String apiGwSuffix = isProduction() ? "" : "-q1";
-        String url = "https://api-gw" + apiGwSuffix + ".adeo.no/ekstern/difi/idporten-oidc-provider/token";
-
-        return new DifiAccessTokenProviderImpl(sbsServiceUser, url);
+    public DifiAccessTokenProviderImpl accessTokenRepository(EnvironmentProperties properties, SbsServiceUser sbsServiceUser) {
+        return new DifiAccessTokenProviderImpl(sbsServiceUser, properties.getDifiTokenUrl());
     }
 
     @Bean

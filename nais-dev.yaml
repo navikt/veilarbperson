@@ -78,6 +78,8 @@ spec:
   env:
     - name: DIFI_IDPORTEN_AUTHLEVEL_URL
       value: https://api-gw-q1.adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa/
+    - name: DIFI_IDPORTEN_TOKEN_URL
+      value: https://api-gw-q1.adeo.no/ekstern/difi/idporten-oidc-provider/token
     - name: KODEVERK_URL
       value: http://kodeverk.default.svc.nais.local
     - name: KONTAKT_OG_RESERVASJONSREGISTERET_API_URL
@@ -104,6 +106,8 @@ spec:
       value: api://dev-gcp.nom.skjermede-personer-pip/.default
     - name: SKJERMEDE_PERSONER_PIP_URL
       value: https://skjermede-personer-pip.dev.intern.nav.no
+    - name: VEILARBOPPFOLGING_SCOPE
+      value: api://dev-fss.pto.veilarboppfolging/.default
     - name: VEILARBOPPFOLGING_URL
       value: https://veilarboppfolging-q1.nais.preprod.local/veilarboppfolging
     - name: VEILARBREGISTRERING_SCOPE

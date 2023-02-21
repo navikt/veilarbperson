@@ -14,6 +14,8 @@ public class EnvironmentProperties {
 
     private String difiAuthlevelUrl;
 
+    private String difiTokenUrl;
+
     private String egenAnsattV1Endpoint;
 
     private String kodeverkUrl;
@@ -67,6 +69,8 @@ public class EnvironmentProperties {
     private String soapStsUrl;
 
     private String unleashUrl;
+
+    private String veilarboppfolgingScope;
 
     private String veilarboppfolgingUrl;
 
