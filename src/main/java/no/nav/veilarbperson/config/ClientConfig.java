@@ -49,7 +49,7 @@ import static no.nav.common.utils.NaisUtils.getCredentials;
 public class ClientConfig {
     @Bean
     public AktorOppslagClient aktorOppslagClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient tokenClient) {
-        PdlAktorOppslagClient pdlClient = new PdlAktorOppslagClient(properties.getPdlUrl(),
+        PdlAktorOppslagClient pdlClient = new PdlAktorOppslagClient(properties.getPdlApiUrl(),
                 () -> tokenClient.createMachineToMachineToken(properties.getPdlApiScope()));
 
         return new CachedAktorOppslagClient(pdlClient);
