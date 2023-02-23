@@ -22,7 +22,6 @@ import no.nav.poao_tilgang.client.PoaoTilgangClient;
 import no.nav.poao_tilgang.client.TilgangType;
 import no.nav.poao_tilgang.client.Decision;
 import no.nav.veilarbperson.config.EnvironmentProperties;
-import no.nav.veilarbperson.utils.DownstreamApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -207,9 +206,8 @@ public class AuthService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Subject is missing"));
     }
 
-    public String getAadOboTokenForTjeneste(DownstreamApi api) {
-        String scope = "api://" + api.cluster + "." + api.namespace + "." + api.serviceName + "/.default";
-        return aadOboTokenClient.exchangeOnBehalfOfToken(scope, authContextHolder.requireIdTokenString());
+    public String getAadOboTokenForTjeneste(String tokenScope) {
+        return aadOboTokenClient.exchangeOnBehalfOfToken(tokenScope, authContextHolder.requireIdTokenString());
     }
 
 	public UUID hentInnloggetVeilederUUID() {

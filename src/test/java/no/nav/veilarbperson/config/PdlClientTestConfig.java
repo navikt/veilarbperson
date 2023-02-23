@@ -5,8 +5,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.matching.AnythingPattern;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
-import no.nav.veilarbperson.service.AuthService;
-import no.nav.veilarbperson.utils.DownstreamApi;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
 
