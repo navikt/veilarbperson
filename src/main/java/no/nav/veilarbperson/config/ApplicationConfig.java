@@ -32,14 +32,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.annotation.PostConstruct;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
-
-import static no.nav.common.utils.UrlUtils.createDevInternalIngressUrl;
-import static no.nav.common.utils.UrlUtils.createProdInternalIngressUrl;
-import static no.nav.veilarbperson.config.ClientConfig.isProduction;
 
 @Slf4j
 @Configuration
@@ -100,14 +95,8 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public RegoppslagClient regoppslagClient(AzureAdMachineToMachineTokenClient tokenClient) {
-        String tokenScope = String.format("api://%s.%s.%s/.default",
-                isProduction() ? "prod-fss" : "dev-fss", "teamdokumenthandtering", "regoppslag");
-        String url = isProduction()
-                ? createProdInternalIngressUrl("regoppslag")
-                : createDevInternalIngressUrl("regoppslag");
-
-        return new RegoppslagClientImpl(url, () -> tokenClient.createMachineToMachineToken(tokenScope));
+    public RegoppslagClient regoppslagClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient tokenClient) {
+        return new RegoppslagClientImpl(properties.getRegoppslagUrl(), () -> tokenClient.createMachineToMachineToken(properties.getRegoppslagScope()));
     }
 
 	@Bean

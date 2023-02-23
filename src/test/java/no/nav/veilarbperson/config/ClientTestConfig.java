@@ -13,7 +13,7 @@ import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.difi.DifiCient;
+import no.nav.veilarbperson.client.difi.DifiClient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
@@ -130,7 +130,7 @@ public class ClientTestConfig {
     }
 
     @Bean
-    public DifiCient difiCient() {
+    public DifiClient difiClient() {
         return fnr -> {
             HarLoggetInnRespons harLoggetInnRespons = new HarLoggetInnRespons();
             harLoggetInnRespons.setHarbruktnivaa4(true);
