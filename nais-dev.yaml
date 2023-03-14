@@ -113,7 +113,7 @@ spec:
     - name: VEILARBREGISTRERING_SCOPE
       value: api://dev-gcp.paw.veilarbregistrering/.default
     - name: VEILARBREGISTRERING_URL
-      value: https://veilarbregistrering.dev.intern.nav.no
+      value: https://veilarbregistrering.intern.dev.nav.no
     - name: VIRKSOMHET_PERSON_V3_URL
       value: https://app-q1.adeo.no/tpsws-aura/ws/Person/v3
     - name: VIRKSOMHET_EGENANSATT_V1_URL
