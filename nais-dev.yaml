@@ -56,6 +56,11 @@ spec:
         extra:
           - "NAVident"
   accessPolicy:
+    outbound:
+      rules:
+        - application: poao-tilgang
+          namespace: poao
+          cluster: dev-gcp
     inbound:
       rules:
         - application: veilarbdialog
