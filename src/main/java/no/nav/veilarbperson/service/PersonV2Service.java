@@ -72,18 +72,18 @@ public class PersonV2Service {
     public HentPerson.Person hentPerson(Fnr personIdent) {
         return pdlClient.hentPerson(personIdent);
     }
-
+/*
     public PersonDataTPS hentPersonDataFraTps(Fnr personIdent) {
         return PersonDataMapper.tilPersonDataTPS(personClient.hentPerson(personIdent));
     }
-
+*/
     public PersonV2Data hentFlettetPerson(Fnr fodselsnummer) {
         HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Fant ikke person i hentPerson operasjonen i PDL"));
 
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
-        flettInnKontonummer(personV2Data);
+//        flettInnKontonummer(personV2Data);
 
         flettInnEgenAnsatt(personV2Data, fodselsnummer);
         flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
@@ -94,12 +94,12 @@ public class PersonV2Service {
 
         return personV2Data;
     }
-
+/*
     public void flettInnKontonummer(PersonV2Data person) {
         PersonDataTPS personDataTPSFraTps = hentPersonDataFraTps(person.getFodselsnummer());
         person.setKontonummer(personDataTPSFraTps.getKontonummer());
     }
-
+*/
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse) {
         List<HentPerson.PersonFraBolk> familiemedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr);
 
