@@ -105,7 +105,7 @@ spec:
     - name: SKJERMEDE_PERSONER_PIP_SCOPE
       value: api://dev-gcp.nom.skjermede-personer-pip/.default
     - name: SKJERMEDE_PERSONER_PIP_URL
-      value: https://skjermede-personer-pip.dev.intern.nav.no
+      value: https://skjermede-personer-pip.intern.dev.nav.no
     - name: VEILARBOPPFOLGING_SCOPE
       value: api://dev-fss.pto.veilarboppfolging/.default
     - name: VEILARBOPPFOLGING_URL
