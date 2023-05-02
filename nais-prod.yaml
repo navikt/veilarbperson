@@ -92,9 +92,9 @@ spec:
     - name: PDL_API_URL
       value: http://pdl-api.pdl.svc.nais.local
     - name: POAO_TILGANG_URL
-      value: https://poao-tilgang.intern.nav.no
+      value: http://poao-tilgang.poao.svc.nais.local
     - name: POAO_TILGANG_SCOPE
-      value: api://prod-gcp.poao.poao-tilgang/.default
+      value: api://prod-fss.poao.poao-tilgang/.default
     - name: REGOPPSLAG_SCOPE
       value: api://prod-fss.teamdokumenthandtering.regoppslag/.default
     - name: REGOPPSLAG_URL
