@@ -106,8 +106,13 @@ public class PersonV2Service {
 
     public void flettInnKontonummer(PersonV2Data person) {
         PersonDataTPS personDataTPSFraTps = hentPersonDataFraTps(person.getFodselsnummer());
-        Optional<KontoregisterResponseDTO> kontonummerFraKontoregister = hentKontonummerFraKontoregister(person.getFodselsnummer());
-        log.info("Kontonummer fra Kontoregister {}", kontonummerFraKontoregister);
+        try {
+            Optional<KontoregisterResponseDTO> kontonummerFraKontoregister = hentKontonummerFraKontoregister(person.getFodselsnummer());
+            log.info("Kontonummer fra Kontoregister {}", kontonummerFraKontoregister);
+        }
+        catch (Exception e) {
+            log.info("Feil ved oppslag mot kontoregister", e);
+        }
         person.setKontonummer(personDataTPSFraTps.getKontonummer());
     }
 
