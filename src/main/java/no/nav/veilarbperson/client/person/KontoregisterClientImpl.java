@@ -43,6 +43,7 @@ public class KontoregisterClientImpl implements KontoregisterClient {
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, "Bearer " + getToken())
                 .build();
+        log.info("Kontoregisterkall url = {} header = {} token = {}", request.url(), request.header(AUTHORIZATION), getToken());
         try (Response response = client.newCall(request).execute()) {
             RestUtils.throwIfNotSuccessful(response);
             return RestUtils.parseJsonResponse(response, KontoregisterResponseDTO.class);
