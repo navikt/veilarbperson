@@ -11,6 +11,7 @@ import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
+import no.nav.veilarbperson.client.person.KontoregisterClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.PersonDataMapper;
 import no.nav.veilarbperson.domain.*;
@@ -48,6 +49,8 @@ public class PersonV2Service {
     private final DifiClient difiClient;
     private final UnleashService unleashService;
 
+    private final KontoregisterClient kontoregisterClient;
+
     @Autowired
     public PersonV2Service(PdlClient pdlClient,
                            DifiClient difiClient,
@@ -57,7 +60,8 @@ public class PersonV2Service {
                            PersonClient personClient,
                            UnleashService unleashService,
                            SkjermetClient skjermetClient,
-                           KodeverkService kodeverkService) {
+                           KodeverkService kodeverkService,
+                           KontoregisterClient kontoregisterClient) {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.digdirClient = digdirClient;
@@ -67,6 +71,7 @@ public class PersonV2Service {
         this.kodeverkService = kodeverkService;
         this.difiClient = difiClient;
         this.unleashService = unleashService;
+        this.kontoregisterClient = kontoregisterClient;
     }
 
     public HentPerson.Person hentPerson(Fnr personIdent) {
@@ -75,6 +80,10 @@ public class PersonV2Service {
 
     public PersonDataTPS hentPersonDataFraTps(Fnr personIdent) {
         return PersonDataMapper.tilPersonDataTPS(personClient.hentPerson(personIdent));
+    }
+
+    public Optional<KontoregisterResponseDTO> hentKontonummerFraKontoregister(Fnr kontohaver) {
+        return kontoregisterClient.hentKontonummer(kontohaver);
     }
 
     public PersonV2Data hentFlettetPerson(Fnr fodselsnummer) {
@@ -97,6 +106,8 @@ public class PersonV2Service {
 
     public void flettInnKontonummer(PersonV2Data person) {
         PersonDataTPS personDataTPSFraTps = hentPersonDataFraTps(person.getFodselsnummer());
+        Optional<KontoregisterResponseDTO> kontonummerFraKontoregister = hentKontonummerFraKontoregister(person.getFodselsnummer());
+        log.info("Kontonummer fra Kontoregister {}", kontonummerFraKontoregister);
         person.setKontonummer(personDataTPSFraTps.getKontonummer());
     }
 

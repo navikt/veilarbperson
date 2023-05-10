@@ -32,6 +32,8 @@ import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pam.PamClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
+import no.nav.veilarbperson.client.person.KontoregisterClient;
+import no.nav.veilarbperson.client.person.KontoregisterClientImpl;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.PersonClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
@@ -81,6 +83,11 @@ public class ClientConfig {
     @Bean
     public PersonClient personClient(EnvironmentProperties properties, StsConfig stsConfig) {
         return new PersonClientImpl(properties.getPersonV3Endpoint(), stsConfig);
+    }
+
+    @Bean
+    public KontoregisterClient kontoregisterClient(EnvironmentProperties properties, MachineToMachineTokenClient tokenClient) {
+        return new KontoregisterClientImpl(properties.getKontoregisterUrl(), () -> tokenClient.createMachineToMachineToken(properties.getKontoregisterScope()));
     }
 
     @Bean

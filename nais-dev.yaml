@@ -118,6 +118,10 @@ spec:
       value: https://app-q1.adeo.no/tpsws-aura/ws/Person/v3
     - name: VIRKSOMHET_EGENANSATT_V1_URL
       value: https://app-q1.adeo.no/tpsws-aura/ws/EgenAnsatt/v1
+    - name: KONTOREGISTER_PERSON_V1_SCOPE
+      value: api://dev-gcp.okonomi.sokos-kontoregister-person/.default
+    - name: KONTOREGISTER_PERSON_V1_URL
+      value: https://sokos-kontoregister-person.intern.dev.nav.no/api/system/v1/hent-aktiv-konto
   envFrom:
     - configmap: pto-config
     - configmap: loginservice-idporten

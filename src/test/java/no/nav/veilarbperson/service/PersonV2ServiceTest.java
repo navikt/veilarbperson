@@ -11,6 +11,7 @@ import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
+import no.nav.veilarbperson.client.person.KontoregisterClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted;
 import no.nav.veilarbperson.client.person.TpsPerson;
@@ -54,6 +55,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private final KodeverkService kodeverkService = mock(KodeverkService.class);
     private final SkjermetClient skjermetClient = mock(SkjermetClient.class);
     private final AuthService authService = mock(AuthService.class);
+
     private PersonV2Service personV2Service;
     private HentPerson.Person person;
     private static final Fnr FNR = Fnr.of("0123456789");
@@ -79,7 +81,8 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 personClient,
                 mock(UnleashService.class),
                 skjermetClient,
-                kodeverkService);
+                kodeverkService,
+                mock(KontoregisterClient.class));
         person = hentPerson(FNR);
     }
 
