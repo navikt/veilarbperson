@@ -76,7 +76,7 @@ public class PersonV2Controller {
         authService.sjekkLesetilgang(fnr);
         return regoppslagClient.hentPostadresse(fnr);
     }
-    @GetMapping
+    @GetMapping("/kontoregister")
     @Operation(summary = "Henter kontonummer fra Kontoregister")
     public Optional<KontoregisterResponseDTO> hentKontoregisterData(@RequestParam("kontohaver") Fnr kontohaver) {
         authService.stoppHvisEksternBruker();
