@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.client.person;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
@@ -19,7 +20,7 @@ import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-
+@Slf4j
 public class KontoregisterClientImpl implements KontoregisterClient {
 
     private final String kontoregisterUrl;
@@ -46,7 +47,7 @@ public class KontoregisterClientImpl implements KontoregisterClient {
             RestUtils.throwIfNotSuccessful(response);
             return RestUtils.parseJsonResponse(response, KontoregisterResponseDTO.class);
         } catch (Exception e) {
-    //        log.error("Feil under henting av data fra Kontoregister", e);
+          log.error("Feil under henting av data fra Kontoregister", e);
             return empty();
         }
     }
