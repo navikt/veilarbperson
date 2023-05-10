@@ -2,6 +2,7 @@ package no.nav.veilarbperson.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.person.KontoregisterClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v2/person")
@@ -78,7 +79,8 @@ public class PersonV2Controller {
     }
     @GetMapping("/kontoregister")
     @Operation(summary = "Henter kontonummer fra Kontoregister")
-    public Optional<KontoregisterResponseDTO> hentKontoregisterData(@RequestParam("kontohaver") Fnr kontohaver) {
+    public Optional<KontoregisterResponseDTO> hentKontonummerFraKontoregister(@RequestParam("kontohaver") Fnr kontohaver) {
+        log.info("inne i hentKontonummerFraKontoregister");
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(kontohaver);
         return kontoregisterClient.hentKontonummer(kontohaver);
