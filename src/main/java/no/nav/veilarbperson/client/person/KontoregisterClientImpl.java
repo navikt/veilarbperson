@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static java.util.Optional.empty;
+import static no.nav.common.utils.UrlUtils.joinPaths;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -22,6 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class KontoregisterClientImpl implements KontoregisterClient {
 
     private final String kontoregisterUrl;
+    private static final String KONTOREGISTER_API_URL = "/api/system/v1/hent-aktiv-konto";
 
     private final Supplier<String> systemUserTokenProvider;
 
@@ -36,7 +38,7 @@ public class KontoregisterClientImpl implements KontoregisterClient {
     @Override
     public Optional<KontoregisterResponseDTO> hentKontonummer(Fnr kontohaver) {
         Request request = new Request.Builder()
-                .url(kontoregisterUrl)
+                .url(joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, "Bearer " + getToken())
                 .build();
