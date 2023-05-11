@@ -38,13 +38,16 @@ public class KontoregisterClientImpl implements KontoregisterClient {
     @SneakyThrows
     @Override
     public Optional<KontoregisterResponseDTO> hentKontonummer(Fnr kontohaver) {
+
         Request request = new Request.Builder()
                 .url(joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
-                .header(AUTHORIZATION, "Bearer " + getToken())
+                .header(AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
                 .build();
-        log.info("Kontoregisterkall url = {} header = {} token = {}", request.url(), request.header(AUTHORIZATION), getToken());
+        log.info("Request til kontoreg url = {},  auth = {}", request.url(), systemUserTokenProvider.get());
+
         try (Response response = client.newCall(request).execute()) {
+            log.info("svar fra kontoreg: message = {}, challenges = {}, TokenProvider = {}", response.message(), response.challenges(), systemUserTokenProvider.get());
             RestUtils.throwIfNotSuccessful(response);
             return RestUtils.parseJsonResponse(response, KontoregisterResponseDTO.class);
         } catch (Exception e) {
@@ -56,10 +59,6 @@ public class KontoregisterClientImpl implements KontoregisterClient {
     @Override
     public HealthCheckResult checkHealth() {
         return null;
-    }
-
-    private String getToken() {
-        return systemUserTokenProvider.get();
     }
 }
 
