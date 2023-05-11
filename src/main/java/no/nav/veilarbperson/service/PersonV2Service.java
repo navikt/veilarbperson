@@ -82,10 +82,6 @@ public class PersonV2Service {
         return PersonDataMapper.tilPersonDataTPS(personClient.hentPerson(personIdent));
     }
 
-    public Optional<KontoregisterResponseDTO> hentKontonummerFraKontoregister(Fnr kontohaver) {
-        return kontoregisterClient.hentKontonummer(kontohaver);
-    }
-
     public PersonV2Data hentFlettetPerson(Fnr fodselsnummer) {
         HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -106,9 +102,10 @@ public class PersonV2Service {
 
     public void flettInnKontonummer(PersonV2Data person) {
         PersonDataTPS personDataTPSFraTps = hentPersonDataFraTps(person.getFodselsnummer());
+        log.info("Kontonummer fra Kontoregister, fnr = {}", person.getFodselsnummer());
         try {
-            Optional<KontoregisterResponseDTO> kontonummerFraKontoregister = hentKontonummerFraKontoregister(person.getFodselsnummer());
-            log.info("Kontonummer fra Kontoregister {}", kontonummerFraKontoregister);
+            Optional<KontoregisterResponseDTO> kontoinformasjon =  kontoregisterClient.hentKontonummer(person.getFodselsnummer());
+            log.info("Kontonummer fra Kontoregister {}", kontoinformasjon);
         }
         catch (Exception e) {
             log.info("Feil ved oppslag mot kontoregister", e);
