@@ -1,30 +1,31 @@
-package no.nav.veilarbperson.client.person;
+package no.nav.veilarbperson.client.kontoregister;
 
-import lombok.SneakyThrows;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.health.HealthCheckResult;
+import no.nav.common.health.HealthCheckUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.domain.KontoregisterResponseDTO;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 
-import java.util.Optional;
+import java.io.IOException;
 import java.util.function.Supplier;
 
-import static java.util.Optional.empty;
+import no.nav.common.utils.UrlUtils;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.springframework.http.HttpHeaders;
+
 import static no.nav.common.utils.UrlUtils.joinPaths;
-import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 public class KontoregisterClientImpl implements KontoregisterClient {
 
     private final String kontoregisterUrl;
-    private static final String KONTOREGISTER_API_URL = "https://sokos-kontoregister-person.intern.dev.nav.no/api/system/v1/hent-aktiv-konto";
+    private static final String KONTOREGISTER_API_URL = "/api/system/v1/hent-aktiv-konto";
 
     private final Supplier<String> systemUserTokenProvider;
 
@@ -35,30 +36,37 @@ public class KontoregisterClientImpl implements KontoregisterClient {
         this.systemUserTokenProvider = systemUserTokenProvider;
         this.client = RestClient.baseClient();
     }
-    @SneakyThrows
-    @Override
-    public Optional<KontoregisterResponseDTO> hentKontonummer(Fnr kontohaver) {
+@Override
+    public HentKontoResponseDTO hentKontonummer(Fnr kontohaver) {
 
         Request request = new Request.Builder()
-                .url(joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL))
-                .header(ACCEPT, APPLICATION_JSON_VALUE)
-                .header(AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
+                .url(UrlUtils.joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL))
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
+                .post(RequestBody.create(kontohaver.get(), RestUtils.MEDIA_TYPE_JSON))
                 .build();
         log.info("Request til kontoreg url = {},  auth = {}", request.url(), systemUserTokenProvider.get());
 
         try (Response response = client.newCall(request).execute()) {
             log.info("svar fra kontoreg: message = {}, challenges = {}, TokenProvider = {}", response.message(), response.challenges(), systemUserTokenProvider.get());
             RestUtils.throwIfNotSuccessful(response);
-            return RestUtils.parseJsonResponse(response, KontoregisterResponseDTO.class);
-        } catch (Exception e) {
-          log.error("Feil under henting av data fra Kontoregister", e);
-            return empty();
+            return RestUtils.parseJsonResponse(response, HentKontoResponseDTO.class)
+                    .orElseThrow(() -> new IllegalStateException("HentKontonummer body is missing"));
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-    }
+}
 
     @Override
     public HealthCheckResult checkHealth() {
-        return null;
+        Request request = new Request.Builder()
+                .url(joinPaths(kontoregisterUrl, "/rest/ping"))
+                .header(AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
+                .build();
+
+        return HealthCheckUtils.pingUrl(request, client);
     }
 }
+
 

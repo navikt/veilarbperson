@@ -11,7 +11,7 @@ import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
-import no.nav.veilarbperson.client.person.KontoregisterClient;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted;
 import no.nav.veilarbperson.client.person.TpsPerson;

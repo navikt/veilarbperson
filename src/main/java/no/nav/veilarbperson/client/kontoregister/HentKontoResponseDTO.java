@@ -1,10 +1,10 @@
-package no.nav.veilarbperson.domain;
+package no.nav.veilarbperson.client.kontoregister;
 
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
-public class KontoregisterResponseDTO {
+public class HentKontoResponseDTO {
 
     private HttpStatus status;
 

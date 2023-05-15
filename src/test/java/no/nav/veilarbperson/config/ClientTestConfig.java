@@ -18,18 +18,18 @@ import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
+import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
-import no.nav.veilarbperson.client.person.KontoregisterClient;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.TpsPerson;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
-import no.nav.veilarbperson.domain.KontoregisterResponseDTO;
 import okhttp3.Response;
 import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
@@ -40,7 +40,6 @@ import org.springframework.context.annotation.Import;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static no.nav.veilarbperson.utils.TestData.TEST_AKTOR_ID;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
@@ -136,8 +135,8 @@ public class ClientTestConfig {
     public KontoregisterClient kontoregisterClient() {
         return new KontoregisterClient() {
             @Override
-            public Optional<KontoregisterResponseDTO> hentKontonummer(Fnr kontohaver) {
-                return Optional.of(new KontoregisterResponseDTO());
+            public HentKontoResponseDTO hentKontonummer(Fnr kontohaver) {
+                return new HentKontoResponseDTO();
             }
 
             @Override

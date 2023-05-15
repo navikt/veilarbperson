@@ -7,11 +7,12 @@ import no.nav.veilarbperson.client.difi.DifiClient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
+import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
-import no.nav.veilarbperson.client.person.KontoregisterClient;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.person.PersonClient;
 import no.nav.veilarbperson.client.person.PersonDataMapper;
 import no.nav.veilarbperson.domain.*;
@@ -29,7 +30,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.UKJENT_BOSTED;
 import static no.nav.veilarbperson.client.person.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseZonedDateToDateString;
@@ -104,7 +104,7 @@ public class PersonV2Service {
         PersonDataTPS personDataTPSFraTps = hentPersonDataFraTps(person.getFodselsnummer());
         log.info("Kontonummer fra Kontoregister, fnr = {}", person.getFodselsnummer());
         try {
-            Optional<KontoregisterResponseDTO> kontoinformasjon =  kontoregisterClient.hentKontonummer(person.getFodselsnummer());
+            HentKontoResponseDTO kontoinformasjon =  kontoregisterClient.hentKontonummer(person.getFodselsnummer());
             log.info("Kontonummer fra Kontoregister {}", kontoinformasjon);
         }
         catch (Exception e) {
