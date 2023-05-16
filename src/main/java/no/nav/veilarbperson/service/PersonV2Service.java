@@ -103,17 +103,13 @@ public class PersonV2Service {
 
     public void flettInnKontonummer(PersonV2Data person) {
         PersonDataTPS personDataTPSFraTps = hentPersonDataFraTps(person.getFodselsnummer());
-        HentKontoRequestDTO kto = new HentKontoRequestDTO();
-        kto.setKontohaver(person.getFodselsnummer().toString());
-        log.info("Kontonummer fra Kontoregister, kontohaver = {}", kto);
-        try {
-            HentKontoResponseDTO kontoinformasjon =  kontoregisterClient.hentKontonummer(kto);
-            log.info("Kontonummer fra Kontoregister {}", kontoinformasjon);
-        }
-        catch (Exception e) {
-            log.info("Feil ved oppslag mot kontoregister", e);
-        }
+        HentKontoRequestDTO kontohaver = new HentKontoRequestDTO();
+        kontohaver.setKontohaver(person.getFodselsnummer().toString());
+        HentKontoResponseDTO kontoregisterKonto = kontoregisterClient.hentKontonummer(kontohaver);
+
         person.setKontonummer(personDataTPSFraTps.getKontonummer());
+        person.setKontonummer(kontoregisterKonto.getNorskKontonummer());
+        log.info("kontonr TPS = {} kontonr Kontoreg={}", personDataTPSFraTps.getKontonummer(), kontoregisterKonto.getNorskKontonummer());
     }
 
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse) {

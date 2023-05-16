@@ -26,4 +26,8 @@ public class HentKontoResponseDTO {
     private LocalDateTime gyldigTom;
     private String endretAv;
     private String opprettetAv;
+
+    public String getNorskKontonummer() {
+        return kontonummer;
+    }
 }
