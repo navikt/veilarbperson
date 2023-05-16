@@ -40,7 +40,7 @@ public class KontoregisterClientImpl implements KontoregisterClient {
     @Cacheable(CacheConfig.KONTOREGISTER_CACHE_NAME)
     @Override
     public HentKontoResponseDTO hentKontonummer(HentKontoRequestDTO kontohaver) {
-        log.info("I HentKontoResponseDTO Url={}, kontohaver.getKontohaver()={}", UrlUtils.joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL), kontohaver.getKontohaver());
+        log.info("I hentKontonummerImpl Url={}, kontohaver.getKontohaver()={}, token={}", UrlUtils.joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL), kontohaver.getKontohaver(), systemUserTokenProvider.toString());
         Request request = new Request.Builder()
                 .url(UrlUtils.joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
