@@ -37,7 +37,7 @@ public class KontoregisterClientImpl implements KontoregisterClient {
     }
 @Override
     public HentKontoResponseDTO hentKontonummer(HentKontoRequestDTO kontohaver) {
-
+        log.info("I HentKontoResponseDTO Url={}, kontohaver.getKontohaver()={}", UrlUtils.joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL), kontohaver.getKontohaver());
         Request request = new Request.Builder()
                 .url(UrlUtils.joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
