@@ -26,7 +26,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class KontoregisterClientImpl implements KontoregisterClient {
 
     private final String kontoregisterUrl;
-    private static final String KONTOREGISTER_API_URL = "https://sokos-kontoregister-person.intern.dev.nav.no/api/system/v1/hent-aktiv-konto";
+    private static final String KONTOREGISTER_API_URL = "/api/system/v1/hent-aktiv-konto";
 
     private final Supplier<String> systemUserTokenProvider;
 

@@ -121,7 +121,7 @@ spec:
     - name: KONTOREGISTER_PERSON_V1_SCOPE
       value: api://dev-gcp.okonomi.sokos-kontoregister-person/.default
     - name: KONTOREGISTER_PERSON_V1_URL
-      value: https://sokos-kontoregister-person.intern.dev.nav.no/api/system/v1/hent-aktiv-konto
+      value: https://sokos-kontoregister-person.intern.dev.nav.no
   envFrom:
     - configmap: pto-config
     - configmap: loginservice-idporten
