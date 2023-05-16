@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.function.Supplier;
 
 import no.nav.common.utils.UrlUtils;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
@@ -44,7 +43,7 @@ public class KontoregisterClientImpl implements KontoregisterClient {
         Request request = new Request.Builder()
                 .url(UrlUtils.joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
-                .post(RequestBody.create(kontohaver.getKontohaver(), RestUtils.MEDIA_TYPE_JSON))
+                .post(RestUtils.toJsonRequestBody(kontohaver))
                 .build();
         log.info("Request til kontoreg url = {},  auth = {}", request.url(), systemUserTokenProvider.get());
 
