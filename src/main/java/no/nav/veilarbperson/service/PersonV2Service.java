@@ -7,6 +7,7 @@ import no.nav.veilarbperson.client.difi.DifiClient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
+import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
 import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
@@ -102,9 +103,11 @@ public class PersonV2Service {
 
     public void flettInnKontonummer(PersonV2Data person) {
         PersonDataTPS personDataTPSFraTps = hentPersonDataFraTps(person.getFodselsnummer());
-        log.info("Kontonummer fra Kontoregister, fnr = {}", person.getFodselsnummer());
+        HentKontoRequestDTO kto = new HentKontoRequestDTO();
+        kto.setKontohaver(person.getFodselsnummer().toString());
+        log.info("Kontonummer fra Kontoregister, kontohaver = {}", kto);
         try {
-            HentKontoResponseDTO kontoinformasjon =  kontoregisterClient.hentKontonummer(person.getFodselsnummer());
+            HentKontoResponseDTO kontoinformasjon =  kontoregisterClient.hentKontonummer(kto);
             log.info("Kontonummer fra Kontoregister {}", kontoinformasjon);
         }
         catch (Exception e) {

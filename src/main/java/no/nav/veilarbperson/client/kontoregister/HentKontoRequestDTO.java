@@ -11,4 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HentKontoRequestDTO {
     private String kontohaver;
+    public String getKontohaver() {
+        return kontohaver;
+    }
+
+    public void setKontohaver(String kontohaver) {
+        this.kontohaver = kontohaver;
+    }
+
+
 }

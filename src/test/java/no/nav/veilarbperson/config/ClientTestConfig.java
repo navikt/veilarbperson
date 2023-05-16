@@ -18,6 +18,7 @@ import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
+import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
 import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
@@ -135,7 +136,7 @@ public class ClientTestConfig {
     public KontoregisterClient kontoregisterClient() {
         return new KontoregisterClient() {
             @Override
-            public HentKontoResponseDTO hentKontonummer(Fnr kontohaver) {
+            public HentKontoResponseDTO hentKontonummer(HentKontoRequestDTO kontohaver) {
                 return new HentKontoResponseDTO();
             }
 

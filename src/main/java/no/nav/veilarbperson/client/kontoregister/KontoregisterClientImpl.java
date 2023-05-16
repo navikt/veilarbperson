@@ -6,7 +6,6 @@ import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.HealthCheckUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
-import no.nav.common.types.identer.Fnr;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -37,12 +36,12 @@ public class KontoregisterClientImpl implements KontoregisterClient {
         this.client = RestClient.baseClient();
     }
 @Override
-    public HentKontoResponseDTO hentKontonummer(Fnr kontohaver) {
+    public HentKontoResponseDTO hentKontonummer(HentKontoRequestDTO kontohaver) {
 
         Request request = new Request.Builder()
                 .url(UrlUtils.joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
-                .post(RequestBody.create(kontohaver.get(), RestUtils.MEDIA_TYPE_JSON))
+                .post(RequestBody.create(kontohaver.getKontohaver(), RestUtils.MEDIA_TYPE_JSON))
                 .build();
         log.info("Request til kontoreg url = {},  auth = {}", request.url(), systemUserTokenProvider.get());
 

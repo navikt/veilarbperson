@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
 import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
@@ -79,10 +80,10 @@ public class PersonV2Controller {
     }
     @GetMapping("/kontoregister")
     @Operation(summary = "Henter kontonummer fra Kontoregister")
-    public HentKontoResponseDTO hentKontonummerFraKontoregister(@RequestParam("kontohaver") Fnr kontohaver) {
+    public HentKontoResponseDTO hentKontonummerFraKontoregister(@RequestParam("kontohaver") HentKontoRequestDTO kontohaver) {
         log.info("inne i hentKontonummerFraKontoregister");
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(kontohaver);
+    //    authService.sjekkLesetilgang(kontohaver);
         return kontoregisterClient.hentKontonummer(kontohaver);
     }
 
