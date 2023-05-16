@@ -6,6 +6,7 @@ import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.HealthCheckUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
+import no.nav.veilarbperson.config.CacheConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -15,6 +16,7 @@ import java.util.function.Supplier;
 import no.nav.common.utils.UrlUtils;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 
 import static no.nav.common.utils.UrlUtils.joinPaths;
@@ -35,7 +37,8 @@ public class KontoregisterClientImpl implements KontoregisterClient {
         this.systemUserTokenProvider = systemUserTokenProvider;
         this.client = RestClient.baseClient();
     }
-@Override
+    @Cacheable(CacheConfig.KONTOREGISTER_CACHE_NAME)
+    @Override
     public HentKontoResponseDTO hentKontonummer(HentKontoRequestDTO kontohaver) {
         log.info("I HentKontoResponseDTO Url={}, kontohaver.getKontohaver()={}", UrlUtils.joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL), kontohaver.getKontohaver());
         Request request = new Request.Builder()

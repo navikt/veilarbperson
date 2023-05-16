@@ -21,6 +21,8 @@ public class CacheConfig {
     public static final String DIFI_HAR_NIVA_4_CACHE_NAME = "difi_har_niva_4_cache";
     public static final String KODEVERK_BETYDNING_CACHE_NAME = "kodeverk_betydning_cache";
 
+    public static final String KONTOREGISTER_CACHE_NAME = "kontoregister_person_cache";
+
     @Bean
     public Cache veilarboppfolgingUnderOppfolgingCache() {
         return litenCache(VEILARBOPPFOLGING_UNDER_OPPFOLGING_CACHE_NAME);
@@ -67,6 +69,11 @@ public class CacheConfig {
                 .expireAfterWrite(1, TimeUnit.MINUTES)
                 .maximumSize(15_000)
                 .build());
+    }
+
+    @Bean
+    public Cache kontoregisterPersonCache() {
+        return litenCache(KONTOREGISTER_CACHE_NAME);
     }
 
 }
