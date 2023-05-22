@@ -30,4 +30,8 @@ public class HentKontoResponseDTO {
     public String getNorskKontonummer() {
         return kontonummer;
     }
+    public void setNorskKontonummer(String kontonummer) {
+        this.kontonummer = kontonummer;
+    }
+
 }
