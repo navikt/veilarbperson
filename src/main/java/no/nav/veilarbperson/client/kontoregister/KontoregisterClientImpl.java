@@ -6,20 +6,19 @@ import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.HealthCheckUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
+import no.nav.common.utils.UrlUtils;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.veilarbperson.config.CacheConfig;
 import no.nav.veilarbperson.domain.Enhet;
 import no.nav.veilarbperson.domain.PersonDataKontoregister;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-
-import java.io.IOException;
-import java.util.function.Supplier;
-
-import no.nav.common.utils.UrlUtils;
 import okhttp3.Response;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
+
+import java.io.IOException;
+import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
 import static no.nav.common.utils.UrlUtils.joinPaths;
@@ -40,6 +39,7 @@ public class KontoregisterClientImpl implements KontoregisterClient {
         this.systemUserTokenProvider = systemUserTokenProvider;
         this.client = RestClient.baseClient();
     }
+
     @Cacheable(CacheConfig.KONTOREGISTER_CACHE_NAME)
     @Override
     public HentKontoResponseDTO hentKontonummer(HentKontoRequestDTO kontohaver) {
@@ -52,7 +52,7 @@ public class KontoregisterClientImpl implements KontoregisterClient {
         log.info("Request til kontoreg url = {},  auth = {}", request.url(), systemUserTokenProvider.get());
 
         try (Response response = client.newCall(request).execute()) {
-            log.info("svar fra kontoreg: message = {}, challenges = {}, TokenProvider = {}", response.message(), response.challenges(), systemUserTokenProvider.get());
+            log.info("svar fra kontoreg: message = {}, challenges = {}, TokenProvider = {}, responsKod = {}, responsBody = {}", response.message(), response.challenges(), systemUserTokenProvider.get(), response.code(), response.body());
             RestUtils.throwIfNotSuccessful(response);
             return RestUtils.parseJsonResponse(response, HentKontoResponseDTO.class)
                     .orElseThrow(() -> new IllegalStateException("HentKontonummer body is missing"));
@@ -61,7 +61,7 @@ public class KontoregisterClientImpl implements KontoregisterClient {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-}
+    }
 
     @Override
     public HealthCheckResult checkHealth() {
