@@ -61,7 +61,7 @@ public class KontoregisterClientImpl implements KontoregisterClient {
                 return RestUtils.parseJsonResponse(response, HentKontoResponseDTO.class)
                         .orElseThrow(() -> new IllegalStateException("HentKontonummer body is missing"));
             } else if (response.code() == HttpStatus.NO_CONTENT.value()) {
-                return null;
+                return new HentKontoResponseDTO();
             } else {
                 throw new IllegalStateException(String.format("Error code: %s, Message: %s", response.code(), response.message()));
             }
