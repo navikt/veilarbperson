@@ -54,10 +54,13 @@ public class KontoregisterClientImpl implements KontoregisterClient {
         try (Response response = client.newCall(request).execute()) {
             log.info("svar fra kontoreg: message = {}, challenges = {}, TokenProvider = {}, responsKod = {}, responsBody = {}", response.message(), response.challenges(), systemUserTokenProvider.get(), response.code(), response.body());
             RestUtils.throwIfNotSuccessful(response);
-            return RestUtils.parseJsonResponse(response, HentKontoResponseDTO.class)
-                    .orElseThrow(() -> new IllegalStateException("HentKontonummer body is missing"));
 
 
+            if (response.body() != null) {
+                return RestUtils.parseJsonResponse(response, HentKontoResponseDTO.class)
+                        .orElseThrow(() -> new IllegalStateException("Hent kontonummer feiler"));
+            }
+            return new HentKontoResponseDTO();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
