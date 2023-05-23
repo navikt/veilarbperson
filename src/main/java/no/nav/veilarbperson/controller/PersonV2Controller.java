@@ -78,7 +78,6 @@ public class PersonV2Controller {
     @PostMapping
     @Operation(summary = "Henter kontonummer fra Kontoregister")
     public HentKontoResponseDTO hentKontonummerFraKontoregister(@RequestParam("kontohaver") HentKontoRequestDTO kontohaver) {
-        log.info("inne i hentKontonummerFraKontoregister");
         Fnr fnr = new Fnr(kontohaver.getKontohaver());
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);

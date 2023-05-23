@@ -111,10 +111,6 @@ spec:
       value: api://prod-gcp.paw.veilarbregistrering/.default
     - name: VEILARBREGISTRERING_URL
       value: https://veilarbregistrering.intern.nav.no
-    - name: VIRKSOMHET_PERSON_V3_URL
-      value: https://app.adeo.no/tpsws-aura/ws/Person/v3
-    - name: VIRKSOMHET_EGENANSATT_V1_URL
-      value: https://app.adeo.no/tpsws-aura/ws/EgenAnsatt/v1
     - name: KONTOREGISTER_PERSON_V1_SCOPE
       value: api://prod-gcp.okonomi.sokos-kontoregister-person/.default
     - name: KONTOREGISTER_PERSON_V1_URL

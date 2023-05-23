@@ -97,7 +97,6 @@ public class PersonV2Service {
         kontohaver.setKontohaver(person.getFodselsnummer().toString());
         HentKontoResponseDTO kontoregisterKonto = kontoregisterClient.hentKontonummer(kontohaver);
         person.setKontonummer(kontoregisterKonto.getNorskKontonummer());
-        log.info("kontonr Kontoreg={}", kontoregisterKonto.getNorskKontonummer());
     }
 
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse) {
