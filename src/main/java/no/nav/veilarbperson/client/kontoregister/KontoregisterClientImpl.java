@@ -16,8 +16,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
@@ -47,20 +49,24 @@ public class KontoregisterClientImpl implements KontoregisterClient {
         Request request = new Request.Builder()
                 .url(UrlUtils.joinPaths(kontoregisterUrl, KONTOREGISTER_API_URL))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
+                .header("Nav-Call-Id", UUID.randomUUID().toString())
                 .post(RestUtils.toJsonRequestBody(kontohaver))
                 .build();
         log.info("Request til kontoreg url = {},  auth = {}", request.url(), systemUserTokenProvider.get());
 
         try (Response response = client.newCall(request).execute()) {
-            log.info("svar fra kontoreg: message = {}, challenges = {}, TokenProvider = {}, responsKod = {}, responsBody = {}", response.message(), response.challenges(), systemUserTokenProvider.get(), response.code(), response.body());
+            log.info("svar fra kontoreg: message = {}, challenges = {}, TokenProvider = {}", response.message(), response.challenges(), systemUserTokenProvider.get());
             RestUtils.throwIfNotSuccessful(response);
-
-
-            if (response.body() != null) {
+            if (response.code() == HttpStatus.OK.value()) {
                 return RestUtils.parseJsonResponse(response, HentKontoResponseDTO.class)
-                        .orElseThrow(() -> new IllegalStateException("Hent kontonummer feiler"));
+                        .orElseThrow(() -> new IllegalStateException("HentKontonummer body is missing"));
+            } else if (response.code() == HttpStatus.NO_CONTENT.value()) {
+                return null;
+            } else {
+                throw new IllegalStateException(String.format("Error code: %s, Message: %s", response.code(), response.message()));
             }
-            return new HentKontoResponseDTO();
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
