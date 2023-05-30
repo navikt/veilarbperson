@@ -26,13 +26,6 @@ public class PersonController {
 
     private final RegistreringService registreringService;
 
-    @GetMapping("/{fodselsnummer}")
-    @Operation(summary = "Henter informasjon om en person",
-            description = "Denne tjenesten gjør kall mot flere baktjenester: " +
-                    "Kodeverk, organisasjonenhet_v2, Digitalkontaktinformasjon_v1, Person_v3, Egenansatt_v1")
-    public PersonDataTPS person(@PathVariable("fodselsnummer") Fnr fnr) {
-        throw new ResponseStatusException(HttpStatus.GONE, "Bytt til v2 endepunkt");
-    }
 
     @GetMapping("/aktorid")
     public AktoerId aktorid(@RequestParam("fnr") Fnr fnr) {

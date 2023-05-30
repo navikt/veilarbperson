@@ -7,7 +7,6 @@ import no.nav.common.client.aktoroppslag.PdlAktorOppslagClient;
 import no.nav.common.client.norg2.CachedNorg2Client;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.client.norg2.NorgHttp2Client;
-import no.nav.common.cxf.StsConfig;
 import no.nav.common.metrics.InfluxClient;
 import no.nav.common.metrics.MetricsClient;
 import no.nav.common.rest.client.RestClient;
@@ -16,7 +15,6 @@ import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.token_client.client.MachineToMachineTokenClient;
 import no.nav.common.utils.Credentials;
-import no.nav.common.utils.EnvironmentUtils;
 import no.nav.common.utils.NaisUtils;
 import no.nav.veilarbperson.client.difi.DifiAccessTokenProviderImpl;
 import no.nav.veilarbperson.client.difi.DifiClient;
@@ -32,8 +30,8 @@ import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pam.PamClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
-import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.person.PersonClientImpl;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
@@ -78,9 +76,10 @@ public class ClientConfig {
                 () -> tokenClient.createMachineToMachineToken(properties.getPamCvApiScope()));
     }
 
+
     @Bean
-    public PersonClient personClient(EnvironmentProperties properties, StsConfig stsConfig) {
-        return new PersonClientImpl(properties.getPersonV3Endpoint(), stsConfig);
+    public KontoregisterClient kontoregisterClient(EnvironmentProperties properties, MachineToMachineTokenClient tokenClient) {
+        return new KontoregisterClientImpl(properties.getKontoregisterUrl(), () -> tokenClient.createMachineToMachineToken(properties.getKontoregisterScope()));
     }
 
     @Bean
@@ -144,7 +143,4 @@ public class ClientConfig {
         return new InfluxClient();
     }
 
-    public static boolean isProduction() {
-        return EnvironmentUtils.isProduction().orElseThrow();
-    }
 }

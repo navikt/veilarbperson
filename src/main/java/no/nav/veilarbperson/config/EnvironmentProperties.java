@@ -37,4 +37,6 @@ public class EnvironmentProperties {
     private String veilarboppfolgingUrl;
     private String veilarbregistreringScope;
     private String veilarbregistreringUrl;
+    private String kontoregisterScope;
+    private String kontoregisterUrl;
 }
