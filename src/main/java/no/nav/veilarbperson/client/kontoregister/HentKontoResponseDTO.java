@@ -13,8 +13,6 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class HentKontoResponseDTO {
 
-    private HttpStatus status;
-
     private String kontohaver;
     private String kontonummer;
 
