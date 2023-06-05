@@ -18,12 +18,13 @@ import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
+import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
+import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
-import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.person.TpsPerson;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
@@ -130,6 +131,21 @@ public class ClientTestConfig {
     }
 
     @Bean
+    public KontoregisterClient kontoregisterClient() {
+        return new KontoregisterClient() {
+            @Override
+            public HentKontoResponseDTO hentKontonummer(HentKontoRequestDTO kontohaver) {
+                return new HentKontoResponseDTO();
+            }
+
+            @Override
+            public HealthCheckResult checkHealth() {
+                return HealthCheckResult.healthy();
+            }
+        };
+    }
+
+    @Bean
     public DifiClient difiClient() {
         return fnr -> {
             HarLoggetInnRespons harLoggetInnRespons = new HarLoggetInnRespons();
@@ -169,19 +185,6 @@ public class ClientTestConfig {
         };
     }
 
-    @Bean
-    public PersonClient personClient() {
-        return new PersonClient() {
-            @Override
-            public TpsPerson hentPerson(Fnr ident) {
-                return new TpsPerson().setKontonummer("123456789");
-            }
-            @Override
-            public HealthCheckResult checkHealth() {
-                return HealthCheckResult.healthy();
-            }
-        };
-    }
 
     @Bean
     public VeilarboppfolgingClient veilarboppfolgingClient() {

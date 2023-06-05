@@ -42,6 +42,7 @@ public class ApplicationTestConfig {
 	@Bean
 	public PoaoTilgangClient poaoTilgangClient() { return mock(PoaoTilgangClient.class); }
 
+
 	@Bean
 	public AuditLogger auditLogger() { return mock(AuditLogger.class); }
 }
