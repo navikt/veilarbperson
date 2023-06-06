@@ -7,12 +7,13 @@ import no.nav.veilarbperson.client.difi.DifiClient;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
+import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
+import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
-import no.nav.veilarbperson.client.person.PersonClient;
-import no.nav.veilarbperson.client.person.PersonDataMapper;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
@@ -28,8 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.UKJENT_BOSTED;
-import static no.nav.veilarbperson.client.person.Mappers.fraNorg2Enhet;
+import static no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseZonedDateToDateString;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.sivilstandMapper;
@@ -42,11 +42,12 @@ public class PersonV2Service {
     private final AuthService authService;
     private final DigdirClient digdirClient;
     private final Norg2Client norg2Client;
-    private final PersonClient personClient;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
     private final DifiClient difiClient;
     private final UnleashService unleashService;
+
+    private final KontoregisterClient kontoregisterClient;
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient,
@@ -54,36 +55,32 @@ public class PersonV2Service {
                            AuthService authService,
                            DigdirClient digdirClient,
                            Norg2Client norg2Client,
-                           PersonClient personClient,
                            UnleashService unleashService,
                            SkjermetClient skjermetClient,
-                           KodeverkService kodeverkService) {
+                           KodeverkService kodeverkService,
+                           KontoregisterClient kontoregisterClient) {
         this.pdlClient = pdlClient;
         this.authService = authService;
         this.digdirClient = digdirClient;
         this.norg2Client = norg2Client;
-        this.personClient = personClient;
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
         this.difiClient = difiClient;
         this.unleashService = unleashService;
+        this.kontoregisterClient = kontoregisterClient;
     }
 
     public HentPerson.Person hentPerson(Fnr personIdent) {
         return pdlClient.hentPerson(personIdent);
     }
-/*
-    public PersonDataTPS hentPersonDataFraTps(Fnr personIdent) {
-        return PersonDataMapper.tilPersonDataTPS(personClient.hentPerson(personIdent));
-    }
-*/
+
     public PersonV2Data hentFlettetPerson(Fnr fodselsnummer) {
         HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Fant ikke person i hentPerson operasjonen i PDL"));
 
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
-//        flettInnKontonummer(personV2Data);
+        flettInnKontonummer(personV2Data);
 
         flettInnEgenAnsatt(personV2Data, fodselsnummer);
         flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
@@ -94,12 +91,14 @@ public class PersonV2Service {
 
         return personV2Data;
     }
-/*
+
     public void flettInnKontonummer(PersonV2Data person) {
-        PersonDataTPS personDataTPSFraTps = hentPersonDataFraTps(person.getFodselsnummer());
-        person.setKontonummer(personDataTPSFraTps.getKontonummer());
+        HentKontoRequestDTO kontohaver = new HentKontoRequestDTO();
+        kontohaver.setKontohaver(person.getFodselsnummer().toString());
+        HentKontoResponseDTO kontoregisterKonto = kontoregisterClient.hentKontonummer(kontohaver);
+        person.setKontonummer(kontoregisterKonto.getNorskKontonummer());
     }
-*/
+
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse) {
         List<HentPerson.PersonFraBolk> familiemedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr);
 
@@ -127,16 +126,6 @@ public class PersonV2Service {
         );
     }
 
-    private Familiemedlem mapFamiliemedlemUtenFnr(HentPerson.RelatertPersonUtenFolkeregisteridentifikator personUtenFnr) {
-        return new Familiemedlem()
-                .setFornavn(personUtenFnr.getNavn().getFornavn())
-                .setFodselsdato(personUtenFnr.getFoedselsdato())
-                .setDodsdato(null)
-                .setErEgenAnsatt(false)
-                .setHarVeilederTilgang(true)
-                .setRelasjonsBosted(UKJENT_BOSTED);
-    }
-
     public List<Fnr> hentBarnaFnr(List<HentPerson.ForelderBarnRelasjon> familierelasjoner) {
         return familierelasjoner.stream()
                 .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
@@ -149,20 +138,8 @@ public class PersonV2Service {
     public void flettBarn(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data) {
         List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
         List<Familiemedlem> barnInfo = hentFamiliemedlemOpplysninger(barnFnrListe, personV2Data.getBostedsadresse());
-        List<Familiemedlem> barnUtenFnrInfo = hentBarnUtenFnr(forelderBarnRelasjoner);
-        barnInfo.addAll(barnUtenFnrInfo);
 
         personV2Data.setBarn(barnInfo);
-    }
-
-    private List<Familiemedlem> hentBarnUtenFnr(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner) {
-        return forelderBarnRelasjoner.stream()
-                .filter(familierelasjon -> "BARN".equals(familierelasjon.getRelatertPersonsRolle()))
-                .filter(barn -> barn.getRelatertPersonsIdent() == null)
-                .map(HentPerson.ForelderBarnRelasjon::getRelatertPersonUtenFolkeregisteridentifikator)
-                .filter(Objects::nonNull)
-                .map(this::mapFamiliemedlemUtenFnr)
-                .collect(Collectors.toList());
     }
 
     public void flettSivilstand(List<HentPerson.Sivilstand> sivilstands, PersonV2Data personV2Data) {
@@ -189,16 +166,13 @@ public class PersonV2Service {
             return null;
         }
 
-        switch (geografiskTilknytning.getGtType()) {
-            case "KOMMUNE":
-                return new GeografiskTilknytning(geografiskTilknytning.getGtKommune());
-            case "BYDEL":
-                return new GeografiskTilknytning(geografiskTilknytning.getGtBydel());
-            case "UTLAND":
-                return new GeografiskTilknytning(geografiskTilknytning.getGtLand());
-            default:  // type == UDEFINERT
-                return null;
-        }
+        return switch (geografiskTilknytning.getGtType()) {
+            case "KOMMUNE" -> new GeografiskTilknytning(geografiskTilknytning.getGtKommune());
+            case "BYDEL" -> new GeografiskTilknytning(geografiskTilknytning.getGtBydel());
+            case "UTLAND" -> new GeografiskTilknytning(geografiskTilknytning.getGtLand());
+            default ->  // type == UDEFINERT
+                    null;
+        };
     }
 
     private void flettGeografiskEnhet(Fnr fnr, PersonV2Data personV2Data) {

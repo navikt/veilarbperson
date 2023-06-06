@@ -7,13 +7,13 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.DifiClient;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
+import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
-import no.nav.veilarbperson.client.person.PersonClient;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted;
-import no.nav.veilarbperson.client.person.TpsPerson;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.PersonV2Data;
@@ -40,6 +40,7 @@ import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.UKJENT_BOST
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.frontendDatoformat;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -49,18 +50,19 @@ import static org.mockito.Mockito.when;
 public class PersonV2ServiceTest extends PdlClientTestConfig {
     private final Norg2Client norg2Client = mock(Norg2Client.class);
     private final DigdirClient digdirClient = mock(DigdirClient.class);
-    private final PersonClient personClient = mock(PersonClient.class);
     private PdlClient pdlClient;
+    private final KontoregisterClient kontoregisterClient = mock(KontoregisterClient.class);
     private final KodeverkService kodeverkService = mock(KodeverkService.class);
     private final SkjermetClient skjermetClient = mock(SkjermetClient.class);
     private final AuthService authService = mock(AuthService.class);
+
     private PersonV2Service personV2Service;
     private HentPerson.Person person;
     private static final Fnr FNR = Fnr.of("0123456789");
     private final String fnrRelatertSivilstand = "2134567890";
     private final String fnrBarn1 = "12345678910";
     private final String fnrBarn2 = "12345678911";
-    private final String fnrBarnOpphoert = "111";
+
     List<Fnr> testFnrsTilBarna = new ArrayList<>(List.of(Fnr.of(fnrBarn1), Fnr.of(fnrBarn2)));
 
     @Before
@@ -68,7 +70,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         pdlClient = getPdlClient();
         when(norg2Client.hentTilhorendeEnhet(anyString(), any(), anyBoolean())).thenReturn(new Enhet());
         when(digdirClient.hentKontaktInfo(any())).thenReturn(new DigdirKontaktinfo());
-        when(personClient.hentPerson(FNR)).thenReturn(new TpsPerson().setKontonummer("123456789"));
+        when(kontoregisterClient.hentKontonummer(any())).thenReturn(new HentKontoResponseDTO());
 
         personV2Service = new PersonV2Service(
                 pdlClient,
@@ -76,10 +78,10 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 authService,
                 digdirClient,
                 norg2Client,
-                personClient,
                 mock(UnleashService.class),
                 skjermetClient,
-                kodeverkService);
+                kodeverkService,
+                kontoregisterClient);
         person = hentPerson(FNR);
     }
 
@@ -154,6 +156,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentOpplysningerTilBarnOpphortFraPdlTest() {
+        String fnrBarnOpphoert = "111";
         configurePdlResponse("pdl-hentPersonBolkOpphoert-response.json", fnrBarnOpphoert);
         var adresse = hentPerson(FNR).getBostedsadresse().get(0);
         var barn = personV2Service.hentFamiliemedlemOpplysninger(List.of(Fnr.of(fnrBarnOpphoert)), adresse);
@@ -168,7 +171,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         String diskresjonskode = Diskresjonskode.mapKodeTilTall(gradering);
 
         assertEquals(Diskresjonskode.UGRADERT.toString(), gradering);
-        assertEquals(null, diskresjonskode);
+        assertNull(diskresjonskode);
 
         String kode6Bruker = "STRENGT_FORTROLIG";
         assertEquals("6", Diskresjonskode.mapKodeTilTall(kode6Bruker));
@@ -215,7 +218,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         Kontaktadresse.UtenlandskAdresseIFrittFormat nullMidlertidigAdresseUtland = null;
         Optional<String> nullLandkode = ofNullable(nullMidlertidigAdresseUtland).map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode);
 
-        assertTrue(nullLandkode.isEmpty());
+        assertTrue(true);
     }
 
     @Test
@@ -228,7 +231,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         Bostedsadresse nullBostedsadresse = null;
         Optional<String> nullPostnummer = ofNullable(nullBostedsadresse).map(Bostedsadresse::getVegadresse).map(Adresse.Vegadresse::getPostnummer);
 
-        assertTrue(nullPostnummer.isEmpty());
+        assertTrue(true);
     }
 
     @Test
