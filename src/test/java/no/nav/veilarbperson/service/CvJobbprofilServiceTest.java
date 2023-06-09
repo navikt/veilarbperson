@@ -123,7 +123,7 @@ public class CvJobbprofilServiceTest {
             cvJobbprofilService.hentCvJobbprofilJson(Fnr.of("1234"));
             fail();
         } catch (ResponseStatusException e) {
-            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+            assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
         }
     }
 
@@ -169,7 +169,7 @@ public class CvJobbprofilServiceTest {
             cvJobbprofilService.hentCvJobbprofilJson(Fnr.of("1234"));
             fail();
         } catch (ResponseStatusException e) {
-            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+            assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
         }
     }
 
