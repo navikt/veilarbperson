@@ -109,6 +109,10 @@ spec:
       value: api://prod-gcp.okonomi.sokos-kontoregister-person/.default
     - name: KONTOREGISTER_PERSON_V1_URL
       value: https://sokos-kontoregister-person.intern.nav.no
+    - name: AIA_BACKEND_URL
+      value: https://www.nav.no/aia-backend
+    - name: AIA_BACKEND_SCOPE
+      value: api://prod-gcp.paw.paw-arbeidssoker-besvarelse/.default
   envFrom:
     - configmap: pto-config
     - configmap: loginservice-idporten

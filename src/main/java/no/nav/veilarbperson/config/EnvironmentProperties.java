@@ -37,4 +37,6 @@ public class EnvironmentProperties {
     private String veilarbregistreringUrl;
     private String kontoregisterScope;
     private String kontoregisterUrl;
+    private String aiaBackendUrl;
+    private String aiaBackendScope;
 }

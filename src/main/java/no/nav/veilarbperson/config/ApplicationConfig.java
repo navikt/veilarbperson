@@ -2,7 +2,6 @@ package no.nav.veilarbperson.config;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.abac.Pep;
 import no.nav.common.abac.VeilarbPepFactory;
@@ -24,7 +23,6 @@ import no.nav.poao_tilgang.client.PoaoTilgangCachedClient;
 import no.nav.poao_tilgang.client.PoaoTilgangClient;
 import no.nav.poao_tilgang.client.PoaoTilgangHttpClient;
 import no.nav.poao_tilgang.client.PolicyInput;
-import no.nav.veilarbperson.client.regoppslag.JsonUtils;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClientImpl;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -103,9 +101,4 @@ public class ApplicationConfig {
 	AuditLogger auditLogger() {
 		return new AuditLoggerImpl();
 	}
-
-    @PostConstruct
-    public void initJsonUtils() {
-        JsonUtils.init();
-    }
 }
