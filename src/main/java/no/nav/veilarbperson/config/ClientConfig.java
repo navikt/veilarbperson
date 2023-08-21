@@ -14,24 +14,19 @@ import no.nav.common.token_client.builder.AzureAdTokenClientBuilder;
 import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.token_client.client.MachineToMachineTokenClient;
-import no.nav.common.utils.Credentials;
 import no.nav.common.utils.NaisUtils;
-import no.nav.veilarbperson.client.difi.DifiAccessTokenProviderImpl;
-import no.nav.veilarbperson.client.difi.DifiClient;
-import no.nav.veilarbperson.client.difi.DifiClientImpl;
-import no.nav.veilarbperson.client.difi.SbsServiceUser;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClientImpl;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.nom.SkjermetClientImpl;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pam.PamClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
-import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
-import no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
@@ -40,7 +35,6 @@ import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static no.nav.common.utils.NaisUtils.getCredentials;
 
 @Slf4j
 @Configuration
@@ -100,15 +94,6 @@ public class ClientConfig {
                 () -> tokenClient.createMachineToMachineToken(properties.getPdlApiScope()));
     }
 
-    @Bean
-    public DifiAccessTokenProviderImpl accessTokenRepository(EnvironmentProperties properties, SbsServiceUser sbsServiceUser) {
-        return new DifiAccessTokenProviderImpl(sbsServiceUser, properties.getDifiTokenUrl());
-    }
-
-    @Bean
-    public DifiClient difiClient(EnvironmentProperties properties, String xNavApikey, DifiAccessTokenProviderImpl difiAccessTokenProvider) {
-        return new DifiClientImpl(difiAccessTokenProvider, xNavApikey, properties.getDifiAuthlevelUrl());
-    }
 
     @Bean
     public VeilarbregistreringClient veilarbregistreringClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient) {
@@ -120,12 +105,6 @@ public class ClientConfig {
     @Bean
     public String xNavApikey() {
         return NaisUtils.getFileContent("/var/run/secrets/nais.io/authlevel/x-nav-apiKey");
-    }
-
-    @Bean
-    public SbsServiceUser sbsServiceUser() {
-        Credentials service_user_sbs = getCredentials("service_user_sbs");
-        return new SbsServiceUser(service_user_sbs.username, service_user_sbs.password);
     }
 
     @Bean
