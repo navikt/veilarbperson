@@ -88,6 +88,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: Release to prod
-          target_commitish: master
+          target_commitish: main
           tag_name: release/prod@${{ env.IMAGE_TAG }}
           prerelease: false
