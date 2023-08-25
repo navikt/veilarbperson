@@ -4,7 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
-import no.nav.veilarbperson.domain.*;
+import no.nav.veilarbperson.domain.AktoerId;
+import no.nav.veilarbperson.domain.GeografiskTilknytning;
+import no.nav.veilarbperson.domain.Malform;
+import no.nav.veilarbperson.domain.PersonNavn;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.CvJobbprofilService;
 import no.nav.veilarbperson.service.PersonV2Service;
@@ -52,11 +55,15 @@ public class PersonController {
         return authService.harLesetilgang(fodselsnummer);
     }
 
+    // TODO: 21/08/2023 denne skal slettes etter vi har ryddet opp i kode i de andre appene da dkif slutter å tilby tjenesten
     @GetMapping("/{fodselsnummer}/harNivaa4")
     public HarLoggetInnRespons harNivaa4(@PathVariable("fodselsnummer") Fnr fodselsnummer) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fodselsnummer);
-        return personV2Service.hentHarNivaa4(fodselsnummer);
+        return new HarLoggetInnRespons()
+                .setErRegistrertIdPorten(true)
+                .setHarbruktnivaa4(true)
+                .setPersonidentifikator(fodselsnummer);
     }
 
     @GetMapping("/geografisktilknytning")

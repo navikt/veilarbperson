@@ -9,8 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "app.env")
 public class EnvironmentProperties {
     private String abacUrl;
-    private String difiAuthlevelUrl;
-    private String difiTokenUrl;
     private String kodeverkUrl;
     private String krrScope;
     private String krrUrl;

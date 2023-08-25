@@ -3,17 +3,15 @@ package no.nav.veilarbperson.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.difi.DifiClient;
-import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
 import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
-import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
@@ -30,9 +28,7 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl.Mappers.fraNorg2Enhet;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.getFirstElement;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseZonedDateToDateString;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.sivilstandMapper;
+import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
 
 @Slf4j
@@ -44,14 +40,12 @@ public class PersonV2Service {
     private final Norg2Client norg2Client;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
-    private final DifiClient difiClient;
     private final UnleashService unleashService;
 
     private final KontoregisterClient kontoregisterClient;
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient,
-                           DifiClient difiClient,
                            AuthService authService,
                            DigdirClient digdirClient,
                            Norg2Client norg2Client,
@@ -65,7 +59,6 @@ public class PersonV2Service {
         this.norg2Client = norg2Client;
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
-        this.difiClient = difiClient;
         this.unleashService = unleashService;
         this.kontoregisterClient = kontoregisterClient;
     }
@@ -378,13 +371,4 @@ public class PersonV2Service {
         return PersonV2DataMapper.navnMapper(personNavn.getNavn());
     }
 
-    public HarLoggetInnRespons hentHarNivaa4(Fnr fodselsnummer) {
-        if (unleashService.sjekkNivaa4()) {
-            return new HarLoggetInnRespons()
-                    .setErRegistrertIdPorten(true)
-                    .setHarbruktnivaa4(true)
-                    .setPersonidentifikator(fodselsnummer);
-        }
-        return difiClient.harLoggetInnSiste18mnd(fodselsnummer);
-    }
 }

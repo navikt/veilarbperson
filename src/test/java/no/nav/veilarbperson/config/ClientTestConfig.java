@@ -13,18 +13,16 @@ import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.difi.DifiClient;
-import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
 import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
-import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
@@ -145,15 +143,6 @@ public class ClientTestConfig {
         };
     }
 
-    @Bean
-    public DifiClient difiClient() {
-        return fnr -> {
-            HarLoggetInnRespons harLoggetInnRespons = new HarLoggetInnRespons();
-            harLoggetInnRespons.setHarbruktnivaa4(true);
-//                harLoggetInnRespons.setPersonidentifikator(fnr);
-            return harLoggetInnRespons;
-        };
-    }
 
     @Bean
     public SkjermetClient skjermetClient() {

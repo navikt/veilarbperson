@@ -46,8 +46,6 @@ spec:
         mountPath: /var/run/secrets/nais.io/service_user_sbs
       - kvPath: /kv/preprod/fss/veilarbperson/q1
         mountPath: /var/run/secrets/nais.io/vault
-      - kvPath: /apikey/apigw/dev/eksternapp.difi.idporten.authlevel/veilarbperson_q1
-        mountPath: /var/run/secrets/nais.io/authlevel
   azure:
     application:
       enabled: true
@@ -76,10 +74,6 @@ spec:
           cluster: dev-gcp
 
   env:
-    - name: DIFI_IDPORTEN_AUTHLEVEL_URL
-      value: https://api-gw-q1.adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa/
-    - name: DIFI_IDPORTEN_TOKEN_URL
-      value: https://api-gw-q1.adeo.no/ekstern/difi/idporten-oidc-provider/token
     - name: KODEVERK_URL
       value: http://kodeverk.default.svc.nais.local
     - name: KONTAKT_OG_RESERVASJONSREGISTERET_API_URL
