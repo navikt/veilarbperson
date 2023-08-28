@@ -14,7 +14,6 @@ import no.nav.common.token_client.builder.AzureAdTokenClientBuilder;
 import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.token_client.client.MachineToMachineTokenClient;
-import no.nav.common.utils.NaisUtils;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
@@ -102,10 +101,6 @@ public class ClientConfig {
                 () -> aadMachineToMachineTokenClient.createMachineToMachineToken(properties.getVeilarbregistreringScope()));
     }
 
-    @Bean
-    public String xNavApikey() {
-        return NaisUtils.getFileContent("/var/run/secrets/nais.io/authlevel/x-nav-apiKey");
-    }
 
     @Bean
     public AzureAdMachineToMachineTokenClient azureAdMachineToMachineTokenClient() {
