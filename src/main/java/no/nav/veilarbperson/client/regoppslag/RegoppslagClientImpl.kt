@@ -7,6 +7,8 @@ import no.nav.common.rest.client.RestUtils
 import no.nav.common.types.identer.Fnr
 import no.nav.common.utils.AuthUtils
 import no.nav.common.utils.UrlUtils
+import no.nav.veilarbperson.utils.deserializeJsonOrThrow
+import no.nav.veilarbperson.utils.toJson
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody

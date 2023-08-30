@@ -1,7 +1,6 @@
-package no.nav.veilarbperson.client.regoppslag
+package no.nav.veilarbperson.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.common.rest.client.RestUtils
 import okhttp3.Response
@@ -9,10 +8,6 @@ import okhttp3.Response
 object JsonUtils {
     val objectMapper: ObjectMapper =
         no.nav.common.json.JsonUtils.getMapper().registerModule(KotlinModule.Builder().build())
-
-    @JvmStatic
-    fun init() {
-    }
 }
 
 inline fun <reified T> Response.deserializeJson(): T? {

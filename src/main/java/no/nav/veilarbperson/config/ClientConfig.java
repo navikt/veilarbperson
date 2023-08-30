@@ -14,6 +14,8 @@ import no.nav.common.token_client.builder.AzureAdTokenClientBuilder;
 import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.token_client.client.MachineToMachineTokenClient;
+import no.nav.veilarbperson.client.aiabackend.AiaBackendClient;
+import no.nav.veilarbperson.client.aiabackend.AiaBackendClientImpl;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
@@ -55,6 +57,13 @@ public class ClientConfig {
     public VeilarboppfolgingClient veilarboppfolgingClient(EnvironmentProperties properties, AuthService authService) {
         return new VeilarboppfolgingClientImpl(properties.getVeilarboppfolgingUrl(),
                 () -> authService.getAadOboTokenForTjeneste(properties.getVeilarboppfolgingScope()));
+    }
+
+    @Bean
+    public AiaBackendClient aiaBackendClient(EnvironmentProperties environmentProperties, AuthService authService) {
+        return new AiaBackendClientImpl(
+                environmentProperties.getAiaBackendUrl(),
+                () -> authService.getAadOboTokenForTjeneste(environmentProperties.getAiaBackendScope()));
     }
 
     @Bean

@@ -85,6 +85,13 @@ public class PersonController {
         return registreringService.hentRegistrering(fnr);
     }
 
+    @GetMapping("/registrering/endringer")
+    public ResponseEntity<String> endringIRegistreringdata(@RequestParam(value = "fnr") Fnr fnr) {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(fnr);
+        return registreringService.hentEndringIRegistreringsdata(fnr);
+    }
+
     // TODO: Det er hårete å måtte skille på ekstern og intern
     //  Lag istedenfor en egen controller for interne operasjoner og en annen for eksterne
     private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {

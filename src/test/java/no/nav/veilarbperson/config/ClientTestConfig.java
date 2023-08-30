@@ -13,6 +13,8 @@ import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.aiabackend.AiaBackendClient;
+import no.nav.veilarbperson.client.aiabackend.EndringIRegistreringsdataRequestDTO;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
@@ -28,6 +30,7 @@ import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -180,6 +183,22 @@ public class ClientTestConfig {
         return new VeilarboppfolgingClient() {
             @Override
             public UnderOppfolging hentUnderOppfolgingStatus(Fnr fnr) {
+                return null;
+            }
+
+            @Override
+            public HealthCheckResult checkHealth() {
+                return HealthCheckResult.healthy();
+            }
+        };
+    }
+
+    @Bean
+    public AiaBackendClient aiaBackendClient() {
+        return new AiaBackendClient() {
+            @NotNull
+            @Override
+            public Response hentEndringIRegistreringsdata(@NotNull EndringIRegistreringsdataRequestDTO endringIRegistreringsdataRequestDTO) {
                 return null;
             }
 
