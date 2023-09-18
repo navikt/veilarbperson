@@ -8,6 +8,7 @@ import no.nav.veilarbperson.domain.AktoerId;
 import no.nav.veilarbperson.domain.GeografiskTilknytning;
 import no.nav.veilarbperson.domain.Malform;
 import no.nav.veilarbperson.domain.PersonNavn;
+import no.nav.veilarbperson.domain.PersonRequestBody;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.CvJobbprofilService;
 import no.nav.veilarbperson.service.PersonV2Service;
@@ -85,8 +86,9 @@ public class PersonController {
         return registreringService.hentRegistrering(fnr);
     }
 
-    @GetMapping("/registrering/endringer")
-    public ResponseEntity<String> endringIRegistreringdata(@RequestParam(value = "fnr") Fnr fnr) {
+    @PostMapping("/registrering/endringer")
+    public ResponseEntity<String> endringIRegistreringdata(@RequestBody PersonRequestBody personRequestBody) {
+        Fnr fnr = Fnr.of(personRequestBody.fodselsnummer());
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
         return registreringService.hentEndringIRegistreringsdata(fnr);
