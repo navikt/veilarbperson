@@ -7,7 +7,7 @@ env:
 permissions:
   packages: write
   contents: write
-  
+
 jobs:
   test:
     name: Run tests

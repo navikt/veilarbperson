@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.controller;
+package no.nav.veilarbperson.controller.v2;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,7 @@ public class PersonV2Controller {
 
     private final KontoregisterClient kontoregisterClient;
 
+    @Deprecated
     @GetMapping
     @Operation(summary = "Henter informasjon om en person fra PDL")
     public PersonV2Data hentPerson(@RequestParam("fnr") Fnr fnr) {
@@ -34,6 +35,7 @@ public class PersonV2Controller {
         return personV2Service.hentFlettetPerson(fnr);
     }
 
+    @Deprecated
     @GetMapping("/malform")
     @Operation(summary = "Henter malform fra DIGDIR tjeneste")
     public Malform malform(@RequestParam("fnr") Fnr fnr) {
@@ -44,6 +46,7 @@ public class PersonV2Controller {
         return new Malform(malform);
     }
 
+    @Deprecated
     @GetMapping("/vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
     public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam("fnr") Fnr fnr) {
@@ -52,6 +55,7 @@ public class PersonV2Controller {
         return personV2Service.hentVergeEllerFullmakt(fnr);
     }
 
+    @Deprecated
     @GetMapping("/tolk")
     @Operation(summary = "Henter tolk informajon til en person fra PDL")
     public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestParam("fnr") Fnr fnr) {
@@ -60,6 +64,7 @@ public class PersonV2Controller {
         return personV2Service.hentSpraakTolkInfo(fnr);
     }
 
+    @Deprecated
     @GetMapping("/navn")
     @Operation(summary = "Henter navn til en person fra PDL")
     public PersonNavnV2 hentNavn(@RequestParam("fnr") Fnr fnr) {
@@ -68,6 +73,7 @@ public class PersonV2Controller {
         return personV2Service.hentNavn(fnr);
     }
 
+    @Deprecated
     @GetMapping("/postadresse")
     @Operation(summary = "Henter postadresse til en person fra regoppslag")
     public RegoppslagResponseDTO hentPostadresse(@RequestParam("fnr") Fnr fnr) {

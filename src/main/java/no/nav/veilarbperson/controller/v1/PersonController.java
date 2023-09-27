@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.controller;
+package no.nav.veilarbperson.controller.v1;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -30,7 +30,7 @@ public class PersonController {
 
     private final RegistreringService registreringService;
 
-
+    @Deprecated
     @GetMapping("/aktorid")
     public AktoerId aktorid(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
@@ -38,19 +38,21 @@ public class PersonController {
         return new AktoerId(authService.getAktorId(fnr));
     }
 
+    @Deprecated
     @GetMapping("/navn")
     @Operation(summary = "Henter navnet til en person")
     public PersonNavn navn(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         throw new ResponseStatusException(HttpStatus.GONE, "Bytt til v2 endepunkt");
     }
 
+    @Deprecated
     @GetMapping("/{fodselsnummer}/malform")
     @Operation(summary = "Henter målform til en person")
     public Malform malform(@PathVariable("fodselsnummer") Fnr fnr) {
         throw new ResponseStatusException(HttpStatus.GONE,
                 "Bytt til v2 endepunkt");
     }
-
+    @Deprecated
     @GetMapping("/{fodselsnummer}/tilgangTilBruker")
     public boolean tilgangTilBruker(@PathVariable("fodselsnummer") Fnr fodselsnummer) {
         return authService.harLesetilgang(fodselsnummer);
@@ -67,6 +69,7 @@ public class PersonController {
                 .setPersonidentifikator(fodselsnummer);
     }
 
+    @Deprecated
     @GetMapping("/geografisktilknytning")
     public GeografiskTilknytning geografisktilknytning(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         Fnr fodselsnummer = hentIdentForEksternEllerIntern(fnr);
@@ -74,11 +77,13 @@ public class PersonController {
         return personV2Service.hentGeografiskTilknytning(fodselsnummer);
     }
 
+    @Deprecated
     @GetMapping("/cv_jobbprofil")
     public ResponseEntity<String> cvOgJobbprofil(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         return cvJobbprofilService.hentCvJobbprofilJson(fnr);
     }
 
+    @Deprecated
     @GetMapping("/registrering")
     public ResponseEntity<String> registrering(@RequestParam(value = "fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
@@ -86,6 +91,7 @@ public class PersonController {
         return registreringService.hentRegistrering(fnr);
     }
 
+    @Deprecated
     @PostMapping("/registrering/endringer")
     public ResponseEntity<String> endringIRegistreringdata(@RequestBody PersonRequestBody personRequestBody) {
         Fnr fnr = Fnr.of(personRequestBody.fodselsnummer());
