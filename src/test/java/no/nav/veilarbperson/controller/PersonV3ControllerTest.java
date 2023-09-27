@@ -2,7 +2,7 @@ package no.nav.veilarbperson.controller;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.veilarbperson.config.ApplicationTestConfig;
-import no.nav.veilarbperson.controller.v1.PersonController;
+import no.nav.veilarbperson.controller.v3.PersonV3Controller;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -10,15 +10,24 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
+import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = PersonController.class)
+@WebMvcTest(controllers = PersonV3Controller.class)
 @Import({ApplicationTestConfig.class})
 @DirtiesContext
-public class PersonControllerTest {
+public class PersonV3ControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -34,7 +43,7 @@ public class PersonControllerTest {
                         .withBody(expectedJson)));
 
 
-        mockMvc.perform(get("/api/person/registrering").queryParam("fnr", fnr))
+        mockMvc.perform(post("/api/v3/person/registrering").contentType(APPLICATION_JSON).content("{\"fnr\":\"1234\"}"))
                 .andExpect(content().json(expectedJson))
                 .andExpect(status().is(200));
     }
@@ -49,8 +58,7 @@ public class PersonControllerTest {
                                 .withHeader("Content-Type", "application/json")));
 
 
-        mockMvc.perform(get("/api/person/registrering").queryParam("fnr", fnr))
+        mockMvc.perform(post("/api/v3/person/registrering").contentType(APPLICATION_JSON).content("{\"fnr\":\"4321\"}"))
                 .andExpect(status().is(404));
     }
 }
-
