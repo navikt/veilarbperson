@@ -6,6 +6,7 @@ env:
   PRINT_PAYLOAD: true
 permissions:
   packages: write
+  contents: write
   
 jobs:
   test:
