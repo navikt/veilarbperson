@@ -17,6 +17,6 @@ public class CustomWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(fnrUsageLoggerInterceptor);
+        registry.addInterceptor(fnrUsageLoggerInterceptor).addPathPatterns("/api/person", "/api/person/**", "/api/v2/person", "/api/v2/person/**");
     }
 }
