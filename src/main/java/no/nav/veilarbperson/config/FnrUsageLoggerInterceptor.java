@@ -31,7 +31,7 @@ public class FnrUsageLoggerInterceptor implements HandlerInterceptor {
             String consumerId = Optional.ofNullable(request.getHeader(NAV_CONSUMER_ID_HEADER_NAME)).orElse("unknown");
 
             MDC.put(MDC_ENDPOINT_KEY, requestURI);
-            log.debug("Konsument {} forespurte endepunkt {} som matcher fnr-regex.", consumerId, requestURI);
+            log.info("Konsument {} forespurte endepunkt {} som matcher fnr-regex.", consumerId, requestURI);
             MDC.remove(MDC_ENDPOINT_KEY);
         }
 
