@@ -22,7 +22,7 @@ public class FnrUsageLoggerInterceptor implements HandlerInterceptor {
     public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
         String requestURI = request.getRequestURI();
         String queryString = request.getQueryString();
-        String fnrPattern = "(^|\\W)\\d{11}(?=$|\\W)";
+        String fnrPattern = ".*\\b\\d{11}\\b.*";
 
         boolean hasFnrInRequestURI = StringUtils.notNullOrEmpty(requestURI) && requestURI.matches(fnrPattern);
         boolean hasFnrInQueryString = StringUtils.notNullOrEmpty(queryString) && requestURI.matches(fnrPattern);
