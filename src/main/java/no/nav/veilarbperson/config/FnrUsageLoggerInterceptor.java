@@ -25,7 +25,7 @@ public class FnrUsageLoggerInterceptor implements HandlerInterceptor {
         String fnrPattern = ".*\\b\\d{11}\\b.*";
 
         boolean hasFnrInRequestURI = StringUtils.notNullOrEmpty(requestURI) && requestURI.matches(fnrPattern);
-        boolean hasFnrInQueryString = StringUtils.notNullOrEmpty(queryString) && requestURI.matches(fnrPattern);
+        boolean hasFnrInQueryString = StringUtils.notNullOrEmpty(queryString) && queryString.matches(fnrPattern);
 
         if (hasFnrInRequestURI || hasFnrInQueryString) {
             String consumerId = Optional.ofNullable(request.getHeader(NAV_CONSUMER_ID_HEADER_NAME)).orElse("unknown");
