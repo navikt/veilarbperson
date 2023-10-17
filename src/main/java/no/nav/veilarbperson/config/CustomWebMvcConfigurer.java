@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration
 public class CustomWebMvcConfigurer implements WebMvcConfigurer {
 
@@ -17,6 +20,15 @@ public class CustomWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(fnrUsageLoggerInterceptor).addPathPatterns("/api/person", "/api/person/**", "/api/v2/person", "/api/v2/person/**");
+        List<String> personApiPaths = List.of(
+                "/api/person",
+                "/api/person/**",
+                "/api/v2/person",
+                "/api/v2/person/**",
+                "/api/v3/person",
+                "/api/v3/person/**"
+        );
+
+        registry.addInterceptor(fnrUsageLoggerInterceptor).addPathPatterns(personApiPaths);
     }
 }
