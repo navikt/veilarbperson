@@ -46,6 +46,8 @@ spec:
         mountPath: /var/run/secrets/nais.io/service_user_sbs
       - kvPath: /kv/preprod/fss/veilarbperson/q1
         mountPath: /var/run/secrets/nais.io/vault
+  secureLogs:
+    enabled: true
   azure:
     application:
       enabled: true
