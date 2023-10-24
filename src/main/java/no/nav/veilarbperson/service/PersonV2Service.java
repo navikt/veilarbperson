@@ -40,7 +40,6 @@ public class PersonV2Service {
     private final Norg2Client norg2Client;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
-    private final UnleashService unleashService;
 
     private final KontoregisterClient kontoregisterClient;
 
@@ -49,7 +48,6 @@ public class PersonV2Service {
                            AuthService authService,
                            DigdirClient digdirClient,
                            Norg2Client norg2Client,
-                           UnleashService unleashService,
                            SkjermetClient skjermetClient,
                            KodeverkService kodeverkService,
                            KontoregisterClient kontoregisterClient) {
@@ -59,7 +57,6 @@ public class PersonV2Service {
         this.norg2Client = norg2Client;
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
-        this.unleashService = unleashService;
         this.kontoregisterClient = kontoregisterClient;
     }
 

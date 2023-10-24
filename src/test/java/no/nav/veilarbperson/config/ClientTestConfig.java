@@ -4,7 +4,6 @@ import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.BrukerIdenter;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.selftest.SelfTestChecks;
 import no.nav.common.metrics.MetricsClient;
@@ -263,12 +262,6 @@ public class ClientTestConfig {
             }
         };
     }
-
-    @Bean
-    public UnleashClient unleashClient() {
-        return mock(UnleashClient.class);
-    }
-
     @Bean
     public SelfTestChecks selfTestChecks() {
         return mock(SelfTestChecks.class);

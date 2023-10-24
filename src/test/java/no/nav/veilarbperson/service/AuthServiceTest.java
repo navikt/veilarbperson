@@ -1,7 +1,6 @@
 package no.nav.veilarbperson.service;
 
 import com.nimbusds.jwt.JWTClaimsSet;
-import no.nav.common.abac.Pep;
 import no.nav.common.audit_log.cef.CefMessage;
 import no.nav.common.audit_log.log.AuditLogger;
 import no.nav.common.audit_log.log.AuditLoggerImpl;
@@ -22,31 +21,24 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class AuthServiceTest {
 	private final AuthContextHolder authContextHolder = mock(AuthContextHolder.class);
-	private final Pep veilarbPep = mock(Pep.class);
 	private final AktorOppslagClient aktorOppslagClient = mock(AktorOppslagClient.class);
 	private final AzureAdOnBehalfOfTokenClient azureAdOnBehalfOfTokenClient = mock(AzureAdOnBehalfOfTokenClient.class);
 	private final EnvironmentProperties environmentProperties = mock(EnvironmentProperties.class);
 	private final AuditLogger auditLogger = mock(AuditLoggerImpl.class);
 	private final PoaoTilgangClient poaoTilgangClient = mock(PoaoTilgangClient.class);
-	private final UnleashService unleashService = mock(UnleashService.class);
 
 
 	private final AuthService authService = new AuthService(
-			veilarbPep,
 			aktorOppslagClient,
 			authContextHolder,
 			environmentProperties,
 			azureAdOnBehalfOfTokenClient,
 			poaoTilgangClient,
-			auditLogger,
-			unleashService
+			auditLogger
 	);
 
 	@Test
@@ -60,7 +52,7 @@ public class AuthServiceTest {
 		when(authContextHolder.getUid()).thenReturn(Optional.of(FNR.get()));
 		when(authContextHolder.erEksternBruker()).thenReturn(true);
 		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
-		when(unleashService.skalBrukePoaoTilgang()).thenReturn(true);
+
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, Decision.Permit.INSTANCE));
 
 		Boolean answer = authService.harLesetilgang(FNR);
@@ -81,7 +73,7 @@ public class AuthServiceTest {
 		when(authContextHolder.getUid()).thenReturn(Optional.of(FNR.get()));
 		when(authContextHolder.erEksternBruker()).thenReturn(true);
 		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
-		when(unleashService.skalBrukePoaoTilgang()).thenReturn(true);
+
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, Decision.Permit.INSTANCE));
 
 
@@ -101,7 +93,7 @@ public class AuthServiceTest {
 		when(authContextHolder.getUid()).thenReturn(Optional.of("4321"));
 		when(authContextHolder.erEksternBruker()).thenReturn(true);
 		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
-		when(unleashService.skalBrukePoaoTilgang()).thenReturn(true);
+
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, new Decision.Deny("","")));
 
 		Boolean answer = authService.harLesetilgang(FNR);
@@ -123,7 +115,7 @@ public class AuthServiceTest {
 		when(authContextHolder.requireIdTokenClaims()).thenReturn(claims);
 		when(authContextHolder.erInternBruker()).thenReturn(true);
 		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
-		when(unleashService.skalBrukePoaoTilgang()).thenReturn(true);
+
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, Decision.Permit.INSTANCE));
 
 		Boolean answer = authService.harLesetilgang(FNR);
@@ -146,7 +138,7 @@ public class AuthServiceTest {
 		when(authContextHolder.requireIdTokenClaims()).thenReturn(claims);
 		when(authContextHolder.erInternBruker()).thenReturn(true);
 		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
-		when(unleashService.skalBrukePoaoTilgang()).thenReturn(true);
+
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, new Decision.Deny("","")));
 
 		Boolean answer = authService.harLesetilgang(FNR);
@@ -166,7 +158,7 @@ public class AuthServiceTest {
 				.build();
 		when(authContextHolder.requireIdTokenClaims()).thenReturn(claims);
 		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
-		when(unleashService.skalBrukePoaoTilgang()).thenReturn(true);
+
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, new Decision.Deny("","")));
 
 		Assertions.assertThrows(ResponseStatusException.class, () -> authService.harLesetilgang(FNR));
@@ -187,7 +179,7 @@ public class AuthServiceTest {
 		when(authContextHolder.erSystemBruker()).thenReturn(true);
 		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
 		when(environmentProperties.getNaisAadIssuer()).thenReturn("tokendings");
-		when(unleashService.skalBrukePoaoTilgang()).thenReturn(true);
+
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, new Decision.Deny("","")));
 
 		Boolean answer = authService.harLesetilgang(FNR);

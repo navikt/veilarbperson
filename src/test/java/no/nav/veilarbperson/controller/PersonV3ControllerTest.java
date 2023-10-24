@@ -1,6 +1,9 @@
 package no.nav.veilarbperson.controller;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import no.nav.poao_tilgang.poao_tilgang_test_core.NavAnsatt;
+import no.nav.poao_tilgang.poao_tilgang_test_core.NavContext;
+import no.nav.poao_tilgang.poao_tilgang_test_core.PrivatBruker;
 import no.nav.veilarbperson.config.ApplicationTestConfig;
 import no.nav.veilarbperson.controller.v3.PersonV3Controller;
 import org.junit.jupiter.api.Test;
@@ -10,16 +13,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
-import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
-import static com.github.tomakehurst.wiremock.client.WireMock.ok;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,10 +27,17 @@ public class PersonV3ControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private NavContext navContext;
+
+
     @Test
     public void returnerer_registrering_for_registrert_bruker() throws Exception {
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+
         String expectedJson = "{}";
-        String fnr = "1234";
+        String fnr = ny.getNorskIdent();
 
         stubFor(WireMock.get(urlEqualTo("/veilarbregistrering/api/registrering?fnr=" + fnr))
                 .willReturn(ok()
@@ -43,14 +45,23 @@ public class PersonV3ControllerTest {
                         .withBody(expectedJson)));
 
 
-        mockMvc.perform(post("/api/v3/person/registrering").contentType(APPLICATION_JSON).content("{\"fnr\":\"1234\"}"))
+        mockMvc
+                .perform(
+                        post("/api/v3/person/registrering")
+                                .contentType(APPLICATION_JSON)
+                                .content("{\"fnr\":\""+ fnr +"\"}")
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
                 .andExpect(content().json(expectedJson))
                 .andExpect(status().is(200));
     }
 
     @Test
     public void returnerer_ikke_registrering_for_bruker_som_ikke_er_registrert() throws Exception {
-        String fnr = "4321";
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+        String fnr = ny.getNorskIdent();
 
         stubFor(WireMock.get(urlEqualTo("/veilarbregistrering/api/registrering?fnr=" + fnr))
                 .willReturn(
@@ -58,7 +69,14 @@ public class PersonV3ControllerTest {
                                 .withHeader("Content-Type", "application/json")));
 
 
-        mockMvc.perform(post("/api/v3/person/registrering").contentType(APPLICATION_JSON).content("{\"fnr\":\"4321\"}"))
+        mockMvc
+                .perform(
+                        post("/api/v3/person/registrering")
+                                .contentType(APPLICATION_JSON)
+                                .content("{\"fnr\":\""+ fnr +"\"}")
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
                 .andExpect(status().is(404));
     }
 }

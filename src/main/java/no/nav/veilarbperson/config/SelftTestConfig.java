@@ -1,6 +1,5 @@
 package no.nav.veilarbperson.config;
 
-import no.nav.common.abac.Pep;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.health.selftest.SelfTestCheck;
@@ -23,7 +22,6 @@ public class SelftTestConfig {
     @Bean
     public SelfTestChecks selfTestChecks(
             AktorOppslagClient aktorOppslagClient,
-            Pep veilarbPep,
             DigdirClient digdirClient,
             KodeverkClient kodeverkClient,
             SkjermetClient skjermetClient,
@@ -34,7 +32,6 @@ public class SelftTestConfig {
     ) {
         return new SelfTestChecks(List.of(
                 new SelfTestCheck("AktorOppslagClient", true, aktorOppslagClient),
-                new SelfTestCheck("ABAC", true, veilarbPep.getAbacClient()),
                 new SelfTestCheck("Digitalkontakinformasjon (DIGDIR)", false, digdirClient),
                 new SelfTestCheck("Felles kodeverk", false, kodeverkClient),
                 new SelfTestCheck("Norg2", false, norg2Client),

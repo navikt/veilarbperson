@@ -74,7 +74,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 authService,
                 digdirClient,
                 norg2Client,
-                mock(UnleashService.class),
                 skjermetClient,
                 kodeverkService,
                 kontoregisterClient);
