@@ -3,26 +3,16 @@ package no.nav.veilarbperson.config;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.common.abac.Pep;
-import no.nav.common.abac.VeilarbPepFactory;
-import no.nav.common.abac.audit.SpringAuditRequestInfoSupplier;
 import no.nav.common.audit_log.log.AuditLogger;
 import no.nav.common.audit_log.log.AuditLoggerImpl;
 import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.auth.context.AuthContextHolderThreadLocal;
 import no.nav.common.cxf.StsConfig;
-import no.nav.common.featuretoggle.UnleashClient;
-import no.nav.common.featuretoggle.UnleashClientImpl;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.utils.Credentials;
 import no.nav.common.utils.NaisUtils;
-import no.nav.poao_tilgang.client.AdGruppe;
-import no.nav.poao_tilgang.client.Decision;
-import no.nav.poao_tilgang.client.PoaoTilgangCachedClient;
-import no.nav.poao_tilgang.client.PoaoTilgangClient;
-import no.nav.poao_tilgang.client.PoaoTilgangHttpClient;
-import no.nav.poao_tilgang.client.PolicyInput;
+import no.nav.poao_tilgang.client.*;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClientImpl;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -61,13 +51,6 @@ public class ApplicationConfig {
                 .build();
     }
 
-    @Bean
-    public Pep veilarbPep(EnvironmentProperties properties) {
-        Credentials serviceUserCredentials = NaisUtils.getCredentials("service_user");
-        return VeilarbPepFactory.get(
-                properties.getAbacUrl(), serviceUserCredentials.username,
-                serviceUserCredentials.password, new SpringAuditRequestInfoSupplier());
-    }
 	@Bean
 	public PoaoTilgangClient poaoTilgangClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient tokenClient) {
 		return new PoaoTilgangCachedClient(
@@ -85,11 +68,6 @@ public class ApplicationConfig {
     @Bean
     public AuthContextHolder authContextHolder() {
         return AuthContextHolderThreadLocal.instance();
-    }
-
-    @Bean
-    public UnleashClient unleashClient(EnvironmentProperties properties) {
-        return new UnleashClientImpl(properties.getUnleashUrl(), APPLICATION_NAME);
     }
 
     @Bean

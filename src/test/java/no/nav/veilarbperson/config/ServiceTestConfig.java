@@ -4,13 +4,13 @@ import no.nav.veilarbperson.service.*;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+
 @Configuration
 @Import({
-        AuthService.class,
-        KodeverkService.class,
-        PersonV2Service.class,
-        CvJobbprofilService.class,
-        RegistreringService.class,
-		UnleashService.class
+		AuthService.class,
+		KodeverkService.class,
+		PersonV2Service.class,
+		CvJobbprofilService.class,
+		RegistreringService.class,
 })
 public class ServiceTestConfig {}
