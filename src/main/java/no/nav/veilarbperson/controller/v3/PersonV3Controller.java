@@ -23,7 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v3/person")
+@RequestMapping("/api/v3")
 public class PersonV3Controller {
 
     private final PersonV2Service personV2Service;
@@ -34,7 +34,7 @@ public class PersonV3Controller {
 
     private final RegistreringService registreringService;
 
-    @PostMapping
+    @PostMapping("/hent-person")
     @Operation(summary = "Henter informasjon om en person fra PDL")
     public PersonV2Data hentPerson(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
@@ -42,7 +42,7 @@ public class PersonV3Controller {
         return personV2Service.hentFlettetPerson(personRequest.getFnr());
     }
 
-    @PostMapping("/aktorid")
+    @PostMapping("/person/hent-aktorid")
     @Operation(summary = "Henter aktørId til person")
     public AktoerId aktorid(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
@@ -50,13 +50,13 @@ public class PersonV3Controller {
         return new AktoerId(authService.getAktorId(personRequest.getFnr()));
     }
 
-    @PostMapping("/tilgangTilBruker")
+    @PostMapping("/person/hent-tilgangTilBruker")
     @Operation(summary = "Sjekk om innlogget person har tilgang til person")
     public boolean tilgangTilBruker(@RequestBody PersonRequest personRequest) {
         return authService.harLesetilgang(personRequest.getFnr());
     }
 
-    @PostMapping("/geografisktilknytning")
+    @PostMapping("/person/hent-geografisktilknytning")
     @Operation(summary = "Henter persons geografisk tilknytning")
     public GeografiskTilknytning geografisktilknytning(@RequestBody PersonRequest personRequest) {
         Fnr fodselsnummer = hentIdentForEksternEllerIntern(personRequest.getFnr());
@@ -64,13 +64,13 @@ public class PersonV3Controller {
         return personV2Service.hentGeografiskTilknytning(fodselsnummer);
     }
 
-    @PostMapping("/cv_jobbprofil")
+    @PostMapping("/person/hent-cv_jobbprofil")
     @Operation(summary = "Henter persons cv og jobbprofil")
     public ResponseEntity<String> cvOgJobbprofil(@RequestBody PersonRequest personRequest) {
         return cvJobbprofilService.hentCvJobbprofilJson(personRequest.getFnr());
     }
 
-    @PostMapping("/registrering")
+    @PostMapping("/person/hent-registrering")
     @Operation(summary = "Henter registreringen til person")
     public ResponseEntity<String> registrering(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
@@ -78,7 +78,7 @@ public class PersonV3Controller {
         return registreringService.hentRegistrering(personRequest.getFnr());
     }
 
-    @PostMapping("/registrering/endringer")
+    @PostMapping("/person/registrering/hent-endringer")
     @Operation(summary = "Henter endringer på registreringen til person")
     public ResponseEntity<String> endringIRegistreringdata(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
@@ -86,7 +86,7 @@ public class PersonV3Controller {
         return registreringService.hentEndringIRegistreringsdata(personRequest.getFnr());
     }
 
-    @PostMapping("/malform")
+    @PostMapping("/person/hent-malform")
     @Operation(summary = "Henter malform fra DIGDIR tjeneste")
     public Malform malform(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
@@ -96,7 +96,7 @@ public class PersonV3Controller {
         return new Malform(malform);
     }
 
-    @PostMapping("/vergeOgFullmakt")
+    @PostMapping("/person/hent-vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
     public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
@@ -104,7 +104,7 @@ public class PersonV3Controller {
         return personV2Service.hentVergeEllerFullmakt(personRequest.getFnr());
     }
 
-    @PostMapping("/tolk")
+    @PostMapping("/person/hent-tolk")
     @Operation(summary = "Henter tolk informajon til en person fra PDL")
     public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
@@ -112,7 +112,7 @@ public class PersonV3Controller {
         return personV2Service.hentSpraakTolkInfo(personRequest.getFnr());
     }
 
-    @PostMapping("/navn")
+    @PostMapping("/person/hent-navn")
     @Operation(summary = "Henter navn til en person fra PDL")
     public PersonNavnV2 hentNavn(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
@@ -120,7 +120,7 @@ public class PersonV3Controller {
         return personV2Service.hentNavn(personRequest.getFnr());
     }
 
-    @PostMapping("/postadresse")
+    @PostMapping("/person/hent-postadresse")
     @Operation(summary = "Henter postadresse til en person fra regoppslag")
     public RegoppslagResponseDTO hentPostadresse(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
