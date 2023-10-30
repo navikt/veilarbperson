@@ -47,7 +47,7 @@ public class PersonV3ControllerTest {
 
         mockMvc
                 .perform(
-                        post("/api/v3/person/registrering")
+                        post("/api/v3/person/hent-registrering")
                                 .contentType(APPLICATION_JSON)
                                 .content("{\"fnr\":\""+ fnr +"\"}")
                                 .header("test_ident", navAnsatt.getNavIdent())
@@ -71,7 +71,7 @@ public class PersonV3ControllerTest {
 
         mockMvc
                 .perform(
-                        post("/api/v3/person/registrering")
+                        post("/api/v3/person/hent-registrering")
                                 .contentType(APPLICATION_JSON)
                                 .content("{\"fnr\":\""+ fnr +"\"}")
                                 .header("test_ident", navAnsatt.getNavIdent())
