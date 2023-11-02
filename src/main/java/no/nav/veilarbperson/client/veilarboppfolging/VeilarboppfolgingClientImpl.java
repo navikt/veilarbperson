@@ -38,7 +38,8 @@ public class VeilarboppfolgingClientImpl implements VeilarboppfolgingClient {
     @Override
     public UnderOppfolging hentUnderOppfolgingStatus(Fnr fnr) {
         Request request = new Request.Builder()
-                .url(joinPaths(veilarboppfolgingUrl, "/api/underoppfolging?fnr=" + fnr.get()))
+                .url(joinPaths(veilarboppfolgingUrl, "/api/v2/hent-underOppfolging"))
+                .post(RestUtils.toJsonRequestBody(new HentUnderoppfolgingRequest(fnr)))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, "Bearer " + userTokenProvider.get())
                 .build();
@@ -53,5 +54,4 @@ public class VeilarboppfolgingClientImpl implements VeilarboppfolgingClient {
     public HealthCheckResult checkHealth() {
         return HealthCheckUtils.pingUrl(joinPaths(veilarboppfolgingUrl, "/internal/isAlive"), client);
     }
-
 }
