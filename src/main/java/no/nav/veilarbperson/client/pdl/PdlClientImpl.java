@@ -110,6 +110,7 @@ public class PdlClientImpl implements PdlClient {
                 .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, createBearerToken(userToken))
                 .header("Tema", "GEN")
+                .header("behandlingsnummer", "B555")
                 .post(RequestBody.create(gqlRequest, MEDIA_TYPE_JSON));
 
         Request request = builder.build();
