@@ -71,6 +71,12 @@ public class PdlClientImpl implements PdlClient {
     }
 
     @Override
+    public HentPerson.Person hentPerson(Fnr personIdent, String behandlingsnummer) {
+        var request = new GqlRequest<>(hentPersonQuery, new GqlVariables.HentPerson(personIdent, false));
+        return graphqlRequest(request, userTokenProvider.get(), behandlingsnummer, HentPerson.class).hentPerson;
+    }
+
+    @Override
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent) {
         var request = new GqlRequest<>(hentVergeOgFullmaktQuery, new GqlVariables.HentPerson(personIdent, false));
         return graphqlRequest(request, userTokenProvider.get(), HentPerson.HentVergeOgFullmakt.class).hentPerson;
@@ -132,6 +138,38 @@ public class PdlClientImpl implements PdlClient {
         }
     }
 
+
+    @SneakyThrows
+    public String rawRequest(String gqlRequest, String userToken, String behandlingsnummer) {
+        String behandlingsnr = (behandlingsnummer != null) ? behandlingsnummer : "";
+        Request.Builder builder = new Request.Builder()
+                .url(joinPaths(pdlUrl, "/graphql"))
+                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, createBearerToken(userToken))
+                .header("Tema", "GEN")
+                .header("behandlingsnummer", behandlingsnr)
+                .post(RequestBody.create(gqlRequest, MEDIA_TYPE_JSON));
+
+        Request request = builder.build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.code() >= 300) {
+                HttpStatus status = HttpStatus.resolve(response.code());
+                status = status != null
+                        ? status
+                        : HttpStatus.INTERNAL_SERVER_ERROR;
+
+                String body = RestUtils.getBodyStr(response).orElse("");
+                throw new ResponseStatusException(status, body);
+            }
+
+            RestUtils.throwIfNotSuccessful(response);
+            return RestUtils.getBodyStr(response)
+                    .orElseThrow(() -> new IllegalStateException("Body is missing"));
+        }
+    }
+
     @Override
     public HealthCheckResult checkHealth() {
         return HealthCheckUtils.pingUrl(joinPaths(pdlUrl, "/internal/health/liveness"), client);
@@ -140,6 +178,17 @@ public class PdlClientImpl implements PdlClient {
     private <T> T graphqlRequest(GqlRequest<?> gqlRequest, String token, Class<T> gqlResponseDataClass) {
         try {
             String gqlResponse = rawRequest(JsonUtils.toJson(gqlRequest), token);
+            return parseGqlJsonResponse(gqlResponse, gqlResponseDataClass);
+        } catch (Exception e) {
+            log.error("Graphql request feilet", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    private <T> T graphqlRequest(GqlRequest<?> gqlRequest, String token, String behandlingsnummer, Class<T> gqlResponseDataClass) {
+        try {
+            String gqlResponse = rawRequest(JsonUtils.toJson(gqlRequest), token, behandlingsnummer);
             return parseGqlJsonResponse(gqlResponse, gqlResponseDataClass);
         } catch (Exception e) {
             log.error("Graphql request feilet", e);

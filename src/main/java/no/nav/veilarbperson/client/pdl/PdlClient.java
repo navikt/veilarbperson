@@ -8,6 +8,7 @@ import java.util.List;
 public interface PdlClient extends HealthCheck {
 
     HentPerson.Person hentPerson(Fnr personIdent);
+    HentPerson.Person hentPerson(Fnr personIdent, String behandlingsnummer);
 
     HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent);
 

@@ -85,6 +85,13 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         return pdlClient.hentPerson(fnr);
     }
 
+
+    public HentPerson.Person hentPerson(Fnr fnr, String behandlingsnummer) {
+        configurePdlResponse("pdl-hentPerson-response.json", fnr.get());
+        return pdlClient.hentPerson(fnr, behandlingsnummer);
+    }
+
+
     public HentPerson.PersonNavn hentPersonNavn(Fnr fnr) {
         configurePdlResponse("pdl-hentPersonNavn-response.json", fnr.get());
         return pdlClient.hentPersonNavn(fnr);
@@ -315,7 +322,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void flettPartnerInfoSomErEgenAnsattTestMedNyttSkjermetAPI_UtenLeseTilgang_SomErSkjermet() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
-        person = hentPerson(FNR);
+        person = hentPerson(FNR, null);
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(person);
 
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
@@ -332,7 +339,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void flettSivilstandinfoTest_MedLesetilgang() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
         PersonV2Data personV2Data = new PersonV2Data();
-        person = hentPerson(FNR);
+        person = hentPerson(FNR, null);
 
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);

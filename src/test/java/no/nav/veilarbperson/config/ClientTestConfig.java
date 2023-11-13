@@ -217,6 +217,11 @@ public class ClientTestConfig {
             }
 
             @Override
+            public HentPerson.Person hentPerson(Fnr personIdent, String behandlingsnummer) {
+                return null;
+            }
+
+            @Override
             public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent) {
                 return null;
             }

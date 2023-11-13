@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.hentGjeldeneNavn;

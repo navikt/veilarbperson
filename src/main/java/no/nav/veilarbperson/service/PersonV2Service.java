@@ -60,12 +60,30 @@ public class PersonV2Service {
         this.kontoregisterClient = kontoregisterClient;
     }
 
-    public HentPerson.Person hentPerson(Fnr personIdent) {
-        return pdlClient.hentPerson(personIdent);
+    public HentPerson.Person hentPerson(Fnr personIdent, String behandlingsnummer) {
+        return pdlClient.hentPerson(personIdent, behandlingsnummer);
     }
 
     public PersonV2Data hentFlettetPerson(Fnr fodselsnummer) {
         HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Fant ikke person i hentPerson operasjonen i PDL"));
+
+        PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
+        flettInnKontonummer(personV2Data);
+
+        flettInnEgenAnsatt(personV2Data, fodselsnummer);
+        flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
+        flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data);
+        flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
+        flettGeografiskEnhet(fodselsnummer, personV2Data);
+        flettKodeverk(personV2Data);
+
+        return personV2Data;
+    }
+
+    public PersonV2Data hentFlettetPerson(Fnr fodselsnummer, String behandlingsnummer) {
+        HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer, behandlingsnummer))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Fant ikke person i hentPerson operasjonen i PDL"));
 

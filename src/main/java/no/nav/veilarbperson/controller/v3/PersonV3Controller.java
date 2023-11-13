@@ -11,10 +11,13 @@ import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.CvJobbprofilService;
 import no.nav.veilarbperson.service.PersonV2Service;
 import no.nav.veilarbperson.service.RegistreringService;
+import no.nav.veilarbperson.utils.SecureLog;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import static no.nav.veilarbperson.utils.SecureLog.secureLog;
 
 @Slf4j
 @RestController
@@ -32,10 +35,12 @@ public class PersonV3Controller {
 
     @PostMapping("/hent-person")
     @Operation(summary = "Henter informasjon om en person fra PDL")
-    public PersonV2Data hentPerson(@RequestBody PersonRequest personRequest) {
+    public PersonV2Data hentPerson(@RequestBody PdlRequest pdlRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personRequest.getFnr());
-        return personV2Service.hentFlettetPerson(personRequest.getFnr());
+        authService.sjekkLesetilgang(pdlRequest.getFnr());
+        secureLog.info("Mottok request mot hent-person med behandlingsnummer:" + pdlRequest.getBehandlingsnummer());
+        //TODO: Remove log before merging/prodsetting!
+        return personV2Service.hentFlettetPerson(pdlRequest.getFnr(), pdlRequest.getBehandlingsnummer());
     }
 
     @PostMapping("/person/hent-aktorid")
