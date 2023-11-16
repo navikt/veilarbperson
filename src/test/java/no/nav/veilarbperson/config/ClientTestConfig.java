@@ -28,6 +28,7 @@ import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
+import no.nav.veilarbperson.domain.PdlRequest;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
@@ -211,18 +212,30 @@ public class ClientTestConfig {
     @Bean
     public PdlClient pdlClient() {
         return new PdlClient() {
+            @Deprecated
             @Override
             public HentPerson.Person hentPerson(Fnr personIdent) {
                 return null;
             }
 
             @Override
-            public HentPerson.Person hentPerson(Fnr personIdent, String behandlingsnummer) {
+            public HentPerson.Person hentPerson(PdlRequest pdlRequest) {
+                return null;
+            }
+
+            @Deprecated
+            @Override
+            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent) {
                 return null;
             }
 
             @Override
-            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent) {
+            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(PdlRequest pdlRequest) {
+                return null;
+            }
+
+            @Override
+            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String behandlingsnummer) {
                 return null;
             }
 
@@ -231,18 +244,36 @@ public class ClientTestConfig {
                 return null;
             }
 
+            @Deprecated
             @Override
             public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter) {
                 return null;
             }
 
             @Override
+            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, String behandlingsnummer) {
+                return null;
+            }
+
+            @Deprecated
+            @Override
             public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent) {
                 return null;
             }
 
             @Override
+            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(PdlRequest pdlRequest) {
+                return null;
+            }
+
+            @Override
             public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent) {
+                return null;
+            }
+
+
+            @Override
+            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
                 return null;
             }
 
@@ -267,6 +298,7 @@ public class ClientTestConfig {
             }
         };
     }
+
     @Bean
     public SelfTestChecks selfTestChecks() {
         return mock(SelfTestChecks.class);

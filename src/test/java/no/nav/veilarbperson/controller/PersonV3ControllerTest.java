@@ -99,7 +99,7 @@ public class PersonV3ControllerTest {
     public void returnerer_person_uten_behandlingsnummer_hent_person() throws Exception {
         PrivatBruker ny = navContext.getPrivatBrukere().ny();
         NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
-        when(personV2Service.hentFlettetPerson(TEST_FNR, null)).thenReturn(new PersonV2Data().setFodselsnummer(TEST_FNR).setFornavn("Knut").setMellomnavn("Knutsen"));
+        when(personV2Service.hentFlettetPerson(new PdlRequest(TEST_FNR, null))).thenReturn(new PersonV2Data().setFodselsnummer(TEST_FNR).setFornavn("Knut").setMellomnavn("Knutsen"));
 
         String expectedJson = "{\"fornavn\":\"Knut\",\"mellomnavn\":\"Knutsen\",\"fodselsnummer\":\"12345678900\"}";
 
@@ -121,7 +121,7 @@ public class PersonV3ControllerTest {
     public void returnerer_person_med_behandlingsnummer_hent_person() throws Exception {
         PrivatBruker ny = navContext.getPrivatBrukere().ny();
         NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
-        when(personV2Service.hentFlettetPerson(TEST_FNR, "B555")).thenReturn(new PersonV2Data().setFodselsnummer(TEST_FNR).setFornavn("Knut").setMellomnavn("Knutsen"));
+        when(personV2Service.hentFlettetPerson(new PdlRequest(TEST_FNR, "B555"))).thenReturn(new PersonV2Data().setFodselsnummer(TEST_FNR).setFornavn("Knut").setMellomnavn("Knutsen"));
 
         String expectedJson = "{\"fornavn\":\"Knut\",\"mellomnavn\":\"Knutsen\",\"fodselsnummer\":\"12345678900\"}";
 

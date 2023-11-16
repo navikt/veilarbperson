@@ -11,6 +11,7 @@ import no.nav.common.json.JsonUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.domain.PdlRequest;
 import no.nav.veilarbperson.utils.FileUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -26,6 +27,7 @@ import static java.util.Collections.emptyList;
 import static no.nav.common.rest.client.RestUtils.MEDIA_TYPE_JSON;
 import static no.nav.common.utils.UrlUtils.joinPaths;
 import static no.nav.veilarbperson.utils.RestClientUtils.createBearerToken;
+import static no.nav.veilarbperson.utils.SecureLog.secureLog;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -64,6 +66,7 @@ public class PdlClientImpl implements PdlClient {
         this.hentTilrettelagtKommunikasjonQuery = FileUtils.getResourceFileAsString("graphql/hentTilrettelagtKommunikasjon.gql");
     }
 
+    @Deprecated
     @Override
     public HentPerson.Person hentPerson(Fnr personIdent) {
         var request = new GqlRequest<>(hentPersonQuery, new GqlVariables.HentPerson(personIdent, false));
@@ -71,11 +74,12 @@ public class PdlClientImpl implements PdlClient {
     }
 
     @Override
-    public HentPerson.Person hentPerson(Fnr personIdent, String behandlingsnummer) {
-        var request = new GqlRequest<>(hentPersonQuery, new GqlVariables.HentPerson(personIdent, false));
-        return graphqlRequest(request, userTokenProvider.get(), behandlingsnummer, HentPerson.class).hentPerson;
+    public HentPerson.Person hentPerson(PdlRequest pdlRequest) {
+        var request = new GqlRequest<>(hentPersonQuery, new GqlVariables.HentPerson(pdlRequest.getFnr(), false));
+        return graphqlRequest(request, userTokenProvider.get(), pdlRequest.getBehandlingsnummer(), HentPerson.class).hentPerson;
     }
 
+    @Deprecated
     @Override
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent) {
         var request = new GqlRequest<>(hentVergeOgFullmaktQuery, new GqlVariables.HentPerson(personIdent, false));
@@ -83,13 +87,35 @@ public class PdlClientImpl implements PdlClient {
     }
 
     @Override
+    public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(PdlRequest pdlRequest) {
+        var request = new GqlRequest<>(hentVergeOgFullmaktQuery, new GqlVariables.HentPerson(pdlRequest.getFnr(), false));
+        return graphqlRequest(request, userTokenProvider.get(), pdlRequest.getBehandlingsnummer(), HentPerson.HentVergeOgFullmakt.class).hentPerson;
+    }
+
+    @Deprecated
+    @Override
     public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent) {
         var request = new GqlRequest<>(hentPersonNavnQuery, new GqlVariables.HentPerson(personIdent, false));
         return graphqlRequest(request, userTokenProvider.get(), HentPerson.HentFullmaktNavn.class).hentPerson;
     }
 
     @Override
+    public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String behandlingsnummer) {
+        var request = new GqlRequest<>(hentPersonNavnQuery, new GqlVariables.HentPerson(personIdent, false));
+        return graphqlRequest(request, userTokenProvider.get(), behandlingsnummer, HentPerson.HentFullmaktNavn.class).hentPerson;
+    }
+
+    @Deprecated
+    @Override
     public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter) {
+        var request = new GqlRequest<>(hentPersonBolkQuery, new GqlVariables.HentPersonBolk(personIdenter, false));
+        return (!personIdenter.isEmpty())
+                ? graphqlRequest(request, systemTokenProvider.get(), HentPerson.class).hentPersonBolk
+                : emptyList();
+    }
+
+    @Override
+    public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, String behandlingsnummer) {
         var request = new GqlRequest<>(hentPersonBolkQuery, new GqlVariables.HentPersonBolk(personIdenter, false));
         return (!personIdenter.isEmpty())
                 ? graphqlRequest(request, systemTokenProvider.get(), HentPerson.class).hentPersonBolk
@@ -104,15 +130,23 @@ public class PdlClientImpl implements PdlClient {
     }
 
     @Override
-    public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String behandlingsnummer) {
-        var request = new GqlRequest<>(hentGeografiskTilknytningQuery, new GqlVariables.HentGeografiskTilknytning(personIdent));
-        return graphqlRequest(request, userTokenProvider.get(), behandlingsnummer, HentPerson.class).hentGeografiskTilknytning;
+    public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(PdlRequest pdlRequest) {
+        var request = new GqlRequest<>(hentGeografiskTilknytningQuery, new GqlVariables.HentGeografiskTilknytning(pdlRequest.getFnr()));
+        return graphqlRequest(request, userTokenProvider.get(), pdlRequest.getBehandlingsnummer(), HentPerson.class).hentGeografiskTilknytning;
     }
 
+    @Deprecated
     @Override
     public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent) {
         var request = new GqlRequest<>(hentTilrettelagtKommunikasjonQuery, new GqlVariables.HentTilrettelagtKommunikasjon(personIdent));
         return graphqlRequest(request, userTokenProvider.get(), HentPerson.HentTilrettelagtKommunikasjon.class).hentPerson;
+    }
+
+
+    @Override
+    public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
+        var request = new GqlRequest<>(hentTilrettelagtKommunikasjonQuery, new GqlVariables.HentTilrettelagtKommunikasjon(pdlRequest.getFnr()));
+        return graphqlRequest(request, userTokenProvider.get(), pdlRequest.getBehandlingsnummer(), HentPerson.HentTilrettelagtKommunikasjon.class).hentPerson;
     }
 
     @SneakyThrows

@@ -60,8 +60,8 @@ public class PersonV2Service {
         this.kontoregisterClient = kontoregisterClient;
     }
 
-    public HentPerson.Person hentPerson(Fnr personIdent, String behandlingsnummer) {
-        return pdlClient.hentPerson(personIdent, behandlingsnummer);
+    public HentPerson.Person hentPerson(PdlRequest pdlRequest) {
+        return pdlClient.hentPerson(pdlRequest);
     }
 
     @Deprecated
@@ -83,19 +83,19 @@ public class PersonV2Service {
         return personV2Data;
     }
 
-    public PersonV2Data hentFlettetPerson(Fnr fodselsnummer, String behandlingsnummer) {
-        HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer, behandlingsnummer))
+    public PersonV2Data hentFlettetPerson(PdlRequest pdlRequest) {
+        HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(pdlRequest))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Fant ikke person i hentPerson operasjonen i PDL"));
 
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
         flettInnKontonummer(personV2Data);
 
-        flettInnEgenAnsatt(personV2Data, fodselsnummer);
-        flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
+        flettInnEgenAnsatt(personV2Data, pdlRequest.getFnr());
+        flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data, pdlRequest.getBehandlingsnummer());
         flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data);
-        flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
-        flettGeografiskEnhet(fodselsnummer, personV2Data, behandlingsnummer);
+        flettDigitalKontaktinformasjon(pdlRequest.getFnr(), personV2Data);
+        flettGeografiskEnhet(pdlRequest, personV2Data);
         flettKodeverk(personV2Data);
 
         return personV2Data;
@@ -108,8 +108,20 @@ public class PersonV2Service {
         person.setKontonummer(kontoregisterKonto.getNorskKontonummer());
     }
 
+    @Deprecated
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse) {
         List<HentPerson.PersonFraBolk> familiemedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr);
+
+        return familiemedlemInfo
+                .stream()
+                .filter(medlemInfo -> medlemInfo.getCode().equals("ok"))
+                .map(HentPerson.PersonFraBolk::getPerson)
+                .filter(PersonV2DataMapper::harGyldigIdent)
+                .map(familiemedlem -> mapFamiliemedlem(familiemedlem, bostedsadresse))
+                .collect(Collectors.toList());
+    }
+    public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse, String behandlingsnummer) {
+        List<HentPerson.PersonFraBolk> familiemedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr, behandlingsnummer);
 
         return familiemedlemInfo
                 .stream()
@@ -144,9 +156,17 @@ public class PersonV2Service {
                 .collect(Collectors.toList());
     }
 
+    @Deprecated
     public void flettBarn(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data) {
         List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
         List<Familiemedlem> barnInfo = hentFamiliemedlemOpplysninger(barnFnrListe, personV2Data.getBostedsadresse());
+
+        personV2Data.setBarn(barnInfo);
+    }
+
+    public void flettBarn(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data, String behandlingsnummer) {
+        List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
+        List<Familiemedlem> barnInfo = hentFamiliemedlemOpplysninger(barnFnrListe, personV2Data.getBostedsadresse(), behandlingsnummer);
 
         personV2Data.setBarn(barnInfo);
     }
@@ -185,8 +205,8 @@ public class PersonV2Service {
         };
     }
 
-    public GeografiskTilknytning hentGeografiskTilknytning(Fnr fnr, String behandlingsnummer) {
-        HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(fnr, behandlingsnummer);
+    public GeografiskTilknytning hentGeografiskTilknytning(PdlRequest pdlRequest) {
+        HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(pdlRequest);
 
         if (geografiskTilknytning == null) {
             return null;
@@ -202,6 +222,7 @@ public class PersonV2Service {
     }
 
 
+    @Deprecated
     private void flettGeografiskEnhet(Fnr fnr, PersonV2Data personV2Data) {
         String geografiskTilknytning = Optional.ofNullable(hentGeografiskTilknytning(fnr))
                 .map(GeografiskTilknytning::getGeografiskTilknytning)
@@ -221,8 +242,8 @@ public class PersonV2Service {
         }
     }
 
-    private void flettGeografiskEnhet(Fnr fnr, PersonV2Data personV2Data, String behandlingsnummer) {
-        String geografiskTilknytning = Optional.ofNullable(hentGeografiskTilknytning(fnr, behandlingsnummer))
+    private void flettGeografiskEnhet(PdlRequest pdlRequest, PersonV2Data personV2Data) {
+        String geografiskTilknytning = Optional.ofNullable(hentGeografiskTilknytning(pdlRequest))
                 .map(GeografiskTilknytning::getGeografiskTilknytning)
                 .orElse(null);
 
@@ -343,6 +364,8 @@ public class PersonV2Service {
         }
     }
 
+
+    @Deprecated
     public TilrettelagtKommunikasjonData hentSpraakTolkInfo(Fnr fnr) {
         HentPerson.HentSpraakTolk spraakTolkInfo = pdlClient.hentTilrettelagtKommunikasjon(fnr);
 
@@ -364,6 +387,28 @@ public class PersonV2Service {
         return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
     }
 
+    public TilrettelagtKommunikasjonData hentSpraakTolkInfo(PdlRequest pdlRequest) {
+        HentPerson.HentSpraakTolk spraakTolkInfo = pdlClient.hentTilrettelagtKommunikasjon(pdlRequest);
+
+        if (spraakTolkInfo.getTilrettelagtKommunikasjon().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                    "Ingen tilrettelagtkommunikasjon for person i PDL");
+        }
+
+        HentPerson.TilrettelagtKommunikasjon tilrettelagtKommunikasjon = getFirstElement(spraakTolkInfo.getTilrettelagtKommunikasjon());
+        String tegnSpraak = ofNullable(tilrettelagtKommunikasjon)
+                .map(HentPerson.TilrettelagtKommunikasjon::getTegnspraaktolk)
+                .map(HentPerson.Tolk::getSpraak)
+                .map(kodeverkService::getBeskrivelseForSpraakKode).orElse(null);
+        String taleSpraak = ofNullable(tilrettelagtKommunikasjon)
+                .map(HentPerson.TilrettelagtKommunikasjon::getTalespraaktolk)
+                .map(HentPerson.Tolk::getSpraak)
+                .map(kodeverkService::getBeskrivelseForSpraakKode).orElse(null);
+
+        return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
+    }
+
+    @Deprecated
     public VergeOgFullmaktData hentVergeEllerFullmakt(Fnr fnr) {
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(fnr);
 
@@ -374,6 +419,22 @@ public class PersonV2Service {
         VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
 
         flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData);
+        flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
+
+        return vergeOgFullmaktData;
+    }
+
+
+    public VergeOgFullmaktData hentVergeEllerFullmakt(PdlRequest pdlRequest) {
+        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(pdlRequest);
+
+        if (vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke verge eller fullmakt i PDL");
+        }
+
+        VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+
+        flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, pdlRequest.getBehandlingsnummer());
         flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
 
         return vergeOgFullmaktData;
@@ -392,9 +453,23 @@ public class PersonV2Service {
         );
     }
 
+    @Deprecated
     public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData) {
         vergeOgFullmaktData.getFullmakt().forEach(fullmakt -> {
             HentPerson.PersonNavn fullmaktNavn = pdlClient.hentPersonNavn(Fnr.of(fullmakt.getMotpartsPersonident()));
+
+            if (fullmaktNavn.getNavn().isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke motpartspersonnavn til fullmakt");
+            }
+
+            VergeOgFullmaktData.Navn personNavn = VergeOgFullmaktDataMapper.personNavnMapper(fullmaktNavn.getNavn());
+            fullmakt.setMotpartsPersonNavn(personNavn);
+        });
+    }
+
+    public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData, String behandlingsnummer) {
+        vergeOgFullmaktData.getFullmakt().forEach(fullmakt -> {
+            HentPerson.PersonNavn fullmaktNavn = pdlClient.hentPersonNavn(Fnr.of(fullmakt.getMotpartsPersonident()), behandlingsnummer);
 
             if (fullmaktNavn.getNavn().isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke motpartspersonnavn til fullmakt");
