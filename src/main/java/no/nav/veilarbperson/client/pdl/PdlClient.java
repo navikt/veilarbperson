@@ -18,5 +18,7 @@ public interface PdlClient extends HealthCheck {
 
     HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent);
 
+    HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String behandlingsnummer);
+
     HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent);
 }

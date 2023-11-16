@@ -96,10 +96,17 @@ public class PdlClientImpl implements PdlClient {
                 : emptyList();
     }
 
+    @Deprecated
     @Override
     public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent) {
         var request = new GqlRequest<>(hentGeografiskTilknytningQuery, new GqlVariables.HentGeografiskTilknytning(personIdent));
         return graphqlRequest(request, userTokenProvider.get(), HentPerson.class).hentGeografiskTilknytning;
+    }
+
+    @Override
+    public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent, String behandlingsnummer) {
+        var request = new GqlRequest<>(hentGeografiskTilknytningQuery, new GqlVariables.HentGeografiskTilknytning(personIdent));
+        return graphqlRequest(request, userTokenProvider.get(), behandlingsnummer, HentPerson.class).hentGeografiskTilknytning;
     }
 
     @Override

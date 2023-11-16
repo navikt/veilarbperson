@@ -59,8 +59,8 @@ public class PersonV3Controller {
 
     @PostMapping("/person/hent-geografisktilknytning")
     @Operation(summary = "Henter persons geografisk tilknytning")
-    public GeografiskTilknytning geografisktilknytning(@RequestBody PersonRequest personRequest) {
-        Fnr fodselsnummer = hentIdentForEksternEllerIntern(personRequest.getFnr());
+    public GeografiskTilknytning geografisktilknytning(@RequestBody PdlRequest pdlRequest) {
+        Fnr fodselsnummer = hentIdentForEksternEllerIntern(pdlRequest.getFnr());
         authService.sjekkLesetilgang(fodselsnummer);
         return personV2Service.hentGeografiskTilknytning(fodselsnummer);
     }

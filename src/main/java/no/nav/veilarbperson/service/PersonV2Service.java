@@ -64,6 +64,7 @@ public class PersonV2Service {
         return pdlClient.hentPerson(personIdent, behandlingsnummer);
     }
 
+    @Deprecated
     public PersonV2Data hentFlettetPerson(Fnr fodselsnummer) {
         HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(fodselsnummer))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -94,7 +95,7 @@ public class PersonV2Service {
         flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data);
         flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data);
         flettDigitalKontaktinformasjon(fodselsnummer, personV2Data);
-        flettGeografiskEnhet(fodselsnummer, personV2Data);
+        flettGeografiskEnhet(fodselsnummer, personV2Data, behandlingsnummer);
         flettKodeverk(personV2Data);
 
         return personV2Data;
@@ -167,6 +168,7 @@ public class PersonV2Service {
         personV2Data.setEgenAnsatt(egenAnsatt);
     }
 
+    @Deprecated
     public GeografiskTilknytning hentGeografiskTilknytning(Fnr fnr) {
         HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(fnr);
 
@@ -182,6 +184,23 @@ public class PersonV2Service {
                     null;
         };
     }
+
+    public GeografiskTilknytning hentGeografiskTilknytning(Fnr fnr, String behandlingsnummer) {
+        HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(fnr, behandlingsnummer);
+
+        if (geografiskTilknytning == null) {
+            return null;
+        }
+
+        return switch (geografiskTilknytning.getGtType()) {
+            case "KOMMUNE" -> new GeografiskTilknytning(geografiskTilknytning.getGtKommune());
+            case "BYDEL" -> new GeografiskTilknytning(geografiskTilknytning.getGtBydel());
+            case "UTLAND" -> new GeografiskTilknytning(geografiskTilknytning.getGtLand());
+            default ->  // type == UDEFINERT
+                    null;
+        };
+    }
+
 
     private void flettGeografiskEnhet(Fnr fnr, PersonV2Data personV2Data) {
         String geografiskTilknytning = Optional.ofNullable(hentGeografiskTilknytning(fnr))
@@ -201,6 +220,26 @@ public class PersonV2Service {
             }
         }
     }
+
+    private void flettGeografiskEnhet(Fnr fnr, PersonV2Data personV2Data, String behandlingsnummer) {
+        String geografiskTilknytning = Optional.ofNullable(hentGeografiskTilknytning(fnr, behandlingsnummer))
+                .map(GeografiskTilknytning::getGeografiskTilknytning)
+                .orElse(null);
+
+        personV2Data.setGeografiskTilknytning(geografiskTilknytning);
+
+        // Sjekk at geografiskTilknytning er satt og at det ikke er en tre-bokstavs landkode (ISO 3166 Alpha-3, for utenlandske brukere så blir landskode brukt istedenfor nummer)
+        if (geografiskTilknytning != null && geografiskTilknytning.matches("\\d+")) {
+            try {
+                // Henter geografisk enhet, derfor settes ikke diskresjonskode og skjermet
+                Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning, null, false));
+                personV2Data.setGeografiskEnhet(enhet);
+            } catch (Exception e) {
+                log.error("Klarte ikke å flette inn geografisk enhet", e);
+            }
+        }
+    }
+
 
     public void flettKodeverk(PersonV2Data personV2Data) {
         Optional<String> postnrIBostedsVegAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(
