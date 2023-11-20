@@ -69,6 +69,7 @@ public class PdlClientImpl implements PdlClient {
     @Deprecated
     @Override
     public HentPerson.Person hentPerson(Fnr personIdent) {
+        secureLog.info("Kaller deprecated funksjon hentperson");
         var request = new GqlRequest<>(hentPersonQuery, new GqlVariables.HentPerson(personIdent, false));
         return graphqlRequest(request, userTokenProvider.get(), HentPerson.class).hentPerson;
     }
@@ -82,6 +83,7 @@ public class PdlClientImpl implements PdlClient {
     @Deprecated
     @Override
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent) {
+        secureLog.info("Kaller deprecated funksjon hentVergeOgFullmakt");
         var request = new GqlRequest<>(hentVergeOgFullmaktQuery, new GqlVariables.HentPerson(personIdent, false));
         return graphqlRequest(request, userTokenProvider.get(), HentPerson.HentVergeOgFullmakt.class).hentPerson;
     }
@@ -95,6 +97,7 @@ public class PdlClientImpl implements PdlClient {
     @Deprecated
     @Override
     public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent) {
+        secureLog.info("Kaller deprecated funksjon hentPersonNavn");
         var request = new GqlRequest<>(hentPersonNavnQuery, new GqlVariables.HentPerson(personIdent, false));
         return graphqlRequest(request, userTokenProvider.get(), HentPerson.HentFullmaktNavn.class).hentPerson;
     }
@@ -108,6 +111,7 @@ public class PdlClientImpl implements PdlClient {
     @Deprecated
     @Override
     public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter) {
+        secureLog.info("Kaller deprecated funksjon hentPersonBolk");
         var request = new GqlRequest<>(hentPersonBolkQuery, new GqlVariables.HentPersonBolk(personIdenter, false));
         return (!personIdenter.isEmpty())
                 ? graphqlRequest(request, systemTokenProvider.get(), HentPerson.class).hentPersonBolk
@@ -118,13 +122,14 @@ public class PdlClientImpl implements PdlClient {
     public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, String behandlingsnummer) {
         var request = new GqlRequest<>(hentPersonBolkQuery, new GqlVariables.HentPersonBolk(personIdenter, false));
         return (!personIdenter.isEmpty())
-                ? graphqlRequest(request, systemTokenProvider.get(), HentPerson.class).hentPersonBolk
+                ? graphqlRequest(request, systemTokenProvider.get(), behandlingsnummer, HentPerson.class).hentPersonBolk
                 : emptyList();
     }
 
     @Deprecated
     @Override
     public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent) {
+        secureLog.info("Kaller deprecated funksjon hentGeografiskTilknytning");
         var request = new GqlRequest<>(hentGeografiskTilknytningQuery, new GqlVariables.HentGeografiskTilknytning(personIdent));
         return graphqlRequest(request, userTokenProvider.get(), HentPerson.class).hentGeografiskTilknytning;
     }
@@ -138,6 +143,7 @@ public class PdlClientImpl implements PdlClient {
     @Deprecated
     @Override
     public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent) {
+        secureLog.info("Kaller deprecated funksjon hentTilrettelagtKommunikasjon");
         var request = new GqlRequest<>(hentTilrettelagtKommunikasjonQuery, new GqlVariables.HentTilrettelagtKommunikasjon(personIdent));
         return graphqlRequest(request, userTokenProvider.get(), HentPerson.HentTilrettelagtKommunikasjon.class).hentPerson;
     }
@@ -217,6 +223,7 @@ public class PdlClientImpl implements PdlClient {
     }
 
     private <T> T graphqlRequest(GqlRequest<?> gqlRequest, String token, Class<T> gqlResponseDataClass) {
+        secureLog.info("Kaller deprecated funksjon uten behandlingsnummer " + gqlRequest.toString());
         try {
             String gqlResponse = rawRequest(JsonUtils.toJson(gqlRequest), token);
             return parseGqlJsonResponse(gqlResponse, gqlResponseDataClass);
@@ -228,6 +235,9 @@ public class PdlClientImpl implements PdlClient {
 
 
     private <T> T graphqlRequest(GqlRequest<?> gqlRequest, String token, String behandlingsnummer, Class<T> gqlResponseDataClass) {
+        if (behandlingsnummer == null) {
+            secureLog.info("Mottok request mot PDL med behandlingsnummer null " + gqlRequest.toString());
+        }
         try {
             String gqlResponse = rawRequest(JsonUtils.toJson(gqlRequest), token, behandlingsnummer);
             return parseGqlJsonResponse(gqlResponse, gqlResponseDataClass);

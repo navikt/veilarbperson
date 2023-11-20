@@ -41,7 +41,7 @@ public class PersonV3Controller {
         if (pdlRequest.getBehandlingsnummer() == null) {
             secureLog.info("Mottok request mot hent-person med behandlingsnummer null");
         }else {
-            secureLog.info("Mottok request mot hent-person med behandlingsnummer:" + pdlRequest.getBehandlingsnummer());
+            secureLog.info("Mottok request mot hent-person med behandlingsnummer : " + pdlRequest.getBehandlingsnummer());
         }
             //TODO: Remove log before merging/prodsetting!
         return personV2Service.hentFlettetPerson(pdlRequest);
@@ -69,7 +69,7 @@ public class PersonV3Controller {
         if (pdlRequest.getBehandlingsnummer() == null) {
             secureLog.info("Mottok request mot hent-geografisktilknytning med behandlingsnummer null");
         } else {
-            secureLog.info("Mottok request mot hent-geografisktilknytning med behandlingsnummer:" + pdlRequest.getBehandlingsnummer());
+            secureLog.info("Mottok request mot hent-geografisktilknytning med behandlingsnummer : " + pdlRequest.getBehandlingsnummer());
         }
         return personV2Service.hentGeografiskTilknytning(pdlRequest);
     }
@@ -113,7 +113,7 @@ public class PersonV3Controller {
         if (pdlRequest.getBehandlingsnummer() == null) {
             secureLog.info("Mottok request mot hent-vergeOgFullmakt med behandlingsnummer null");
         } else {
-            secureLog.info("Mottok request mot hent-vergeOgFullmakt med behandlingsnummer:" + pdlRequest.getBehandlingsnummer());
+            secureLog.info("Mottok request mot hent-vergeOgFullmakt med behandlingsnummer : " + pdlRequest.getBehandlingsnummer());
         }
         return personV2Service.hentVergeEllerFullmakt(pdlRequest);
     }
@@ -123,6 +123,11 @@ public class PersonV3Controller {
     public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestBody PdlRequest pdlRequest) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(pdlRequest.getFnr());
+        if (pdlRequest.getBehandlingsnummer() == null) {
+            secureLog.info("Mottok request mot hent-tolk med behandlingsnummer null");
+        } else {
+            secureLog.info("Mottok request mot hent-tolk med behandlingsnummer : " + pdlRequest.getBehandlingsnummer());
+        }
         return personV2Service.hentSpraakTolkInfo(pdlRequest);
     }
 

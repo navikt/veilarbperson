@@ -93,7 +93,7 @@ public class PersonV2Service {
 
         flettInnEgenAnsatt(personV2Data, pdlRequest.getFnr());
         flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data, pdlRequest.getBehandlingsnummer());
-        flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data);
+        flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data, pdlRequest.getBehandlingsnummer());
         flettDigitalKontaktinformasjon(pdlRequest.getFnr(), personV2Data);
         flettGeografiskEnhet(pdlRequest, personV2Data);
         flettKodeverk(personV2Data);
@@ -171,11 +171,24 @@ public class PersonV2Service {
         personV2Data.setBarn(barnInfo);
     }
 
+    @Deprecated
     public void flettSivilstand(List<HentPerson.Sivilstand> sivilstands, PersonV2Data personV2Data) {
         List<Sivilstand> mappetSivilstand = sivilstands.stream().flatMap(sivilstand -> {
             Optional<Familiemedlem> relatert = Optional.ofNullable(sivilstand.getRelatertVedSivilstand())
                     .map(Fnr::of)
                     .map(fnr -> hentFamiliemedlemOpplysninger(List.of(fnr), personV2Data.getBostedsadresse()))
+                    .flatMap(list -> list.stream().findFirst());
+            return Stream.of(sivilstandMapper(sivilstand, relatert));
+        }).collect(Collectors.toList());
+
+        personV2Data.setSivilstandliste(mappetSivilstand);
+    }
+
+    public void flettSivilstand(List<HentPerson.Sivilstand> sivilstands, PersonV2Data personV2Data, String behandlingsnummer) {
+        List<Sivilstand> mappetSivilstand = sivilstands.stream().flatMap(sivilstand -> {
+            Optional<Familiemedlem> relatert = Optional.ofNullable(sivilstand.getRelatertVedSivilstand())
+                    .map(Fnr::of)
+                    .map(fnr -> hentFamiliemedlemOpplysninger(List.of(fnr), personV2Data.getBostedsadresse(), behandlingsnummer))
                     .flatMap(list -> list.stream().findFirst());
             return Stream.of(sivilstandMapper(sivilstand, relatert));
         }).collect(Collectors.toList());
