@@ -155,6 +155,7 @@ public class PdlClientImpl implements PdlClient {
         return graphqlRequest(request, userTokenProvider.get(), pdlRequest.getBehandlingsnummer(), HentPerson.HentTilrettelagtKommunikasjon.class).hentPerson;
     }
 
+    @Deprecated
     @SneakyThrows
     public String rawRequest(String gqlRequest, String userToken) {
         Request.Builder builder = new Request.Builder()
@@ -163,7 +164,6 @@ public class PdlClientImpl implements PdlClient {
                 .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, createBearerToken(userToken))
                 .header("Tema", "GEN")
-                .header("behandlingsnummer", "B555")
                 .post(RequestBody.create(gqlRequest, MEDIA_TYPE_JSON));
 
         Request request = builder.build();
