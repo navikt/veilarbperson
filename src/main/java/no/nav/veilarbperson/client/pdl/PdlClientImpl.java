@@ -222,6 +222,7 @@ public class PdlClientImpl implements PdlClient {
         return HealthCheckUtils.pingUrl(joinPaths(pdlUrl, "/internal/health/liveness"), client);
     }
 
+    @Deprecated
     private <T> T graphqlRequest(GqlRequest<?> gqlRequest, String token, Class<T> gqlResponseDataClass) {
         secureLog.info("Kaller deprecated funksjon uten behandlingsnummer " + gqlRequest.toString());
         try {
