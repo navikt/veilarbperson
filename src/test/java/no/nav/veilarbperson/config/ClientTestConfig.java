@@ -212,20 +212,9 @@ public class ClientTestConfig {
     @Bean
     public PdlClient pdlClient() {
         return new PdlClient() {
-            @Deprecated
-            @Override
-            public HentPerson.Person hentPerson(Fnr personIdent) {
-                return null;
-            }
 
             @Override
             public HentPerson.Person hentPerson(PdlRequest pdlRequest) {
-                return null;
-            }
-
-            @Deprecated
-            @Override
-            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent) {
                 return null;
             }
 
@@ -235,18 +224,7 @@ public class ClientTestConfig {
             }
 
             @Override
-            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent, String behandlingsnummer) {
-                return null;
-            }
-
-            @Override
-            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent) {
-                return null;
-            }
-
-            @Deprecated
-            @Override
-            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter) {
+            public HentPerson.PersonNavn hentPersonNavn(PdlRequest pdlRequest) {
                 return null;
             }
 
@@ -255,22 +233,10 @@ public class ClientTestConfig {
                 return null;
             }
 
-            @Deprecated
-            @Override
-            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent) {
-                return null;
-            }
-
             @Override
             public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(PdlRequest pdlRequest) {
                 return null;
             }
-
-            @Override
-            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent) {
-                return null;
-            }
-
 
             @Override
             public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {

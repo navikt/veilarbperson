@@ -13,10 +13,7 @@ import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
-import no.nav.veilarbperson.domain.PersonNavnV2;
-import no.nav.veilarbperson.domain.PersonV2Data;
-import no.nav.veilarbperson.domain.TilrettelagtKommunikasjonData;
-import no.nav.veilarbperson.domain.VergeOgFullmaktData;
+import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.TestUtils;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
@@ -82,39 +79,40 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     public HentPerson.Person hentPerson(Fnr fnr) {
         configurePdlResponse("pdl-hentPerson-response.json", fnr.get());
-        return pdlClient.hentPerson(fnr);
+        return pdlClient.hentPerson(new PdlRequest(fnr, null));
     }
 
 
-    public HentPerson.PersonNavn hentPersonNavn(Fnr fnr) {
-        configurePdlResponse("pdl-hentPersonNavn-response.json", fnr.get());
-        return pdlClient.hentPersonNavn(fnr);
+    public HentPerson.PersonNavn hentPersonNavn(PdlRequest pdlRequest) {
+        configurePdlResponse("pdl-hentPersonNavn-response.json", pdlRequest.getFnr().get());
+        return pdlClient.hentPersonNavn(pdlRequest);
     }
 
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
         configurePdlResponse("pdl-hentVergeOgFullmakt-response.json", fnr.get());
-        return pdlClient.hentVergeOgFullmakt(fnr);
+        PdlRequest pdlRequestVergeOgFullmakt = new PdlRequest(fnr, null);
+        return pdlClient.hentVergeOgFullmakt(pdlRequestVergeOgFullmakt);
     }
 
-    public HentPerson.GeografiskTilknytning hentGeografisktilknytning(Fnr fnr) {
+    public HentPerson.GeografiskTilknytning hentGeografisktilknytning(PdlRequest pdlRequest) {
         configurePdlResponse("pdl-hentGeografiskTilknytning-response.json", "hentGeografiskTilknytning");
-        return pdlClient.hentGeografiskTilknytning(fnr);
+        return pdlClient.hentGeografiskTilknytning(pdlRequest);
     }
 
     public HentPerson.Person hentPersonUtenBarnOgSivilstand(Fnr fnr) {
         configurePdlResponse("pdl-hentPersonMedIngenBarn-responsen.json", fnr.get());
-        return pdlClient.hentPerson(fnr);
+        return pdlClient.hentPerson(new PdlRequest(fnr, null));
     }
 
     public HentPerson.Person hentPersonSomErUgift(Fnr fnr) {
         configurePdlResponse("pdl-hentPersonUgift-response.json", fnr.get());
-        return pdlClient.hentPerson(fnr);
+        return pdlClient.hentPerson(new PdlRequest(fnr, null));
     }
 
 
-    public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr fnr) {
-        configurePdlResponse("pdl-hentTilrettelagtKommunikasjon-response.json", fnr.get());
-        return pdlClient.hentTilrettelagtKommunikasjon(fnr);
+    public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
+        configurePdlResponse("pdl-hentTilrettelagtKommunikasjon-response.json", pdlRequest.getFnr().get());
+        return pdlClient.hentTilrettelagtKommunikasjon(pdlRequest);
     }
 
     @Test
@@ -144,8 +142,9 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void hentOpplysningerTilBarnaMedKodeOkFraPdlTest() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
         configurePdlResponse("pdl-hentPersonBolk-response.json", fnrBarn1, fnrBarn2);
-        hentGeografisktilknytning(FNR); // Må ha med fnr fordi dette flettes
-        List<Familiemedlem> barn = personV2Service.hentFlettetPerson(FNR).getBarn();
+        PdlRequest pdlRequest = new PdlRequest(FNR, null);
+        hentGeografisktilknytning(pdlRequest); // Må ha med fnr fordi dette flettes
+        List<Familiemedlem> barn = personV2Service.hentFlettetPerson(pdlRequest).getBarn();
 
         assertEquals(1, barn.size());
     }
@@ -155,7 +154,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         String fnrBarnOpphoert = "111";
         configurePdlResponse("pdl-hentPersonBolkOpphoert-response.json", fnrBarnOpphoert);
         var adresse = hentPerson(FNR).getBostedsadresse().get(0);
-        var barn = personV2Service.hentFamiliemedlemOpplysninger(List.of(Fnr.of(fnrBarnOpphoert)), adresse);
+        var barn = personV2Service.hentFamiliemedlemOpplysninger(List.of(Fnr.of(fnrBarnOpphoert)), adresse, null);
 
         assertEquals(0, barn.size());
     }
@@ -197,7 +196,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentGeografiskTilknytningTest() {
-        HentPerson.GeografiskTilknytning geografiskTilknytning = hentGeografisktilknytning(FNR);
+        HentPerson.GeografiskTilknytning geografiskTilknytning = hentGeografisktilknytning(new PdlRequest(FNR, null));
 
         assertEquals("0570", geografiskTilknytning.getGtKommune());
         assertEquals("OSLO", geografiskTilknytning.getGtBydel());
@@ -239,8 +238,8 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals(0, personV2Data.getBarn().size());
         assertNull(personV2Data.getSivilstandliste());
 
-        personV2Service.flettBarn(person.getForelderBarnRelasjon(), personV2Data); // Forsøker å flette person med 3 barn hvor informasjonen til bare 1 barn er tilgjengelig i PDL
-        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
+        personV2Service.flettBarn(person.getForelderBarnRelasjon(), personV2Data, null); // Forsøker å flette person med 3 barn hvor informasjonen til bare 1 barn er tilgjengelig i PDL
+        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
         assertEquals(1, personV2Data.getBarn().size()); // Fant bare 1 av 3 barna med "ok"(gyldig) status fra hentPersonBolk operasjonen
         assertNotNull(personV2Data.getSivilstandliste());
@@ -254,8 +253,8 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertNull(personV2Data.getSivilstandliste());
 
         person = hentPersonUtenBarnOgSivilstand(FNR);
-        personV2Service.flettBarn(person.getForelderBarnRelasjon(), personV2Data);
-        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
+        personV2Service.flettBarn(person.getForelderBarnRelasjon(), personV2Data, null);
+        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
         assertEquals(Collections.emptyList(), personV2Data.getSivilstandliste());
         assertEquals(Collections.emptyList(), personV2Data.getBarn());
@@ -270,7 +269,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         // flett sivilstandinfo når relatert person ikke har gradering/adressebeskyttelse
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
-        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
+        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
         Sivilstand sivilstand = personV2Data.getSivilstandliste().get(0);
         assertTrue(sivilstand.getSkjermet());
@@ -289,7 +288,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                                         .withBody(TestUtils.readTestResourceFile("pdl-hentPersonBolkRelatertVedSivilstand-response.json").replace("UGRADERT", "FORTROLIG"))
                         )
         );
-        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
+        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
         sivilstand = personV2Data.getSivilstandliste().get(0);
         assertNull(sivilstand.getSkjermet());
@@ -305,7 +304,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
-        personV2Service.flettSivilstand(person.getSivilstand(),personV2Data);
+        personV2Service.flettSivilstand(person.getSivilstand(),personV2Data, null);
 
         Sivilstand sivilstand = personV2Data.getSivilstandliste().get(0);
         assertNull(sivilstand.getSkjermet());
@@ -321,7 +320,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
-        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
+        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
         Sivilstand sivilstand = personV2Data.getSivilstandliste().get(0);
         assertTrue(sivilstand.getSkjermet());
@@ -337,7 +336,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
-        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
+        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
         Sivilstand sivilstand = personV2Data.getSivilstandliste().get(0);
         assertEquals("GIFT", sivilstand.getSivilstand());
@@ -354,7 +353,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         PersonV2Data personV2Data = new PersonV2Data();
         person = hentPersonSomErUgift(Fnr.of("01234567899"));
 
-        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
+        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
         Sivilstand sivilstand = personV2Data.getSivilstandliste().get(0);
 
         assertEquals("UGIFT", sivilstand.getSivilstand());
@@ -369,10 +368,10 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", "27057612970");
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", "2134567890");
         PersonV2Data personV2Data = new PersonV2Data();
-        person = pdlClient.hentPerson(Fnr.of("01234567899"));
+        person = pdlClient.hentPerson(new PdlRequest(Fnr.of("01234567899"),null));
 
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
-        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data);
+        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
         List<Sivilstand> sivilstands = personV2Data.getSivilstandliste();
 
         assertEquals("SEPARERT_PARTNER", sivilstands.get(0).getSivilstand());
@@ -458,7 +457,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void flettBeskrivelseFraKodeverkTest() {
         mockKodeverk();
-        person = pdlClient.hentPerson(Fnr.of("0123456789"));
+        person = pdlClient.hentPerson(new PdlRequest(Fnr.of("0123456789"), null));
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(person);
 
         personV2Service.flettKodeverk(personV2Data);
@@ -506,7 +505,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         configurePdlResponse("pdl-hentPersonNavn-response.json", "motpartsPersonident2");
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
         VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
-        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData);
+        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, null);
 
         List<VergeOgFullmaktData.Fullmakt> fullmaktListe =  vergeOgFullmaktData.getFullmakt();
 
@@ -515,7 +514,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void personNavnMapperTest() {
-        PersonNavnV2 navn = PersonV2DataMapper.navnMapper(hentPersonNavn(FNR).getNavn());
+        PersonNavnV2 navn = PersonV2DataMapper.navnMapper(hentPersonNavn(new PdlRequest(FNR, null)).getNavn());
         assertEquals("OLA", navn.getFornavn());
         assertEquals("NORDMANN", navn.getEtternavn());
         assertEquals("NORDMANN OLA", navn.getForkortetNavn());
@@ -524,15 +523,15 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void hentSpraakTolkInfoTest() {
         mockKodeverk();
-        hentTilrettelagtKommunikasjon(FNR);
-        TilrettelagtKommunikasjonData tilrettelagtKommunikasjonData = personV2Service.hentSpraakTolkInfo(FNR);
+        hentTilrettelagtKommunikasjon(new PdlRequest(FNR, null));
+        TilrettelagtKommunikasjonData tilrettelagtKommunikasjonData = personV2Service.hentSpraakTolkInfo(new PdlRequest(FNR, null));
         assertEquals("Engelsk", tilrettelagtKommunikasjonData.getTalespraak());
         assertEquals("Norsk", tilrettelagtKommunikasjonData.getTegnspraak());
     }
 
     @Test
     public void hentSikkerhetstiltakTest() {
-        person = pdlClient.hentPerson(Fnr.of("0123456789"));
+        person = pdlClient.hentPerson(new PdlRequest(Fnr.of("0123456789"), null));
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(person);
 
         assertEquals("Fysisk utestengelse", personV2Data.getSikkerhetstiltak());

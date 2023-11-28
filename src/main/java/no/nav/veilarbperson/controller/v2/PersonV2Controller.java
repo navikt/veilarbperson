@@ -32,7 +32,8 @@ public class PersonV2Controller {
     public PersonV2Data hentPerson(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentFlettetPerson(fnr);
+        PdlRequest pdlRequest = new PdlRequest(fnr, null);
+        return personV2Service.hentFlettetPerson(pdlRequest);
     }
 
     @Deprecated
@@ -52,7 +53,8 @@ public class PersonV2Controller {
     public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentVergeEllerFullmakt(fnr);
+        PdlRequest pdlRequestVergeEllerFullmakt = new PdlRequest(fnr, null);
+        return personV2Service.hentVergeEllerFullmakt(pdlRequestVergeEllerFullmakt);
     }
 
     @Deprecated
@@ -61,7 +63,7 @@ public class PersonV2Controller {
     public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentSpraakTolkInfo(fnr);
+        return personV2Service.hentSpraakTolkInfo(new PdlRequest(fnr, null));
     }
 
     @Deprecated
@@ -70,7 +72,7 @@ public class PersonV2Controller {
     public PersonNavnV2 hentNavn(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentNavn(fnr);
+        return personV2Service.hentNavn(new PdlRequest(fnr, null));
     }
 
     @Deprecated

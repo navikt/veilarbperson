@@ -5,6 +5,7 @@ import no.nav.common.json.JsonUtils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.*;
 import no.nav.veilarbperson.client.pdl.domain.*;
+import no.nav.veilarbperson.domain.PdlRequest;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
@@ -170,7 +171,9 @@ public class PdlClientImplTest {
 
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
-        HentPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(FNR);
+        PdlRequest pdlRequestVergeOgFullmakt = new PdlRequest(FNR, null);
+
+        HentPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(pdlRequestVergeOgFullmakt);
 
         HentPerson.VergemaalEllerFremtidsfullmakt vergemaal = vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt().get(0);
         HentPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
@@ -223,7 +226,7 @@ public class PdlClientImplTest {
 
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
-        String response = pdlClient.rawRequest(jsonRequest, PDL_AUTH);
+        String response = pdlClient.rawRequest(jsonRequest, PDL_AUTH, null);
         assertEquals(hentPersonResponseJson, response);
     }
 

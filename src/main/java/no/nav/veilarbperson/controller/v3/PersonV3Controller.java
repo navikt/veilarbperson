@@ -133,10 +133,10 @@ public class PersonV3Controller {
 
     @PostMapping("/person/hent-navn")
     @Operation(summary = "Henter navn til en person fra PDL")
-    public PersonNavnV2 hentNavn(@RequestBody PersonRequest personRequest) {
+    public PersonNavnV2 hentNavn(@RequestBody PdlRequest pdlRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personRequest.getFnr());
-        return personV2Service.hentNavn(personRequest.getFnr());
+        authService.sjekkLesetilgang(pdlRequest.getFnr());
+        return personV2Service.hentNavn(pdlRequest);
     }
 
     @PostMapping("/person/hent-postadresse")
