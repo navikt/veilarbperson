@@ -44,7 +44,7 @@ public class PdlClientImplTest {
 
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
-        pdlClient.hentPerson(FNR);
+        pdlClient.hentPerson(new PdlRequest(FNR, null));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class PdlClientImplTest {
 
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
-        HentPerson.Person person = pdlClient.hentPerson(FNR);
+        HentPerson.Person person = pdlClient.hentPerson(new PdlRequest(FNR, null));
 
         HentPerson.Navn navn = person.getNavn().get(0);
         assertEquals("NATURLIG", navn.getFornavn());
@@ -205,7 +205,7 @@ public class PdlClientImplTest {
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
         assertThrows(ResponseStatusException.class, () -> {
-            pdlClient.hentPerson(FNR);
+            pdlClient.hentPerson(new PdlRequest(FNR,  null));
         });
     }
 
