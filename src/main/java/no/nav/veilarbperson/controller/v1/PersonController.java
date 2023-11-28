@@ -70,8 +70,7 @@ public class PersonController {
     public GeografiskTilknytning geografisktilknytning(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         Fnr fodselsnummer = hentIdentForEksternEllerIntern(fnr);
         authService.sjekkLesetilgang(fodselsnummer);
-        PdlRequest pdlRequest = new PdlRequest(fodselsnummer, null);
-        return personV2Service.hentGeografiskTilknytning(pdlRequest);
+        return personV2Service.hentGeografiskTilknytning(new PdlRequest(fodselsnummer, null));
     }
 
     @Deprecated

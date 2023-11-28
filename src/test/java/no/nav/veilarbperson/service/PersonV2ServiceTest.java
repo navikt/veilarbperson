@@ -90,8 +90,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
         configurePdlResponse("pdl-hentVergeOgFullmakt-response.json", fnr.get());
-        PdlRequest pdlRequestVergeOgFullmakt = new PdlRequest(fnr, null);
-        return pdlClient.hentVergeOgFullmakt(pdlRequestVergeOgFullmakt);
+        return pdlClient.hentVergeOgFullmakt(new PdlRequest(fnr, null));
     }
 
     public HentPerson.GeografiskTilknytning hentGeografisktilknytning(PdlRequest pdlRequest) {
@@ -108,7 +107,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         configurePdlResponse("pdl-hentPersonUgift-response.json", fnr.get());
         return pdlClient.hentPerson(new PdlRequest(fnr, null));
     }
-
 
     public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
         configurePdlResponse("pdl-hentTilrettelagtKommunikasjon-response.json", pdlRequest.getFnr().get());

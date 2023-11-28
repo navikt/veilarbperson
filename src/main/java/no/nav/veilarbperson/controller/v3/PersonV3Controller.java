@@ -11,7 +11,6 @@ import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.CvJobbprofilService;
 import no.nav.veilarbperson.service.PersonV2Service;
 import no.nav.veilarbperson.service.RegistreringService;
-import no.nav.veilarbperson.utils.SecureLog;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

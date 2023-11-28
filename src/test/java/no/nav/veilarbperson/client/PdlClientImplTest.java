@@ -171,9 +171,7 @@ public class PdlClientImplTest {
 
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
-        PdlRequest pdlRequestVergeOgFullmakt = new PdlRequest(FNR, null);
-
-        HentPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(pdlRequestVergeOgFullmakt);
+        HentPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(new PdlRequest(FNR, null));
 
         HentPerson.VergemaalEllerFremtidsfullmakt vergemaal = vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt().get(0);
         HentPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
