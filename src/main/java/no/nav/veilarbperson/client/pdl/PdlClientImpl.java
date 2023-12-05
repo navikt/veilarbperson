@@ -143,7 +143,7 @@ public class PdlClientImpl implements PdlClient {
 
     private <T> T graphqlRequest(GqlRequest<?> gqlRequest, String token, String behandlingsnummer, Class<T> gqlResponseDataClass) {
         if (behandlingsnummer == null) {
-            secureLog.info("Mottok request mot PDL med behandlingsnummer null " + gqlRequest.toString());
+            secureLog.info("Mottok graphQLrequest mot PDL med behandlingsnummer null");
         }
         try {
             String gqlResponse = rawRequest(JsonUtils.toJson(gqlRequest), token, behandlingsnummer);
