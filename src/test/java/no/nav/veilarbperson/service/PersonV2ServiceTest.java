@@ -84,7 +84,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
 
     public HentPerson.PersonNavn hentPersonNavn(PdlRequest pdlRequest) {
-        configurePdlResponse("pdl-hentPersonNavn-response.json", pdlRequest.getFnr().get());
+        configurePdlResponse("pdl-hentPersonNavn-response.json", pdlRequest.fnr().get());
         return pdlClient.hentPersonNavn(pdlRequest);
     }
 
@@ -109,7 +109,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     }
 
     public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
-        configurePdlResponse("pdl-hentTilrettelagtKommunikasjon-response.json", pdlRequest.getFnr().get());
+        configurePdlResponse("pdl-hentTilrettelagtKommunikasjon-response.json", pdlRequest.fnr().get());
         return pdlClient.hentTilrettelagtKommunikasjon(pdlRequest);
     }
 
@@ -140,9 +140,9 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void hentOpplysningerTilBarnaMedKodeOkFraPdlTest() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
         configurePdlResponse("pdl-hentPersonBolk-response.json", fnrBarn1, fnrBarn2);
-        PdlRequest pdlRequest = new PdlRequest(FNR, null);
-        hentGeografisktilknytning(pdlRequest); // Må ha med fnr fordi dette flettes
-        List<Familiemedlem> barn = personV2Service.hentFlettetPerson(pdlRequest).getBarn();
+        PersonFraPdlRequest personFraPdlRequest = new PersonFraPdlRequest(FNR, null);
+        hentGeografisktilknytning(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())); // Må ha med fnr fordi dette flettes
+        List<Familiemedlem> barn = personV2Service.hentFlettetPerson(personFraPdlRequest).getBarn();
 
         assertEquals(1, barn.size());
     }
@@ -522,7 +522,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void hentSpraakTolkInfoTest() {
         mockKodeverk();
         hentTilrettelagtKommunikasjon(new PdlRequest(FNR, null));
-        TilrettelagtKommunikasjonData tilrettelagtKommunikasjonData = personV2Service.hentSpraakTolkInfo(new PdlRequest(FNR, null));
+        TilrettelagtKommunikasjonData tilrettelagtKommunikasjonData = personV2Service.hentSpraakTolkInfo(new PersonFraPdlRequest(FNR, null));
         assertEquals("Engelsk", tilrettelagtKommunikasjonData.getTalespraak());
         assertEquals("Norsk", tilrettelagtKommunikasjonData.getTegnspraak());
     }

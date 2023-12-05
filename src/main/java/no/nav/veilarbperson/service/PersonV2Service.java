@@ -60,23 +60,23 @@ public class PersonV2Service {
         this.kontoregisterClient = kontoregisterClient;
     }
 
-    public HentPerson.Person hentPerson(PdlRequest pdlRequest) {
-        return pdlClient.hentPerson(pdlRequest);
+    public HentPerson.Person hentPerson(PersonFraPdlRequest personFraPdlRequest) {
+        return pdlClient.hentPerson(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
     }
 
-    public PersonV2Data hentFlettetPerson(PdlRequest pdlRequest) {
-        HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(pdlRequest))
+    public PersonV2Data hentFlettetPerson(PersonFraPdlRequest personFraPdlRequest) {
+        HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Fant ikke person i hentPerson operasjonen i PDL"));
 
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
         flettInnKontonummer(personV2Data);
 
-        flettInnEgenAnsatt(personV2Data, pdlRequest.getFnr());
-        flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data, pdlRequest.getBehandlingsnummer());
-        flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data, pdlRequest.getBehandlingsnummer());
-        flettDigitalKontaktinformasjon(pdlRequest.getFnr(), personV2Data);
-        flettGeografiskEnhet(pdlRequest, personV2Data);
+        flettInnEgenAnsatt(personV2Data, personFraPdlRequest.getFnr());
+        flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data, personFraPdlRequest.getBehandlingsnummer());
+        flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data, personFraPdlRequest.getBehandlingsnummer());
+        flettDigitalKontaktinformasjon(personFraPdlRequest.getFnr(), personV2Data);
+        flettGeografiskEnhet(personFraPdlRequest, personV2Data);
         flettKodeverk(personV2Data);
 
         return personV2Data;
@@ -149,8 +149,8 @@ public class PersonV2Service {
         personV2Data.setEgenAnsatt(egenAnsatt);
     }
 
-    public GeografiskTilknytning hentGeografiskTilknytning(PdlRequest pdlRequest) {
-        HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(pdlRequest);
+    public GeografiskTilknytning hentGeografiskTilknytning(PersonFraPdlRequest personFraPdlRequest) {
+        HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
 
         if (geografiskTilknytning == null) {
             return null;
@@ -165,8 +165,8 @@ public class PersonV2Service {
         };
     }
 
-    private void flettGeografiskEnhet(PdlRequest pdlRequest, PersonV2Data personV2Data) {
-        String geografiskTilknytning = Optional.ofNullable(hentGeografiskTilknytning(pdlRequest))
+    private void flettGeografiskEnhet(PersonFraPdlRequest personFraPdlRequest, PersonV2Data personV2Data) {
+        String geografiskTilknytning = Optional.ofNullable(hentGeografiskTilknytning(personFraPdlRequest))
                 .map(GeografiskTilknytning::getGeografiskTilknytning)
                 .orElse(null);
 
@@ -287,8 +287,8 @@ public class PersonV2Service {
         }
     }
 
-    public TilrettelagtKommunikasjonData hentSpraakTolkInfo(PdlRequest pdlRequest) {
-        HentPerson.HentSpraakTolk spraakTolkInfo = pdlClient.hentTilrettelagtKommunikasjon(pdlRequest);
+    public TilrettelagtKommunikasjonData hentSpraakTolkInfo(PersonFraPdlRequest personFraPdlRequest) {
+        HentPerson.HentSpraakTolk spraakTolkInfo = pdlClient.hentTilrettelagtKommunikasjon(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
 
         if (spraakTolkInfo.getTilrettelagtKommunikasjon().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT,
@@ -308,8 +308,8 @@ public class PersonV2Service {
         return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
     }
 
-    public VergeOgFullmaktData hentVergeEllerFullmakt(PdlRequest pdlRequest) {
-        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(pdlRequest);
+    public VergeOgFullmaktData hentVergeEllerFullmakt(PersonFraPdlRequest personFraPdlRequest) {
+        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
 
         if (vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke verge eller fullmakt i PDL");
@@ -317,7 +317,7 @@ public class PersonV2Service {
 
         VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
 
-        flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, pdlRequest.getBehandlingsnummer());
+        flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, personFraPdlRequest.getBehandlingsnummer());
         flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
 
         return vergeOgFullmaktData;
@@ -359,8 +359,8 @@ public class PersonV2Service {
         return null;
     }
 
-    public PersonNavnV2 hentNavn(PdlRequest pdlRequest) {
-        HentPerson.PersonNavn personNavn = pdlClient.hentPersonNavn(pdlRequest);
+    public PersonNavnV2 hentNavn(PersonFraPdlRequest personFraPdlRequest) {
+        HentPerson.PersonNavn personNavn = pdlClient.hentPersonNavn(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
 
         if (personNavn.getNavn().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke navn til person");

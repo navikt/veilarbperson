@@ -5,7 +5,7 @@ import no.nav.common.json.JsonUtils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.*;
 import no.nav.veilarbperson.client.pdl.domain.*;
-import no.nav.veilarbperson.domain.PdlRequest;
+import no.nav.veilarbperson.domain.PersonFraPdlRequest;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;

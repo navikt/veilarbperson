@@ -7,7 +7,7 @@ import no.nav.poao_tilgang.poao_tilgang_test_core.NavContext;
 import no.nav.poao_tilgang.poao_tilgang_test_core.PrivatBruker;
 import no.nav.veilarbperson.config.ApplicationTestConfig;
 import no.nav.veilarbperson.controller.v3.PersonV3Controller;
-import no.nav.veilarbperson.domain.PdlRequest;
+import no.nav.veilarbperson.domain.PersonFraPdlRequest;
 import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonV2Service;
@@ -99,7 +99,7 @@ public class PersonV3ControllerTest {
     public void returnerer_person_uten_behandlingsnummer_hent_person() throws Exception {
         PrivatBruker ny = navContext.getPrivatBrukere().ny();
         NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
-        when(personV2Service.hentFlettetPerson(new PdlRequest(TEST_FNR, null))).thenReturn(new PersonV2Data().setFodselsnummer(TEST_FNR).setFornavn("Knut").setMellomnavn("Knutsen"));
+        when(personV2Service.hentFlettetPerson(new PersonFraPdlRequest(TEST_FNR, null))).thenReturn(new PersonV2Data().setFodselsnummer(TEST_FNR).setFornavn("Knut").setMellomnavn("Knutsen"));
 
         String expectedJson = "{\"fornavn\":\"Knut\",\"mellomnavn\":\"Knutsen\",\"fodselsnummer\":\"12345678900\"}";
 
@@ -107,7 +107,7 @@ public class PersonV3ControllerTest {
                 .perform(
                         post("/api/v3/hent-person")
                                 .contentType(APPLICATION_JSON)
-                                .content(JsonUtils.toJson(new PdlRequest(TEST_FNR, null)))
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(TEST_FNR, null)))
                                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                                 .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                 .header("test_ident", navAnsatt.getNavIdent())
@@ -121,7 +121,7 @@ public class PersonV3ControllerTest {
     public void returnerer_person_med_behandlingsnummer_hent_person() throws Exception {
         PrivatBruker ny = navContext.getPrivatBrukere().ny();
         NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
-        when(personV2Service.hentFlettetPerson(new PdlRequest(TEST_FNR, "B555"))).thenReturn(new PersonV2Data().setFodselsnummer(TEST_FNR).setFornavn("Knut").setMellomnavn("Knutsen"));
+        when(personV2Service.hentFlettetPerson(new PersonFraPdlRequest(TEST_FNR, "B555"))).thenReturn(new PersonV2Data().setFodselsnummer(TEST_FNR).setFornavn("Knut").setMellomnavn("Knutsen"));
 
         String expectedJson = "{\"fornavn\":\"Knut\",\"mellomnavn\":\"Knutsen\",\"fodselsnummer\":\"12345678900\"}";
 
@@ -129,7 +129,7 @@ public class PersonV3ControllerTest {
                 .perform(
                         post("/api/v3/hent-person")
                                 .contentType(APPLICATION_JSON)
-                                .content(JsonUtils.toJson(new PdlRequest(TEST_FNR, "B555")))
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(TEST_FNR, "B555")))
                                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                                 .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                 .header("test_ident", navAnsatt.getNavIdent())
