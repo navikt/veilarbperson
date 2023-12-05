@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import static no.nav.veilarbperson.utils.SecureLog.secureLog;
 
 @Slf4j
 @RestController
@@ -37,12 +36,6 @@ public class PersonV3Controller {
     public PersonV2Data hentPerson(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        if (personFraPdlRequest.getBehandlingsnummer() == null) {
-            secureLog.info("Mottok request mot hent-person med behandlingsnummer null");
-        }else {
-            secureLog.info("Mottok request mot hent-person med behandlingsnummer : " + personFraPdlRequest.getBehandlingsnummer());
-        }
-            //TODO: Remove log before merging/prodsetting!
         return personV2Service.hentFlettetPerson(personFraPdlRequest);
     }
 
@@ -65,11 +58,6 @@ public class PersonV3Controller {
     public GeografiskTilknytning geografisktilknytning(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         Fnr fodselsnummer = hentIdentForEksternEllerIntern(personFraPdlRequest.getFnr());
         authService.sjekkLesetilgang(fodselsnummer);
-        if (personFraPdlRequest.getBehandlingsnummer() == null) {
-            secureLog.info("Mottok request mot hent-geografisktilknytning med behandlingsnummer null");
-        } else {
-            secureLog.info("Mottok request mot hent-geografisktilknytning med behandlingsnummer : " + personFraPdlRequest.getBehandlingsnummer());
-        }
         return personV2Service.hentGeografiskTilknytning(personFraPdlRequest);
     }
 
@@ -109,11 +97,6 @@ public class PersonV3Controller {
     public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        if (personFraPdlRequest.getBehandlingsnummer() == null) {
-            secureLog.info("Mottok request mot hent-vergeOgFullmakt med behandlingsnummer null");
-        } else {
-            secureLog.info("Mottok request mot hent-vergeOgFullmakt med behandlingsnummer : " + personFraPdlRequest.getBehandlingsnummer());
-        }
         return personV2Service.hentVergeEllerFullmakt(personFraPdlRequest);
     }
 
@@ -122,11 +105,6 @@ public class PersonV3Controller {
     public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        if (personFraPdlRequest.getBehandlingsnummer() == null) {
-            secureLog.info("Mottok request mot hent-tolk med behandlingsnummer null");
-        } else {
-            secureLog.info("Mottok request mot hent-tolk med behandlingsnummer : " + personFraPdlRequest.getBehandlingsnummer());
-        }
         return personV2Service.hentSpraakTolkInfo(personFraPdlRequest);
     }
 
