@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import static no.nav.veilarbperson.utils.SecureLog.secureLog;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -32,10 +34,16 @@ public class PersonV3Controller {
 
     @PostMapping("/hent-person")
     @Operation(summary = "Henter informasjon om en person fra PDL")
-    public PersonV2Data hentPerson(@RequestBody PersonRequest personRequest) {
+    public PersonV2Data hentPerson(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personRequest.getFnr());
-        return personV2Service.hentFlettetPerson(personRequest.getFnr());
+        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
+        if (personFraPdlRequest.getBehandlingsnummer() == null) {
+            secureLog.info("Mottok request mot hent-person med behandlingsnummer null");
+        }else {
+            secureLog.info("Mottok request mot hent-person med behandlingsnummer : " + personFraPdlRequest.getBehandlingsnummer());
+        }
+            //TODO: Remove log before merging/prodsetting!
+        return personV2Service.hentFlettetPerson(personFraPdlRequest);
     }
 
     @PostMapping("/person/hent-aktorid")
@@ -54,10 +62,15 @@ public class PersonV3Controller {
 
     @PostMapping("/person/hent-geografisktilknytning")
     @Operation(summary = "Henter persons geografisk tilknytning")
-    public GeografiskTilknytning geografisktilknytning(@RequestBody PersonRequest personRequest) {
-        Fnr fodselsnummer = hentIdentForEksternEllerIntern(personRequest.getFnr());
+    public GeografiskTilknytning geografisktilknytning(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+        Fnr fodselsnummer = hentIdentForEksternEllerIntern(personFraPdlRequest.getFnr());
         authService.sjekkLesetilgang(fodselsnummer);
-        return personV2Service.hentGeografiskTilknytning(fodselsnummer);
+        if (personFraPdlRequest.getBehandlingsnummer() == null) {
+            secureLog.info("Mottok request mot hent-geografisktilknytning med behandlingsnummer null");
+        } else {
+            secureLog.info("Mottok request mot hent-geografisktilknytning med behandlingsnummer : " + personFraPdlRequest.getBehandlingsnummer());
+        }
+        return personV2Service.hentGeografiskTilknytning(personFraPdlRequest);
     }
 
     @PostMapping("/person/hent-cv_jobbprofil")
@@ -87,33 +100,42 @@ public class PersonV3Controller {
     public Malform malform(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personRequest.getFnr());
-
         String malform = personV2Service.hentMalform(personRequest.getFnr());
         return new Malform(malform);
     }
 
     @PostMapping("/person/hent-vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
-    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestBody PersonRequest personRequest) {
+    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personRequest.getFnr());
-        return personV2Service.hentVergeEllerFullmakt(personRequest.getFnr());
+        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
+        if (personFraPdlRequest.getBehandlingsnummer() == null) {
+            secureLog.info("Mottok request mot hent-vergeOgFullmakt med behandlingsnummer null");
+        } else {
+            secureLog.info("Mottok request mot hent-vergeOgFullmakt med behandlingsnummer : " + personFraPdlRequest.getBehandlingsnummer());
+        }
+        return personV2Service.hentVergeEllerFullmakt(personFraPdlRequest);
     }
 
     @PostMapping("/person/hent-tolk")
     @Operation(summary = "Henter tolk informajon til en person fra PDL")
-    public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestBody PersonRequest personRequest) {
+    public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personRequest.getFnr());
-        return personV2Service.hentSpraakTolkInfo(personRequest.getFnr());
+        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
+        if (personFraPdlRequest.getBehandlingsnummer() == null) {
+            secureLog.info("Mottok request mot hent-tolk med behandlingsnummer null");
+        } else {
+            secureLog.info("Mottok request mot hent-tolk med behandlingsnummer : " + personFraPdlRequest.getBehandlingsnummer());
+        }
+        return personV2Service.hentSpraakTolkInfo(personFraPdlRequest);
     }
 
     @PostMapping("/person/hent-navn")
     @Operation(summary = "Henter navn til en person fra PDL")
-    public PersonNavnV2 hentNavn(@RequestBody PersonRequest personRequest) {
+    public PersonNavnV2 hentNavn(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personRequest.getFnr());
-        return personV2Service.hentNavn(personRequest.getFnr());
+        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
+        return personV2Service.hentNavn(personFraPdlRequest);
     }
 
     @PostMapping("/person/hent-postadresse")

@@ -24,10 +24,13 @@ import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
+import no.nav.veilarbperson.client.pdl.PdlClientImpl;
+import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
+import no.nav.veilarbperson.domain.PersonFraPdlRequest;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
@@ -211,33 +214,34 @@ public class ClientTestConfig {
     @Bean
     public PdlClient pdlClient() {
         return new PdlClient() {
+
             @Override
-            public HentPerson.Person hentPerson(Fnr personIdent) {
+            public HentPerson.Person hentPerson(PdlRequest pdlRequest) {
                 return null;
             }
 
             @Override
-            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent) {
+            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(PdlRequest pdlRequest) {
                 return null;
             }
 
             @Override
-            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent) {
+            public HentPerson.PersonNavn hentPersonNavn(PdlRequest pdlRequest) {
                 return null;
             }
 
             @Override
-            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter) {
+            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, String behandlingsnummer) {
                 return null;
             }
 
             @Override
-            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent) {
+            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(PdlRequest pdlRequest) {
                 return null;
             }
 
             @Override
-            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent) {
+            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
                 return null;
             }
 
@@ -262,6 +266,7 @@ public class ClientTestConfig {
             }
         };
     }
+
     @Bean
     public SelfTestChecks selfTestChecks() {
         return mock(SelfTestChecks.class);

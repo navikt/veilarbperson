@@ -2,9 +2,11 @@ package no.nav.veilarbperson.utils.mappers;
 
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPerson;
+import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
+import no.nav.veilarbperson.domain.PersonFraPdlRequest;
 import no.nav.veilarbperson.domain.VergeOgFullmaktData;
 import no.nav.veilarbperson.utils.TestUtils;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
@@ -24,7 +26,7 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
 
     public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
         configurePdlResponse("pdl-hentVergeOgFullmakt-response.json");
-        return getPdlClient().hentVergeOgFullmakt(fnr);
+        return getPdlClient().hentVergeOgFullmakt(new PdlRequest(fnr, null));
     }
 
     @Test

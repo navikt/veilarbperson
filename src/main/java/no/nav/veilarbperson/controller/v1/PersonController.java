@@ -4,11 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
-import no.nav.veilarbperson.domain.AktoerId;
-import no.nav.veilarbperson.domain.GeografiskTilknytning;
-import no.nav.veilarbperson.domain.Malform;
-import no.nav.veilarbperson.domain.PersonNavn;
-import no.nav.veilarbperson.domain.PersonRequestBody;
+import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.CvJobbprofilService;
 import no.nav.veilarbperson.service.PersonV2Service;
@@ -74,7 +70,7 @@ public class PersonController {
     public GeografiskTilknytning geografisktilknytning(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         Fnr fodselsnummer = hentIdentForEksternEllerIntern(fnr);
         authService.sjekkLesetilgang(fodselsnummer);
-        return personV2Service.hentGeografiskTilknytning(fodselsnummer);
+        return personV2Service.hentGeografiskTilknytning(new PersonFraPdlRequest(fodselsnummer, null));
     }
 
     @Deprecated
