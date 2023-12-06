@@ -8,7 +8,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 
 public class PamClientImplTest {
 
@@ -21,9 +20,8 @@ public class PamClientImplTest {
         String apiUrl = "http://localhost:" + wireMockRule.port();
         PamClientImpl pamClient = new PamClientImpl(apiUrl, () -> "SYSTEM_TOKEN");
 
-        givenThat(get("/rest/v2/arbeidssoker?erManuell=true")
+        givenThat(get("/rest/v2/arbeidssoker/1234?erManuell=true")
                 .withHeader("Authorization", equalTo("Bearer SYSTEM_TOKEN"))
-                .withHeader("fnr", equalTo("1234"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(pamCvJobbprofilJson))
