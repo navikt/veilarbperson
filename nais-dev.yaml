@@ -86,9 +86,9 @@ spec:
     - name: KONTAKT_OG_RESERVASJONSREGISTERET_SCOPE
       value: api://dev-gcp.team-rocket.digdir-krr-proxy/.default
     - name: PAM_CV_API_SCOPE
-      value: api://dev-fss.teampam.pam-cv-api/.default
+      value: api://dev-gcp.teampam.pam-cv-api-gcp/.default
     - name: PAM_CV_API_URL
-      value: https://pam-cv-api.dev.adeo.no/pam-cv-api
+      value: https://pam-cv-api-gcp.intern.dev.nav.no/pam-cv-api
     - name: PDL_API_SCOPE
       value: api://dev-fss.pdl.pdl-api/.default
     - name: PDL_API_URL
