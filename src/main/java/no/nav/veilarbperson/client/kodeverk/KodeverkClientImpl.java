@@ -19,11 +19,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
 import static java.lang.String.format;
 import static no.nav.common.utils.UrlUtils.joinPaths;
 import static org.springframework.http.HttpHeaders.ACCEPT;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -31,10 +33,13 @@ public class KodeverkClientImpl implements KodeverkClient {
 
     private final String kodeverkUrl;
 
+    private final Supplier<String> systemUserTokenProvider;
+
     private final OkHttpClient client;
 
-    public KodeverkClientImpl(String kodeverkUrl) {
+    public KodeverkClientImpl(String kodeverkUrl, Supplier<String> systemUserTokenProvider) {
         this.kodeverkUrl = kodeverkUrl;
+        this.systemUserTokenProvider = systemUserTokenProvider;
         this.client = RestClient.baseClient();
     }
 
@@ -44,6 +49,7 @@ public class KodeverkClientImpl implements KodeverkClient {
         Request request = new Request.Builder()
                 .url(joinPaths(kodeverkUrl, format("/api/v1/kodeverk/%s/koder/betydninger?ekskluderUgyldige=false&spraak=nb", kodeverksnavn)))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -60,7 +66,12 @@ public class KodeverkClientImpl implements KodeverkClient {
 
     @Override
     public HealthCheckResult checkHealth() {
-        return HealthCheckUtils.pingUrl(joinPaths(kodeverkUrl, "/internal/isAlive"), client);
+        Request request = new Request.Builder()
+                .url(joinPaths(kodeverkUrl, "/rest/ping"))
+                .header(AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
+                .build();
+
+        return HealthCheckUtils.pingUrl(request, client);
     }
 
     private Map<String, String> parseKodeverkBetydningJson(String responseJson) {

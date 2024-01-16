@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "app.env")
 public class EnvironmentProperties {
     private String kodeverkUrl;
+    private String kodeverkScope;
     private String krrScope;
     private String krrUrl;
     private String loginserviceIdportenAudience;
