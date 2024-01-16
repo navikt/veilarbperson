@@ -91,8 +91,9 @@ public class ClientConfig {
     }
 
     @Bean
-    public KodeverkClient kodeverkClient(EnvironmentProperties properties) {
-        return new KodeverkClientImpl(properties.getKodeverkUrl());
+    public KodeverkClient kodeverkClient(EnvironmentProperties properties, MachineToMachineTokenClient tokenClient) {
+        return new KodeverkClientImpl(properties.getKodeverkUrl(),
+                () -> tokenClient.createMachineToMachineToken(properties.getKodeverkScope()));
     }
 
     @Bean

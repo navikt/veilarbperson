@@ -21,9 +21,10 @@ public class KodeverkClientImplTest {
     public void skal_hente_beskrivelse_for_sivilstander() {
         String kodeverkJson = TestUtils.readTestResourceFile("kodeverk-sivilstander.json");
         String apiUrl = "http://localhost:" + wireMockRule.port();
-        KodeverkClientImpl kodeverkClient = new KodeverkClientImpl(apiUrl);
+        KodeverkClientImpl kodeverkClient = new KodeverkClientImpl(apiUrl, () -> "TOKEN");
 
         givenThat(get(anyUrl())
+                .withHeader("Authorization", equalTo("Bearer TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(kodeverkJson))
@@ -37,9 +38,10 @@ public class KodeverkClientImplTest {
     public void skal_hente_beskrivelse_for_landkoder() {
         String kodeverkJson = TestUtils.readTestResourceFile("kodeverk-landkoder.json");
         String apiUrl = "http://localhost:" + wireMockRule.port();
-        KodeverkClientImpl kodeverkClient = new KodeverkClientImpl(apiUrl);
+        KodeverkClientImpl kodeverkClient = new KodeverkClientImpl(apiUrl, () -> "TOKEN");
 
         givenThat(get(anyUrl())
+                .withHeader("Authorization", equalTo("Bearer TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(kodeverkJson))
@@ -54,9 +56,10 @@ public class KodeverkClientImplTest {
     public void skal_hente_beskrivelse_for_postnummer() {
         String kodeverkJson = TestUtils.readTestResourceFile("kodeverk-postnummer.json");
         String apiUrl = "http://localhost:" + wireMockRule.port();
-        KodeverkClientImpl kodeverkClient = new KodeverkClientImpl(apiUrl);
+        KodeverkClientImpl kodeverkClient = new KodeverkClientImpl(apiUrl, () -> "TOKEN");
 
         givenThat(get(anyUrl())
+                .withHeader("Authorization", equalTo("Bearer TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(kodeverkJson))
@@ -70,9 +73,10 @@ public class KodeverkClientImplTest {
     public void testFindingMostRecentValue() {
         String kodeverkJson = TestUtils.readTestResourceFile("kodeverk-spraak.json");
         String apiUrl = "http://localhost:" + wireMockRule.port();
-        KodeverkClientImpl kodeverkClient = new KodeverkClientImpl(apiUrl);
+        KodeverkClientImpl kodeverkClient = new KodeverkClientImpl(apiUrl, () -> "TOKEN");
 
         givenThat(get(anyUrl())
+                .withHeader("Authorization", equalTo("Bearer TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(kodeverkJson))
