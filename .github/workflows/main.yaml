@@ -78,7 +78,7 @@ jobs:
   deploy-prod:
     name: Deploy application to prod
     if: github.ref == 'refs/heads/main'
-    needs: deploy-dev
+    needs: [deploy-dev, build-and-push]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
