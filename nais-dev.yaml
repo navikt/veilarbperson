@@ -80,9 +80,9 @@ spec:
 
   env:
     - name: KODEVERK_URL
-      value: http://kodeverk.team-rocket.svc.nais.local
+      value: https://kodeverk-api.nav.no
     - name: KODEVERK_SCOPE
-      value: api://dev-fss.team-rocket.kodeverk/.default
+      value: api://dev-gcp.team-rocket.kodeverk-api/.default
     - name: KONTAKT_OG_RESERVASJONSREGISTERET_API_URL
       value: https://digdir-krr-proxy.intern.dev.nav.no
     - name: KONTAKT_OG_RESERVASJONSREGISTERET_SCOPE
