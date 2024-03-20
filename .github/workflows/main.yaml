@@ -36,8 +36,9 @@ jobs:
     outputs:
       image: ${{ steps.docker-build-push.outputs.image }}
     permissions:
-      id-token: write
+      packages: write
       contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -65,8 +66,9 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     permissions:
+      packages: write
+      contents: read
       id-token: write
-      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -84,8 +86,9 @@ jobs:
     needs: [deploy-dev, build-and-push]
     runs-on: ubuntu-latest
     permissions:
+      packages: write
+      contents: read
       id-token: write
-      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -102,8 +105,9 @@ jobs:
     needs: deploy-prod
     runs-on: ubuntu-latest
     permissions:
+      packages: write
+      contents: read
       id-token: write
-      contents: write
     steps:
       - name: Create release
         uses: softprops/action-gh-release@v1
