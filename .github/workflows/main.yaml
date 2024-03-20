@@ -76,6 +76,7 @@ jobs:
       - name: Deploy application
         uses: nais/deploy/actions/deploy@v1
         env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: nais-dev.yaml
           VAR: image=${{ needs.build-and-push.outputs.image }}
