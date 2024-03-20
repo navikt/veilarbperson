@@ -240,7 +240,7 @@
         <dependency>
             <groupId>no.bekk.bekkopen</groupId>
             <artifactId>nocommons</artifactId>
-            <version>0.15.0</version>
+            <version>0.16.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
