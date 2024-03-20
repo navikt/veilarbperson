@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.controller;
+package no.nav.veilarbperson.controller.v2;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +26,16 @@ public class PersonV2Controller {
 
     private final KontoregisterClient kontoregisterClient;
 
+    @Deprecated
     @GetMapping
     @Operation(summary = "Henter informasjon om en person fra PDL")
     public PersonV2Data hentPerson(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentFlettetPerson(fnr);
+        return personV2Service.hentFlettetPerson(new PersonFraPdlRequest(fnr, null));
     }
 
+    @Deprecated
     @GetMapping("/malform")
     @Operation(summary = "Henter malform fra DIGDIR tjeneste")
     public Malform malform(@RequestParam("fnr") Fnr fnr) {
@@ -44,30 +46,34 @@ public class PersonV2Controller {
         return new Malform(malform);
     }
 
+    @Deprecated
     @GetMapping("/vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
     public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentVergeEllerFullmakt(fnr);
+        return personV2Service.hentVergeEllerFullmakt(new PersonFraPdlRequest(fnr, null));
     }
 
+    @Deprecated
     @GetMapping("/tolk")
     @Operation(summary = "Henter tolk informajon til en person fra PDL")
     public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentSpraakTolkInfo(fnr);
+        return personV2Service.hentSpraakTolkInfo(new PersonFraPdlRequest(fnr, null));
     }
 
+    @Deprecated
     @GetMapping("/navn")
     @Operation(summary = "Henter navn til en person fra PDL")
     public PersonNavnV2 hentNavn(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentNavn(fnr);
+        return personV2Service.hentNavn(new PersonFraPdlRequest(fnr, null));
     }
 
+    @Deprecated
     @GetMapping("/postadresse")
     @Operation(summary = "Henter postadresse til en person fra regoppslag")
     public RegoppslagResponseDTO hentPostadresse(@RequestParam("fnr") Fnr fnr) {

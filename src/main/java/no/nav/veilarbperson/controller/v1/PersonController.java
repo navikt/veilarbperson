@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.controller;
+package no.nav.veilarbperson.controller.v1;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -26,7 +26,7 @@ public class PersonController {
 
     private final RegistreringService registreringService;
 
-
+    @Deprecated
     @GetMapping("/aktorid")
     public AktoerId aktorid(@RequestParam("fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
@@ -34,48 +34,66 @@ public class PersonController {
         return new AktoerId(authService.getAktorId(fnr));
     }
 
+    @Deprecated
     @GetMapping("/navn")
     @Operation(summary = "Henter navnet til en person")
     public PersonNavn navn(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         throw new ResponseStatusException(HttpStatus.GONE, "Bytt til v2 endepunkt");
     }
 
+    @Deprecated
     @GetMapping("/{fodselsnummer}/malform")
     @Operation(summary = "Henter målform til en person")
     public Malform malform(@PathVariable("fodselsnummer") Fnr fnr) {
         throw new ResponseStatusException(HttpStatus.GONE,
                 "Bytt til v2 endepunkt");
     }
-
+    @Deprecated
     @GetMapping("/{fodselsnummer}/tilgangTilBruker")
     public boolean tilgangTilBruker(@PathVariable("fodselsnummer") Fnr fodselsnummer) {
         return authService.harLesetilgang(fodselsnummer);
     }
 
+    // TODO: 21/08/2023 denne skal slettes etter vi har ryddet opp i kode i de andre appene da dkif slutter å tilby tjenesten
     @GetMapping("/{fodselsnummer}/harNivaa4")
     public HarLoggetInnRespons harNivaa4(@PathVariable("fodselsnummer") Fnr fodselsnummer) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fodselsnummer);
-        return personV2Service.hentHarNivaa4(fodselsnummer);
+        return new HarLoggetInnRespons()
+                .setErRegistrertIdPorten(true)
+                .setHarbruktnivaa4(true)
+                .setPersonidentifikator(fodselsnummer);
     }
 
+    @Deprecated
     @GetMapping("/geografisktilknytning")
     public GeografiskTilknytning geografisktilknytning(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         Fnr fodselsnummer = hentIdentForEksternEllerIntern(fnr);
         authService.sjekkLesetilgang(fodselsnummer);
-        return personV2Service.hentGeografiskTilknytning(fodselsnummer);
+        return personV2Service.hentGeografiskTilknytning(new PersonFraPdlRequest(fodselsnummer, null));
     }
 
+    @Deprecated
     @GetMapping("/cv_jobbprofil")
     public ResponseEntity<String> cvOgJobbprofil(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         return cvJobbprofilService.hentCvJobbprofilJson(fnr);
     }
 
+    @Deprecated
     @GetMapping("/registrering")
     public ResponseEntity<String> registrering(@RequestParam(value = "fnr") Fnr fnr) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
         return registreringService.hentRegistrering(fnr);
+    }
+
+    @Deprecated
+    @PostMapping("/registrering/endringer")
+    public ResponseEntity<String> endringIRegistreringdata(@RequestBody PersonRequestBody personRequestBody) {
+        Fnr fnr = Fnr.of(personRequestBody.fodselsnummer());
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(fnr);
+        return registreringService.hentEndringIRegistreringsdata(fnr);
     }
 
     // TODO: Det er hårete å måtte skille på ekstern og intern

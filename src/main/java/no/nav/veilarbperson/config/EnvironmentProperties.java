@@ -8,10 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 @ConfigurationProperties(prefix = "app.env")
 public class EnvironmentProperties {
-    private String abacUrl;
-    private String difiAuthlevelUrl;
-    private String difiTokenUrl;
     private String kodeverkUrl;
+    private String kodeverkScope;
     private String krrScope;
     private String krrUrl;
     private String loginserviceIdportenAudience;
@@ -32,11 +30,12 @@ public class EnvironmentProperties {
     private String skjermedePersonerPipScope;
     private String skjermedePersonerPipUrl;
     private String soapStsUrl;
-    private String unleashUrl;
     private String veilarboppfolgingScope;
     private String veilarboppfolgingUrl;
     private String veilarbregistreringScope;
     private String veilarbregistreringUrl;
     private String kontoregisterScope;
     private String kontoregisterUrl;
+    private String aiaBackendUrl;
+    private String aiaBackendScope;
 }

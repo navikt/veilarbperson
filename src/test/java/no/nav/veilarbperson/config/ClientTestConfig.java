@@ -4,7 +4,6 @@ import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.BrukerIdenter;
 import no.nav.common.client.norg2.Enhet;
 import no.nav.common.client.norg2.Norg2Client;
-import no.nav.common.featuretoggle.UnleashClient;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.selftest.SelfTestChecks;
 import no.nav.common.metrics.MetricsClient;
@@ -13,23 +12,25 @@ import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.difi.DifiClient;
-import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
+import no.nav.veilarbperson.client.aiabackend.AiaBackendClient;
+import no.nav.veilarbperson.client.aiabackend.EndringIRegistreringsdataRequestDTO;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
 import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
+import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
-import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
+import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -145,15 +146,6 @@ public class ClientTestConfig {
         };
     }
 
-    @Bean
-    public DifiClient difiClient() {
-        return fnr -> {
-            HarLoggetInnRespons harLoggetInnRespons = new HarLoggetInnRespons();
-            harLoggetInnRespons.setHarbruktnivaa4(true);
-//                harLoggetInnRespons.setPersonidentifikator(fnr);
-            return harLoggetInnRespons;
-        };
-    }
 
     @Bean
     public SkjermetClient skjermetClient() {
@@ -202,35 +194,52 @@ public class ClientTestConfig {
     }
 
     @Bean
+    public AiaBackendClient aiaBackendClient() {
+        return new AiaBackendClient() {
+            @NotNull
+            @Override
+            public Response hentEndringIRegistreringsdata(@NotNull EndringIRegistreringsdataRequestDTO endringIRegistreringsdataRequestDTO) {
+                return null;
+            }
+
+            @Override
+            public HealthCheckResult checkHealth() {
+                return HealthCheckResult.healthy();
+            }
+        };
+    }
+
+    @Bean
     public PdlClient pdlClient() {
         return new PdlClient() {
+
             @Override
-            public HentPerson.Person hentPerson(Fnr personIdent) {
+            public HentPerson.Person hentPerson(PdlRequest pdlRequest) {
                 return null;
             }
 
             @Override
-            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent) {
+            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(PdlRequest pdlRequest) {
                 return null;
             }
 
             @Override
-            public HentPerson.PersonNavn hentPersonNavn(Fnr personIdent) {
+            public HentPerson.PersonNavn hentPersonNavn(PdlRequest pdlRequest) {
                 return null;
             }
 
             @Override
-            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter) {
+            public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, String behandlingsnummer) {
                 return null;
             }
 
             @Override
-            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent) {
+            public HentPerson.GeografiskTilknytning hentGeografiskTilknytning(PdlRequest pdlRequest) {
                 return null;
             }
 
             @Override
-            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent) {
+            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
                 return null;
             }
 
@@ -254,11 +263,6 @@ public class ClientTestConfig {
                 return HealthCheckResult.healthy();
             }
         };
-    }
-
-    @Bean
-    public UnleashClient unleashClient() {
-        return mock(UnleashClient.class);
     }
 
     @Bean

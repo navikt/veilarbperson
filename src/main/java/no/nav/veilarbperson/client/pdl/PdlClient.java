@@ -2,20 +2,21 @@ package no.nav.veilarbperson.client.pdl;
 
 import no.nav.common.health.HealthCheck;
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
+import no.nav.veilarbperson.domain.PersonFraPdlRequest;
 
 import java.util.List;
 
 public interface PdlClient extends HealthCheck {
+    HentPerson.Person hentPerson(PdlRequest pdlRequest);
 
-    HentPerson.Person hentPerson(Fnr personIdent);
+    HentPerson.VergeOgFullmakt hentVergeOgFullmakt(PdlRequest pdlRequest);
 
-    HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr personIdent);
+    HentPerson.PersonNavn hentPersonNavn(PdlRequest pdlRequest);
 
-    HentPerson.PersonNavn hentPersonNavn(Fnr personIdent);
+    List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, String behandlingsnummer);
 
-    List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter);
+    HentPerson.GeografiskTilknytning hentGeografiskTilknytning(PdlRequest pdlRequest);
 
-    HentPerson.GeografiskTilknytning hentGeografiskTilknytning(Fnr personIdent);
-
-    HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(Fnr personIdent);
+    HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest);
 }

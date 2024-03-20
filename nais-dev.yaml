@@ -6,7 +6,7 @@ metadata:
   labels:
     team: pto
 spec:
-  image: ghcr.io/navikt/veilarbperson/veilarbperson:{{version}}
+  image: {{image}}
   port: 8080
   webproxy: true
   ingresses:
@@ -46,8 +46,8 @@ spec:
         mountPath: /var/run/secrets/nais.io/service_user_sbs
       - kvPath: /kv/preprod/fss/veilarbperson/q1
         mountPath: /var/run/secrets/nais.io/vault
-      - kvPath: /apikey/apigw/dev/eksternapp.difi.idporten.authlevel/veilarbperson_q1
-        mountPath: /var/run/secrets/nais.io/authlevel
+  secureLogs:
+    enabled: true
   azure:
     application:
       enabled: true
@@ -74,22 +74,23 @@ spec:
         - application: mulighetsrommet-api
           namespace: team-mulighetsrommet
           cluster: dev-gcp
+        - application: arbeidssokerregistrering-for-veileder
+          namespace: paw
+          cluster: dev-gcp
 
   env:
-    - name: DIFI_IDPORTEN_AUTHLEVEL_URL
-      value: https://api-gw-q1.adeo.no/ekstern/difi/authlevel/rest/v1/sikkerhetsnivaa/
-    - name: DIFI_IDPORTEN_TOKEN_URL
-      value: https://api-gw-q1.adeo.no/ekstern/difi/idporten-oidc-provider/token
     - name: KODEVERK_URL
-      value: http://kodeverk.default.svc.nais.local
+      value: http://kodeverk.team-rocket.svc.nais.local
+    - name: KODEVERK_SCOPE
+      value: api://dev-fss.team-rocket.kodeverk/.default
     - name: KONTAKT_OG_RESERVASJONSREGISTERET_API_URL
       value: https://digdir-krr-proxy.intern.dev.nav.no
     - name: KONTAKT_OG_RESERVASJONSREGISTERET_SCOPE
       value: api://dev-gcp.team-rocket.digdir-krr-proxy/.default
     - name: PAM_CV_API_SCOPE
-      value: api://dev-fss.teampam.pam-cv-api/.default
+      value: api://dev-gcp.teampam.pam-cv-api-gcp/.default
     - name: PAM_CV_API_URL
-      value: https://pam-cv-api.dev.adeo.no/pam-cv-api
+      value: https://pam-cv-api-gcp.intern.dev.nav.no/pam-cv-api
     - name: PDL_API_SCOPE
       value: api://dev-fss.pdl.pdl-api/.default
     - name: PDL_API_URL
@@ -118,6 +119,10 @@ spec:
       value: api://dev-gcp.okonomi.sokos-kontoregister-person/.default
     - name: KONTOREGISTER_PERSON_V1_URL
       value: https://sokos-kontoregister-person.intern.dev.nav.no
+    - name: AIA_BACKEND_URL
+      value: https://www.intern.dev.nav.no/aia-backend
+    - name: AIA_BACKEND_SCOPE
+      value: api://dev-gcp.paw.paw-arbeidssoker-besvarelse/.default
   envFrom:
     - configmap: pto-config
     - configmap: loginservice-idporten

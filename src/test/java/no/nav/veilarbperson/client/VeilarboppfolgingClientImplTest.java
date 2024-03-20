@@ -23,7 +23,8 @@ public class VeilarboppfolgingClientImplTest {
         String apiUrl = "http://localhost:" + wireMockRule.port();
         VeilarboppfolgingClientImpl veilarboppfolgingClient = new VeilarboppfolgingClientImpl(apiUrl, () -> "USER_TOKEN");
 
-        givenThat(get("/api/underoppfolging?fnr=1234")
+        givenThat(post("/api/v2/hent-underOppfolging")
+                .withRequestBody(equalToJson("{\"fnr\": \"1234\"}"))
                 .withHeader("Authorization", equalTo("Bearer USER_TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
