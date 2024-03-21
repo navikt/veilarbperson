@@ -276,14 +276,20 @@ public class PersonV2Service {
 
     /* Legger telefonnummer fra PDL og KRR til en liste. Hvis de er like da kan liste inneholde kun en av dem */
     public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, String sistOppdatert, List<Telefon> telefonListe) {
+        int prioritet;
         boolean ikkeKrrTelefonIListe = telefonNummerFraKrr != null
                 && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
         if (ikkeKrrTelefonIListe) {
             telefonListe.add(new Telefon()
-                    .setPrioritet(telefonListe.size() + 1 + "")
+                    .setPrioritet(1 + "")
                     .setTelefonNr(telefonNummerFraKrr)
                     .setRegistrertDato(sistOppdatert)
                     .setMaster("KRR"));
+            for (Telefon telefon : telefonListe) {
+                if (telefon.getMaster().equals("PDL")) {
+                    prioritet = Integer.parseInt(telefon.getPrioritet()) + 1;
+                    telefon.setPrioritet(prioritet + "");}
+            }
         }
     }
 
