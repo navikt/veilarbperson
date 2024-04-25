@@ -1,6 +1,8 @@
 package no.nav.veilarbperson.config;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.common.audit_log.log.AuditLogger;
+import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.CachedAktorOppslagClient;
 import no.nav.common.client.aktoroppslag.PdlAktorOppslagClient;
@@ -14,6 +16,7 @@ import no.nav.common.token_client.builder.AzureAdTokenClientBuilder;
 import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.token_client.client.MachineToMachineTokenClient;
+import no.nav.poao_tilgang.client.PoaoTilgangClient;
 import no.nav.veilarbperson.client.aiabackend.AiaBackendClient;
 import no.nav.veilarbperson.client.aiabackend.AiaBackendClientImpl;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
@@ -125,6 +128,25 @@ public class ClientConfig {
     @Bean
     public MetricsClient influxMetricsClient() {
         return new InfluxClient();
+    }
+
+    @Bean
+    public AuthService authService(AktorOppslagClient aktorOppslagClient, AuthContextHolder authContextHolder,
+                                   EnvironmentProperties environmentProperties,
+                                   AzureAdOnBehalfOfTokenClient aadOboTokenClient,
+                                   PoaoTilgangClient poaoTilgangClient,
+                                   AuditLogger auditLogger){
+        return new AuthService(aktorOppslagClient, authContextHolder, environmentProperties, aadOboTokenClient,
+                poaoTilgangClient, auditLogger);
+    }
+
+    @Bean
+    public AuthService authServiceWithoutAuditLogg(AktorOppslagClient aktorOppslagClient, AuthContextHolder authContextHolder,
+                                   EnvironmentProperties environmentProperties,
+                                   AzureAdOnBehalfOfTokenClient aadOboTokenClient,
+                                   PoaoTilgangClient poaoTilgangClient){
+        return new AuthService(aktorOppslagClient, authContextHolder, environmentProperties, aadOboTokenClient,
+                poaoTilgangClient, null);
     }
 
 }

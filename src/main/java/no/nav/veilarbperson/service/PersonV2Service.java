@@ -45,14 +45,14 @@ public class PersonV2Service {
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient,
-                           AuthService authService,
+                           AuthService authServiceWithoutAuditLogg,
                            DigdirClient digdirClient,
                            Norg2Client norg2Client,
                            SkjermetClient skjermetClient,
                            KodeverkService kodeverkService,
                            KontoregisterClient kontoregisterClient) {
         this.pdlClient = pdlClient;
-        this.authService = authService;
+        this.authService = authServiceWithoutAuditLogg;
         this.digdirClient = digdirClient;
         this.norg2Client = norg2Client;
         this.skjermetClient = skjermetClient;
