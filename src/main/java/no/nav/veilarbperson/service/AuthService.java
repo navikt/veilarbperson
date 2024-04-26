@@ -46,7 +46,6 @@ public class AuthService {
 
     private final AuditLogger auditLogger;
 
-    @Autowired
     public AuthService(
                        AktorOppslagClient aktorOppslagClient,
                        AuthContextHolder authContextHolder,
@@ -105,12 +104,17 @@ public class AuthService {
         Decision desicion = poaoTilgangClient.evaluatePolicy(new EksternBrukerTilgangTilEksternBrukerPolicyInput(
                 authContextHolder.getUid().orElseThrow(), ressursNorskIdent
         )).getOrThrow();
-        auditLogWithMessageAndDestinationUserId(
-                "Ekstern bruker har gjort oppslag på ekstern bruker",
-                ressursNorskIdent,
-                authContextHolder.getUid().get(),
-                desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
-        );
+
+        if (auditLogger != null){
+            auditLogWithMessageAndDestinationUserId(
+                    "Ekstern bruker har gjort oppslag på ekstern bruker",
+                    ressursNorskIdent,
+                    authContextHolder.getUid().get(),
+                    desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
+            );
+        }
+
+
         return desicion.isPermit();
     }
 
@@ -118,12 +122,16 @@ public class AuthService {
         Decision desicion = poaoTilgangClient.evaluatePolicy(new NavAnsattTilgangTilEksternBrukerPolicyInput(
                 hentInnloggetVeilederUUID(), TilgangType.LESE, eksternBruker
         )).getOrThrow();
-        auditLogWithMessageAndDestinationUserId(
-                "Veileder har gjort oppslag på bruker",
-                eksternBruker,
-                getNavIdentClaimHvisTilgjengelig().orElseThrow().get(),
-                desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
-        );
+
+        if (auditLogger != null){
+            auditLogWithMessageAndDestinationUserId(
+                    "Veileder har gjort oppslag på bruker",
+                    eksternBruker,
+                    getNavIdentClaimHvisTilgjengelig().orElseThrow().get(),
+                    desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
+            );
+        }
+
         return desicion.isPermit();
     }
 
@@ -167,11 +175,6 @@ public class AuthService {
 
     public AktorId getAktorId(Fnr fnr) {
         return aktorOppslagClient.hentAktorId(fnr);
-    }
-
-    public String getInnloggetBrukerToken() {
-        return authContextHolder.getIdTokenString()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is missing"));
     }
 
     public String getInnloggerBrukerUid() {
