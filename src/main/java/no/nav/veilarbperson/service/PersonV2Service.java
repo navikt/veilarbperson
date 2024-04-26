@@ -46,7 +46,7 @@ public class PersonV2Service {
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient,
-                           @Qualifier("authServiceWithoutAuditLogg") AuthService authServiceWithoutAuditLogg,
+                           @Qualifier("authServiceWithoutAuditLog") AuthService authServiceWithoutAuditLogg,
                            DigdirClient digdirClient,
                            Norg2Client norg2Client,
                            SkjermetClient skjermetClient,

@@ -130,17 +130,8 @@ public class ClientConfig {
         return new InfluxClient();
     }
 
-    @Bean
-    public AuthService authService(AktorOppslagClient aktorOppslagClient, AuthContextHolder authContextHolder,
-                                   EnvironmentProperties environmentProperties,
-                                   AzureAdOnBehalfOfTokenClient aadOboTokenClient,
-                                   PoaoTilgangClient poaoTilgangClient,
-                                   AuditLogger auditLogger){
-        return new AuthService(aktorOppslagClient, authContextHolder, environmentProperties, aadOboTokenClient,
-                poaoTilgangClient, auditLogger);
-    }
 
-    @Bean("authServiceWithoutAuditLogg")
+    @Bean("authServiceWithoutAuditLog")
     public AuthService authServiceWithoutAuditLogg(AktorOppslagClient aktorOppslagClient, AuthContextHolder authContextHolder,
                                    EnvironmentProperties environmentProperties,
                                    AzureAdOnBehalfOfTokenClient aadOboTokenClient,
