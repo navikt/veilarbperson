@@ -16,6 +16,7 @@ import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -45,7 +46,7 @@ public class PersonV2Service {
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient,
-                           AuthService authServiceWithoutAuditLogg,
+                           @Qualifier("authServiceWithoutAuditLogg") AuthService authServiceWithoutAuditLogg,
                            DigdirClient digdirClient,
                            Norg2Client norg2Client,
                            SkjermetClient skjermetClient,

@@ -140,7 +140,7 @@ public class ClientConfig {
                 poaoTilgangClient, auditLogger);
     }
 
-    @Bean
+    @Bean("authServiceWithoutAuditLogg")
     public AuthService authServiceWithoutAuditLogg(AktorOppslagClient aktorOppslagClient, AuthContextHolder authContextHolder,
                                    EnvironmentProperties environmentProperties,
                                    AzureAdOnBehalfOfTokenClient aadOboTokenClient,
