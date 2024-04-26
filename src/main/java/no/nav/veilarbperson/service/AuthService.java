@@ -16,7 +16,7 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.common.types.identer.NavIdent;
 import no.nav.poao_tilgang.client.*;
 import no.nav.veilarbperson.config.EnvironmentProperties;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,6 +32,7 @@ import static java.util.Optional.ofNullable;
 import static no.nav.common.auth.Constants.AAD_NAV_IDENT_CLAIM;
 
 @Service
+@Primary
 public class AuthService {
 
     private final AktorOppslagClient aktorOppslagClient;
