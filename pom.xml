@@ -22,7 +22,7 @@
         <common.version>3.2023.09.13_04.55-a8ff452fbd94</common.version>
         <tjenestespesifikasjoner.version>1.2019.09.25-00.21-49b69f0625e0</tjenestespesifikasjoner.version>
         <kotlin.version>1.9.0</kotlin.version>
-        <poao-tilgang.version>2024.02.20_07.34-4dbbf67d478e</poao-tilgang.version>
+        <poao-tilgang.version>2024.05.03_11.09-def8e29c9033</poao-tilgang.version>
     </properties>
 
     <build>
