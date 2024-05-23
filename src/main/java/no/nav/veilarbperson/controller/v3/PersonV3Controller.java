@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import static no.nav.veilarbperson.utils.SecureLog.secureLog;
+
 
 @Slf4j
 @RestController
@@ -34,6 +36,7 @@ public class PersonV3Controller {
     @PostMapping("/hent-person")
     @Operation(summary = "Henter informasjon om en person fra PDL")
     public PersonV2Data hentPerson(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+        kastExceptionOmIkkeBehandlingsnummer(personFraPdlRequest.getBehandlingsnummer(), "hent-person");
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
         return personV2Service.hentFlettetPerson(personFraPdlRequest);
@@ -56,6 +59,7 @@ public class PersonV3Controller {
     @PostMapping("/person/hent-geografisktilknytning")
     @Operation(summary = "Henter persons geografisk tilknytning")
     public GeografiskTilknytning geografisktilknytning(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+        kastExceptionOmIkkeBehandlingsnummer(personFraPdlRequest.getBehandlingsnummer(), "hent-geografisktilknytning");
         Fnr fodselsnummer = hentIdentForEksternEllerIntern(personFraPdlRequest.getFnr());
         authService.sjekkLesetilgang(fodselsnummer);
         return personV2Service.hentGeografiskTilknytning(personFraPdlRequest);
@@ -95,6 +99,7 @@ public class PersonV3Controller {
     @PostMapping("/person/hent-vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
     public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+        kastExceptionOmIkkeBehandlingsnummer(personFraPdlRequest.getBehandlingsnummer(), "hent-vergeOgFullmakt");
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
         return personV2Service.hentVergeEllerFullmakt(personFraPdlRequest);
@@ -103,6 +108,7 @@ public class PersonV3Controller {
     @PostMapping("/person/hent-tolk")
     @Operation(summary = "Henter tolk informajon til en person fra PDL")
     public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+        kastExceptionOmIkkeBehandlingsnummer(personFraPdlRequest.getBehandlingsnummer(), "hent-tolk");
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
         return personV2Service.hentSpraakTolkInfo(personFraPdlRequest);
@@ -111,6 +117,7 @@ public class PersonV3Controller {
     @PostMapping("/person/hent-navn")
     @Operation(summary = "Henter navn til en person fra PDL")
     public PersonNavnV2 hentNavn(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+        kastExceptionOmIkkeBehandlingsnummer(personFraPdlRequest.getBehandlingsnummer(), "hent-navn");
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
         return personV2Service.hentNavn(personFraPdlRequest);
@@ -140,6 +147,13 @@ public class PersonV3Controller {
         }
 
         return fnr;
+    }
+
+    private void kastExceptionOmIkkeBehandlingsnummer(String behandlingsnummer, String endepunkt) {
+        if (behandlingsnummer == null) {
+            secureLog.info("Mangler behandlingsnummer på endepunkt: " + endepunkt);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler behandlingsnummer");
+        }
     }
 
 }
