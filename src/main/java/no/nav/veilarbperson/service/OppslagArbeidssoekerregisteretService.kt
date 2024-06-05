@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.service
 
 import no.nav.common.types.identer.Fnr
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerperiodeResponse
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClient
 import no.nav.veilarbperson.domain.OpplysningerOmArbeidssoekerMedProfilering
 import no.nav.veilarbperson.domain.mapToOpplyasningerOmArbeidssoekerMedNuskode
@@ -12,6 +13,9 @@ import org.springframework.web.server.ResponseStatusException
 class OppslagArbeidssoekerregisteretService(
     private val oppslagArbeidssoekerregisteretClient: OppslagArbeidssoekerregisteretClient
 ) {
+
+    fun hentSisteArbeidssoekerPeriode(fnr: Fnr): ArbeidssokerperiodeResponse? = oppslagArbeidssoekerregisteretClient.hentArbeidssokerPerioder(fnr.get())?.find { it.avsluttet == null }
+
     fun hentSisteOpplysningerOmArbeidssoekerMedProfilering(fnr: Fnr): OpplysningerOmArbeidssoekerMedProfilering? {
         val aktivArbeidssoekerperiode = oppslagArbeidssoekerregisteretClient.hentArbeidssokerPerioder(fnr.get())
             ?.find { it.avsluttet == null }

@@ -452,4 +452,107 @@ public class PersonV3ControllerTest {
 
     }
 
+    @Test
+    void returnerer_siste_aktive_arbeidssoekerperiode_paa_bruker() throws Exception {
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+        String fnr = ny.getNorskIdent();
+
+        String expectedJsonArbeidssoekerPeriode = """
+                    [
+                      {
+                        "periodeId": "ea0ad984-8b99-4fff-afd6-07737ab19d16",
+                        "startet": {
+                          "tidspunkt": "2024-04-23T13:04:40.739Z",
+                          "utfoertAv": {
+                            "type": "SLUTTBRUKER"
+                          },
+                          "kilde": "europe-north1-docker.pkg.dev/nais-management-233d/paw/paw-arbeidssokerregisteret-api-inngang:24.04.23.118-1",
+                          "aarsak": "Er over 18 år, er bosatt i Norge i hendhold Folkeregisterloven"
+                        },
+                        "avsluttet": null
+                      }
+                    ]
+                """.trim();
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/arbeidssoekerperioder"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonArbeidssoekerPeriode)));
+
+        String expectedJson = """
+                    {
+                        "periodeId": "ea0ad984-8b99-4fff-afd6-07737ab19d16",
+                        "startet": {
+                            "tidspunkt":"2024-04-23T13:04:40.739Z",
+                            "utfoertAv": {
+                                "type": "SLUTTBRUKER",
+                                "id": null
+                            },
+                            "kilde": "europe-north1-docker.pkg.dev/nais-management-233d/paw/paw-arbeidssokerregisteret-api-inngang:24.04.23.118-1",
+                            "aarsak": "Er over 18 år, er bosatt i Norge i hendhold Folkeregisterloven"
+                        },
+                        "avsluttet":null
+                    }
+                """.trim();
+
+        mockMvc
+                .perform(
+                        post("/api/v3/person/hent-siste-aktiv-arbeidssoekerperiode")
+                                .contentType(APPLICATION_JSON)
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
+                .andExpect(status().is(200))
+                .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    void returnerer_204_om_bruker_ikke_har_aktiv_arbeidssoekerperiode() throws Exception {
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+        String fnr = ny.getNorskIdent();
+
+        String expectedJsonArbeidssoekerPeriode = """
+                    [
+                      {
+                        "periodeId": "ea0ad984-8b99-4fff-afd6-07737ab19d16",
+                        "startet": {
+                          "tidspunkt": "2023-04-23T13:04:40.739Z",
+                          "utfoertAv": {
+                            "type": "SLUTTBRUKER"
+                          },
+                          "kilde": "europe-north1-docker.pkg.dev/nais-management-233d/paw/paw-arbeidssokerregisteret-api-inngang:24.04.23.118-1",
+                          "aarsak": "Er over 18 år, er bosatt i Norge i hendhold Folkeregisterloven"
+                        },
+                        "avsluttet": {
+                          "tidspunkt": "2024-04-23T13:04:40.739Z",
+                          "utfoertAv": {
+                            "type": "SLUTTBRUKER"
+                          },
+                          "kilde": "europe-north1-docker.pkg.dev/nais-management-233d/paw/paw-arbeidssokerregisteret-api-inngang:24.04.23.118-1",
+                          "aarsak": "Er over 18 år, er bosatt i Norge i hendhold Folkeregisterloven"
+                        }
+                      }
+                    ]
+                """.trim();
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/arbeidssoekerperioder"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonArbeidssoekerPeriode)));
+
+        mockMvc
+                .perform(
+                        post("/api/v3/person/hent-siste-aktiv-arbeidssoekerperiode")
+                                .contentType(APPLICATION_JSON)
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
+                .andExpect(status().is(204));
+    }
+
+
 }
