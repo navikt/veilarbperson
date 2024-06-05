@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.veilarbperson.client.pdl.domain.*;
+import no.nav.veilarbperson.client.representasjon.RepresentasjonFullmakt;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -31,6 +31,8 @@ import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pam.PamClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
+import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
+import no.nav.veilarbperson.client.representasjon.RepresentasjonClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
@@ -106,6 +108,12 @@ public class ClientConfig {
                 () -> tokenClient.createMachineToMachineToken(properties.getPdlApiScope()));
     }
 
+    @Bean
+    public RepresentasjonClient representasjonClient(EnvironmentProperties properties, AuthService authService, AzureAdMachineToMachineTokenClient tokenClient) {
+        return new RepresentasjonClientImpl(properties.getReprApiUrl(),
+                () -> authService.getAadOboTokenForTjeneste(properties.getReprApiScope()),
+                () -> tokenClient.createMachineToMachineToken(properties.getReprApiScope()));
+    }
 
     @Bean
     public VeilarbregistreringClient veilarbregistreringClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient) {

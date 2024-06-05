@@ -12,6 +12,8 @@ import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
+import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
+import no.nav.veilarbperson.client.representasjon.RepresentasjonFullmakt;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
@@ -21,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -41,7 +44,7 @@ public class PersonV2Service {
     private final Norg2Client norg2Client;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
-
+    private final RepresentasjonClient representasjonClient;
     private final KontoregisterClient kontoregisterClient;
 
     @Autowired
@@ -51,6 +54,7 @@ public class PersonV2Service {
                            Norg2Client norg2Client,
                            SkjermetClient skjermetClient,
                            KodeverkService kodeverkService,
+                           RepresentasjonClient representasjonClient,
                            KontoregisterClient kontoregisterClient) {
         this.pdlClient = pdlClient;
         this.authService = authServiceWithoutAuditLogg;
@@ -58,6 +62,7 @@ public class PersonV2Service {
         this.norg2Client = norg2Client;
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
+        this.representasjonClient = representasjonClient;
         this.kontoregisterClient = kontoregisterClient;
     }
 
@@ -315,9 +320,10 @@ public class PersonV2Service {
         return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
     }
 
-    public VergeOgFullmaktData hentVergeEllerFullmakt(PersonFraPdlRequest personFraPdlRequest) {
+    public VergeOgFullmaktData hentVergeEllerFullmakt(PersonFraPdlRequest personFraPdlRequest) throws IOException {
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
 
+        RepresentasjonFullmakt representasjonFullmakt = representasjonClient.getFullmakt("");
         if (vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke verge eller fullmakt i PDL");
         }

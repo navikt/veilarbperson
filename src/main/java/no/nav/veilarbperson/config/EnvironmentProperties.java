@@ -22,6 +22,8 @@ public class EnvironmentProperties {
     private String pamCvApiUrl;
     private String pdlApiScope;
     private String pdlApiUrl;
+    private String reprApiScope;
+    private String reprApiUrl;
     private String poaoTilgangScope;
     private String poaoTilgangUrl;
     private String personV3Endpoint;
