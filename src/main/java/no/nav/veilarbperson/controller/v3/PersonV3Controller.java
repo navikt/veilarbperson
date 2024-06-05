@@ -7,10 +7,7 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagResponseDTO;
 import no.nav.veilarbperson.domain.*;
-import no.nav.veilarbperson.service.AuthService;
-import no.nav.veilarbperson.service.CvJobbprofilService;
-import no.nav.veilarbperson.service.PersonV2Service;
-import no.nav.veilarbperson.service.RegistreringService;
+import no.nav.veilarbperson.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +27,8 @@ public class PersonV3Controller {
     private final CvJobbprofilService cvJobbprofilService;
 
     private final RegistreringService registreringService;
+
+    private final OppslagArbeidssoekerregisteretService oppslagArbeidssoekerregisteretService;
 
     @PostMapping("/hent-person")
     @Operation(summary = "Henter informasjon om en person fra PDL")
@@ -122,6 +121,14 @@ public class PersonV3Controller {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personRequest.getFnr());
         return regoppslagClient.hentPostadresse(personRequest.getFnr());
+    }
+
+    @PostMapping("/person/hent-siste-opplysninger-om-arbeidssoeker-med-profilering")
+    @Operation(summary = "Henter svarene fra den siste arbeidssøkerregistrering til en person i en aktiv arbeidssøkerperiode")
+    public OpplysningerOmArbeidssoekerMedProfilering hentSisteOpplysningerOmArbeidssoerkerOgProfilering(@RequestBody PersonRequest personRequest) {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(personRequest.getFnr());
+        return oppslagArbeidssoekerregisteretService.hentSisteOpplysningerOmArbeidssoekerMedProfilering(personRequest.getFnr());
     }
 
     private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {

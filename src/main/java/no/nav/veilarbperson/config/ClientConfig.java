@@ -27,6 +27,8 @@ import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.nom.SkjermetClientImpl;
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClient;
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClientImpl;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pam.PamClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -38,6 +40,10 @@ import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient
 import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.function.Supplier;
+
+import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
 
 
 @Slf4j
@@ -112,6 +118,18 @@ public class ClientConfig {
         return new VeilarbregistreringClientImpl(RestClient.baseClient(),
                 properties.getVeilarbregistreringUrl(),
                 () -> aadMachineToMachineTokenClient.createMachineToMachineToken(properties.getVeilarbregistreringScope()));
+    }
+
+    @Bean
+    public OppslagArbeidssoekerregisteretClient oppslagArbeidssoekerregisteretClient(
+            EnvironmentProperties properties,
+            AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient
+    ) {
+        return new OppslagArbeidssoekerregisteretClientImpl(
+                properties.getOppslagArbeidssoekerregisteretUrl(),
+                () -> aadMachineToMachineTokenClient.createMachineToMachineToken(properties.getOppslagArbeidssoekerregisteretScope()),
+                APPLICATION_NAME
+        );
     }
 
 
