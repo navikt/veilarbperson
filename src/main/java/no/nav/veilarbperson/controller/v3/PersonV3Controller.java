@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerperiodeResponse;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagResponseDTO;
 import no.nav.veilarbperson.domain.*;
@@ -129,6 +130,18 @@ public class PersonV3Controller {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personRequest.getFnr());
         return oppslagArbeidssoekerregisteretService.hentSisteOpplysningerOmArbeidssoekerMedProfilering(personRequest.getFnr());
+    }
+
+    @PostMapping("/person/hent-siste-aktiv-arbeidssoekerperiode")
+    @Operation(summary = "Henter siste aktiv arbeidssøkerperiode på en person")
+    public ArbeidssokerperiodeResponse hentSisteArbeidssoekerperiode(@RequestBody PersonRequest personRequest) {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(personRequest.getFnr());
+        ArbeidssokerperiodeResponse sisteArbeidssoekerPeriode =  oppslagArbeidssoekerregisteretService.hentSisteArbeidssoekerPeriode(personRequest.getFnr());
+        if(sisteArbeidssoekerPeriode == null) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ingen aktive arbeidssøkerperioder");
+        }
+        return sisteArbeidssoekerPeriode;
     }
 
     private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {
