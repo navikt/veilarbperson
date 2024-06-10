@@ -23,7 +23,7 @@ public class RepresentasjonClientImpl implements RepresentasjonClient{
     private final String reprUrl;
     private final OkHttpClient client;
     private final Supplier<String> userTokenProvider;
-    public RepresentasjonClientImpl(String reprUrl, Supplier<String> userTokenProvider, Supplier<String> systemTokenProvider) {
+    public RepresentasjonClientImpl(String reprUrl, Supplier<String> userTokenProvider) {
         this.reprUrl = reprUrl;
         this.client = RestClient.baseClient();
         this.userTokenProvider = userTokenProvider;

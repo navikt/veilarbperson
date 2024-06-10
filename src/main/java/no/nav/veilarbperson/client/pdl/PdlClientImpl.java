@@ -109,7 +109,7 @@ public class PdlClientImpl implements PdlClient {
     public String rawRequest(String gqlRequest, String userToken, String behandlingsnummer) {
         String behandlingsnr = (behandlingsnummer != null) ? behandlingsnummer : "";
         Request.Builder builder = new Request.Builder()
-                .url(joinPaths(pdlUrl, "/grxaphql"))
+                .url(joinPaths(pdlUrl, "/graphql"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, createBearerToken(userToken))
