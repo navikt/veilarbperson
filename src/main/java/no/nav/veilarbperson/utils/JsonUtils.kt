@@ -2,6 +2,7 @@ package no.nav.veilarbperson.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.common.rest.client.RestUtils
 import okhttp3.Response
 
@@ -12,7 +13,10 @@ object JsonUtils {
 
 inline fun <reified T> Response.deserializeJson(): T? {
     return RestUtils.getBodyStr(this)
-        .map { JsonUtils.objectMapper.readValue(it, T::class.java) }
+        .map {
+            val result: T = JsonUtils.objectMapper.readValue(it)
+            result
+        }
         .orElse(null)
 }
 
