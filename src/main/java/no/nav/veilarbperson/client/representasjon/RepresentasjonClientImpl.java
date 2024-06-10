@@ -1,8 +1,8 @@
 package no.nav.veilarbperson.client.representasjon;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
-import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -17,6 +17,7 @@ import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Slf4j
 public class RepresentasjonClientImpl implements RepresentasjonClient{
 
     private final String reprUrl;
@@ -28,18 +29,21 @@ public class RepresentasjonClientImpl implements RepresentasjonClient{
         this.userTokenProvider = userTokenProvider;
     }
 
-    public RepresentasjonFullmakt getFullmakt(String kryptertIdent) throws IOException {
+    public List<Fullmakt> getFullmakt(String kryptertIdent) throws IOException {
         Request request = new Request.Builder()
-                .url(joinPaths(reprUrl, "/api/fullmakt/fullmaktsgiver"))
+                .url(joinPaths(reprUrl, "/api/internbbruker/fullmaktsgiver"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, createBearerToken(userTokenProvider.get()))
                 .header("Nav-Personident", kryptertIdent)
                 .build();
 
+        log.info("token til fullmakt i representasjon: "+ userTokenProvider.get());
+
         try (Response response = client.newCall(request).execute()) {
             RestUtils.throwIfNotSuccessful(response);
-            return RestUtils.parseJsonResponse(response, RepresentasjonFullmakt.class)
-                    .orElseThrow(() -> new IllegalStateException("Representasjon fullmakt body is missing"));
+            return RestUtils.parseJsonArrayResponse(response, Fullmakt.class)
+                    .orElseThrow(() -> new IllegalStateException("They mangler body i responsen til representasjon fullmakt"));
+
         }
     }
 }

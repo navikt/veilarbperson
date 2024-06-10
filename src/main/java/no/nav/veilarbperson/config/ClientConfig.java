@@ -1,7 +1,6 @@
 package no.nav.veilarbperson.config;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.common.audit_log.log.AuditLogger;
 import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.CachedAktorOppslagClient;

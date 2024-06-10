@@ -15,6 +15,7 @@ public class VergeOgFullmaktData {
 
     public List<VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
     public List<Fullmakt> fullmakt;
+    public List<RepresentasjonFullmakt> representasjonFullmakt;
 
     @Data
     public static class Navn {
@@ -66,5 +67,22 @@ public class VergeOgFullmaktData {
         private List<Omraade> omraader;
         private LocalDate gyldigFraOgMed;
         private LocalDate gyldigTilOgMed;
+    }
+
+    @Data
+    public static class RepresentasjonFullmakt {
+        private int fullmaktId;
+        private String registrert;
+        private String registrertAv;
+        private String fullmaktsgiver;
+        private String fullmektig;
+        private String omraade;
+        private String gyldigFraOgMed;
+        private String gyldigTilOgMed;
+        private String opplysningsId;
+        private int endringsId;
+        private String fullmaktsgiverNavn;
+        private String fullmektigsNavn;
+        private boolean opphoert;
     }
 }

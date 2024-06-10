@@ -1,11 +1,11 @@
 package no.nav.veilarbperson.client.representasjon;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
-import java.util.List;
-
 @Data
-class Fullmakt {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Fullmakt {
     private int fullmaktId;
     private String registrert;
     private String registrertAv;
@@ -19,9 +19,4 @@ class Fullmakt {
     private String fullmaktsgiverNavn;
     private String fullmektigsNavn;
     private boolean opphoert;
-}
-
-@Data
-public class RepresentasjonFullmakt{
-    private List<Fullmakt> representasjonFullmakt;
 }

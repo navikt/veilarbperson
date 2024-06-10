@@ -12,8 +12,8 @@ import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
+import no.nav.veilarbperson.client.representasjon.Fullmakt;
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
-import no.nav.veilarbperson.client.representasjon.RepresentasjonFullmakt;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -323,10 +324,14 @@ public class PersonV2Service {
     public VergeOgFullmaktData hentVergeEllerFullmakt(PersonFraPdlRequest personFraPdlRequest) throws IOException {
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
 
-        RepresentasjonFullmakt representasjonFullmakt = representasjonClient.getFullmakt("");
         if (vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke verge eller fullmakt i PDL");
         }
+
+        String encryptertIdent = Base64.getEncoder().encodeToString(personFraPdlRequest.getFnr().get().getBytes());
+        List<Fullmakt> fullmaktFraRepresentasjon = representasjonClient.getFullmakt(encryptertIdent);
+        log.info("encryptertIdent: "+ encryptertIdent);
+        log.info("fullmaktFraRepresentasjon: "+ fullmaktFraRepresentasjon.getFirst());
 
         VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
 
