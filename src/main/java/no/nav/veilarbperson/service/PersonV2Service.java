@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
+import static no.nav.veilarbperson.utils.SecureLog.secureLog;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
 
 @Slf4j
@@ -330,8 +331,8 @@ public class PersonV2Service {
 
         String encryptertIdent = Base64.getEncoder().encodeToString(personFraPdlRequest.getFnr().get().getBytes());
         List<Fullmakt> fullmaktFraRepresentasjon = representasjonClient.getFullmakt(encryptertIdent);
-        log.info("encryptertIdent: "+ encryptertIdent);
-        log.info("fullmaktFraRepresentasjon: "+ fullmaktFraRepresentasjon.getFirst());
+        secureLog.info("encryptertIdent: "+ encryptertIdent);
+        secureLog.info("fullmaktFraRepresentasjon: "+ fullmaktFraRepresentasjon.getFirst());
 
         VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
 

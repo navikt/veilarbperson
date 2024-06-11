@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 
 import static no.nav.common.utils.UrlUtils.joinPaths;
 import static no.nav.veilarbperson.utils.RestClientUtils.createBearerToken;
+import static no.nav.veilarbperson.utils.SecureLog.secureLog;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -31,13 +32,13 @@ public class RepresentasjonClientImpl implements RepresentasjonClient{
 
     public List<Fullmakt> getFullmakt(String kryptertIdent) throws IOException {
         Request request = new Request.Builder()
-                .url(joinPaths(reprUrl, "/api/internbbruker/fullmaktsgiver"))
+                .url(joinPaths(reprUrl, "/api/internbruker/fullmaktsgiver"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, createBearerToken(userTokenProvider.get()))
                 .header("Nav-Personident", kryptertIdent)
                 .build();
 
-        log.info("token til fullmakt i representasjon: "+ userTokenProvider.get());
+        secureLog.info("token til fullmakt i representasjon: "+ userTokenProvider.get());
 
         try (Response response = client.newCall(request).execute()) {
             RestUtils.throwIfNotSuccessful(response);
