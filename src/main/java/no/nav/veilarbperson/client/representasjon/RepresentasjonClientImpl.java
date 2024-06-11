@@ -35,9 +35,10 @@ public class RepresentasjonClientImpl implements RepresentasjonClient{
                 .url(joinPaths(reprUrl, "/api/internbruker/fullmaktsgiver"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, createBearerToken(userTokenProvider.get()))
-                .header("Nav-Personident", kryptertIdent)
+                .post(RestUtils.toJsonRequestBody(new PersonIdentDTO(kryptertIdent)))
                 .build();
 
+        secureLog.info("kryptertIdent: "+ kryptertIdent);
         secureLog.info("token til fullmakt i representasjon: "+ userTokenProvider.get());
 
         try (Response response = client.newCall(request).execute()) {
