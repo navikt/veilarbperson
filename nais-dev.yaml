@@ -97,7 +97,7 @@ spec:
     - name: PDL_API_SCOPE
       value: api://dev-fss.pdl.pdl-api/.default
     - name: REPR_API_SCOPE
-      value: api://dev-fss.pdl.pdl-web/.default
+      value: api://dev-fss.pdl.pdl-fullmakt/.default
     - name: REPR_API_URL
       value: https://pdl-fullmakt.dev.intern.nav.no
     - name: PDL_API_URL
