@@ -323,16 +323,15 @@ public class PersonV2Service {
     }
 
     public VergeOgFullmaktData hentVergeEllerFullmakt(PersonFraPdlRequest personFraPdlRequest) throws IOException {
-        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
-
-        if (vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke verge eller fullmakt i PDL");
-        }
-
         String encryptertIdent = Base64.getEncoder().encodeToString(personFraPdlRequest.getFnr().get().getBytes());
         List<Fullmakt> fullmaktFraRepresentasjon = representasjonClient.getFullmakt(encryptertIdent);
         secureLog.info("encryptertIdent: "+ encryptertIdent);
         secureLog.info("fullmaktFraRepresentasjon: "+ fullmaktFraRepresentasjon.getFirst());
+
+        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
+        if (vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke verge eller fullmakt i PDL");
+        }
 
         VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
 
