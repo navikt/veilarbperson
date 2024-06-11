@@ -1,7 +1,6 @@
 package no.nav.veilarbperson.utils;
 
 import no.nav.veilarbperson.client.pdl.HentPerson;
-import no.nav.veilarbperson.client.representasjon.Fullmakt;
 import no.nav.veilarbperson.domain.VergeOgFullmaktData;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +67,7 @@ public class VergeOgFullmaktDataMapper {
         return fullmakter;
     }
 
-    public static List<VergeOgFullmaktData.RepresentasjonFullmakt> representasjonsFullmaktMapper(List<Fullmakt> representasjonFullmakt) {
+    /*public static List<VergeOgFullmaktData.RepresentasjonFullmakt> representasjonsFullmaktMapper(List<Fullmakt> representasjonFullmakt) {
         List<VergeOgFullmaktData.RepresentasjonFullmakt> representasjonFullmaktListe = new ArrayList<>();
         representasjonFullmakt.forEach(fullmakt -> {
                 representasjonFullmaktListe.add(new VergeOgFullmaktData.RepresentasjonFullmakt()
@@ -87,5 +86,5 @@ public class VergeOgFullmaktDataMapper {
                 );
         });
         return representasjonFullmaktListe;
-    }
+    }*/
 }
