@@ -2,13 +2,13 @@ package no.nav.veilarbperson.domain
 
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OpplysningerOmArbeidssoekerResponse
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ProfileringResponse
+import java.time.ZonedDateTime
 
 data class OpplysningerOmArbeidssoekerMedProfilering(
+    val arbeidssoekerperiodeStartet: ZonedDateTime? = null,
     val opplysningerOmArbeidssoeker: OpplysningerOmArbeidssoekerResponse? = null,
     val profilering: ProfileringResponse ? = null
 )
-
-
 
 fun OpplysningerOmArbeidssoekerResponse.mapToOpplyasningerOmArbeidssoekerMedNuskode(): OpplysningerOmArbeidssoekerResponse {
     val utdanning = this.utdanning?.copy(nus = mapNuskodeTilUtdanningsnivaa(this.utdanning.nus))
