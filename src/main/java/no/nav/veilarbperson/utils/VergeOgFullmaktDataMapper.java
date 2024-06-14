@@ -11,7 +11,6 @@ public class VergeOgFullmaktDataMapper {
     public static VergeOgFullmaktData toVergeOgFullmaktData(HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl) {
         return new VergeOgFullmaktData()
                 .setVergemaalEllerFremtidsfullmakt(vergemaalEllerFremtidsfullmaktMapper(vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt()))
-               // .setRepresentasjonFullmakt(representasjonsFullmaktMapper(fullmaktFraRepresentajon))
                 .setFullmakt(fullmaktMapper(vergeOgFullmaktFraPdl.getFullmakt()));
     }
 
@@ -66,25 +65,4 @@ public class VergeOgFullmaktDataMapper {
         );
         return fullmakter;
     }
-
-    /*public static List<VergeOgFullmaktData.RepresentasjonFullmakt> representasjonsFullmaktMapper(List<Fullmakt> representasjonFullmakt) {
-        List<VergeOgFullmaktData.RepresentasjonFullmakt> representasjonFullmaktListe = new ArrayList<>();
-        representasjonFullmakt.forEach(fullmakt -> {
-                representasjonFullmaktListe.add(new VergeOgFullmaktData.RepresentasjonFullmakt()
-                        .setFullmaktId(fullmakt.getFullmaktId())
-                        .setOmraade(fullmakt.getOmraade())
-                        .setEndringsId(fullmakt.getEndringsId())
-                        .setFullmaktsgiver(fullmakt.getFullmaktsgiver())
-                        .setFullmektig(fullmakt.getFullmektig())
-                        .setFullmaktsgiverNavn(fullmakt.getFullmaktsgiverNavn())
-                        .setOpphoert(fullmakt.isOpphoert())
-                        .setGyldigTilOgMed(fullmakt.getGyldigTilOgMed())
-                        .setGyldigFraOgMed(fullmakt.getGyldigFraOgMed())
-                        .setRegistrert(fullmakt.getRegistrert())
-                        .setRegistrertAv(fullmakt.getRegistrertAv())
-                        .setOpplysningsId(fullmakt.getOpplysningsId())
-                );
-        });
-        return representasjonFullmaktListe;
-    }*/
 }

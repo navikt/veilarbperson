@@ -4,11 +4,9 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Accessors(chain=true)
@@ -16,7 +14,6 @@ public class VergeOgFullmaktData {
 
     public List<VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
     public List<Fullmakt> fullmakt;
-    public List<RepresentasjonFullmakt> representasjonFullmakt;
 
     @Data
     public static class Navn {
@@ -68,37 +65,5 @@ public class VergeOgFullmaktData {
         private List<Omraade> omraader;
         private LocalDate gyldigFraOgMed;
         private LocalDate gyldigTilOgMed;
-    }
-
-    @Data
-    public static class RepresentasjonFullmakt {
-        private int fullmaktId;
-        private String registrert;
-        private String registrertAv;
-        private String fullmaktsgiver;
-        private String fullmektig;
-        private List<OmraadeMedHandling> omraade;
-        private LocalDate gyldigFraOgMed;
-        private LocalDate gyldigTilOgMed;
-        private UUID opplysningsId;
-        private Long endringsId;
-        private String fullmaktsgiverNavn;
-        private String fullmektigsNavn;
-        private boolean opphoert;
-        private String kilde;
-        private String status;
-    }
-
-    @Data
-    static
-    class OmraadeMedHandling {
-        private String tema;
-        private List<OmraadeHandlingType> handling;
-    }
-
-    enum OmraadeHandlingType {
-        LES,
-        KOMMUNISER,
-        SKRIV
     }
 }

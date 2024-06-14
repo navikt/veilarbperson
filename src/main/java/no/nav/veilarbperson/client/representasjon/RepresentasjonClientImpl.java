@@ -30,7 +30,7 @@ public class RepresentasjonClientImpl implements RepresentasjonClient{
         this.userTokenProvider = userTokenProvider;
     }
 
-    public List<Fullmakt> getFullmakt(String kryptertIdent) throws IOException {
+    public List<Fullmakt> hentFullmakt(String kryptertIdent) throws IOException {
         Request request = new Request.Builder()
                 .url(joinPaths(reprUrl, "/api/internbruker/fullmaktsgiver"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
@@ -38,7 +38,6 @@ public class RepresentasjonClientImpl implements RepresentasjonClient{
                 .post(RestUtils.toJsonRequestBody(new PersonIdentDTO(kryptertIdent)))
                 .build();
 
-        secureLog.info("kryptertIdent: "+ kryptertIdent);
         secureLog.info("token til fullmakt i representasjon: "+ userTokenProvider.get());
 
         try (Response response = client.newCall(request).execute()) {

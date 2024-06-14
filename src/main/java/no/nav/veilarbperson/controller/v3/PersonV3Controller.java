@@ -7,6 +7,7 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerperiodeResponse;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagResponseDTO;
+import no.nav.veilarbperson.client.representasjon.Fullmakt;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.service.*;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @Slf4j
@@ -100,6 +102,14 @@ public class PersonV3Controller {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
         return personV2Service.hentVergeEllerFullmakt(personFraPdlRequest);
+    }
+
+    @PostMapping("/person/hent-representasjon-fullmakt")
+    @Operation(summary = "Henter informasjon om fullmakt fra representasjon")
+    public List<Fullmakt> hentFullmakt(@RequestBody PersonRequest personRequest) throws IOException {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(personRequest.getFnr());
+        return personV2Service.hentFullmakt(personRequest);
     }
 
     @PostMapping("/person/hent-tolk")

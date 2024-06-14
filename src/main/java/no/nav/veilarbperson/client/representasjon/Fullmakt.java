@@ -28,6 +28,7 @@ public class Fullmakt {
     private boolean opphoert;
     private String kilde;
     private String status;
+    private String endretAv;
 }
 
 @Data
