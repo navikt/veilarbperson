@@ -2,6 +2,7 @@ package no.nav.veilarbperson.controller;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.common.json.JsonUtils;
+import no.nav.common.types.identer.Fnr;
 import no.nav.poao_tilgang.poao_tilgang_test_core.NavAnsatt;
 import no.nav.poao_tilgang.poao_tilgang_test_core.NavContext;
 import no.nav.poao_tilgang.poao_tilgang_test_core.PrivatBruker;
@@ -64,7 +65,7 @@ public class PersonV3ControllerTest {
                 .perform(
                         post("/api/v3/person/hent-registrering")
                                 .contentType(APPLICATION_JSON)
-                                .content("{\"fnr\":\""+ fnr +"\"}")
+                                .content("{\"fnr\":\"" + fnr + "\"}")
                                 .header("test_ident", navAnsatt.getNavIdent())
                                 .header("test_ident_type", "INTERN")
                 )
@@ -88,7 +89,7 @@ public class PersonV3ControllerTest {
                 .perform(
                         post("/api/v3/person/hent-registrering")
                                 .contentType(APPLICATION_JSON)
-                                .content("{\"fnr\":\""+ fnr +"\"}")
+                                .content("{\"fnr\":\"" + fnr + "\"}")
                                 .header("test_ident", navAnsatt.getNavIdent())
                                 .header("test_ident_type", "INTERN")
                 )
@@ -138,5 +139,420 @@ public class PersonV3ControllerTest {
                 .andExpect(content().json(expectedJson))
                 .andExpect(status().is(200));
     }
+
+    @Test
+    void returnerer_opplysninger_om_arbeidssoeker_med_profilering_paa_bruker() throws Exception {
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+        String fnr = ny.getNorskIdent();
+
+        String expectedJsonArbeidssoekerPeriode = """
+                    [
+                      {
+                        "periodeId": "ea0ad984-8b99-4fff-afd6-07737ab19d16",
+                        "startet": {
+                          "tidspunkt": "2024-04-23T13:04:40.739Z",
+                          "utfoertAv": {
+                            "type": "SLUTTBRUKER"
+                          },
+                          "kilde": "europe-north1-docker.pkg.dev/nais-management-233d/paw/paw-arbeidssokerregisteret-api-inngang:24.04.23.118-1",
+                          "aarsak": "Er over 18 år, er bosatt i Norge i hendhold Folkeregisterloven"
+                        },
+                        "avsluttet": null
+                      }
+                    ]
+                """.trim();
+
+        String expectedJsonOpplysningerOmArbeidssoeker = "[" +
+                "  {" +
+                "    \"opplysningerOmArbeidssoekerId\": \"913161a3-dde9-4448-abf8-2a01a043f8cd\"," +
+                "    \"periodeId\": \"ea0ad984-8b99-4fff-afd6-07737ab19d16\"," +
+                "    \"sendtInnAv\": {" +
+                "      \"tidspunkt\": \"2024-04-23T13:22:58.089Z\"," +
+                "      \"utfoertAv\": {" +
+                "        \"type\": \"SLUTTBRUKER\"," +
+                "        \"id\": \"Z123456\"" +
+                "      }," +
+                "      \"kilde\": \"paw-arbeidssoekerregisteret-inngang\"," +
+                "      \"aarsak\": \"opplysning om arbeidssøker sendt inn\"" +
+                "    }," +
+                "    \"jobbsituasjon\": [" +
+                "      {" +
+                "        \"beskrivelse\": \"ALDRI_HATT_JOBB\"," +
+                "        \"detaljer\": { \"prosent\":  \"25\" }" +
+                "      }," +
+                "      {" +
+                "        \"beskrivelse\": \"ER_PERMITTERT\"," +
+                "        \"detaljer\": { \"prosent\":  \"75\" }" +
+                "      }" +
+                "    ]," +
+                "    \"utdanning\": {" +
+                "      \"nus\": \"3\"," +
+                "      \"bestaatt\": \"JA\"," +
+                "      \"godkjent\": \"JA\"" +
+                "    }," +
+                "    \"helse\": {" +
+                "      \"helsetilstandHindrerArbeid\": \"NEI\"" +
+                "    }," +
+                "    \"annet\": {" +
+                "      \"andreForholdHindrerArbeid\": \"NEI\"" +
+                "    }" +
+                "  }" +
+                "]";
+
+        String expectedJsonProfilering = "[" +
+                "  {" +
+                "    \"profileringId\": \"7c9a2feb-0b31-4101-825a-0c4a3d465e01\"," +
+                "    \"periodeId\": \"ea0ad984-8b99-4fff-afd6-07737ab19d16\"," +
+                "    \"opplysningerOmArbeidssoekerId\": \"913161a3-dde9-4448-abf8-2a01a043f8cd\"," +
+                "    \"sendtInnAv\": {" +
+                "      \"tidspunkt\": \"2024-04-25T08:19:53.612Z\"," +
+                "      \"utfoertAv\": {" +
+                "        \"type\": \"SYSTEM\"" +
+                "      }," +
+                "      \"kilde\": \"null-null\"," +
+                "      \"aarsak\": \"opplysninger-mottatt\"" +
+                "    }," +
+                "    \"profilertTil\": \"OPPGITT_HINDRINGER\"," +
+                "    \"jobbetSammenhengendeSeksAvTolvSisteManeder\": false," +
+                "    \"alder\": 33" +
+                "  }" +
+                "]";
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/arbeidssoekerperioder"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonArbeidssoekerPeriode)));
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/opplysninger-om-arbeidssoeker"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonOpplysningerOmArbeidssoeker)));
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/profilering"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonProfilering)));
+
+        String expectedJson = "{\"arbeidssoekerperiodeStartet\":\"2024-04-23T13:04:40.739Z\",\"opplysningerOmArbeidssoeker\":{\"opplysningerOmArbeidssoekerId\":\"913161a3-dde9-4448-abf8-2a01a043f8cd\",\"periodeId\":\"ea0ad984-8b99-4fff-afd6-07737ab19d16\",\"sendtInnAv\":{\"tidspunkt\":\"2024-04-23T13:22:58.089Z\",\"utfoertAv\":{\"type\":\"SLUTTBRUKER\",\"id\":\"Z123456\"},\"kilde\":\"paw-arbeidssoekerregisteret-inngang\",\"aarsak\":\"opplysning om arbeidssøker sendt inn\"},\"utdanning\":{\"nus\":\"VIDEREGAENDE_GRUNNUTDANNING\",\"bestaatt\":\"JA\",\"godkjent\":\"JA\"},\"helse\":{\"helsetilstandHindrerArbeid\":\"NEI\"},\"annet\":{\"andreForholdHindrerArbeid\":\"NEI\"},\"jobbsituasjon\":[{\"beskrivelse\":\"ALDRI_HATT_JOBB\",\"detaljer\":{\"prosent\":\"25\"}},{\"beskrivelse\":\"ER_PERMITTERT\",\"detaljer\":{\"prosent\":\"75\"}}]},\"profilering\":{\"profileringId\":\"7c9a2feb-0b31-4101-825a-0c4a3d465e01\",\"periodeId\":\"ea0ad984-8b99-4fff-afd6-07737ab19d16\",\"opplysningerOmArbeidssoekerId\":\"913161a3-dde9-4448-abf8-2a01a043f8cd\",\"sendtInnAv\":{\"tidspunkt\":\"2024-04-25T08:19:53.612Z\",\"utfoertAv\":{\"type\":\"SYSTEM\",\"id\":null},\"kilde\":\"null-null\",\"aarsak\":\"opplysninger-mottatt\"},\"profilertTil\":\"OPPGITT_HINDRINGER\",\"jobbetSammenhengendeSeksAvTolvSisteManeder\":false,\"alder\":33}}";
+
+        mockMvc
+                .perform(
+                        post("/api/v3/person/hent-siste-opplysninger-om-arbeidssoeker-med-profilering")
+                                .contentType(APPLICATION_JSON)
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
+                .andExpect(status().is(200))
+                .andExpect(content().json(expectedJson));
+
+    }
+
+    @Test
+    void returnerer_null_dersom_person_ikke_har_aktiv_arbeidssoekerperiode() throws Exception {
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+        String fnr = ny.getNorskIdent();
+
+        String expectedJsonOpplysningerOmArbeidssoeker = "[" +
+                "  {" +
+                "    \"opplysningerOmArbeidssoekerId\": \"913161a3-dde9-4448-abf8-2a01a043f8cd\"," +
+                "    \"periodeId\": \"ea0ad984-8b99-4fff-afd6-07737ab19d16\"," +
+                "    \"sendtInnAv\": {" +
+                "      \"tidspunkt\": \"2024-04-23T13:22:58.089Z\"," +
+                "      \"utfoertAv\": {" +
+                "        \"type\": \"SLUTTBRUKER\"" +
+                "      }," +
+                "      \"kilde\": \"paw-arbeidssoekerregisteret-inngang\"," +
+                "      \"aarsak\": \"opplysning om arbeidssøker sendt inn\"" +
+                "    }," +
+                "    \"jobbsituasjon\": [" +
+                "      {" +
+                "        \"beskrivelse\": \"ALDRI_HATT_JOBB\"," +
+                "        \"detaljer\": { \"prosent\":  \"25\" }" +
+                "      }," +
+                "      {" +
+                "        \"beskrivelse\": \"ER_PERMITTERT\"," +
+                "        \"detaljer\": { \"prosent\":  \"75\" }" +
+                "      }" +
+                "    ]," +
+                "    \"utdanning\": {" +
+                "      \"nus\": \"3\"," +
+                "      \"bestaatt\": \"JA\"," +
+                "      \"godkjent\": \"JA\"" +
+                "    }," +
+                "    \"helse\": {" +
+                "      \"helsetilstandHindrerArbeid\": \"NEI\"" +
+                "    }," +
+                "    \"annet\": {" +
+                "      \"andreForholdHindrerArbeid\": \"NEI\"" +
+                "    }" +
+                "  }" +
+                "]";
+
+        String expectedJsonProfilering = "[" +
+                "  {" +
+                "    \"profileringId\": \"7c9a2feb-0b31-4101-825a-0c4a3d465e01\"," +
+                "    \"periodeId\": \"ea0ad984-8b99-4fff-afd6-07737ab19d16\"," +
+                "    \"opplysningerOmArbeidssoekerId\": \"913161a3-dde9-4448-abf8-2a01a043f8cd\"," +
+                "    \"sendtInnAv\": {" +
+                "      \"tidspunkt\": \"2024-04-25T08:19:53.612Z\"," +
+                "      \"utfoertAv\": {" +
+                "        \"type\": \"SYSTEM\"" +
+                "      }," +
+                "      \"kilde\": \"null-null\"," +
+                "      \"aarsak\": \"opplysninger-mottatt\"" +
+                "    }," +
+                "    \"profilertTil\": \"OPPGITT_HINDRINGER\"," +
+                "    \"jobbetSammenhengendeSeksAvTolvSisteManeder\": false," +
+                "    \"alder\": 33" +
+                "  }" +
+                "]";
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/arbeidssoekerperioder"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody("[]")));
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/opplysninger-om-arbeidssoeker"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonOpplysningerOmArbeidssoeker)));
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/profilering"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonProfilering)));
+
+        mockMvc
+                .perform(
+                        post("/api/v3/person/hent-siste-opplysninger-om-arbeidssoeker-med-profilering")
+                                .contentType(APPLICATION_JSON)
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
+                .andExpect(status().is(204))
+                .andExpect(content().string(""));
+
+    }
+
+    @Test
+    void returnerer_null_dersom_person_kun_har_avsluttede_arbeidssoekerperioder() throws Exception {
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+        String fnr = ny.getNorskIdent();
+
+        String expectedJsonArbeidssoekerPeriode = """
+                    [
+                      {
+                        "periodeId": "ea0ad984-8b99-4fff-afd6-07737ab19d16",
+                        "startet": {
+                          "tidspunkt": "2024-04-23T13:04:40.739Z",
+                          "utfoertAv": {
+                            "type": "SLUTTBRUKER"
+                          },
+                          "kilde": "europe-north1-docker.pkg.dev/nais-management-233d/paw/paw-arbeidssokerregisteret-api-inngang:24.04.23.118-1",
+                          "aarsak": "Er over 18 år, er bosatt i Norge i hendhold Folkeregisterloven"
+                        },
+                        "avsluttet": {
+                          "tidspunkt": "2024-05-23T13:04:40.739Z",
+                          "utfoertAv": {
+                            "type": "VEILEDER",
+                            "id": "Z123456"
+                          },
+                          "kilde": "europe-north1-docker.pkg.dev/nais-management-233d/paw/paw-arbeidssokerregisteret-api-inngang:24.04.23.118-1",
+                          "aarsak": "Er over 18 år, er bosatt i Norge i hendhold Folkeregisterloven"
+                        }
+                      }
+                    ]
+                """.trim();
+
+        String expectedJsonOpplysningerOmArbeidssoeker = "[" +
+                "  {" +
+                "    \"opplysningerOmArbeidssoekerId\": \"913161a3-dde9-4448-abf8-2a01a043f8cd\"," +
+                "    \"periodeId\": \"ea0ad984-8b99-4fff-afd6-07737ab19d16\"," +
+                "    \"sendtInnAv\": {" +
+                "      \"tidspunkt\": \"2024-04-23T13:22:58.089Z\"," +
+                "      \"utfoertAv\": {" +
+                "        \"type\": \"SLUTTBRUKER\"" +
+                "      }," +
+                "      \"kilde\": \"paw-arbeidssoekerregisteret-inngang\"," +
+                "      \"aarsak\": \"opplysning om arbeidssøker sendt inn\"" +
+                "    }," +
+                "    \"jobbsituasjon\": [" +
+                "      {" +
+                "        \"beskrivelse\": \"ALDRI_HATT_JOBB\"," +
+                "        \"detaljer\": { \"prosent\":  \"25\" }" +
+                "      }," +
+                "      {" +
+                "        \"beskrivelse\": \"ER_PERMITTERT\"," +
+                "        \"detaljer\": { \"prosent\":  \"75\" }" +
+                "      }" +
+                "    ]," +
+                "    \"utdanning\": {" +
+                "      \"nus\": \"3\"," +
+                "      \"bestaatt\": \"JA\"," +
+                "      \"godkjent\": \"JA\"" +
+                "    }," +
+                "    \"helse\": {" +
+                "      \"helsetilstandHindrerArbeid\": \"NEI\"" +
+                "    }," +
+                "    \"annet\": {" +
+                "      \"andreForholdHindrerArbeid\": \"NEI\"" +
+                "    }" +
+                "  }" +
+                "]";
+
+        String expectedJsonProfilering = "[" +
+                "  {" +
+                "    \"profileringId\": \"7c9a2feb-0b31-4101-825a-0c4a3d465e01\"," +
+                "    \"periodeId\": \"ea0ad984-8b99-4fff-afd6-07737ab19d16\"," +
+                "    \"opplysningerOmArbeidssoekerId\": \"913161a3-dde9-4448-abf8-2a01a043f8cd\"," +
+                "    \"sendtInnAv\": {" +
+                "      \"tidspunkt\": \"2024-04-25T08:19:53.612Z\"," +
+                "      \"utfoertAv\": {" +
+                "        \"type\": \"SYSTEM\"" +
+                "      }," +
+                "      \"kilde\": \"null-null\"," +
+                "      \"aarsak\": \"opplysninger-mottatt\"" +
+                "    }," +
+                "    \"profilertTil\": \"OPPGITT_HINDRINGER\"," +
+                "    \"jobbetSammenhengendeSeksAvTolvSisteManeder\": false," +
+                "    \"alder\": 33" +
+                "  }" +
+                "]";
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/arbeidssoekerperioder"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonArbeidssoekerPeriode)));
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/opplysninger-om-arbeidssoeker"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonOpplysningerOmArbeidssoeker)));
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/profilering"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonProfilering)));
+
+        mockMvc
+                .perform(
+                        post("/api/v3/person/hent-siste-opplysninger-om-arbeidssoeker-med-profilering")
+                                .contentType(APPLICATION_JSON)
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
+                .andExpect(status().is(204))
+                .andExpect(content().string(""));
+
+    }
+
+    @Test
+    void returnerer_siste_aktive_arbeidssoekerperiode_paa_bruker() throws Exception {
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+        String fnr = ny.getNorskIdent();
+
+        String expectedJsonArbeidssoekerPeriode = """
+                    [
+                      {
+                        "periodeId": "ea0ad984-8b99-4fff-afd6-07737ab19d16",
+                        "startet": {
+                          "tidspunkt": "2024-04-23T13:04:40.739Z",
+                          "utfoertAv": {
+                            "type": "SLUTTBRUKER"
+                          },
+                          "kilde": "europe-north1-docker.pkg.dev/nais-management-233d/paw/paw-arbeidssokerregisteret-api-inngang:24.04.23.118-1",
+                          "aarsak": "Er over 18 år, er bosatt i Norge i hendhold Folkeregisterloven"
+                        },
+                        "avsluttet": null
+                      }
+                    ]
+                """.trim();
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/arbeidssoekerperioder"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonArbeidssoekerPeriode)));
+
+        String expectedJson = """
+                    {
+                        "periodeId": "ea0ad984-8b99-4fff-afd6-07737ab19d16",
+                        "startet": {
+                            "tidspunkt":"2024-04-23T13:04:40.739Z",
+                            "utfoertAv": {
+                                "type": "SLUTTBRUKER",
+                                "id": null
+                            },
+                            "kilde": "europe-north1-docker.pkg.dev/nais-management-233d/paw/paw-arbeidssokerregisteret-api-inngang:24.04.23.118-1",
+                            "aarsak": "Er over 18 år, er bosatt i Norge i hendhold Folkeregisterloven"
+                        },
+                        "avsluttet":null
+                    }
+                """.trim();
+
+        mockMvc
+                .perform(
+                        post("/api/v3/person/hent-siste-aktiv-arbeidssoekerperiode")
+                                .contentType(APPLICATION_JSON)
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
+                .andExpect(status().is(200))
+                .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    void returnerer_204_om_bruker_ikke_har_aktiv_arbeidssoekerperiode() throws Exception {
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+        String fnr = ny.getNorskIdent();
+
+        String expectedJsonArbeidssoekerPeriode = """
+                    [
+                      {
+                        "periodeId": "ea0ad984-8b99-4fff-afd6-07737ab19d16",
+                        "startet": {
+                          "tidspunkt": "2023-04-23T13:04:40.739Z",
+                          "utfoertAv": {
+                            "type": "SLUTTBRUKER"
+                          },
+                          "kilde": "europe-north1-docker.pkg.dev/nais-management-233d/paw/paw-arbeidssokerregisteret-api-inngang:24.04.23.118-1",
+                          "aarsak": "Er over 18 år, er bosatt i Norge i hendhold Folkeregisterloven"
+                        },
+                        "avsluttet": {
+                          "tidspunkt": "2024-04-23T13:04:40.739Z",
+                          "utfoertAv": {
+                            "type": "SLUTTBRUKER"
+                          },
+                          "kilde": "europe-north1-docker.pkg.dev/nais-management-233d/paw/paw-arbeidssokerregisteret-api-inngang:24.04.23.118-1",
+                          "aarsak": "Er over 18 år, er bosatt i Norge i hendhold Folkeregisterloven"
+                        }
+                      }
+                    ]
+                """.trim();
+
+        stubFor(WireMock.post(urlEqualTo("/api/v1/veileder/arbeidssoekerperioder"))
+                .willReturn(ok()
+                        .withHeader("Nav-Consumer-Id", "veilarbperson")
+                        .withBody(expectedJsonArbeidssoekerPeriode)));
+
+        mockMvc
+                .perform(
+                        post("/api/v3/person/hent-siste-aktiv-arbeidssoekerperiode")
+                                .contentType(APPLICATION_JSON)
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
+                .andExpect(status().is(204));
+    }
+
 
 }
