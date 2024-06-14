@@ -1,6 +1,8 @@
 package no.nav.veilarbperson.config;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.common.audit_log.log.AuditLogger;
+import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.CachedAktorOppslagClient;
 import no.nav.common.client.aktoroppslag.PdlAktorOppslagClient;
@@ -14,6 +16,7 @@ import no.nav.common.token_client.builder.AzureAdTokenClientBuilder;
 import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.token_client.client.MachineToMachineTokenClient;
+import no.nav.poao_tilgang.client.PoaoTilgangClient;
 import no.nav.veilarbperson.client.aiabackend.AiaBackendClient;
 import no.nav.veilarbperson.client.aiabackend.AiaBackendClientImpl;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
@@ -24,6 +27,8 @@ import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.nom.SkjermetClientImpl;
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClient;
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClientImpl;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pam.PamClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -35,6 +40,10 @@ import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient
 import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.function.Supplier;
+
+import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
 
 
 @Slf4j
@@ -111,6 +120,18 @@ public class ClientConfig {
                 () -> aadMachineToMachineTokenClient.createMachineToMachineToken(properties.getVeilarbregistreringScope()));
     }
 
+    @Bean
+    public OppslagArbeidssoekerregisteretClient oppslagArbeidssoekerregisteretClient(
+            EnvironmentProperties properties,
+            AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient
+    ) {
+        return new OppslagArbeidssoekerregisteretClientImpl(
+                properties.getOppslagArbeidssoekerregisteretUrl(),
+                () -> aadMachineToMachineTokenClient.createMachineToMachineToken(properties.getOppslagArbeidssoekerregisteretScope()),
+                APPLICATION_NAME
+        );
+    }
+
 
     @Bean
     public AzureAdMachineToMachineTokenClient azureAdMachineToMachineTokenClient() {
@@ -125,6 +146,16 @@ public class ClientConfig {
     @Bean
     public MetricsClient influxMetricsClient() {
         return new InfluxClient();
+    }
+
+
+    @Bean("authServiceWithoutAuditLog")
+    public AuthService authServiceWithoutAuditLogg(AktorOppslagClient aktorOppslagClient, AuthContextHolder authContextHolder,
+                                   EnvironmentProperties environmentProperties,
+                                   AzureAdOnBehalfOfTokenClient aadOboTokenClient,
+                                   PoaoTilgangClient poaoTilgangClient){
+        return new AuthService(aktorOppslagClient, authContextHolder, environmentProperties, aadOboTokenClient,
+                poaoTilgangClient, null);
     }
 
 }

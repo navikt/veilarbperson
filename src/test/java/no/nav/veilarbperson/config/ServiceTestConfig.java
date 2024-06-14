@@ -12,5 +12,6 @@ import org.springframework.context.annotation.Import;
 		PersonV2Service.class,
 		CvJobbprofilService.class,
 		RegistreringService.class,
+		OppslagArbeidssoekerregisteretService.class
 })
 public class ServiceTestConfig {}

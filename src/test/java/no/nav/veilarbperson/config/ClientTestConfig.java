@@ -21,6 +21,8 @@ import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
 import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
 import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClient;
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClientImpl;
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -274,6 +276,12 @@ public class ClientTestConfig {
     public VeilarbregistreringClient veilarbregistreringClient() {
         return new VeilarbregistreringClientImpl(
                 RestClient.baseClient(), "http://localhost:" + WIREMOCK_PORT, () -> "");
+    }
+
+    @Bean
+    public OppslagArbeidssoekerregisteretClient oppslagArbeidssoekerregisteretClient() {
+        return new OppslagArbeidssoekerregisteretClientImpl(
+                "http://localhost:" + WIREMOCK_PORT, () -> "", "veilarbperson");
     }
 
     @Bean

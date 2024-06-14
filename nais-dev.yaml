@@ -77,6 +77,9 @@ spec:
         - application: arbeidssokerregistrering-for-veileder
           namespace: paw
           cluster: dev-gcp
+        - application: azure-token-generator
+          namespace: aura
+          cluster: dev-gcp
 
   env:
     - name: KODEVERK_URL
@@ -123,6 +126,11 @@ spec:
       value: https://www.intern.dev.nav.no/aia-backend
     - name: AIA_BACKEND_SCOPE
       value: api://dev-gcp.paw.paw-arbeidssoker-besvarelse/.default
+    - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_URL
+      value: https://oppslag-arbeidssoekerregisteret.intern.dev.nav.no
+    - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_SCOPE
+      value: api://dev-gcp.paw.paw-arbeidssoekerregisteret-api-oppslag/.default
+
   envFrom:
     - configmap: pto-config
     - configmap: loginservice-idporten

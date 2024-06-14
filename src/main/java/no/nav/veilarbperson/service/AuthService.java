@@ -16,7 +16,7 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.common.types.identer.NavIdent;
 import no.nav.poao_tilgang.client.*;
 import no.nav.veilarbperson.config.EnvironmentProperties;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,6 +32,7 @@ import static java.util.Optional.ofNullable;
 import static no.nav.common.auth.Constants.AAD_NAV_IDENT_CLAIM;
 
 @Service
+@Primary
 public class AuthService {
 
     private final AktorOppslagClient aktorOppslagClient;
@@ -46,7 +47,6 @@ public class AuthService {
 
     private final AuditLogger auditLogger;
 
-    @Autowired
     public AuthService(
                        AktorOppslagClient aktorOppslagClient,
                        AuthContextHolder authContextHolder,
@@ -105,12 +105,17 @@ public class AuthService {
         Decision desicion = poaoTilgangClient.evaluatePolicy(new EksternBrukerTilgangTilEksternBrukerPolicyInput(
                 authContextHolder.getUid().orElseThrow(), ressursNorskIdent
         )).getOrThrow();
-        auditLogWithMessageAndDestinationUserId(
-                "Ekstern bruker har gjort oppslag på ekstern bruker",
-                ressursNorskIdent,
-                authContextHolder.getUid().get(),
-                desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
-        );
+
+        if (auditLogger != null){
+            auditLogWithMessageAndDestinationUserId(
+                    "Ekstern bruker har gjort oppslag på ekstern bruker",
+                    ressursNorskIdent,
+                    authContextHolder.getUid().get(),
+                    desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
+            );
+        }
+
+
         return desicion.isPermit();
     }
 
@@ -118,12 +123,16 @@ public class AuthService {
         Decision desicion = poaoTilgangClient.evaluatePolicy(new NavAnsattTilgangTilEksternBrukerPolicyInput(
                 hentInnloggetVeilederUUID(), TilgangType.LESE, eksternBruker
         )).getOrThrow();
-        auditLogWithMessageAndDestinationUserId(
-                "Veileder har gjort oppslag på bruker",
-                eksternBruker,
-                getNavIdentClaimHvisTilgjengelig().orElseThrow().get(),
-                desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
-        );
+
+        if (auditLogger != null){
+            auditLogWithMessageAndDestinationUserId(
+                    "Veileder har gjort oppslag på bruker",
+                    eksternBruker,
+                    getNavIdentClaimHvisTilgjengelig().orElseThrow().get(),
+                    desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
+            );
+        }
+
         return desicion.isPermit();
     }
 
@@ -167,11 +176,6 @@ public class AuthService {
 
     public AktorId getAktorId(Fnr fnr) {
         return aktorOppslagClient.hentAktorId(fnr);
-    }
-
-    public String getInnloggetBrukerToken() {
-        return authContextHolder.getIdTokenString()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is missing"));
     }
 
     public String getInnloggerBrukerUid() {

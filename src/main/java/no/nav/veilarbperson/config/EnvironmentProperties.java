@@ -38,4 +38,6 @@ public class EnvironmentProperties {
     private String kontoregisterUrl;
     private String aiaBackendUrl;
     private String aiaBackendScope;
+    private String oppslagArbeidssoekerregisteretUrl;
+    private String oppslagArbeidssoekerregisteretScope;
 }
