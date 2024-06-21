@@ -18,6 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.util.List;
 
+import static no.nav.veilarbperson.utils.SecureLog.secureLog;
+
 
 @Slf4j
 @RestController
@@ -107,6 +109,7 @@ public class PersonV3Controller {
     @PostMapping("/person/hent-representasjon-fullmakt")
     @Operation(summary = "Henter informasjon om fullmakt fra representasjon")
     public List<Fullmakt> hentFullmakt(@RequestBody PersonRequest personRequest) throws IOException {
+        secureLog.info("Inside hentFullmakt personV3Controller");
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personRequest.getFnr());
         return personV2Service.hentFullmakt(personRequest);
