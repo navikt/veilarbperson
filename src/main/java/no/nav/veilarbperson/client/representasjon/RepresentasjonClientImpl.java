@@ -30,7 +30,7 @@ public class RepresentasjonClientImpl implements RepresentasjonClient{
         this.userTokenProvider = userTokenProvider;
     }
 
-    public List<Fullmakt> hentFullmakt(String kryptertIdent) throws IOException {
+    public List<ReprFullmaktData.Fullmakt> hentFullmakt(String kryptertIdent) throws IOException {
         Request request = new Request.Builder()
                 .url(joinPaths(reprUrl, "/api/internbruker/fullmaktsgiver"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
@@ -42,7 +42,7 @@ public class RepresentasjonClientImpl implements RepresentasjonClient{
 
         try (Response response = client.newCall(request).execute()) {
             RestUtils.throwIfNotSuccessful(response);
-            return RestUtils.parseJsonArrayResponse(response, Fullmakt.class)
+            return RestUtils.parseJsonArrayResponse(response, ReprFullmaktData.Fullmakt.class)
                     .orElseThrow(() -> new IllegalStateException("They mangler body i responsen til representasjon fullmakt"));
 
         }

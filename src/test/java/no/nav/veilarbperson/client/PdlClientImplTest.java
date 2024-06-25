@@ -5,9 +5,11 @@ import no.nav.common.json.JsonUtils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.*;
 import no.nav.veilarbperson.client.pdl.domain.*;
+import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
 import no.nav.veilarbperson.domain.PersonFraPdlRequest;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
+import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,7 +17,10 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.hentGjeldeneNavn;
@@ -275,4 +280,28 @@ public class PdlClientImplTest {
         assertThat(hentGjeldeneNavn(navn).get().getFornavn()).isEqualTo(pdlNavn1);
     }
 
+    @Test
+    public void testOmFullmaktOmraader() {
+        ArrayList<ReprFullmaktData.OmraadeHandlingType> omraadeHandlingType = new ArrayList<>() {{
+            add(ReprFullmaktData.OmraadeHandlingType.KOMMUNISER);
+            add(ReprFullmaktData.OmraadeHandlingType.LES);
+            add(ReprFullmaktData.OmraadeHandlingType.SKRIV);
+        }};
+
+        ReprFullmaktData reprFullmaktData = new ReprFullmaktData();
+        ReprFullmaktData.Fullmakt fullmakt = new ReprFullmaktData.Fullmakt();
+        ReprFullmaktData.OmraadeMedHandling omraadeMedHandling = new ReprFullmaktData.OmraadeMedHandling();
+        omraadeMedHandling.setTema("OPP");
+        omraadeMedHandling.setHandling(omraadeHandlingType);
+        fullmakt.setOmraade(List.of(omraadeMedHandling));
+        reprFullmaktData.setFullmakter(List.of(fullmakt));
+
+        //VergeOgFullmaktDataMapper.omraadeMapper()
+        //assertThat()
+
+        /*ArrayList<ReprFullmaktData.Fullmakt> fullmaktFraRepresentasjon =
+                new ArrayList<>().add(new ReprFullmaktData.Fullmakt().setOmraade(
+                        new ArrayList<>().add(.setTema("OPP").setHandling(omraadeHandlingType))));*/
+
+    }
 }

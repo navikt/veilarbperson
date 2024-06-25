@@ -1,7 +1,11 @@
 package no.nav.veilarbperson.utils;
 
 import no.nav.veilarbperson.client.pdl.HentPerson;
+import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
+import no.nav.veilarbperson.domain.FullmaktData;
 import no.nav.veilarbperson.domain.VergeOgFullmaktData;
+import no.nav.veilarbperson.service.KodeverkService;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +16,43 @@ public class VergeOgFullmaktDataMapper {
         return new VergeOgFullmaktData()
                 .setVergemaalEllerFremtidsfullmakt(vergemaalEllerFremtidsfullmaktMapper(vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt()))
                 .setFullmakt(fullmaktMapper(vergeOgFullmaktFraPdl.getFullmakt()));
+    }
+
+    public static FullmaktData toFullmaktData(List<ReprFullmaktData.Fullmakt> fullmaktFraRepresentasjon, KodeverkService kodeverkService) {
+        return new FullmaktData()
+                .setFullmakt(representasjonFullmaktMapper(fullmaktFraRepresentasjon, kodeverkService)
+        );
+    }
+
+    public static List<FullmaktData.Fullmakt> representasjonFullmaktMapper(List<ReprFullmaktData.Fullmakt> fullmaktFraRepresentasjon, KodeverkService kodeverkService) {
+        return fullmaktFraRepresentasjon.stream()
+            .map(fullmakt ->
+                new FullmaktData.Fullmakt()
+                        .setFullmaktsgiver(fullmakt.getFullmaktsgiver())
+                        .setFullmaktsgiverNavn(fullmakt.getFullmaktsgiverNavn())
+                        .setFullmektig(fullmakt.getFullmektig())
+                        .setFullmektig(fullmakt.getFullmektig())
+                        .setOmraade(omraadeMapper(fullmakt.getOmraade(), kodeverkService))
+                        .setStatus(fullmakt.getStatus())
+                        .setGyldigFraOgMed(fullmakt.getGyldigFraOgMed())
+                        .setGyldigTilOgMed(fullmakt.getGyldigTilOgMed()))
+            .collect(Collectors.toList());
+    }
+
+    public static List<FullmaktData.OmraadeMedHandling> omraadeMapper(List<ReprFullmaktData.OmraadeMedHandling> omraade, KodeverkService kodeverkService) {
+        List<FullmaktData.OmraadeMedHandling> omraadeMedHandlinger = omraade.stream().map(omraadeMedHandling -> {
+            String temaBeskrivelse = kodeverkService.getBeskrivelseForTema(omraadeMedHandling.getTema());
+            List<ReprFullmaktData.OmraadeHandlingType> reprHandlingTyper = omraadeMedHandling.getHandling();
+            List<FullmaktData.OmraadeHandlingType> fullmaktHandlingTyper =
+                    reprHandlingTyper.stream().map(
+                        omraadeHandlingType -> FullmaktData.OmraadeHandlingType.valueOf(omraadeHandlingType.name()))
+                    .toList();
+            FullmaktData.OmraadeMedHandling flettetOmraadeMedHandling = new FullmaktData.OmraadeMedHandling();
+            flettetOmraadeMedHandling.setTema(temaBeskrivelse).setHandling(fullmaktHandlingTyper);
+             return flettetOmraadeMedHandling;
+        }).toList();
+
+        return omraadeMedHandlinger;
     }
 
     public static List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktMapper(List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {

@@ -7,7 +7,6 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerperiodeResponse;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagResponseDTO;
-import no.nav.veilarbperson.client.representasjon.Fullmakt;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.service.*;
 import org.springframework.http.HttpStatus;
@@ -108,7 +107,7 @@ public class PersonV3Controller {
 
     @PostMapping("/person/hent-representasjon-fullmakt")
     @Operation(summary = "Henter informasjon om fullmakt fra representasjon")
-    public List<Fullmakt> hentFullmakt(@RequestBody PersonRequest personRequest) throws IOException {
+    public FullmaktData hentFullmakt(@RequestBody PersonRequest personRequest) throws IOException {
         secureLog.info("Inside hentFullmakt personV3Controller");
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personRequest.getFnr());

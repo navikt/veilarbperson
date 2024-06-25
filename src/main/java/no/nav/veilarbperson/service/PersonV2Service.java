@@ -12,7 +12,7 @@ import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
-import no.nav.veilarbperson.client.representasjon.Fullmakt;
+import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
@@ -24,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,6 +32,7 @@ import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
 import static no.nav.veilarbperson.utils.SecureLog.secureLog;
+import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toFullmaktData;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
 
 @Slf4j
@@ -336,18 +334,28 @@ public class PersonV2Service {
         return vergeOgFullmaktData;
     }
 
-    public List<Fullmakt> hentFullmakt(PersonRequest personRequest) throws IOException {
+    public FullmaktData hentFullmakt(PersonRequest personRequest) throws IOException {
         String encryptertIdent = Base64.getEncoder().encodeToString(personRequest.getFnr().get().getBytes());
-        List<Fullmakt> fullmaktFraRepresentasjon = representasjonClient.hentFullmakt(encryptertIdent);
-        secureLog.info("encryptertIdent: "+ encryptertIdent);
-        secureLog.info("fullmaktFraRepresentasjon: "+ fullmaktFraRepresentasjon.getFirst());
+        List<ReprFullmaktData.Fullmakt> fullmaktFraRepresentasjon = representasjonClient.hentFullmakt(encryptertIdent);
+        secureLog.info("encryptertIdent" + encryptertIdent);
+        if (fullmaktFraRepresentasjon.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke fullmakt i representasjon");
+        }
+        secureLog.info("FullmaktData: " + toFullmaktData(fullmaktFraRepresentasjon, kodeverkService));
+        return toFullmaktData(fullmaktFraRepresentasjon, kodeverkService);
+    }
 
-        return fullmaktFraRepresentasjon;
+    public String flettBeskrivelseTilFullmaktTema(String område) {
+        if (område!=null && område.equals("*")) {
+            return "alle ytelser";
+        } else {
+            return kodeverkService.getBeskrivelseForTema(område);
+        }
     }
 
     public void flettBeskrivelseForFullmaktOmraader(VergeOgFullmaktData vergeOgFullmaktData) {
         vergeOgFullmaktData.getFullmakt().forEach(fullmakt -> {
-                    if (!fullmakt.getOmraader().isEmpty() && fullmakt.getOmraader().get(0).getKode().equals("*")) {
+                    if (!fullmakt.getOmraader().isEmpty() && fullmakt.getOmraader().getFirst().getKode().equals("*")) {
                         fullmakt.getOmraader().getFirst().setBeskrivelse("alle ytelser");
                     } else {
                         fullmakt.getOmraader().forEach(omraade ->
