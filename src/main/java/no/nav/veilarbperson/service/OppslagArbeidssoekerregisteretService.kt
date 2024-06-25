@@ -40,6 +40,6 @@ class OppslagArbeidssoekerregisteretService(
                 ?.filter { it.opplysningerOmArbeidssoekerId == sisteOpplysningerOmArbeidssoeker.opplysningerOmArbeidssoekerId }
                 ?.maxByOrNull { it.sendtInnAv.tidspunkt }
 
-        return OpplysningerOmArbeidssoekerMedProfilering(sisteOpplysningerOmArbeidssoeker.mapToOpplyasningerOmArbeidssoekerMedNuskode(), sisteProfilering)
+        return OpplysningerOmArbeidssoekerMedProfilering(aktivArbeidssoekerperiode.startet.tidspunkt, sisteOpplysningerOmArbeidssoeker.mapToOpplyasningerOmArbeidssoekerMedNuskode(), sisteProfilering)
     }
 }
