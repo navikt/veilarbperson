@@ -1,9 +1,7 @@
 package no.nav.veilarbperson.domain;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +13,6 @@ public class FullmaktData {
 
     @Data
     public static class Fullmakt {
-        public List<VergeOgFullmaktData.Fullmakt> fullmakt;
         private String fullmaktsgiver;
         private String fullmektig;
         private List<OmraadeMedHandling> omraade;
@@ -23,7 +20,6 @@ public class FullmaktData {
         private LocalDate gyldigTilOgMed;
         private String fullmaktsgiverNavn;
         private String fullmektigsNavn;
-        private String status;
     }
 
     @Data
@@ -42,11 +38,6 @@ public class FullmaktData {
         OmraadeHandlingType(String handlingType) {
             this.name = handlingType;
         }
-
-        public OmraadeHandlingType getOmraadeHandlingType(String handlingType) {
-            return OmraadeHandlingType.valueOf(handlingType);
-        }
     }
-
 }
 
