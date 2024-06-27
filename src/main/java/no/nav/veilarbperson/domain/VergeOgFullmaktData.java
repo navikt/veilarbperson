@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

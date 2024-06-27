@@ -1,7 +1,10 @@
 package no.nav.veilarbperson.utils;
 
 import no.nav.veilarbperson.client.pdl.HentPerson;
+import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
+import no.nav.veilarbperson.domain.FullmaktDTO;
 import no.nav.veilarbperson.domain.VergeOgFullmaktData;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +15,42 @@ public class VergeOgFullmaktDataMapper {
         return new VergeOgFullmaktData()
                 .setVergemaalEllerFremtidsfullmakt(vergemaalEllerFremtidsfullmaktMapper(vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt()))
                 .setFullmakt(fullmaktMapper(vergeOgFullmaktFraPdl.getFullmakt()));
+    }
+
+    public static FullmaktDTO toFullmaktDTO(List<ReprFullmaktData.Fullmakt> fullmaktListe) {
+        return new FullmaktDTO()
+                .setFullmakt(representasjonFullmaktMapper(fullmaktListe)
+        );
+    }
+
+    public static List<FullmaktDTO.Fullmakt> representasjonFullmaktMapper(List<ReprFullmaktData.Fullmakt> fullmaktListe) {
+        return fullmaktListe.stream()
+            .map(fullmakt ->
+                new FullmaktDTO.Fullmakt()
+                        .setFullmaktsgiver(fullmakt.getFullmaktsgiver())
+                        .setFullmaktsgiverNavn(fullmakt.getFullmaktsgiverNavn())
+                        .setFullmektig(fullmakt.getFullmektig())
+                        .setFullmektigsNavn(fullmakt.getFullmektigsNavn())
+                        .setOmraade(omraadeMapper(fullmakt.getOmraade()))
+                        .setGyldigFraOgMed(fullmakt.getGyldigFraOgMed())
+                        .setGyldigTilOgMed(fullmakt.getGyldigTilOgMed()))
+            .collect(Collectors.toList());
+    }
+
+    public static List<FullmaktDTO.OmraadeMedHandling> omraadeMapper(List<ReprFullmaktData.OmraadeMedHandling> omraade) {
+        List<FullmaktDTO.OmraadeMedHandling> omraadeMedHandlinger = omraade.stream().map(omraadeMedHandling -> {
+            List<ReprFullmaktData.OmraadeHandlingType> reprHandlingTyper = omraadeMedHandling.getHandling();
+            List<FullmaktDTO.OmraadeHandlingType> fullmaktHandlingTyper =
+                    reprHandlingTyper.stream().map(
+                        omraadeHandlingType -> FullmaktDTO.OmraadeHandlingType.valueOf(omraadeHandlingType.name()))
+                    .toList();
+            FullmaktDTO.OmraadeMedHandling omraadeMedHandlingMapper = new FullmaktDTO.OmraadeMedHandling();
+            omraadeMedHandlingMapper
+                    .setTema(omraadeMedHandling.getTema())
+                    .setHandling(fullmaktHandlingTyper);
+            return omraadeMedHandlingMapper;
+        }).toList();
+        return omraadeMedHandlinger;
     }
 
     public static List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktMapper(List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {

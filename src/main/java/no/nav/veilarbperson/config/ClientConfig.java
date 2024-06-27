@@ -1,7 +1,6 @@
 package no.nav.veilarbperson.config;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.common.audit_log.log.AuditLogger;
 import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.client.aktoroppslag.CachedAktorOppslagClient;
@@ -33,6 +32,8 @@ import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pam.PamClientImpl;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.PdlClientImpl;
+import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
+import no.nav.veilarbperson.client.representasjon.RepresentasjonClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
@@ -40,11 +41,7 @@ import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient
 import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.function.Supplier;
-
 import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
-
 
 @Slf4j
 @Configuration
@@ -112,6 +109,11 @@ public class ClientConfig {
                 () -> tokenClient.createMachineToMachineToken(properties.getPdlApiScope()));
     }
 
+    @Bean
+    public RepresentasjonClient representasjonClient(EnvironmentProperties properties, AuthService authService) {
+        return new RepresentasjonClientImpl(properties.getReprApiUrl(),
+                () -> authService.getAadOboTokenForTjeneste(properties.getReprApiScope()));
+    }
 
     @Bean
     public VeilarbregistreringClient veilarbregistreringClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient) {

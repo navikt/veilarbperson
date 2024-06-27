@@ -12,6 +12,8 @@ import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
+import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
+import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
@@ -21,16 +23,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
-import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
+import static no.nav.veilarbperson.utils.SecureLog.secureLog;
+import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.*;
 
 @Slf4j
 @Service
@@ -41,7 +43,7 @@ public class PersonV2Service {
     private final Norg2Client norg2Client;
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
-
+    private final RepresentasjonClient representasjonClient;
     private final KontoregisterClient kontoregisterClient;
 
     @Autowired
@@ -51,6 +53,7 @@ public class PersonV2Service {
                            Norg2Client norg2Client,
                            SkjermetClient skjermetClient,
                            KodeverkService kodeverkService,
+                           RepresentasjonClient representasjonClient,
                            KontoregisterClient kontoregisterClient) {
         this.pdlClient = pdlClient;
         this.authService = authServiceWithoutAuditLogg;
@@ -58,6 +61,7 @@ public class PersonV2Service {
         this.norg2Client = norg2Client;
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
+        this.representasjonClient = representasjonClient;
         this.kontoregisterClient = kontoregisterClient;
     }
 
@@ -315,9 +319,8 @@ public class PersonV2Service {
         return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
     }
 
-    public VergeOgFullmaktData hentVergeEllerFullmakt(PersonFraPdlRequest personFraPdlRequest) {
+    public VergeOgFullmaktData hentVergeEllerFullmakt(PersonFraPdlRequest personFraPdlRequest) throws IOException {
         HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
-
         if (vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke verge eller fullmakt i PDL");
         }
@@ -330,10 +333,39 @@ public class PersonV2Service {
         return vergeOgFullmaktData;
     }
 
+    public FullmaktDTO hentFullmakt(PersonRequest personRequest) throws IOException {
+        String encryptertIdent = Base64.getEncoder().encodeToString(personRequest.getFnr().get().getBytes());
+        List<ReprFullmaktData.Fullmakt> fullmaktListe = representasjonClient.hentFullmakt(encryptertIdent);
+        if (fullmaktListe.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke fullmakt i representasjon");
+        }
+        FullmaktDTO fullmaktDTO = toFullmaktDTO(fullmaktListe);
+        flettBeskrivelseTilFullmaktTema(fullmaktDTO);
+        secureLog.info("FullmaktData: " + fullmaktDTO);
+        return fullmaktDTO;
+    }
+
+    public void flettBeskrivelseTilFullmaktTema(FullmaktDTO fullmaktDto) {
+        if (!fullmaktDto.getFullmakt().isEmpty()) {
+            fullmaktDto.getFullmakt().forEach(fullmakt -> {
+                if (!fullmakt.getOmraade().isEmpty()) {
+                    fullmakt.getOmraade().forEach(omraade -> {
+                        if (omraade.getTema().equals("*")) {
+                            omraade.setTema("alle ytelser");
+                        } else {
+                            String beskrivelseForTema = kodeverkService.getBeskrivelseForTema(omraade.getTema());
+                            omraade.setTema(beskrivelseForTema);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
     public void flettBeskrivelseForFullmaktOmraader(VergeOgFullmaktData vergeOgFullmaktData) {
         vergeOgFullmaktData.getFullmakt().forEach(fullmakt -> {
-                    if (!fullmakt.getOmraader().isEmpty() && fullmakt.getOmraader().get(0).getKode().equals("*")) {
-                        fullmakt.getOmraader().get(0).setBeskrivelse("alle ytelser");
+                    if (!fullmakt.getOmraader().isEmpty() && fullmakt.getOmraader().getFirst().getKode().equals("*")) {
+                        fullmakt.getOmraader().getFirst().setBeskrivelse("alle ytelser");
                     } else {
                         fullmakt.getOmraader().forEach(omraade ->
                                 omraade.setBeskrivelse(kodeverkService.getBeskrivelseForTema(omraade.getKode()))
