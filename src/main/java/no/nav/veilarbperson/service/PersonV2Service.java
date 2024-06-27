@@ -32,8 +32,7 @@ import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
 import static no.nav.veilarbperson.utils.SecureLog.secureLog;
-import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toFullmaktData;
-import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.toVergeOgFullmaktData;
+import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.*;
 
 @Slf4j
 @Service
@@ -334,22 +333,32 @@ public class PersonV2Service {
         return vergeOgFullmaktData;
     }
 
-    public FullmaktData hentFullmakt(PersonRequest personRequest) throws IOException {
+    public FullmaktDTO hentFullmakt(PersonRequest personRequest) throws IOException {
         String encryptertIdent = Base64.getEncoder().encodeToString(personRequest.getFnr().get().getBytes());
-        List<ReprFullmaktData.Fullmakt> fullmaktFraRepresentasjon = representasjonClient.hentFullmakt(encryptertIdent);
-        secureLog.info("encryptertIdent" + encryptertIdent);
-        if (fullmaktFraRepresentasjon.isEmpty()) {
+        List<ReprFullmaktData.Fullmakt> fullmaktListe = representasjonClient.hentFullmakt(encryptertIdent);
+        if (fullmaktListe.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke fullmakt i representasjon");
         }
-        secureLog.info("FullmaktData: " + toFullmaktData(fullmaktFraRepresentasjon, kodeverkService));
-        return toFullmaktData(fullmaktFraRepresentasjon, kodeverkService);
+        FullmaktDTO fullmaktDTO = toFullmaktDTO(fullmaktListe);
+        flettBeskrivelseTilFullmaktTema(fullmaktDTO);
+        secureLog.info("FullmaktData: " + fullmaktDTO);
+        return fullmaktDTO;
     }
 
-    public String flettBeskrivelseTilFullmaktTema(String område) {
-        if (område!=null && område.equals("*")) {
-            return "alle ytelser";
-        } else {
-            return kodeverkService.getBeskrivelseForTema(område);
+    public void flettBeskrivelseTilFullmaktTema(FullmaktDTO fullmaktDto) {
+        if (!fullmaktDto.getFullmakt().isEmpty()) {
+            fullmaktDto.getFullmakt().forEach(fullmakt -> {
+                if (!fullmakt.getOmraade().isEmpty()) {
+                    fullmakt.getOmraade().forEach(omraade -> {
+                        if (omraade.getTema().equals("*")) {
+                            omraade.setTema("alle ytelser");
+                        } else {
+                            String beskrivelseForTema = kodeverkService.getBeskrivelseForTema(omraade.getTema());
+                            omraade.setTema(beskrivelseForTema);
+                        }
+                    });
+                }
+            });
         }
     }
 

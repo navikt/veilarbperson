@@ -105,10 +105,9 @@ public class PersonV3Controller {
         return personV2Service.hentVergeEllerFullmakt(personFraPdlRequest);
     }
 
-    @PostMapping("/person/hent-representasjon-fullmakt")
-    @Operation(summary = "Henter informasjon om fullmakt fra representasjon")
-    public FullmaktData hentFullmakt(@RequestBody PersonRequest personRequest) throws IOException {
-        secureLog.info("Inside hentFullmakt personV3Controller");
+    @PostMapping("/person/hent-fullmakt")
+    @Operation(summary = "Henter informasjon for fullmakt fra representasjon")
+    public FullmaktDTO hentFullmakt(@RequestBody PersonRequest personRequest) throws IOException {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personRequest.getFnr());
         return personV2Service.hentFullmakt(personRequest);

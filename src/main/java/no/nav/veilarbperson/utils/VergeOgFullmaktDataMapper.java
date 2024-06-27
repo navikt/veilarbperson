@@ -2,9 +2,8 @@ package no.nav.veilarbperson.utils;
 
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
-import no.nav.veilarbperson.domain.FullmaktData;
+import no.nav.veilarbperson.domain.FullmaktDTO;
 import no.nav.veilarbperson.domain.VergeOgFullmaktData;
-import no.nav.veilarbperson.service.KodeverkService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,40 +17,39 @@ public class VergeOgFullmaktDataMapper {
                 .setFullmakt(fullmaktMapper(vergeOgFullmaktFraPdl.getFullmakt()));
     }
 
-    public static FullmaktData toFullmaktData(List<ReprFullmaktData.Fullmakt> fullmaktFraRepresentasjon, KodeverkService kodeverkService) {
-        return new FullmaktData()
-                .setFullmakt(representasjonFullmaktMapper(fullmaktFraRepresentasjon, kodeverkService)
+    public static FullmaktDTO toFullmaktDTO(List<ReprFullmaktData.Fullmakt> fullmaktListe) {
+        return new FullmaktDTO()
+                .setFullmakt(representasjonFullmaktMapper(fullmaktListe)
         );
     }
 
-    public static List<FullmaktData.Fullmakt> representasjonFullmaktMapper(List<ReprFullmaktData.Fullmakt> fullmaktFraRepresentasjon, KodeverkService kodeverkService) {
-        return fullmaktFraRepresentasjon.stream()
+    public static List<FullmaktDTO.Fullmakt> representasjonFullmaktMapper(List<ReprFullmaktData.Fullmakt> fullmaktListe) {
+        return fullmaktListe.stream()
             .map(fullmakt ->
-                new FullmaktData.Fullmakt()
+                new FullmaktDTO.Fullmakt()
                         .setFullmaktsgiver(fullmakt.getFullmaktsgiver())
                         .setFullmaktsgiverNavn(fullmakt.getFullmaktsgiverNavn())
                         .setFullmektig(fullmakt.getFullmektig())
-                        .setFullmektig(fullmakt.getFullmektig())
-                        .setOmraade(omraadeMapper(fullmakt.getOmraade(), kodeverkService))
-                        .setStatus(fullmakt.getStatus())
+                        .setFullmektigsNavn(fullmakt.getFullmektigsNavn())
+                        .setOmraade(omraadeMapper(fullmakt.getOmraade()))
                         .setGyldigFraOgMed(fullmakt.getGyldigFraOgMed())
                         .setGyldigTilOgMed(fullmakt.getGyldigTilOgMed()))
             .collect(Collectors.toList());
     }
 
-    public static List<FullmaktData.OmraadeMedHandling> omraadeMapper(List<ReprFullmaktData.OmraadeMedHandling> omraade, KodeverkService kodeverkService) {
-        List<FullmaktData.OmraadeMedHandling> omraadeMedHandlinger = omraade.stream().map(omraadeMedHandling -> {
-            String temaBeskrivelse = kodeverkService.getBeskrivelseForTema(omraadeMedHandling.getTema());
+    public static List<FullmaktDTO.OmraadeMedHandling> omraadeMapper(List<ReprFullmaktData.OmraadeMedHandling> omraade) {
+        List<FullmaktDTO.OmraadeMedHandling> omraadeMedHandlinger = omraade.stream().map(omraadeMedHandling -> {
             List<ReprFullmaktData.OmraadeHandlingType> reprHandlingTyper = omraadeMedHandling.getHandling();
-            List<FullmaktData.OmraadeHandlingType> fullmaktHandlingTyper =
+            List<FullmaktDTO.OmraadeHandlingType> fullmaktHandlingTyper =
                     reprHandlingTyper.stream().map(
-                        omraadeHandlingType -> FullmaktData.OmraadeHandlingType.valueOf(omraadeHandlingType.name()))
+                        omraadeHandlingType -> FullmaktDTO.OmraadeHandlingType.valueOf(omraadeHandlingType.name()))
                     .toList();
-            FullmaktData.OmraadeMedHandling flettetOmraadeMedHandling = new FullmaktData.OmraadeMedHandling();
-            flettetOmraadeMedHandling.setTema(temaBeskrivelse).setHandling(fullmaktHandlingTyper);
-             return flettetOmraadeMedHandling;
+            FullmaktDTO.OmraadeMedHandling omraadeMedHandlingMapper = new FullmaktDTO.OmraadeMedHandling();
+            omraadeMedHandlingMapper
+                    .setTema(omraadeMedHandling.getTema())
+                    .setHandling(fullmaktHandlingTyper);
+            return omraadeMedHandlingMapper;
         }).toList();
-
         return omraadeMedHandlinger;
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Accessors(chain=true)
-public class FullmaktData {
+public class FullmaktDTO {
     public List<Fullmakt> fullmakt;
 
     @Data
