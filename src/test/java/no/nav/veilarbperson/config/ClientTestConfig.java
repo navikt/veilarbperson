@@ -27,12 +27,15 @@ import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
+import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
+import no.nav.veilarbperson.client.representasjon.RepresentasjonClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
 import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
+import org.mockito.Mockito;
 import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -250,6 +253,10 @@ public class ClientTestConfig {
                 return HealthCheckResult.healthy();
             }
         };
+    }
+
+    public RepresentasjonClient representasjonClient() {
+        return Mockito.mock(RepresentasjonClient.class);
     }
 
     @Bean

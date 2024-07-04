@@ -9,6 +9,7 @@ import no.nav.poao_tilgang.client.PoaoTilgangClient;
 import no.nav.poao_tilgang.client.PoaoTilgangMockClient;
 import no.nav.poao_tilgang.poao_tilgang_test_core.NavContext;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
+import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
 import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,4 +57,9 @@ public class ApplicationTestConfig {
 
 	@Bean
 	public AuditLogger auditLogger() { return mock(AuditLogger.class); }
+
+    @Bean
+    public RepresentasjonClient representasjonClient(){
+        return mock(RepresentasjonClient.class);
+    }
 }

@@ -14,6 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.util.List;
+
+import static no.nav.veilarbperson.utils.SecureLog.secureLog;
+
 
 @Slf4j
 @RestController
@@ -94,10 +99,18 @@ public class PersonV3Controller {
 
     @PostMapping("/person/hent-vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
-    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestBody PersonFraPdlRequest personFraPdlRequest) throws IOException {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
         return personV2Service.hentVergeEllerFullmakt(personFraPdlRequest);
+    }
+
+    @PostMapping("/person/hent-fullmakt")
+    @Operation(summary = "Henter informasjon for fullmakt fra representasjon")
+    public FullmaktDTO hentFullmakt(@RequestBody PersonRequest personRequest) throws IOException {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(personRequest.getFnr());
+        return personV2Service.hentFullmakt(personRequest);
     }
 
     @PostMapping("/person/hent-tolk")

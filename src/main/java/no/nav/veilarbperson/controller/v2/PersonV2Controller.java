@@ -14,6 +14,8 @@ import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonV2Service;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -49,7 +51,7 @@ public class PersonV2Controller {
     @Deprecated
     @GetMapping("/vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
-    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam("fnr") Fnr fnr) {
+    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam("fnr") Fnr fnr) throws IOException {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
         return personV2Service.hentVergeEllerFullmakt(new PersonFraPdlRequest(fnr, null));
