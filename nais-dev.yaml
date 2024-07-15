@@ -70,7 +70,8 @@ spec:
         - application: veilarbvedtaksstotte
           namespace: pto
         - application: veilarboppgave
-          namespace: pto
+          namespace: obo
+          cluster: dev-gcp
         - application: mulighetsrommet-api
           namespace: team-mulighetsrommet
           cluster: dev-gcp
