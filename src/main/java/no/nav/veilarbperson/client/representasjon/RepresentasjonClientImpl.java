@@ -38,8 +38,6 @@ public class RepresentasjonClientImpl implements RepresentasjonClient{
                 .post(RestUtils.toJsonRequestBody(new PersonIdentDTO(kryptertIdent)))
                 .build();
 
-        secureLog.info("token til fullmakt i representasjon: "+ userTokenProvider.get());
-
         try (Response response = client.newCall(request).execute()) {
             RestUtils.throwIfNotSuccessful(response);
             return RestUtils.parseJsonArrayResponse(response, ReprFullmaktData.Fullmakt.class)
