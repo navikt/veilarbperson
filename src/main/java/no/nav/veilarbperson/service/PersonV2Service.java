@@ -341,7 +341,6 @@ public class PersonV2Service {
         }
         FullmaktDTO fullmaktDTO = toFullmaktDTO(fullmaktListe);
         flettBeskrivelseTilFullmaktTema(fullmaktDTO);
-        secureLog.info("FullmaktData: " + fullmaktDTO);
         return fullmaktDTO;
     }
 
