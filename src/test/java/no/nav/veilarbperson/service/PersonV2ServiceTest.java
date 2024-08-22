@@ -420,35 +420,44 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         String registrertDato = "2018-10-01";
         List<Telefon> telefonListeFraPdl = PersonV2DataMapper.mapTelefonNrFraPdl(person.getTelefonnummer());
         personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl);  //Legger telefonnummere fra PDL og KRR som er ulike, til en liste
-
         assertEquals(2, telefonListeFraPdl.size());
         assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
-        assertEquals("2", telefonListeFraPdl.get(0).getPrioritet());
+        assertEquals("1", telefonListeFraPdl.get(0).getPrioritet());
         assertEquals("+4622222222", telefonListeFraPdl.get(1).getTelefonNr());
-        assertEquals("1", telefonListeFraPdl.get(1).getPrioritet());
+        assertEquals("2", telefonListeFraPdl.get(1).getPrioritet());
+
+        //telefonnummer fra KRR er registrert etter telefonnummer fra PDL
+        registrertDato = "2023-10-01";
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl);
+        assertEquals(2, telefonListeFraPdl.size());
+        assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
+        assertEquals("1", telefonListeFraPdl.get(0).getPrioritet());
+        assertEquals("+4622222222", telefonListeFraPdl.get(1).getTelefonNr());
+        assertEquals("2", telefonListeFraPdl.get(1).getPrioritet());
 
         telefonNrFraKrr = "+4733333333";
+        registrertDato = "2018-10-01";
         personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR som er like, til en liste
 
         assertEquals(2, telefonListeFraPdl.size());
         assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
-        assertEquals("2", telefonListeFraPdl.get(0).getPrioritet());
-        assertEquals("1", telefonListeFraPdl.get(1).getPrioritet());
+        assertEquals("1", telefonListeFraPdl.get(0).getPrioritet());
+        assertEquals("2", telefonListeFraPdl.get(1).getPrioritet());
 
         telefonNrFraKrr = "+4811111111";
         personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl); //Legger en ny telefonnr fra KRR til en pdlTelefonNrListe
-
+        System.out.println(telefonListeFraPdl);
         assertEquals(3, telefonListeFraPdl.size());
         assertEquals("+4811111111", telefonListeFraPdl.get(2).getTelefonNr());
-        assertEquals("1", telefonListeFraPdl.get(2).getPrioritet());
+        assertEquals("3", telefonListeFraPdl.get(2).getPrioritet());
 
         telefonNrFraKrr = null;
         personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra KRR er null
         assertEquals(3, telefonListeFraPdl.size());
         assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
-        assertEquals("3", telefonListeFraPdl.get(0).getPrioritet());
-        assertEquals("1", telefonListeFraPdl.get(1).getPrioritet());
-        assertEquals("1", telefonListeFraPdl.get(2).getPrioritet());
+        assertEquals("1", telefonListeFraPdl.get(0).getPrioritet());
+        assertEquals("2", telefonListeFraPdl.get(1).getPrioritet());
+        assertEquals("3", telefonListeFraPdl.get(2).getPrioritet());
 
         telefonListeFraPdl = new ArrayList<>();
         telefonNrFraKrr = "+4733333333";

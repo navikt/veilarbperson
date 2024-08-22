@@ -21,9 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -292,6 +290,8 @@ public class PersonV2Service {
                     telefon.setPrioritet(prioritet + "");}
             }
         }
+        Collections.sort(telefonListe);
+        telefonListe.forEach(telefon -> telefon.setPrioritet(telefonListe.indexOf(telefon) + 1 + ""));
     }
 
     public TilrettelagtKommunikasjonData hentSpraakTolkInfo(PersonFraPdlRequest personFraPdlRequest) {
