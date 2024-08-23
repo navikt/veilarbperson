@@ -137,5 +137,4 @@ spec:
       value: api://dev-gcp.paw.paw-arbeidssoekerregisteret-api-oppslag/.default
 
   envFrom:
-    - configmap: pto-config
     - configmap: loginservice-idporten
