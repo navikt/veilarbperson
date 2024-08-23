@@ -1,5 +1,11 @@
 name: Deploy til DEV-GCP
 on:
+  push:
+    branches:
+      - 'gcp-migrering'
+  pull_request:
+    branches:
+      - 'gcp-migrering'
   workflow_dispatch:
 env:
   IMAGE_TAG: ${{ github.sha }}
