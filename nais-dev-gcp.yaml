@@ -132,7 +132,7 @@ spec:
     - name: AIA_BACKEND_SCOPE
       value: api://dev-gcp.paw.paw-arbeidssoker-besvarelse/.default
     - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_URL
-      value: https://paw-arbeidssoekerregisteret-api-oppslag.paw
+      value: http://paw-arbeidssoekerregisteret-api-oppslag.paw
     - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_SCOPE
       value: api://dev-gcp.paw.paw-arbeidssoekerregisteret-api-oppslag/.default
 
