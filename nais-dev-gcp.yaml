@@ -42,6 +42,8 @@ spec:
           - "NAVident"
   idporten:
     enabled: true
+    sidecar:
+      enabled: true
   accessPolicy:
     inbound:
       rules:
