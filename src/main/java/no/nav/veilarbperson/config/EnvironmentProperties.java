@@ -31,7 +31,6 @@ public class EnvironmentProperties {
     private String regoppslagUrl;
     private String skjermedePersonerPipScope;
     private String skjermedePersonerPipUrl;
-    private String soapStsUrl;
     private String veilarboppfolgingScope;
     private String veilarboppfolgingUrl;
     private String veilarbregistreringScope;
