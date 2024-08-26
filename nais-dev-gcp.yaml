@@ -40,6 +40,8 @@ spec:
       claims:
         extra:
           - "NAVident"
+  idporten:
+    enabled: true
   accessPolicy:
     inbound:
       rules:
