@@ -150,3 +150,5 @@ spec:
     - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_SCOPE
       value: api://dev-gcp.paw.paw-arbeidssoekerregisteret-api-oppslag/.default
 
+envFrom:
+  - configmap: loginservice-idporten
