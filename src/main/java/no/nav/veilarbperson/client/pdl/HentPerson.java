@@ -19,7 +19,7 @@ public class HentPerson {
     @Data
     public static class Person {
         private List<Navn> navn;
-        private List<Foedsel> foedsel;
+        private List<Foedselsdato> foedselsdato;
         private List<Kjoenn> kjoenn;
         private List<Folkeregisteridentifikator> folkeregisteridentifikator;
         private List<Statsborgerskap> statsborgerskap;
@@ -46,7 +46,7 @@ public class HentPerson {
     @Data
     public static class Familiemedlem {
         private List<Navn> navn;
-        private List<Foedsel> foedsel;
+        private List<Foedselsdato> foedselsdato;
         private List<Kjoenn> kjoenn;
         private List<Folkeregisteridentifikator> folkeregisteridentifikator;
         private List<Folkeregisterpersonstatus> folkeregisterpersonstatus;
@@ -149,7 +149,7 @@ public class HentPerson {
 
 
     @Data
-    public static class Foedsel {
+    public static class Foedselsdato {
         private LocalDate foedselsdato;
     }
 

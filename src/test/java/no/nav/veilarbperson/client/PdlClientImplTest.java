@@ -80,7 +80,7 @@ public class PdlClientImplTest {
 
         assertTrue(person.getKjoenn().isEmpty());
 
-        HentPerson.Foedsel foedsel = person.getFoedsel().get(0);
+        HentPerson.Foedselsdato foedsel = person.getFoedselsdato().get(0);
         assertEquals(LocalDate.of(1981, 12, 13), foedsel.getFoedselsdato());
 
         HentPerson.ForelderBarnRelasjon familierelasjoner = person.getForelderBarnRelasjon().get(0);

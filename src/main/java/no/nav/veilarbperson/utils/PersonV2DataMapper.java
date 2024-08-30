@@ -29,7 +29,7 @@ public class PersonV2DataMapper {
                 .setEtternavn(navn.map(HentPerson.Navn::getEtternavn).orElse(null))
                 .setForkortetNavn(navn.map(HentPerson.Navn::getForkortetNavn).orElse(null))
                 .setKjonn(ofNullable(getFirstElement(person.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
-                .setFodselsdato(ofNullable(getFirstElement(person.getFoedsel())).map(HentPerson.Foedsel::getFoedselsdato).orElse(null))
+                .setFodselsdato(ofNullable(getFirstElement(person.getFoedselsdato())).map(HentPerson.Foedselsdato::getFoedselsdato).orElse(null))
                 .setStatsborgerskapKoder(ofNullable(person.getStatsborgerskap()).map(statsborgerskap -> statsborgerskap.stream().map(HentPerson.Statsborgerskap::getLand).toList()).orElse(Collections.emptyList()))
                 .setDodsdato(ofNullable(getFirstElement(person.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null))
                 .setFodselsnummer(ofNullable(getFirstElement(person.getFolkeregisteridentifikator()))
@@ -76,8 +76,8 @@ public class PersonV2DataMapper {
                                                     AuthService authService) {
         Optional<HentPerson.Navn> navn = hentGjeldeneNavn(familiemedlem.getNavn());
         Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
-        LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedsel()))
-                .map(HentPerson.Foedsel::getFoedselsdato).orElse(null);
+        LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedselsdato()))
+                .map(HentPerson.Foedselsdato::getFoedselsdato).orElse(null);
         String graderingskode = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
                 .map(HentPerson.Adressebeskyttelse::getGradering)
                 .orElse(null);
