@@ -49,10 +49,13 @@ spec:
       rules:
         - application: veilarbdialog
           namespace: pto
+          cluster: dev-gcp
         - application: veilarbaktivitet
           namespace: pto
+          cluster: dev-gcp
         - application: paw-proxy
           namespace: paw
+          cluster: dev-fss
         - application: veilarbpersonflate
           namespace: poao
           cluster: dev-gcp
@@ -81,7 +84,6 @@ spec:
         - host: poao-tilgang.poao
         - host: regoppslag.dev.intern.nav.no
         - host: skjermede-personer-pip.intern.dev.nav.no
-        - host: veilarboppfolging.dev-fss-pub.nais.io
         - host: veilarbregistrering.intern.dev.nav.no
         - host: sokos-kontoregister-person.intern.dev.nav.no
         - host: www.intern.dev.nav.no
