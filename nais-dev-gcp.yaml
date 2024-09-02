@@ -82,7 +82,7 @@ spec:
         - host: digdir-krr-proxy.intern.dev.nav.no
         - host: pam-cv-api-gcp.intern.dev.nav.no
         - host: poao-tilgang.poao
-        - host: regoppslag.dev.intern.nav.no
+        - host: regoppslag.intern.dev.nav.no
         - host: skjermede-personer-pip.intern.dev.nav.no
         - host: veilarbregistrering.intern.dev.nav.no
         - host: sokos-kontoregister-person.intern.dev.nav.no
