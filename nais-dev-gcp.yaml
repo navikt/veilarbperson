@@ -82,7 +82,7 @@ spec:
         - host: digdir-krr-proxy.intern.dev.nav.no
         - host: pam-cv-api-gcp.intern.dev.nav.no
         - host: poao-tilgang.poao
-        - host: regoppslag.intern.dev.nav.no
+        - host: regoppslag.dev.intern.nav.no
         - host: skjermede-personer-pip.intern.dev.nav.no
         - host: veilarbregistrering.intern.dev.nav.no
         - host: sokos-kontoregister-person.intern.dev.nav.no
@@ -116,7 +116,7 @@ spec:
     - name: REGOPPSLAG_SCOPE
       value: api://dev-fss.teamdokumenthandtering.regoppslag/.default
     - name: REGOPPSLAG_URL
-      value: https://regoppslag.intern.dev.nav.no
+      value: https://regoppslag.dev.intern.nav.no
     - name: SKJERMEDE_PERSONER_PIP_SCOPE
       value: api://dev-gcp.nom.skjermede-personer-pip/.default
     - name: SKJERMEDE_PERSONER_PIP_URL
