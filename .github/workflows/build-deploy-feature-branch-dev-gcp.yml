@@ -14,7 +14,6 @@ env:
 permissions:
   contents: write
   packages: write
-  id-token: write
 jobs:
   build-and-push:
     name: Build and push
