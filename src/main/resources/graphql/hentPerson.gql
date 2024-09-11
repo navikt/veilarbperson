@@ -9,7 +9,7 @@ query($ident: ID!, $historikk: Boolean!) {
                 master
             }
         }
-        foedsel {
+        foedselsdato {
             foedselsdato
         }
         kjoenn {
