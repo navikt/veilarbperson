@@ -14,6 +14,8 @@ public class EnvironmentProperties {
     private String krrUrl;
     private String loginserviceIdportenAudience;
     private String loginserviceIdportenDiscoveryUrl;
+    private String idportenAudience;
+    private String idportenWellKnownUrl;
     private String naisAadClientId;
     private String naisAadDiscoveryUrl;
     private String naisAadIssuer;
@@ -31,7 +33,6 @@ public class EnvironmentProperties {
     private String regoppslagUrl;
     private String skjermedePersonerPipScope;
     private String skjermedePersonerPipUrl;
-    private String soapStsUrl;
     private String veilarboppfolgingScope;
     private String veilarboppfolgingUrl;
     private String veilarbregistreringScope;

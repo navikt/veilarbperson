@@ -20,11 +20,21 @@ import static no.nav.common.utils.EnvironmentUtils.requireApplicationName;
 public class FilterConfig {
 
     private OidcAuthenticatorConfig loginserviceIdportenConfig(EnvironmentProperties properties) {
-        return new OidcAuthenticatorConfig()
-                .withDiscoveryUrl(properties.getLoginserviceIdportenDiscoveryUrl())
-                .withClientId(properties.getLoginserviceIdportenAudience())
-                .withIdTokenCookieName(AZURE_AD_B2C_ID_TOKEN_COOKIE_NAME)
-                .withUserRole(UserRole.EKSTERN);
+        String env = System.getenv("NAIS_CLUSTER_NAME");
+
+        if (env != null && env.contains("gcp")) {
+            return new OidcAuthenticatorConfig()
+                    .withDiscoveryUrl(properties.getIdportenWellKnownUrl())
+                    .withClientId(properties.getIdportenAudience())
+                    .withIdTokenCookieName(AZURE_AD_B2C_ID_TOKEN_COOKIE_NAME)
+                    .withUserRole(UserRole.EKSTERN);
+        } else {
+            return new OidcAuthenticatorConfig()
+                    .withDiscoveryUrl(properties.getLoginserviceIdportenDiscoveryUrl())
+                    .withClientId(properties.getLoginserviceIdportenAudience())
+                    .withIdTokenCookieName(AZURE_AD_B2C_ID_TOKEN_COOKIE_NAME)
+                    .withUserRole(UserRole.EKSTERN);
+        }
     }
 
     private OidcAuthenticatorConfig naisAzureAdConfig(EnvironmentProperties properties) {
