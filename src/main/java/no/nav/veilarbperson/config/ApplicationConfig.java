@@ -41,15 +41,6 @@ public class ApplicationConfig {
 			.expireAfterWrite(Duration.ofMinutes(30))
 			.build();
 
-    @Bean
-    public StsConfig stsConfig(EnvironmentProperties properties) {
-        Credentials serviceUser = NaisUtils.getCredentials("service_user");
-        return StsConfig.builder()
-                .url(properties.getSoapStsUrl())
-                .username(serviceUser.username)
-                .password(serviceUser.password)
-                .build();
-    }
 
 	@Bean
 	public PoaoTilgangClient poaoTilgangClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient tokenClient) {
