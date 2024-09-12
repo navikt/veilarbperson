@@ -124,7 +124,7 @@ spec:
     - name: REGOPPSLAG_SCOPE
       value: api://dev-fss.teamdokumenthandtering.regoppslag/.default
     - name: REGOPPSLAG_URL
-      value: https://regoppslag.intern.dev.nav.no
+      value: https://regoppslag.dev.intern.nav.no
     - name: SKJERMEDE_PERSONER_PIP_SCOPE
       value: api://dev-gcp.nom.skjermede-personer-pip/.default
     - name: SKJERMEDE_PERSONER_PIP_URL
