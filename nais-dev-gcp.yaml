@@ -57,6 +57,7 @@ spec:
           namespace: poao
           cluster: dev-gcp
         - application: veilarbvedtaksstotte
+          namespace: obo
         - application: veilarboppgave
           namespace: obo
           cluster: dev-gcp
