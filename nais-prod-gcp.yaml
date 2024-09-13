@@ -1,0 +1,148 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: veilarbperson
+  namespace: obo
+  labels:
+    team: obo
+spec:
+  image: {{image}}
+  port: 8080
+  webproxy: true
+  ingresses:
+    - https://veilarbperson-gcp.intern.nav.no
+  liveness:
+    path: veilarbperson/internal/isAlive
+    initialDelay: 30
+  readiness:
+    path: veilarbperson/internal/isReady
+    initialDelay: 30
+  prometheus:
+    enabled: true
+    path: veilarbperson/internal/prometheus
+  resources:
+    limits:
+      cpu: "2"
+      memory: 2048Mi
+    requests:
+      cpu: 200m
+      memory: 1024Mi
+  replicas:
+    min: 1
+    max: 1
+    cpuThresholdPercentage: 75
+  secureLogs:
+    enabled: true
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: true
+      claims:
+        extra:
+          - "NAVident"
+  idporten:
+    enabled: true
+    sidecar:
+      enabled: true
+  accessPolicy:
+    inbound:
+      rules:
+        - application: veilarbdialog
+          namespace: pto
+          cluster: prod-gcp
+        - application: veilarbaktivitet
+          namespace: pto
+          cluster: prod-gcp
+        - application: veilarbpersonflate
+          namespace: poao
+          cluster: prod-gcp
+        - application: veilarbvedtaksstotte
+          namespace: obo
+        - application: veilarboppgave
+          namespace: obo
+          cluster: prod-gcp
+        - application: mulighetsrommet-api
+          namespace: team-mulighetsrommet
+          cluster: prod-gcp
+        - application: arbeidssokerregistrering-for-veileder
+          namespace: paw
+          cluster: prod-gcp
+    outbound:
+      rules:
+        - application: kodeverk-api
+          namespace: team-rocket
+        - application: digdir-krr-proxy
+          namespace: team-rocket
+        - application: poao-tilgang
+          namespace: poao
+        - application: pam-cv-api-gcp
+          namespace: teampam
+        - application: veilarbregistrering
+          namespace: paw
+        - application: aia-backend
+          namespace: paw
+        - application: paw-arbeidssoekerregisteret-api-oppslag
+          namespace: paw
+        - application: skjermede-personer-pip
+          namespace: nom
+        - application: sokos-kontoregister-person
+          namespace: okonomi
+      external:
+        - host: pdl-api.prod-fss-pub.nais.io
+        - host: pdl-fullmakt.prod-fss-pub.nais.io
+        - host: veilarboppfolging.prod-fss-pub.nais.io
+        - host: regoppslag.prod-fss-pub.nais.io
+  env:
+    - name: KODEVERK_URL
+      value: http://kodeverk-api.team-rocket
+    - name: KODEVERK_SCOPE
+      value: api://prod-gcp.team-rocket.kodeverk-api/.default
+    - name: KONTAKT_OG_RESERVASJONSREGISTERET_API_URL
+      value: http://digdir-krr-proxy.team-rocket
+    - name: KONTAKT_OG_RESERVASJONSREGISTERET_SCOPE
+      value: api://prod-gcp.team-rocket.digdir-krr-proxy/.default
+    - name: PAM_CV_API_SCOPE
+      value: api://prod-gcp.teampam.pam-cv-api-gcp/.default
+    - name: PAM_CV_API_URL
+      value: http://pam-cv-api-gcp.teampam
+    - name: REPR_API_SCOPE
+      value: api://prod-fss.pdl.pdl-fullmakt/.default
+    - name: REPR_API_URL
+      value: https://pdl-fullmakt.prod-fss-pub.nais.io
+    - name: PDL_API_SCOPE
+      value: api://prod-fss.pdl.pdl-api/.default
+    - name: PDL_API_URL
+      value: https://pdl-api.prod-fss-pub.nais.io
+    - name: POAO_TILGANG_URL
+      value: http://poao-tilgang.poao
+    - name: POAO_TILGANG_SCOPE
+      value: api://prod-gcp.poao.poao-tilgang/.default
+    - name: REGOPPSLAG_SCOPE
+      value: api://prod-fss.teamdokumenthandtering.regoppslag/.default
+    - name: REGOPPSLAG_URL
+      value: https://regoppslag.prod-fss-pub.nais.io
+    - name: SKJERMEDE_PERSONER_PIP_SCOPE
+      value: api://prod-gcp.nom.skjermede-personer-pip/.default
+    - name: SKJERMEDE_PERSONER_PIP_URL
+      value: http://skjermede-personer-pip.nom
+    - name: VEILARBOPPFOLGING_SCOPE
+      value: api://prod-fss.pto.veilarboppfolging/.default
+    - name: VEILARBOPPFOLGING_URL
+      value: https://veilarboppfolging.prod-fss-pub.nais.io/veilarboppfolging
+    - name: VEILARBREGISTRERING_SCOPE
+      value: api://prod-gcp.paw.veilarbregistrering/.default
+    - name: VEILARBREGISTRERING_URL
+      value: http://veilarbregistrering.paw
+    - name: KONTOREGISTER_PERSON_V1_SCOPE
+      value: api://prod-gcp.okonomi.sokos-kontoregister-person/.default
+    - name: KONTOREGISTER_PERSON_V1_URL
+      value: http://sokos-kontoregister-person.okonomi
+    - name: AIA_BACKEND_URL
+      value: http://aia-backend.paw/aia-backend
+    - name: AIA_BACKEND_SCOPE
+      value: api://prod-gcp.paw.paw-arbeidssoker-besvarelse/.default
+    - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_URL
+      value: http://paw-arbeidssoekerregisteret-api-oppslag.paw
+    - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_SCOPE
+      value: api://prod-gcp.paw.paw-arbeidssoekerregisteret-api-oppslag/.default
+
