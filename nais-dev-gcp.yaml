@@ -95,7 +95,7 @@ spec:
         - host: pdl-api.dev-fss-pub.nais.io
         - host: pdl-fullmakt.dev.intern.nav.no
         - host: veilarboppfolging.dev-fss-pub.nais.io
-        - host: regoppslag.dev.intern.nav.no
+        - host: regoppslag.dev-fss-pub.nais.io
   env:
     - name: KODEVERK_URL
       value: http://kodeverk-api.team-rocket
@@ -124,7 +124,7 @@ spec:
     - name: REGOPPSLAG_SCOPE
       value: api://dev-fss.teamdokumenthandtering.regoppslag/.default
     - name: REGOPPSLAG_URL
-      value: https://regoppslag.dev.intern.nav.no
+      value: https://regoppslag.dev-fss-pub.nais.io
     - name: SKJERMEDE_PERSONER_PIP_SCOPE
       value: api://dev-gcp.nom.skjermede-personer-pip/.default
     - name: SKJERMEDE_PERSONER_PIP_URL
