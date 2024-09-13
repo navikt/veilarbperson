@@ -1,9 +1,6 @@
 name: Deploy til DEV-GCP
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'gcp-migrering'
 env:
   IMAGE_TAG: ${{ github.sha }}
   IMAGE: ghcr.io/${{ github.repository }}/veilarbperson
