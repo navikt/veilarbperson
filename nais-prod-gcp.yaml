@@ -58,6 +58,9 @@ spec:
           cluster: prod-gcp
         - application: veilarbvedtaksstotte
           namespace: obo
+        - application: veilarbvedtaksstotte
+          namespace: pto
+          cluster: prod-fss
         - application: veilarboppgave
           namespace: obo
           cluster: prod-gcp
