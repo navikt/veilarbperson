@@ -90,6 +90,8 @@ spec:
           namespace: nom
         - application: sokos-kontoregister-person
           namespace: okonomi
+        - application: norg2
+          namespace: org
       external:
         - host: pdl-api.prod-fss-pub.nais.io
         - host: pdl-fullmakt.prod-fss-pub.nais.io
@@ -148,4 +150,8 @@ spec:
       value: http://paw-arbeidssoekerregisteret-api-oppslag.paw
     - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_SCOPE
       value: api://prod-gcp.paw.paw-arbeidssoekerregisteret-api-oppslag/.default
+    - name: NORG2_URL
+      value: http://norg2.org/norg2
+    - name: NORG2_SCOPE
+      value: api://prod-gcp.org.norg2/.default
 

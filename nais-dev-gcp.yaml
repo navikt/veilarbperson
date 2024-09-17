@@ -152,4 +152,6 @@ spec:
       value: api://dev-gcp.paw.paw-arbeidssoekerregisteret-api-oppslag/.default
     - name: NORG2_URL
       value: http://norg2.org/norg2
+    - name: NORG2_SCOPE
+      value: api://dev-gcp.org.norg2/.default
 
