@@ -97,7 +97,7 @@ spec:
         - host: regoppslag.dev-fss-pub.nais.io
   env:
     - name: KODEVERK_URL
-      value: https://kodeverk-api.nav.no
+      value: http://kodeverk-api.team-rocket
     - name: KODEVERK_SCOPE
       value: api://dev-gcp.team-rocket.kodeverk-api/.default
     - name: KONTAKT_OG_RESERVASJONSREGISTERET_API_URL
