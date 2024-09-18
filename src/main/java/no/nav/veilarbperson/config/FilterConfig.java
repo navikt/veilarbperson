@@ -52,7 +52,7 @@ public class FilterConfig {
         FilterRegistrationBean<OidcAuthenticationFilter> registration = new FilterRegistrationBean<>();
         OidcAuthenticationFilter authenticationFilter = new OidcAuthenticationFilter(
                 fromConfigs(
-                        naisAzureAdConfig(properties),
+                        naisAzureAdConfig(properties)
                 )
         );
 
