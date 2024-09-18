@@ -22,7 +22,6 @@ spec:
     path: veilarbperson/internal/prometheus
   resources:
     limits:
-      cpu: "2"
       memory: 2048Mi
     requests:
       cpu: 200m
