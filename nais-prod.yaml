@@ -53,6 +53,10 @@ spec:
         extra:
           - "NAVident"
   accessPolicy:
+    outbound:
+      rules:
+        - application: veilarboppfolging
+          namespace: poao
     inbound:
       rules:
         - application: veilarbdialog
@@ -108,9 +112,9 @@ spec:
     - name: SKJERMEDE_PERSONER_PIP_URL
       value: https://skjermede-personer-pip.intern.nav.no
     - name: VEILARBOPPFOLGING_SCOPE
-      value: api://prod-fss.pto.veilarboppfolging/.default
+      value: api://prod-gcp.poao.veilarboppfolging/.default
     - name: VEILARBOPPFOLGING_URL
-      value: https://veilarboppfolging.nais.adeo.no/veilarboppfolging
+      value: http://veilarboppfolging.poao/veilarboppfolging
     - name: VEILARBREGISTRERING_SCOPE
       value: api://prod-gcp.paw.veilarbregistrering/.default
     - name: VEILARBREGISTRERING_URL
