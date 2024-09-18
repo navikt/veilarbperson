@@ -108,7 +108,7 @@ spec:
     - name: PAM_CV_API_SCOPE
       value: api://prod-gcp.teampam.pam-cv-api-gcp/.default
     - name: PAM_CV_API_URL
-      value: http://pam-cv-api-gcp.teampam/pam-cv-api
+      value: https://pam-cv-api-gcp.intern.nav.no/pam-cv-api
     - name: REPR_API_SCOPE
       value: api://prod-fss.pdl.pdl-fullmakt/.default
     - name: REPR_API_URL
