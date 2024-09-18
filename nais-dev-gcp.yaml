@@ -43,12 +43,6 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: veilarbdialog
-          namespace: pto
-          cluster: dev-gcp
-        - application: veilarbaktivitet
-          namespace: pto
-          cluster: dev-gcp
         - application: veilarbpersonflate
           namespace: poao
           cluster: dev-gcp
