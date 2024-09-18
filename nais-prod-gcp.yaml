@@ -77,8 +77,6 @@ spec:
           namespace: team-rocket
         - application: poao-tilgang
           namespace: poao
-        - application: pam-cv-api-gcp
-          namespace: teampam
         - application: veilarbregistrering
           namespace: paw
         - application: aia-backend
@@ -96,6 +94,7 @@ spec:
         - host: pdl-fullmakt.prod-fss-pub.nais.io
         - host: veilarboppfolging.prod-fss-pub.nais.io
         - host: regoppslag.prod-fss-pub.nais.io
+        - host: pam-cv-api-gcp.intern.nav.no
   env:
     - name: KODEVERK_URL
       value: http://kodeverk-api.team-rocket
