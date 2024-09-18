@@ -138,4 +138,3 @@ spec:
 
   envFrom:
     - configmap: pto-config
-    - configmap: loginservice-idporten
