@@ -12,10 +12,6 @@ public class EnvironmentProperties {
     private String kodeverkScope;
     private String krrScope;
     private String krrUrl;
-    private String loginserviceIdportenAudience;
-    private String loginserviceIdportenDiscoveryUrl;
-    private String idportenAudience;
-    private String idportenWellKnownUrl;
     private String naisAadClientId;
     private String naisAadDiscoveryUrl;
     private String naisAadIssuer;
