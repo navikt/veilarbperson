@@ -78,8 +78,6 @@ spec:
           namespace: team-rocket
         - application: poao-tilgang
           namespace: poao
-        - application: pam-cv-api-gcp
-          namespace: teampam
         - application: veilarbregistrering
           namespace: paw
         - application: aia-backend
@@ -97,6 +95,7 @@ spec:
         - host: pdl-fullmakt.dev-fss-pub.nais.io
         - host: veilarboppfolging.dev-fss-pub.nais.io
         - host: regoppslag.dev-fss-pub.nais.io
+        - host: pam-cv-api-gcp.intern.dev.nav.no
   env:
     - name: KODEVERK_URL
       value: http://kodeverk-api.team-rocket
@@ -109,7 +108,7 @@ spec:
     - name: PAM_CV_API_SCOPE
       value: api://dev-gcp.teampam.pam-cv-api-gcp/.default
     - name: PAM_CV_API_URL
-      value: http://pam-cv-api-gcp.teampam/pam-cv-api
+      value: https://pam-cv-api-gcp.intern.dev.nav.no/pam-cv-api
     - name: REPR_API_SCOPE
       value: api://dev-fss.pdl.pdl-fullmakt/.default
     - name: REPR_API_URL
