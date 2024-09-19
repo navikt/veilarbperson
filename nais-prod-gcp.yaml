@@ -53,9 +53,6 @@ spec:
         - application: veilarboppgave
           namespace: obo
           cluster: prod-gcp
-        - application: mulighetsrommet-api
-          namespace: team-mulighetsrommet
-          cluster: prod-gcp
         - application: arbeidssokerregistrering-for-veileder
           namespace: paw
           cluster: prod-gcp
