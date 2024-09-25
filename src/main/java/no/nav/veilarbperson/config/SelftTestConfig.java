@@ -34,7 +34,7 @@ public class SelftTestConfig {
                 new SelfTestCheck("AktorOppslagClient", true, aktorOppslagClient),
                 new SelfTestCheck("Digitalkontakinformasjon (DIGDIR)", false, digdirClient),
                 new SelfTestCheck("Felles kodeverk", false, kodeverkClient),
-               // new SelfTestCheck("Norg2", false, norg2Client),
+                new SelfTestCheck("Norg2", false, norg2Client),
                 new SelfTestCheck("PDL", true, pdlClient),
                 new SelfTestCheck("skjermede-personer", true, skjermetClient),
                 new SelfTestCheck("Veilarbregistrering", false, veilarbregistreringClient),
