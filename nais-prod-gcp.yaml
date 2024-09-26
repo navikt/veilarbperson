@@ -76,6 +76,8 @@ spec:
           namespace: okonomi
         - application: norg2
           namespace: org
+        - application: veilarboppfolging
+          namespace: poao
       external:
         - host: pdl-api.prod-fss-pub.nais.io
         - host: pdl-fullmakt.prod-fss-pub.nais.io
@@ -116,9 +118,9 @@ spec:
     - name: SKJERMEDE_PERSONER_PIP_URL
       value: http://skjermede-personer-pip.nom
     - name: VEILARBOPPFOLGING_SCOPE
-      value: api://prod-fss.pto.veilarboppfolging/.default
+      value: api://prod-gcp.poao.veilarboppfolging/.default
     - name: VEILARBOPPFOLGING_URL
-      value: https://veilarboppfolging.prod-fss-pub.nais.io/veilarboppfolging
+      value: http://veilarboppfolging.poao/veilarboppfolging
     - name: VEILARBREGISTRERING_SCOPE
       value: api://prod-gcp.paw.veilarbregistrering/.default
     - name: VEILARBREGISTRERING_URL
