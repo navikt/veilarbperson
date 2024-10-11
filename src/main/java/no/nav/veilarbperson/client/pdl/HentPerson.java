@@ -227,23 +227,13 @@ public class HentPerson {
     }
 
     @Data
-    public static class Fullmakt {
-        private String motpartsPersonident;
-        private String motpartsRolle;
-        private List<String> omraader;
-        private LocalDate gyldigFraOgMed;
-        private LocalDate gyldigTilOgMed;
-    }
-
-    @Data
-    public static class VergeOgFullmakt {
+    public static class Verge {
         private List<VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
-        private List<Fullmakt> fullmakt;
     }
 
     @Data
-    public static class HentVergeOgFullmakt {
-        public VergeOgFullmakt hentPerson;
+    public static class HentVerge {
+        public Verge hentPerson;
     }
 
     @Data

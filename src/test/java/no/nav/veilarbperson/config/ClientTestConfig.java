@@ -224,7 +224,7 @@ public class ClientTestConfig {
             }
 
             @Override
-            public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(PdlRequest pdlRequest) {
+            public HentPerson.Verge hentVerge(PdlRequest pdlRequest) {
                 return null;
             }
 

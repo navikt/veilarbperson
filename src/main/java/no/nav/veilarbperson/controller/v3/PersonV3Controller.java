@@ -99,10 +99,10 @@ public class PersonV3Controller {
 
     @PostMapping("/person/hent-vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
-    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestBody PersonFraPdlRequest personFraPdlRequest) throws IOException {
+    public VergeData hentVergemaal(@RequestBody PersonFraPdlRequest personFraPdlRequest) throws IOException {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        return personV2Service.hentVergeEllerFullmakt(personFraPdlRequest);
+        return personV2Service.hentVerge(personFraPdlRequest);
     }
 
     @PostMapping("/person/hent-fullmakt")

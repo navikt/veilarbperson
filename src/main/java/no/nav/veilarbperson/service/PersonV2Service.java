@@ -31,7 +31,6 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
-import static no.nav.veilarbperson.utils.SecureLog.secureLog;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.*;
 
 @Slf4j
@@ -319,18 +318,12 @@ public class PersonV2Service {
         return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
     }
 
-    public VergeOgFullmaktData hentVergeEllerFullmakt(PersonFraPdlRequest personFraPdlRequest) throws IOException {
-        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = pdlClient.hentVergeOgFullmakt(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
-        if (vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().isEmpty() && vergeOgFullmaktFraPdl.getFullmakt().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke verge eller fullmakt i PDL");
-        }
+    public VergeData hentVerge(PersonFraPdlRequest personFraPdlRequest) throws IOException {
+        HentPerson.Verge vergeOgFullmaktFraPdl = pdlClient.hentVerge(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
+        VergeData vergeData = toVerge(vergeOgFullmaktFraPdl);
 
-        VergeOgFullmaktData vergeOgFullmaktData = toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
 
-        flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, personFraPdlRequest.getBehandlingsnummer());
-        flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
-
-        return vergeOgFullmaktData;
+        return vergeData;
     }
 
     public FullmaktDTO hentFullmakt(PersonRequest personRequest) throws IOException {
@@ -359,32 +352,6 @@ public class PersonV2Service {
                 }
             });
         }
-    }
-
-    public void flettBeskrivelseForFullmaktOmraader(VergeOgFullmaktData vergeOgFullmaktData) {
-        vergeOgFullmaktData.getFullmakt().forEach(fullmakt -> {
-                    if (!fullmakt.getOmraader().isEmpty() && fullmakt.getOmraader().getFirst().getKode().equals("*")) {
-                        fullmakt.getOmraader().getFirst().setBeskrivelse("alle ytelser");
-                    } else {
-                        fullmakt.getOmraader().forEach(omraade ->
-                                omraade.setBeskrivelse(kodeverkService.getBeskrivelseForTema(omraade.getKode()))
-                        );
-                    }
-                }
-        );
-    }
-
-    public void flettMotpartsPersonNavnTilFullmakt(VergeOgFullmaktData vergeOgFullmaktData, String behandlingsnummer) {
-        vergeOgFullmaktData.getFullmakt().forEach(fullmakt -> {
-            HentPerson.PersonNavn fullmaktNavn = pdlClient.hentPersonNavn(new PdlRequest(Fnr.of(fullmakt.getMotpartsPersonident()), behandlingsnummer));
-
-            if (fullmaktNavn.getNavn().isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke motpartspersonnavn til fullmakt");
-            }
-
-            VergeOgFullmaktData.Navn personNavn = VergeOgFullmaktDataMapper.personNavnMapper(fullmaktNavn.getNavn());
-            fullmakt.setMotpartsPersonNavn(personNavn);
-        });
     }
 
     public String hentMalform(Fnr fnr) {

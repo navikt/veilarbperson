@@ -51,10 +51,10 @@ public class PersonV2Controller {
     @Deprecated
     @GetMapping("/vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
-    public VergeOgFullmaktData hentVergemaalOgFullmakt(@RequestParam("fnr") Fnr fnr) throws IOException {
+    public VergeData hentVergemaal(@RequestParam("fnr") Fnr fnr) throws IOException {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(fnr);
-        return personV2Service.hentVergeEllerFullmakt(new PersonFraPdlRequest(fnr, null));
+        return personV2Service.hentVerge(new PersonFraPdlRequest(fnr, null));
     }
 
     @Deprecated
