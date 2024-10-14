@@ -17,13 +17,6 @@ query($ident: ID!, $historikk: Boolean!) {
                 gyldighetstidspunkt
             }
         }
-        fullmakt(historikk:$historikk) {
-            motpartsPersonident
-            motpartsRolle
-            omraader
-            gyldigFraOgMed
-            gyldigTilOgMed
-        }
     }
 }
 
