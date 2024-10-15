@@ -6,8 +6,7 @@ import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
-import no.nav.veilarbperson.domain.PersonFraPdlRequest;
-import no.nav.veilarbperson.domain.VergeOgFullmaktData;
+import no.nav.veilarbperson.domain.VergeData;
 import no.nav.veilarbperson.utils.TestUtils;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.junit.Test;
@@ -24,14 +23,14 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
 
     private static Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
 
-    public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
-        configurePdlResponse("pdl-hentVergeOgFullmakt-response.json");
-        return getPdlClient().hentVergeOgFullmakt(new PdlRequest(fnr, null));
+    public HentPerson.Verge hentVerge(Fnr fnr) {
+        configurePdlResponse("pdl-hentVerge-response.json");
+        return getPdlClient().hentVerge(new PdlRequest(fnr, null));
     }
 
     @Test
     public void vergetypeOgOmfangEnumMapperTest() {
-        List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVergeOgFullmakt(FNR).getVergemaalEllerFremtidsfullmakt();
+        List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVerge(FNR).getVergemaalEllerFremtidsfullmakt();
 
         VergemaalEllerFullmaktOmfangType omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
         VergemaalEllerFullmaktOmfangType omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
@@ -45,34 +44,25 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
 
     @Test
     public void toVergeOgFullmaktDataTest() {
-        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
-        VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
+        HentPerson.Verge vergeOgFullmaktFraPdl = hentVerge(FNR);
+        VergeData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVerge(vergeOgFullmaktFraPdl);
 
-        List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktData = vergeOgFullmaktData.getVergemaalEllerFremtidsfullmakt();
+        List<VergeData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktData = vergeOgFullmaktData.getVergemaalEllerFremtidsfullmakt();
 
         assertEquals(2, vergemaalEllerFremtidsfullmaktData.size());
         assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaalEllerFremtidsfullmaktData.get(0).getType());
         assertEquals("VergemallEmbete", vergemaalEllerFremtidsfullmaktData.get(0).getEmbete());
 
-        VergeOgFullmaktData.VergeEllerFullmektig vergeEllerFullmektigData = vergemaalEllerFremtidsfullmaktData.get(0).getVergeEllerFullmektig();
+        VergeData.VergeEllerFullmektig vergeEllerFullmektigData = vergemaalEllerFremtidsfullmaktData.get(0).getVergeEllerFullmektig();
 
         assertEquals("vergeFornavn1", vergeEllerFullmektigData.getNavn().getFornavn());
         assertEquals("VergeMotpartsPersonident1", vergeEllerFullmektigData.getMotpartsPersonident());
         assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, vergeEllerFullmektigData.getOmfang());
 
-        VergeOgFullmaktData.Folkeregistermetadata folkeregistermetadata = vergemaalEllerFremtidsfullmaktData.get(0).getFolkeregistermetadata();
+        VergeData.Folkeregistermetadata folkeregistermetadata = vergemaalEllerFremtidsfullmaktData.get(0).getFolkeregistermetadata();
         LocalDateTime localDateTime = LocalDateTime.of(LocalDate.of(2021, 03, 02), LocalTime.of(13, 00, 42));
         assertEquals(localDateTime, folkeregistermetadata.getAjourholdstidspunkt());
         assertEquals(localDateTime, folkeregistermetadata.getGyldighetstidspunkt());
-
-        List<VergeOgFullmaktData.Fullmakt> fullmakts = vergeOgFullmaktData.getFullmakt();
-
-        assertEquals(2, fullmakts.size());
-        assertEquals("motpartsPersonident1", fullmakts.get(0).getMotpartsPersonident());
-        assertEquals("motpartsRolle1", fullmakts.get(0).getMotpartsRolle());
-
-        assertEquals(LocalDate.of(2021, 01, 15), fullmakts.get(0).getGyldigFraOgMed());
-        assertEquals(LocalDate.of(2021, 01, 15), fullmakts.get(0).getGyldigFraOgMed());
     }
 
 }

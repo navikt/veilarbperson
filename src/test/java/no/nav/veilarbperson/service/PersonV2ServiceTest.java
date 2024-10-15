@@ -91,9 +91,9 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         return pdlClient.hentPersonNavn(pdlRequest);
     }
 
-    public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(Fnr fnr) {
-        configurePdlResponse("pdl-hentVergeOgFullmakt-response.json", fnr.get());
-        return pdlClient.hentVergeOgFullmakt(new PdlRequest(fnr, null));
+    public HentPerson.Verge hentVerge(Fnr fnr) {
+        configurePdlResponse("pdl-hentVerge-response.json", fnr.get());
+        return pdlClient.hentVerge(new PdlRequest(fnr, null));
     }
 
     public HentPerson.GeografiskTilknytning hentGeografisktilknytning(PdlRequest pdlRequest) {
@@ -486,39 +486,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals("LANDKODE", kontaktadresse.getUtenlandskAdresseIFrittFormat().getLandkode());
     }
 
-    @Test
-    public void flettBeskrivelseForFullmaktOmraader() {
-        mockKodeverk();
-        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
-        VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
-        personV2Service.flettBeskrivelseForFullmaktOmraader(vergeOgFullmaktData);
 
-        List<VergeOgFullmaktData.Omraade> omraader = vergeOgFullmaktData.getFullmakt().get(0).getOmraader();
-
-        assertEquals("AAP", omraader.get(0).getKode());
-        assertEquals("DAG", omraader.get(1).getKode());
-
-        assertEquals("Arbeidsavklaringpenger", omraader.get(0).getBeskrivelse());
-        assertEquals("Dagpenger", omraader.get(1).getBeskrivelse());
-
-        List<VergeOgFullmaktData.Omraade> omraade = vergeOgFullmaktData.getFullmakt().get(1).getOmraader();
-
-        assertEquals("*", omraade.get(0).getKode());
-        assertEquals("alle ytelser", omraade.get(0).getBeskrivelse());
-    }
-
-    @Test
-    public void flettMotpartsPersonNavnTilFullmakt() {
-        configurePdlResponse("pdl-hentPersonNavn-response.json", "motpartsPersonident1");
-        configurePdlResponse("pdl-hentPersonNavn-response.json", "motpartsPersonident2");
-        HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl = hentVergeOgFullmakt(FNR);
-        VergeOgFullmaktData vergeOgFullmaktData = VergeOgFullmaktDataMapper.toVergeOgFullmaktData(vergeOgFullmaktFraPdl);
-        personV2Service.flettMotpartsPersonNavnTilFullmakt(vergeOgFullmaktData, null);
-
-        List<VergeOgFullmaktData.Fullmakt> fullmaktListe =  vergeOgFullmaktData.getFullmakt();
-
-        assertEquals("NORDMANN OLA", fullmaktListe.get(0).getMotpartsPersonNavn().getForkortetNavn());
-    }
 
     @Test
     public void personNavnMapperTest() {

@@ -36,22 +36,6 @@
             "gyldighetstidspunkt":  "2021-03-02T13:00:42"
           }
         }
-      ],
-      "fullmakt": [
-        {
-          "motpartsPersonident": "motpartsPersonident1",
-          "motpartsRolle": "motpartsRolle1",
-          "omraader": ["AAP", "DAG"],
-          "gyldigFraOgMed": "2021-01-15",
-          "gyldigTilOgMed": "2021-01-15"
-        },
-        {
-          "motpartsPersonident": "motpartsPersonident2",
-          "motpartsRolle": "motpartsRolle2",
-          "omraader": ["*"],
-          "gyldigFraOgMed": "2021-01-15",
-          "gyldigTilOgMed": "2021-01-15"
-        }
       ]
     }
   }

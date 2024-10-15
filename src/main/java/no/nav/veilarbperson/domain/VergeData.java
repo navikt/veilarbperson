@@ -4,16 +4,15 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @Accessors(chain=true)
-public class VergeOgFullmaktData {
+public class VergeData {
 
     public List<VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
-    public List<Fullmakt> fullmakt;
 
     @Data
     public static class Navn {
@@ -49,21 +48,5 @@ public class VergeOgFullmaktData {
     public static class Folkeregistermetadata {
         public LocalDateTime ajourholdstidspunkt;
         public LocalDateTime gyldighetstidspunkt;
-    }
-
-    @Data
-    public static class Omraade {
-        public String kode;
-        public String beskrivelse;
-    }
-
-    @Data
-    public static class Fullmakt {
-        private String motpartsPersonident;
-        private Navn motpartsPersonNavn;
-        private String motpartsRolle;
-        private List<Omraade> omraader;
-        private LocalDate gyldigFraOgMed;
-        private LocalDate gyldigTilOgMed;
     }
 }

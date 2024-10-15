@@ -161,7 +161,7 @@ public class PdlClientImplTest {
 
     @Test
     public void henteVergeOgFullmakt_skal_parse_request() {
-        String hentVergeOgFullmaktResponseJson = TestUtils.readTestResourceFile("pdl-hentVergeOgFullmakt-response.json");
+        String hentVergeOgFullmaktResponseJson = TestUtils.readTestResourceFile("pdl-hentVerge-response.json");
         String apiUrl = "http://localhost:" + wireMockRule.port();
 
         givenThat(post(anyUrl())
@@ -172,9 +172,9 @@ public class PdlClientImplTest {
 
         PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
 
-        HentPerson.VergeOgFullmakt vergeOgFullmakt = pdlClient.hentVergeOgFullmakt(new PdlRequest(FNR, null));
+        HentPerson.Verge verge = pdlClient.hentVerge(new PdlRequest(FNR, null));
 
-        HentPerson.VergemaalEllerFremtidsfullmakt vergemaal = vergeOgFullmakt.getVergemaalEllerFremtidsfullmakt().get(0);
+        HentPerson.VergemaalEllerFremtidsfullmakt vergemaal = verge.getVergemaalEllerFremtidsfullmakt().get(0);
         HentPerson.VergeEllerFullmektig vergeEllerFullmektig = vergemaal.getVergeEllerFullmektig();
 
         assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergemaal.getType());
@@ -182,12 +182,6 @@ public class PdlClientImplTest {
         assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, vergeEllerFullmektig.getOmfang());
         assertEquals("VergeMotpartsPersonident1", vergeEllerFullmektig.getMotpartsPersonident());
         assertEquals("vergeEtternavn1", vergeEllerFullmektig.getNavn().getEtternavn());
-
-        HentPerson.Fullmakt fullmakt = vergeOgFullmakt.getFullmakt().get(0);
-
-        assertEquals("motpartsPersonident1", fullmakt.getMotpartsPersonident());
-        assertEquals("motpartsRolle1", fullmakt.getMotpartsRolle());
-        assertEquals(2, fullmakt.getOmraader().size());
     }
 
     @Test

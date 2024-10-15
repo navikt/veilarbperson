@@ -3,18 +3,16 @@ package no.nav.veilarbperson.utils;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
 import no.nav.veilarbperson.domain.FullmaktDTO;
-import no.nav.veilarbperson.domain.VergeOgFullmaktData;
+import no.nav.veilarbperson.domain.VergeData;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class VergeOgFullmaktDataMapper {
 
-    public static VergeOgFullmaktData toVergeOgFullmaktData(HentPerson.VergeOgFullmakt vergeOgFullmaktFraPdl) {
-        return new VergeOgFullmaktData()
-                .setVergemaalEllerFremtidsfullmakt(vergemaalEllerFremtidsfullmaktMapper(vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt()))
-                .setFullmakt(fullmaktMapper(vergeOgFullmaktFraPdl.getFullmakt()));
+    public static VergeData toVerge(HentPerson.Verge vergeOgFullmaktFraPdl) {
+        return new VergeData()
+                .setVergemaalEllerFremtidsfullmakt(vergemaalEllerFremtidsfullmaktMapper(vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt()));
     }
 
     public static FullmaktDTO toFullmaktDTO(List<ReprFullmaktData.Fullmakt> fullmaktListe) {
@@ -38,7 +36,7 @@ public class VergeOgFullmaktDataMapper {
     }
 
     public static List<FullmaktDTO.OmraadeMedHandling> omraadeMapper(List<ReprFullmaktData.OmraadeMedHandling> omraade) {
-        List<FullmaktDTO.OmraadeMedHandling> omraadeMedHandlinger = omraade.stream().map(omraadeMedHandling -> {
+        return omraade.stream().map(omraadeMedHandling -> {
             List<ReprFullmaktData.OmraadeHandlingType> reprHandlingTyper = omraadeMedHandling.getHandling();
             List<FullmaktDTO.OmraadeHandlingType> fullmaktHandlingTyper =
                     reprHandlingTyper.stream().map(
@@ -50,13 +48,12 @@ public class VergeOgFullmaktDataMapper {
                     .setHandling(fullmaktHandlingTyper);
             return omraadeMedHandlingMapper;
         }).toList();
-        return omraadeMedHandlinger;
     }
 
-    public static List<VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktMapper(List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {
+    public static List<VergeData.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktMapper(List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmaktListe) {
             return vergemaalEllerFremtidsfullmaktListe.stream()
                   .map(vergemaalEllerFremtidsfullmakt ->
-                       new VergeOgFullmaktData.VergemaalEllerFremtidsfullmakt()
+                       new VergeData.VergemaalEllerFremtidsfullmakt()
                              .setType(vergemaalEllerFremtidsfullmakt.getType())
                              .setEmbete(vergemaalEllerFremtidsfullmakt.getEmbete())
                              .setVergeEllerFullmektig(vergeEllerFullmektigMapper(vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig()))
@@ -64,44 +61,27 @@ public class VergeOgFullmaktDataMapper {
                   .collect(Collectors.toList());
     }
 
-    public static VergeOgFullmaktData.VergeEllerFullmektig vergeEllerFullmektigMapper(HentPerson.VergeEllerFullmektig vergeEllerFullmektig) {
-        return new VergeOgFullmaktData.VergeEllerFullmektig()
+    public static VergeData.VergeEllerFullmektig vergeEllerFullmektigMapper(HentPerson.VergeEllerFullmektig vergeEllerFullmektig) {
+        return new VergeData.VergeEllerFullmektig()
                 .setNavn(vergeNavnMapper(vergeEllerFullmektig.getNavn()))
                 .setMotpartsPersonident(vergeEllerFullmektig.getMotpartsPersonident())
                 .setOmfang(vergeEllerFullmektig.getOmfang());
     }
 
-    public static VergeOgFullmaktData.VergeNavn vergeNavnMapper(HentPerson.VergeNavn vergeNavn) {
+    public static VergeData.VergeNavn vergeNavnMapper(HentPerson.VergeNavn vergeNavn) {
         return (vergeNavn!=null)
-                ? new VergeOgFullmaktData.VergeNavn().setFornavn(vergeNavn.getFornavn()).setMellomnavn(vergeNavn.getMellomnavn()).setEtternavn(vergeNavn.getEtternavn())
+                ? new VergeData.VergeNavn().setFornavn(vergeNavn.getFornavn()).setMellomnavn(vergeNavn.getMellomnavn()).setEtternavn(vergeNavn.getEtternavn())
                 : null;
     }
 
-    public static VergeOgFullmaktData.Navn personNavnMapper(List<HentPerson.Navn> motpartspersonnavn) {
+    public static VergeData.Navn personNavnMapper(List<HentPerson.Navn> motpartspersonnavn) {
         HentPerson.Navn navn = PersonV2DataMapper.getFirstElement(motpartspersonnavn);
-        return new VergeOgFullmaktData.Navn().setFornavn(navn.getFornavn()).setMellomnavn(navn.getMellomnavn()).setEtternavn(navn.getEtternavn()).setForkortetNavn(navn.getForkortetNavn());
+        return new VergeData.Navn().setFornavn(navn.getFornavn()).setMellomnavn(navn.getMellomnavn()).setEtternavn(navn.getEtternavn()).setForkortetNavn(navn.getForkortetNavn());
     }
 
-    public static VergeOgFullmaktData.Folkeregistermetadata folkeregisterMetadataMapper(HentPerson.Folkeregistermetadata folkeregistermetadata) {
-        return new VergeOgFullmaktData.Folkeregistermetadata()
+    public static VergeData.Folkeregistermetadata folkeregisterMetadataMapper(HentPerson.Folkeregistermetadata folkeregistermetadata) {
+        return new VergeData.Folkeregistermetadata()
                 .setAjourholdstidspunkt(folkeregistermetadata.getAjourholdstidspunkt())
                 .setGyldighetstidspunkt(folkeregistermetadata.getGyldighetstidspunkt());
-    }
-
-    public static List<VergeOgFullmaktData.Fullmakt> fullmaktMapper(List<HentPerson.Fullmakt> fullmaktListe) {
-        List<VergeOgFullmaktData.Fullmakt> fullmakter = new ArrayList<>();
-        fullmaktListe.forEach(fullmakt -> {
-                    ArrayList<VergeOgFullmaktData.Omraade> omraadeKodeListe = new ArrayList<>();
-                    fullmakt.getOmraader().forEach(omraade -> omraadeKodeListe.add(new VergeOgFullmaktData.Omraade().setKode(omraade)));
-
-                    fullmakter.add(new VergeOgFullmaktData.Fullmakt()
-                            .setMotpartsPersonident(fullmakt.getMotpartsPersonident())
-                            .setMotpartsRolle(fullmakt.getMotpartsRolle())
-                            .setOmraader(omraadeKodeListe)
-                            .setGyldigFraOgMed(fullmakt.getGyldigFraOgMed())
-                            .setGyldigTilOgMed(fullmakt.getGyldigTilOgMed()));
-                }
-        );
-        return fullmakter;
     }
 }
