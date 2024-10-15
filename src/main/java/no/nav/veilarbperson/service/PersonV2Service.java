@@ -318,12 +318,9 @@ public class PersonV2Service {
         return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
     }
 
-    public VergeData hentVerge(PersonFraPdlRequest personFraPdlRequest) throws IOException {
+    public VergeData hentVerge(PersonFraPdlRequest personFraPdlRequest) {
         HentPerson.Verge vergeOgFullmaktFraPdl = pdlClient.hentVerge(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
-        VergeData vergeData = toVerge(vergeOgFullmaktFraPdl);
-
-
-        return vergeData;
+        return toVerge(vergeOgFullmaktFraPdl);
     }
 
     public FullmaktDTO hentFullmakt(PersonRequest personRequest) throws IOException {
