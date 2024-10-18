@@ -40,7 +40,7 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentPersonQuery;
 
-    private final String hentVergeOgFullmaktQuery;
+    private final String hentVergeQuery;
 
     private final String hentPersonNavnQuery;
 
@@ -61,7 +61,7 @@ public class PdlClientImpl implements PdlClient {
         this.hentPersonQuery = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
         this.hentPersonBolkQuery = FileUtils.getResourceFileAsString("graphql/hentPersonBolk.gql");
         this.hentPersonNavnQuery = FileUtils.getResourceFileAsString("graphql/hentPersonNavn.gql");
-        this.hentVergeOgFullmaktQuery = FileUtils.getResourceFileAsString("graphql/hentVergeOgFullmakt.gql");
+        this.hentVergeQuery = FileUtils.getResourceFileAsString("graphql/hentVerge.gql");
         this.hentGeografiskTilknytningQuery = FileUtils.getResourceFileAsString("graphql/hentGeografiskTilknytning.gql");
         this.hentTilrettelagtKommunikasjonQuery = FileUtils.getResourceFileAsString("graphql/hentTilrettelagtKommunikasjon.gql");
     }
@@ -73,9 +73,9 @@ public class PdlClientImpl implements PdlClient {
     }
 
     @Override
-    public HentPerson.VergeOgFullmakt hentVergeOgFullmakt(PdlRequest pdlRequest) {
-        var request = new GqlRequest<>(hentVergeOgFullmaktQuery, new GqlVariables.HentPerson(pdlRequest.fnr(), false));
-        return graphqlRequest(request, userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.HentVergeOgFullmakt.class).hentPerson;
+    public HentPerson.Verge hentVerge(PdlRequest pdlRequest) {
+        var request = new GqlRequest<>(hentVergeQuery, new GqlVariables.HentPerson(pdlRequest.fnr(), false));
+        return graphqlRequest(request, userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.HentVerge.class).hentPerson;
     }
 
     @Override
