@@ -31,8 +31,6 @@ public class EnvironmentProperties {
     private String skjermedePersonerPipUrl;
     private String veilarboppfolgingScope;
     private String veilarboppfolgingUrl;
-    private String veilarbregistreringScope;
-    private String veilarbregistreringUrl;
     private String kontoregisterScope;
     private String kontoregisterUrl;
     private String aiaBackendUrl;

@@ -28,11 +28,8 @@ import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
-import no.nav.veilarbperson.client.representasjon.RepresentasjonClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
-import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
-import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.mockito.Mockito;
@@ -277,12 +274,6 @@ public class ClientTestConfig {
     @Bean
     public SelfTestChecks selfTestChecks() {
         return mock(SelfTestChecks.class);
-    }
-
-    @Bean
-    public VeilarbregistreringClient veilarbregistreringClient() {
-        return new VeilarbregistreringClientImpl(
-                RestClient.baseClient(), "http://localhost:" + WIREMOCK_PORT, () -> "");
     }
 
     @Bean

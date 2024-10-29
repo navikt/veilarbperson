@@ -80,14 +80,6 @@ public class PersonController {
     }
 
     @Deprecated
-    @GetMapping("/registrering")
-    public ResponseEntity<String> registrering(@RequestParam(value = "fnr") Fnr fnr) {
-        authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(fnr);
-        return registreringService.hentRegistrering(fnr);
-    }
-
-    @Deprecated
     @PostMapping("/registrering/endringer")
     public ResponseEntity<String> endringIRegistreringdata(@RequestBody PersonRequestBody personRequestBody) {
         Fnr fnr = Fnr.of(personRequestBody.fodselsnummer());

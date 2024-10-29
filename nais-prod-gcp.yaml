@@ -64,8 +64,6 @@ spec:
           namespace: team-rocket
         - application: poao-tilgang
           namespace: poao
-        - application: veilarbregistrering
-          namespace: paw
         - application: aia-backend
           namespace: paw
         - application: paw-arbeidssoekerregisteret-api-oppslag
@@ -121,10 +119,6 @@ spec:
       value: api://prod-gcp.poao.veilarboppfolging/.default
     - name: VEILARBOPPFOLGING_URL
       value: http://veilarboppfolging.poao/veilarboppfolging
-    - name: VEILARBREGISTRERING_SCOPE
-      value: api://prod-gcp.paw.veilarbregistrering/.default
-    - name: VEILARBREGISTRERING_URL
-      value: http://veilarbregistrering.paw
     - name: KONTOREGISTER_PERSON_V1_SCOPE
       value: api://prod-gcp.okonomi.sokos-kontoregister-person/.default
     - name: KONTOREGISTER_PERSON_V1_URL

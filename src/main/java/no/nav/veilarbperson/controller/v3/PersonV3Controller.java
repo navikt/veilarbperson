@@ -72,14 +72,6 @@ public class PersonV3Controller {
         return cvJobbprofilService.hentCvJobbprofilJson(personRequest.getFnr());
     }
 
-    @PostMapping("/person/hent-registrering")
-    @Operation(summary = "Henter registreringen til person")
-    public ResponseEntity<String> registrering(@RequestBody PersonRequest personRequest) {
-        authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personRequest.getFnr());
-        return registreringService.hentRegistrering(personRequest.getFnr());
-    }
-
     @PostMapping("/person/registrering/hent-endringer")
     @Operation(summary = "Henter endringer på registreringen til person")
     public ResponseEntity<String> endringIRegistreringdata(@RequestBody PersonRequest personRequest) {

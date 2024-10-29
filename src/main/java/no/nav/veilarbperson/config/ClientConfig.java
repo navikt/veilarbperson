@@ -36,8 +36,6 @@ import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl;
-import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
-import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import no.nav.veilarbperson.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -113,13 +111,6 @@ public class ClientConfig {
     public RepresentasjonClient representasjonClient(EnvironmentProperties properties, AuthService authService) {
         return new RepresentasjonClientImpl(properties.getReprApiUrl(),
                 () -> authService.getAadOboTokenForTjeneste(properties.getReprApiScope()));
-    }
-
-    @Bean
-    public VeilarbregistreringClient veilarbregistreringClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient aadMachineToMachineTokenClient) {
-        return new VeilarbregistreringClientImpl(RestClient.baseClient(),
-                properties.getVeilarbregistreringUrl(),
-                () -> aadMachineToMachineTokenClient.createMachineToMachineToken(properties.getVeilarbregistreringScope()));
     }
 
     @Bean
