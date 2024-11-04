@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.List;
-
-import static no.nav.veilarbperson.utils.SecureLog.secureLog;
-
 
 @Slf4j
 @RestController
@@ -31,8 +27,6 @@ public class PersonV3Controller {
     private final RegoppslagClient regoppslagClient;
 
     private final CvJobbprofilService cvJobbprofilService;
-
-    private final RegistreringService registreringService;
 
     private final OppslagArbeidssoekerregisteretService oppslagArbeidssoekerregisteretService;
 
@@ -70,14 +64,6 @@ public class PersonV3Controller {
     @Operation(summary = "Henter persons cv og jobbprofil")
     public ResponseEntity<String> cvOgJobbprofil(@RequestBody PersonRequest personRequest) {
         return cvJobbprofilService.hentCvJobbprofilJson(personRequest.getFnr());
-    }
-
-    @PostMapping("/person/registrering/hent-endringer")
-    @Operation(summary = "Henter endringer på registreringen til person")
-    public ResponseEntity<String> endringIRegistreringdata(@RequestBody PersonRequest personRequest) {
-        authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personRequest.getFnr());
-        return registreringService.hentEndringIRegistreringsdata(personRequest.getFnr());
     }
 
     @PostMapping("/person/hent-malform")

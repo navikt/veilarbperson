@@ -64,8 +64,6 @@ spec:
           namespace: team-rocket
         - application: poao-tilgang
           namespace: poao
-        - application: aia-backend
-          namespace: paw
         - application: paw-arbeidssoekerregisteret-api-oppslag
           namespace: paw
         - application: skjermede-personer-pip
@@ -123,10 +121,6 @@ spec:
       value: api://prod-gcp.okonomi.sokos-kontoregister-person/.default
     - name: KONTOREGISTER_PERSON_V1_URL
       value: http://sokos-kontoregister-person.okonomi
-    - name: AIA_BACKEND_URL
-      value: http://aia-backend.paw/aia-backend
-    - name: AIA_BACKEND_SCOPE
-      value: api://prod-gcp.paw.paw-arbeidssoker-besvarelse/.default
     - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_URL
       value: http://paw-arbeidssoekerregisteret-api-oppslag.paw
     - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_SCOPE

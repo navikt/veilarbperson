@@ -33,8 +33,6 @@ public class EnvironmentProperties {
     private String veilarboppfolgingUrl;
     private String kontoregisterScope;
     private String kontoregisterUrl;
-    private String aiaBackendUrl;
-    private String aiaBackendScope;
     private String oppslagArbeidssoekerregisteretUrl;
     private String oppslagArbeidssoekerregisteretScope;
 }

@@ -8,7 +8,6 @@ import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.CvJobbprofilService;
 import no.nav.veilarbperson.service.PersonV2Service;
-import no.nav.veilarbperson.service.RegistreringService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +22,6 @@ public class PersonController {
     private final AuthService authService;
 
     private final CvJobbprofilService cvJobbprofilService;
-
-    private final RegistreringService registreringService;
 
     @Deprecated
     @GetMapping("/aktorid")
@@ -77,15 +74,6 @@ public class PersonController {
     @GetMapping("/cv_jobbprofil")
     public ResponseEntity<String> cvOgJobbprofil(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         return cvJobbprofilService.hentCvJobbprofilJson(fnr);
-    }
-
-    @Deprecated
-    @PostMapping("/registrering/endringer")
-    public ResponseEntity<String> endringIRegistreringdata(@RequestBody PersonRequestBody personRequestBody) {
-        Fnr fnr = Fnr.of(personRequestBody.fodselsnummer());
-        authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(fnr);
-        return registreringService.hentEndringIRegistreringsdata(fnr);
     }
 
     // TODO: Det er hårete å måtte skille på ekstern og intern

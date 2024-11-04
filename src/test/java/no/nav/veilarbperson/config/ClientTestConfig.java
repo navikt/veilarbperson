@@ -7,13 +7,10 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.selftest.SelfTestChecks;
 import no.nav.common.metrics.MetricsClient;
-import no.nav.common.rest.client.RestClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.aiabackend.AiaBackendClient;
-import no.nav.veilarbperson.client.aiabackend.EndringIRegistreringsdataRequestDTO;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
@@ -185,22 +182,6 @@ public class ClientTestConfig {
         return new VeilarboppfolgingClient() {
             @Override
             public UnderOppfolging hentUnderOppfolgingStatus(Fnr fnr) {
-                return null;
-            }
-
-            @Override
-            public HealthCheckResult checkHealth() {
-                return HealthCheckResult.healthy();
-            }
-        };
-    }
-
-    @Bean
-    public AiaBackendClient aiaBackendClient() {
-        return new AiaBackendClient() {
-            @NotNull
-            @Override
-            public Response hentEndringIRegistreringsdata(@NotNull EndringIRegistreringsdataRequestDTO endringIRegistreringsdataRequestDTO) {
                 return null;
             }
 
