@@ -7,13 +7,10 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.health.HealthCheckResult;
 import no.nav.common.health.selftest.SelfTestChecks;
 import no.nav.common.metrics.MetricsClient;
-import no.nav.common.rest.client.RestClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.aiabackend.AiaBackendClient;
-import no.nav.veilarbperson.client.aiabackend.EndringIRegistreringsdataRequestDTO;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
@@ -28,11 +25,8 @@ import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
-import no.nav.veilarbperson.client.representasjon.RepresentasjonClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
-import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClient;
-import no.nav.veilarbperson.client.veilarbregistrering.VeilarbregistreringClientImpl;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.mockito.Mockito;
@@ -199,22 +193,6 @@ public class ClientTestConfig {
     }
 
     @Bean
-    public AiaBackendClient aiaBackendClient() {
-        return new AiaBackendClient() {
-            @NotNull
-            @Override
-            public Response hentEndringIRegistreringsdata(@NotNull EndringIRegistreringsdataRequestDTO endringIRegistreringsdataRequestDTO) {
-                return null;
-            }
-
-            @Override
-            public HealthCheckResult checkHealth() {
-                return HealthCheckResult.healthy();
-            }
-        };
-    }
-
-    @Bean
     public PdlClient pdlClient() {
         return new PdlClient() {
 
@@ -277,12 +255,6 @@ public class ClientTestConfig {
     @Bean
     public SelfTestChecks selfTestChecks() {
         return mock(SelfTestChecks.class);
-    }
-
-    @Bean
-    public VeilarbregistreringClient veilarbregistreringClient() {
-        return new VeilarbregistreringClientImpl(
-                RestClient.baseClient(), "http://localhost:" + WIREMOCK_PORT, () -> "");
     }
 
     @Bean

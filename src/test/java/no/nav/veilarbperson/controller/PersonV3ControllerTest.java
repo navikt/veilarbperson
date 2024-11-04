@@ -48,55 +48,6 @@ public class PersonV3ControllerTest {
     private PersonV2Service personV2Service;
 
     @Test
-    public void returnerer_registrering_for_registrert_bruker() throws Exception {
-        PrivatBruker ny = navContext.getPrivatBrukere().ny();
-        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
-
-        String expectedJson = "{}";
-        String fnr = ny.getNorskIdent();
-
-        stubFor(WireMock.get(urlEqualTo("/veilarbregistrering/api/registrering?fnr=" + fnr))
-                .willReturn(ok()
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(expectedJson)));
-
-
-        mockMvc
-                .perform(
-                        post("/api/v3/person/hent-registrering")
-                                .contentType(APPLICATION_JSON)
-                                .content("{\"fnr\":\"" + fnr + "\"}")
-                                .header("test_ident", navAnsatt.getNavIdent())
-                                .header("test_ident_type", "INTERN")
-                )
-                .andExpect(content().json(expectedJson))
-                .andExpect(status().is(200));
-    }
-
-    @Test
-    public void returnerer_ikke_registrering_for_bruker_som_ikke_er_registrert() throws Exception {
-        PrivatBruker ny = navContext.getPrivatBrukere().ny();
-        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
-        String fnr = ny.getNorskIdent();
-
-        stubFor(WireMock.get(urlEqualTo("/veilarbregistrering/api/registrering?fnr=" + fnr))
-                .willReturn(
-                        notFound()
-                                .withHeader("Content-Type", "application/json")));
-
-
-        mockMvc
-                .perform(
-                        post("/api/v3/person/hent-registrering")
-                                .contentType(APPLICATION_JSON)
-                                .content("{\"fnr\":\"" + fnr + "\"}")
-                                .header("test_ident", navAnsatt.getNavIdent())
-                                .header("test_ident_type", "INTERN")
-                )
-                .andExpect(status().is(404));
-    }
-
-    @Test
     public void returnerer_person_uten_behandlingsnummer_hent_person() throws Exception {
         PrivatBruker ny = navContext.getPrivatBrukere().ny();
         NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
