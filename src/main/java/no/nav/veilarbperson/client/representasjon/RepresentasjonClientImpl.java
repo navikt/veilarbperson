@@ -30,12 +30,12 @@ public class RepresentasjonClientImpl implements RepresentasjonClient{
         this.userTokenProvider = userTokenProvider;
     }
 
-    public List<ReprFullmaktData.Fullmakt> hentFullmakt(String kryptertIdent) throws IOException {
+    public List<ReprFullmaktData.Fullmakt> hentFullmakt(String personIdent) throws IOException {
         Request request = new Request.Builder()
-                .url(joinPaths(reprUrl, "/api/internbruker/fullmaktsgiver"))
+                .url(joinPaths(reprUrl, "/api/internbruker/fullmakt/fullmaktsgiver"))
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, createBearerToken(userTokenProvider.get()))
-                .post(RestUtils.toJsonRequestBody(new PersonIdentDTO(kryptertIdent)))
+                .post(RestUtils.toJsonRequestBody(new PersonIdentDTO(personIdent)))
                 .build();
 
         try (Response response = client.newCall(request).execute()) {

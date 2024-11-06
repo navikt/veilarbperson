@@ -75,9 +75,10 @@ spec:
           namespace: org
         - application: veilarboppfolging
           namespace: poao
+        - application: repr-api
+          namespace: repr
       external:
         - host: pdl-api.dev-fss-pub.nais.io
-        - host: pdl-fullmakt.dev-fss-pub.nais.io
         - host: regoppslag.dev-fss-pub.nais.io
         - host: pam-cv-api-gcp.intern.dev.nav.no
   env:
@@ -94,9 +95,9 @@ spec:
     - name: PAM_CV_API_URL
       value: https://pam-cv-api-gcp.intern.dev.nav.no/pam-cv-api
     - name: REPR_API_SCOPE
-      value: api://dev-fss.pdl.pdl-fullmakt/.default
+      value: api://dev-gcp.repr.repr-api/.default
     - name: REPR_API_URL
-      value: https://pdl-fullmakt.dev-fss-pub.nais.io
+      value: http://repr-api.repr
     - name: PDL_API_SCOPE
       value: api://dev-fss.pdl.pdl-api/.default
     - name: PDL_API_URL

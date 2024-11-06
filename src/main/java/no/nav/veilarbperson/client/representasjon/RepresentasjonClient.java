@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface RepresentasjonClient {
-    List<ReprFullmaktData.Fullmakt> hentFullmakt(String kryptertIdent) throws IOException;
+    List<ReprFullmaktData.Fullmakt> hentFullmakt(String personIdent) throws IOException;
 }
 
 @Data

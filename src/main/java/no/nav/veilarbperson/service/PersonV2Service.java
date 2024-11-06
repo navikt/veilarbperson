@@ -324,8 +324,7 @@ public class PersonV2Service {
     }
 
     public FullmaktDTO hentFullmakt(PersonRequest personRequest) throws IOException {
-        String encryptertIdent = Base64.getEncoder().encodeToString(personRequest.getFnr().get().getBytes());
-        List<ReprFullmaktData.Fullmakt> fullmaktListe = representasjonClient.hentFullmakt(encryptertIdent);
+        List<ReprFullmaktData.Fullmakt> fullmaktListe = representasjonClient.hentFullmakt(personRequest.getFnr().get());
         if (fullmaktListe.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke fullmakt i representasjon");
         }
