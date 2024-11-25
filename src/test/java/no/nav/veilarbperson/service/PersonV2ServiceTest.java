@@ -17,7 +17,6 @@ import no.nav.veilarbperson.config.PdlClientTestConfig;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
 import no.nav.veilarbperson.utils.TestUtils;
-import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -74,8 +73,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 norg2Client,
                 skjermetClient,
                 kodeverkService,
-                representasjonClient,
-                kontoregisterClient
+                representasjonClient
                 );
         person = hentPerson(FNR);
     }
