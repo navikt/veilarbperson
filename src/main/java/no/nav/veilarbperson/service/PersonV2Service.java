@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl.Mappers.fraNorg2Enhet;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.*;
 
@@ -81,9 +80,7 @@ public class PersonV2Service {
     }
 
     public void flettInnKontonummer(PersonV2Data person) {
-    //    HentKontoRequestDTO kontohaver = new HentKontoRequestDTO();
-    //    kontohaver.setKontohaver(person.getFodselsnummer().toString());
-    //    HentKontoResponseDTO kontoregisterKonto = kontoregisterClient.hentKontonummer(kontohaver);
+
         person.setKontonummer(null);
     }
 
@@ -182,6 +179,9 @@ public class PersonV2Service {
         }
     }
 
+    private Enhet fraNorg2Enhet(no.nav.common.client.norg2.Enhet enhet) {
+        return new Enhet(enhet.getEnhetNr(), enhet.getNavn());
+    }
 
     public void flettKodeverk(PersonV2Data personV2Data) {
         Optional<String> postnrIBostedsVegAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(
@@ -363,5 +363,4 @@ public class PersonV2Service {
 
         return PersonV2DataMapper.navnMapper(personNavn.getNavn());
     }
-
 }

@@ -69,8 +69,6 @@ spec:
           namespace: paw
         - application: skjermede-personer-pip
           namespace: nom
-        - application: sokos-kontoregister-person
-          namespace: okonomi
         - application: norg2
           namespace: org
         - application: veilarboppfolging
@@ -118,10 +116,6 @@ spec:
       value: api://dev-gcp.poao.veilarboppfolging/.default
     - name: VEILARBOPPFOLGING_URL
       value: http://veilarboppfolging.poao/veilarboppfolging
-    - name: KONTOREGISTER_PERSON_V1_SCOPE
-      value: api://dev-gcp.okonomi.sokos-kontoregister-person/.default
-    - name: KONTOREGISTER_PERSON_V1_URL
-      value: http://sokos-kontoregister-person.okonomi
     - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_URL
       value: http://paw-arbeidssoekerregisteret-api-oppslag.paw
     - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_SCOPE
