@@ -5,9 +5,6 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
-import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
-import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
-import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -16,7 +13,6 @@ import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonV2DataMapper;
-import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -43,7 +39,7 @@ public class PersonV2Service {
     private final SkjermetClient skjermetClient;
     private final KodeverkService kodeverkService;
     private final RepresentasjonClient representasjonClient;
-    private final KontoregisterClient kontoregisterClient;
+
 
     @Autowired
     public PersonV2Service(PdlClient pdlClient,
@@ -52,8 +48,7 @@ public class PersonV2Service {
                            Norg2Client norg2Client,
                            SkjermetClient skjermetClient,
                            KodeverkService kodeverkService,
-                           RepresentasjonClient representasjonClient,
-                           KontoregisterClient kontoregisterClient) {
+                           RepresentasjonClient representasjonClient) {
         this.pdlClient = pdlClient;
         this.authService = authServiceWithoutAuditLogg;
         this.digdirClient = digdirClient;
@@ -61,7 +56,6 @@ public class PersonV2Service {
         this.skjermetClient = skjermetClient;
         this.kodeverkService = kodeverkService;
         this.representasjonClient = representasjonClient;
-        this.kontoregisterClient = kontoregisterClient;
     }
 
     public HentPerson.Person hentPerson(PersonFraPdlRequest personFraPdlRequest) {
@@ -87,10 +81,10 @@ public class PersonV2Service {
     }
 
     public void flettInnKontonummer(PersonV2Data person) {
-        HentKontoRequestDTO kontohaver = new HentKontoRequestDTO();
-        kontohaver.setKontohaver(person.getFodselsnummer().toString());
-        HentKontoResponseDTO kontoregisterKonto = kontoregisterClient.hentKontonummer(kontohaver);
-        person.setKontonummer(kontoregisterKonto.getNorskKontonummer());
+    //    HentKontoRequestDTO kontohaver = new HentKontoRequestDTO();
+    //    kontohaver.setKontohaver(person.getFodselsnummer().toString());
+    //    HentKontoResponseDTO kontoregisterKonto = kontoregisterClient.hentKontonummer(kontohaver);
+        person.setKontonummer(null);
     }
 
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse, String behandlingsnummer) {
