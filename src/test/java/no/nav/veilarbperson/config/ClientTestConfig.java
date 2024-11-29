@@ -14,22 +14,14 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
-import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
-import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
-import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClient;
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClientImpl;
-import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
-import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
-import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
-import org.mockito.Mockito;
 import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -131,22 +123,6 @@ public class ClientTestConfig {
     }
 
     @Bean
-    public KontoregisterClient kontoregisterClient() {
-        return new KontoregisterClient() {
-            @Override
-            public HentKontoResponseDTO hentKontonummer(HentKontoRequestDTO kontohaver) {
-                return new HentKontoResponseDTO();
-            }
-
-            @Override
-            public HealthCheckResult checkHealth() {
-                return HealthCheckResult.healthy();
-            }
-        };
-    }
-
-
-    @Bean
     public SkjermetClient skjermetClient() {
         return new SkjermetClient() {
             @Override
@@ -223,25 +199,6 @@ public class ClientTestConfig {
 
             @Override
             public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
-                return null;
-            }
-
-            @Override
-            public HealthCheckResult checkHealth() {
-                return HealthCheckResult.healthy();
-            }
-        };
-    }
-
-    public RepresentasjonClient representasjonClient() {
-        return Mockito.mock(RepresentasjonClient.class);
-    }
-
-    @Bean
-    public PamClient pamClient() {
-        return new PamClient() {
-            @Override
-            public Response hentCvOgJobbprofil(Fnr fnr, boolean erBrukerManuell) {
                 return null;
             }
 

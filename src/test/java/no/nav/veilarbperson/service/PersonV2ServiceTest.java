@@ -6,8 +6,6 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
-import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
-import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -45,7 +43,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private final Norg2Client norg2Client = mock(Norg2Client.class);
     private final DigdirClient digdirClient = mock(DigdirClient.class);
     private PdlClient pdlClient;
-    private final KontoregisterClient kontoregisterClient = mock(KontoregisterClient.class);
     private final KodeverkService kodeverkService = mock(KodeverkService.class);
     private final SkjermetClient skjermetClient = mock(SkjermetClient.class);
     private final AuthService authService = mock(AuthService.class);
@@ -64,7 +61,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         pdlClient = getPdlClient();
         when(norg2Client.hentTilhorendeEnhet(anyString(), any(), anyBoolean())).thenReturn(new Enhet());
         when(digdirClient.hentKontaktInfo(any())).thenReturn(new DigdirKontaktinfo());
-        when(kontoregisterClient.hentKontonummer(any())).thenReturn(new HentKontoResponseDTO());
 
         personV2Service = new PersonV2Service(
                 pdlClient,

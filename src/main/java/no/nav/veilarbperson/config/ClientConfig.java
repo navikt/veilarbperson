@@ -19,8 +19,6 @@ import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClientImpl;
-import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
-import no.nav.veilarbperson.client.kontoregister.KontoregisterClientImpl;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.nom.SkjermetClientImpl;
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClient;
@@ -72,11 +70,6 @@ public class ClientConfig {
                 () -> tokenClient.createMachineToMachineToken(properties.getPamCvApiScope()));
     }
 
-
-    @Bean
-    public KontoregisterClient kontoregisterClient(EnvironmentProperties properties, MachineToMachineTokenClient tokenClient) {
-        return new KontoregisterClientImpl(properties.getKontoregisterUrl(), () -> tokenClient.createMachineToMachineToken(properties.getKontoregisterScope()));
-    }
 
     @Bean
     public SkjermetClient skjermetClient(EnvironmentProperties properties, AzureAdMachineToMachineTokenClient tokenClient) {

@@ -4,9 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.kontoregister.HentKontoRequestDTO;
-import no.nav.veilarbperson.client.kontoregister.KontoregisterClient;
-import no.nav.veilarbperson.client.kontoregister.HentKontoResponseDTO;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagResponseDTO;
 import no.nav.veilarbperson.domain.*;
@@ -25,8 +22,6 @@ public class PersonV2Controller {
     private final PersonV2Service personV2Service;
     private final AuthService authService;
     private final RegoppslagClient regoppslagClient;
-
-    private final KontoregisterClient kontoregisterClient;
 
     @Deprecated
     @GetMapping
@@ -83,13 +78,4 @@ public class PersonV2Controller {
         authService.sjekkLesetilgang(fnr);
         return regoppslagClient.hentPostadresse(fnr);
     }
-    @PostMapping
-    @Operation(summary = "Henter kontonummer fra Kontoregister")
-    public HentKontoResponseDTO hentKontonummerFraKontoregister(@RequestParam("kontohaver") HentKontoRequestDTO kontohaver) {
-        Fnr fnr = new Fnr(kontohaver.getKontohaver());
-        authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(fnr);
-        return kontoregisterClient.hentKontonummer(kontohaver);
-    }
-
 }
