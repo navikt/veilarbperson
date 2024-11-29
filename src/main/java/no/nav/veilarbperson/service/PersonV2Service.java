@@ -180,11 +180,8 @@ public class PersonV2Service {
     }
 
     private Enhet fraNorg2Enhet(no.nav.common.client.norg2.Enhet enhet) {
-      {
-            return new Enhet(enhet.getEnhetNr(), enhet.getNavn());
-        }
+        return new Enhet(enhet.getEnhetNr(), enhet.getNavn());
     }
-
 
     public void flettKodeverk(PersonV2Data personV2Data) {
         Optional<String> postnrIBostedsVegAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(
