@@ -31,8 +31,6 @@ public class EnvironmentProperties {
     private String skjermedePersonerPipUrl;
     private String veilarboppfolgingScope;
     private String veilarboppfolgingUrl;
-    private String kontoregisterScope;
-    private String kontoregisterUrl;
     private String oppslagArbeidssoekerregisteretUrl;
     private String oppslagArbeidssoekerregisteretScope;
 }
