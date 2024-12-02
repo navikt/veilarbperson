@@ -24,7 +24,6 @@ public class PersonV2Data {
     LocalDate dodsdato;
     String diskresjonskode;
     boolean egenAnsatt;
-    String kontonummer;
     String geografiskTilknytning;
     Enhet geografiskEnhet;
     List<Telefon> telefon;

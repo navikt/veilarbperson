@@ -67,8 +67,6 @@ public class PersonV2Service {
                         "Fant ikke person i hentPerson operasjonen i PDL"));
 
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
-        flettInnKontonummer(personV2Data);
-
         flettInnEgenAnsatt(personV2Data, personFraPdlRequest.getFnr());
         flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data, personFraPdlRequest.getBehandlingsnummer());
         flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data, personFraPdlRequest.getBehandlingsnummer());
@@ -77,11 +75,6 @@ public class PersonV2Service {
         flettKodeverk(personV2Data);
 
         return personV2Data;
-    }
-
-    public void flettInnKontonummer(PersonV2Data person) {
-
-        person.setKontonummer(null);
     }
 
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse, String behandlingsnummer) {
