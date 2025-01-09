@@ -32,7 +32,7 @@ class OppslagArbeidssoekerregisteretService(
         }
 
         if (sisteOpplysningerOmArbeidssoeker == null) {
-            throw ResponseStatusException(HttpStatusCode.valueOf(204),"Fant ingen opplysninger om arbeidssoeker")
+            return OpplysningerOmArbeidssoekerMedProfilering(aktivArbeidssoekerperiode.startet.tidspunkt, null, null)
         }
 
         val sisteProfilering =
