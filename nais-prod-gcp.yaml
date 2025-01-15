@@ -74,6 +74,8 @@ spec:
           namespace: poao
         - application: repr-api
           namespace: repr
+        - application: inngar
+          namespace: dab
       external:
         - host: pdl-api.prod-fss-pub.nais.io
         - host: veilarboppfolging.prod-fss-pub.nais.io

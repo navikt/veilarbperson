@@ -75,6 +75,8 @@ spec:
           namespace: poao
         - application: repr-api
           namespace: repr
+        - application: inngar
+          namespace: dab
       external:
         - host: pdl-api.dev-fss-pub.nais.io
         - host: regoppslag.dev-fss-pub.nais.io
