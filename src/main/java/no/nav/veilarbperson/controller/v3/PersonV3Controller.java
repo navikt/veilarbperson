@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerperiodeResponse;
+import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagResponseDTO;
 import no.nav.veilarbperson.domain.*;
@@ -105,6 +106,14 @@ public class PersonV3Controller {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
         return personV2Service.hentNavn(personFraPdlRequest);
+    }
+
+    @PostMapping("/person/hent-adressebeskyttelse")
+    @Operation(summary = "Henter gradering på adressebeskyttelse til en person fra PDL")
+    public HentPerson.Adressebeskyttelse hentAdressebeskyttelse(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
+        return personV2Service.hentAdressebeskyttelse(personFraPdlRequest);
     }
 
     @PostMapping("/person/hent-postadresse")
