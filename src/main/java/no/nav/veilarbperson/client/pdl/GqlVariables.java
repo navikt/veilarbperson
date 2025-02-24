@@ -33,4 +33,10 @@ public class GqlVariables {
     public static class HentTilrettelagtKommunikasjon {
         private Fnr ident;
     }
+
+    @Data
+    @AllArgsConstructor
+    public static class HentAdressebeskyttelse {
+        private Fnr ident;
+    }
 }

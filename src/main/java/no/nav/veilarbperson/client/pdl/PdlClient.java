@@ -18,4 +18,6 @@ public interface PdlClient extends HealthCheck {
     HentPerson.GeografiskTilknytning hentGeografiskTilknytning(PdlRequest pdlRequest);
 
     HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest);
+
+    List<HentPerson.Adressebeskyttelse> hentAdressebeskyttelse(PdlRequest pdlRequest);
 }

@@ -48,6 +48,8 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentGeografiskTilknytningQuery;
 
+    private final String hentAdressebeskyttelseQuery;
+
     private final String hentTilrettelagtKommunikasjonQuery;
 
     private final Supplier<String> userTokenProvider;
@@ -64,6 +66,7 @@ public class PdlClientImpl implements PdlClient {
         this.hentVergeQuery = FileUtils.getResourceFileAsString("graphql/hentVerge.gql");
         this.hentGeografiskTilknytningQuery = FileUtils.getResourceFileAsString("graphql/hentGeografiskTilknytning.gql");
         this.hentTilrettelagtKommunikasjonQuery = FileUtils.getResourceFileAsString("graphql/hentTilrettelagtKommunikasjon.gql");
+        this.hentAdressebeskyttelseQuery = FileUtils.getResourceFileAsString("graphql/hentAdressebeskyttelse.gql");
     }
 
     @Override
@@ -103,6 +106,12 @@ public class PdlClientImpl implements PdlClient {
     public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
         var request = new GqlRequest<>(hentTilrettelagtKommunikasjonQuery, new GqlVariables.HentTilrettelagtKommunikasjon(pdlRequest.fnr()));
         return graphqlRequest(request, userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.HentTilrettelagtKommunikasjon.class).hentPerson;
+    }
+
+    @Override
+    public List<HentPerson.Adressebeskyttelse> hentAdressebeskyttelse(PdlRequest pdlRequest) {
+        var request = new GqlRequest<>(hentAdressebeskyttelseQuery, new GqlVariables.HentAdressebeskyttelse(pdlRequest.fnr()));
+        return graphqlRequest(request, systemTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.class).hentPerson.getAdressebeskyttelse();
     }
 
     @SneakyThrows

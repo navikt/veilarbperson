@@ -185,6 +185,24 @@ public class PdlClientImplTest {
     }
 
     @Test
+    public void henteadressebeskyttelse_skal_parse_request() {
+        String hentAdressebeskyttelseResponseJson = TestUtils.readTestResourceFile("pdl-hentAdressebeskyttelse-response.json");
+        String apiUrl = "http://localhost:" + wireMockRule.port();
+
+        givenThat(post(anyUrl())
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody(hentAdressebeskyttelseResponseJson))
+        );
+
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
+
+        List<HentPerson.Adressebeskyttelse> adressebeskyttelse = pdlClient.hentAdressebeskyttelse(new PdlRequest(FNR, null));
+        assertEquals("STRENGT_FORTROLIG", adressebeskyttelse.getFirst().getGradering());
+
+    }
+
+    @Test
     public void hentePerson_skal_sjekke_feil() {
         String hentPersonErrorResponseJson = TestUtils.readTestResourceFile("pdl-hentPerson-error-response.json");
         String apiUrl = "http://localhost:" + wireMockRule.port();

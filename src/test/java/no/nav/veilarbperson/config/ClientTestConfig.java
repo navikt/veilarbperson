@@ -206,6 +206,11 @@ public class ClientTestConfig {
             }
 
             @Override
+            public List<HentPerson.Adressebeskyttelse> hentAdressebeskyttelse(PdlRequest pdlRequest) {
+                return null;
+            }
+
+            @Override
             public HealthCheckResult checkHealth() {
                 return HealthCheckResult.healthy();
             }
