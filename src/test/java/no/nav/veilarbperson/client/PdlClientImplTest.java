@@ -6,6 +6,7 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.*;
 import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
+import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.utils.FileUtils;
 import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
@@ -22,6 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.hentGjeldeneNavn;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 public class PdlClientImplTest {
 
@@ -43,7 +45,7 @@ public class PdlClientImplTest {
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, mock(AuthService.class), () -> PDL_AUTH, () -> PDL_AUTH);
 
         pdlClient.hentPerson(new PdlRequest(FNR, null));
     }
@@ -59,7 +61,7 @@ public class PdlClientImplTest {
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, mock(AuthService.class),() -> PDL_AUTH, () -> PDL_AUTH);
 
         HentPerson.Person person = pdlClient.hentPerson(new PdlRequest(FNR, null));
 
@@ -170,7 +172,7 @@ public class PdlClientImplTest {
                         .withBody(hentVergeOgFullmaktResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, mock(AuthService.class), () -> PDL_AUTH, () -> PDL_AUTH);
 
         HentPerson.Verge verge = pdlClient.hentVerge(new PdlRequest(FNR, null));
 
@@ -195,7 +197,7 @@ public class PdlClientImplTest {
                         .withBody(hentAdressebeskyttelseResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, mock(AuthService.class), () -> PDL_AUTH, () -> PDL_AUTH);
 
         List<HentPerson.Adressebeskyttelse> adressebeskyttelse = pdlClient.hentAdressebeskyttelse(new PdlRequest(FNR, null));
         assertEquals("STRENGT_FORTROLIG", adressebeskyttelse.getFirst().getGradering());
@@ -213,7 +215,7 @@ public class PdlClientImplTest {
                         .withBody(hentPersonErrorResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, mock(AuthService.class), () -> PDL_AUTH, () -> PDL_AUTH);
 
         assertThrows(ResponseStatusException.class, () -> {
             pdlClient.hentPerson(new PdlRequest(FNR,  null));
@@ -235,7 +237,7 @@ public class PdlClientImplTest {
                         .withBody(hentPersonResponseJson))
         );
 
-        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, () -> PDL_AUTH, () -> PDL_AUTH);
+        PdlClientImpl pdlClient = new PdlClientImpl(apiUrl, mock(AuthService.class), () -> PDL_AUTH, () -> PDL_AUTH);
 
         String response = pdlClient.rawRequest(jsonRequest, PDL_AUTH, null);
         assertEquals(hentPersonResponseJson, response);

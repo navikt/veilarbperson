@@ -86,6 +86,7 @@ public class ClientConfig {
     @Bean
     public PdlClient pdlClient(EnvironmentProperties properties, AuthService authService, AzureAdMachineToMachineTokenClient tokenClient) {
         return new PdlClientImpl(properties.getPdlApiUrl(),
+                authService,
                 () -> authService.getAadOboTokenForTjeneste(properties.getPdlApiScope()),
                 () -> tokenClient.createMachineToMachineToken(properties.getPdlApiScope()));
     }

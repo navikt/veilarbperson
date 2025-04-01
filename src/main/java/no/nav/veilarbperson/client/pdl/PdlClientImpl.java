@@ -12,6 +12,7 @@ import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
+import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.utils.FileUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -52,12 +53,15 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentTilrettelagtKommunikasjonQuery;
 
+    private final AuthService authService;
+
     private final Supplier<String> userTokenProvider;
     private final Supplier<String> systemTokenProvider;
 
-    public PdlClientImpl(String pdlUrl, Supplier<String> userTokenProvider, Supplier<String> systemTokenProvider) {
+    public PdlClientImpl(String pdlUrl, AuthService authService, Supplier<String> userTokenProvider, Supplier<String> systemTokenProvider) {
         this.pdlUrl = pdlUrl;
         this.client = RestClient.baseClient();
+        this.authService = authService;
         this.userTokenProvider = userTokenProvider;
         this.systemTokenProvider = systemTokenProvider;
         this.hentPersonQuery = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
@@ -84,7 +88,7 @@ public class PdlClientImpl implements PdlClient {
     @Override
     public HentPerson.PersonNavn hentPersonNavn(PdlRequest pdlRequest) {
         var request = new GqlRequest<>(hentPersonNavnQuery, new GqlVariables.HentPerson(pdlRequest.fnr(), false));
-        return graphqlRequest(request, userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.HentFullmaktNavn.class).hentPerson;
+        return graphqlRequest(request, authService.erSystemBruker() ? systemTokenProvider.get() : userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.HentFullmaktNavn.class).hentPerson;
     }
 
     @Override
