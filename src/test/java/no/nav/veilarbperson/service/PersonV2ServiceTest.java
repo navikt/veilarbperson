@@ -6,6 +6,7 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
+import no.nav.veilarbperson.client.digdir.PostPersonerResponse;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -21,10 +22,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -60,7 +58,17 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void setup() {
         pdlClient = getPdlClient();
         when(norg2Client.hentTilhorendeEnhet(anyString(), any(), anyBoolean())).thenReturn(new Enhet());
-        when(digdirClient.hentKontaktInfo(any())).thenReturn(new DigdirKontaktinfo());
+
+        // Mock DigdirKontaktinfo
+        DigdirKontaktinfo digdirKontaktinfo = new DigdirKontaktinfo("0123456789", true, true, null, false, "NB", null, "test@example.com", null, null, "12345678",  null, null);
+
+
+        // Mock PostPersonerResponse
+        PostPersonerResponse postPersonerResponse = new PostPersonerResponse(
+                Map.of(FNR.get(), digdirKontaktinfo), // Add DigdirKontaktinfo to the map
+                Map.of() // No errors
+        );
+        when(digdirClient.hentKontaktInfo(any())).thenReturn(postPersonerResponse);
 
         personV2Service = new PersonV2Service(
                 pdlClient,

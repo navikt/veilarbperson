@@ -12,7 +12,8 @@ import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
-import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
+import no.nav.veilarbperson.client.digdir.PostPersonerRequest;
+import no.nav.veilarbperson.client.digdir.PostPersonerResponse;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClient;
@@ -24,6 +25,8 @@ import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
 import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -112,9 +115,10 @@ public class ClientTestConfig {
     @Bean
     public DigdirClient digdirClient() {
         return new DigdirClient() {
+            @Nullable
             @Override
-            public DigdirKontaktinfo hentKontaktInfo(Fnr fnr) {
-                return new DigdirKontaktinfo();
+            public PostPersonerResponse hentKontaktInfo(@NotNull PostPersonerRequest personidenter) {
+                return null;
             }
 
             @Override
