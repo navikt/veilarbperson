@@ -7,9 +7,12 @@ import no.nav.veilarbperson.utils.TestUtils;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseDateFromDateTime;
+import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseZonedDateToDateString;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,27 +28,25 @@ public class DigdirClientImplTest {
         String apiUrl = "http://localhost:" + wireMockRule.port();
         DigdirClient digdirClient = new DigdirClientImpl(apiUrl, () -> "TOKEN");
 
-        PostPersonerRequest postPersonerRequest = new PostPersonerRequest(Set.of(TEST_FNR.get()));
+        KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(TEST_FNR.get()));
 
-        givenThat(get(anyUrl())
-                .withHeader("Nav-Personident", equalTo(TEST_FNR.get()))
+        givenThat(post(anyUrl())
                 .withHeader("Authorization", equalTo("Bearer TOKEN"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody(kodeverkJson))
         );
 
-        PostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(postPersonerRequest);
+        KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
         assert kontaktinfo != null;
         DigdirKontaktinfo digdirKontaktinfo = kontaktinfo.getPersoner().get(TEST_FNR.get());
         assertNotNull(digdirKontaktinfo);
         assertEquals("noreply@nav.no", digdirKontaktinfo.getEpostadresse());
         assertEquals("11111111", digdirKontaktinfo.getMobiltelefonnummer());
-    //    assertFalse(digdirKontaktinfo.getSikkerDigitalPost());
 
         Epost epost = new Epost()
                 .setEpostAdresse(digdirKontaktinfo.getEpostadresse())
-                .setEpostSistOppdatert(digdirKontaktinfo.getEpostadresseOppdatert())
+                .setEpostSistOppdatert(parseZonedDateToDateString(ZonedDateTime.parse(digdirKontaktinfo.getEpostadresseOppdatert())))
                 .setMaster("KRR");
 
         assertEquals(digdirKontaktinfo.getEpostadresse(), epost.getEpostAdresse());

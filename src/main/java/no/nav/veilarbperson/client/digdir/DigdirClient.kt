@@ -3,16 +3,16 @@ package no.nav.veilarbperson.client.digdir
 import no.nav.common.health.HealthCheck
 
 interface DigdirClient : HealthCheck {
-    fun hentKontaktInfo(personidenter: PostPersonerRequest): PostPersonerResponse?
+    fun hentKontaktInfo(personidenter: KRRPostPersonerRequest): KRRPostPersonerResponse?
 }
 
-data class PostPersonerRequest(
+data class KRRPostPersonerRequest(
     val personidenter: Set<String>
 )
 
-data class PostPersonerResponse(
+data class KRRPostPersonerResponse(
     val personer: Map<String, DigdirKontaktinfo>,
-    val feil: Map<String, String>
+    val feil: Map<String, String>?
 )
 
 data class DigdirKontaktinfo(

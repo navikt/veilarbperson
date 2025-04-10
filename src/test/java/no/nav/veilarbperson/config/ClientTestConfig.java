@@ -12,8 +12,8 @@ import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
-import no.nav.veilarbperson.client.digdir.PostPersonerRequest;
-import no.nav.veilarbperson.client.digdir.PostPersonerResponse;
+import no.nav.veilarbperson.client.digdir.KRRPostPersonerRequest;
+import no.nav.veilarbperson.client.digdir.KRRPostPersonerResponse;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClient;
@@ -117,7 +117,7 @@ public class ClientTestConfig {
         return new DigdirClient() {
             @Nullable
             @Override
-            public PostPersonerResponse hentKontaktInfo(@NotNull PostPersonerRequest personidenter) {
+            public KRRPostPersonerResponse hentKontaktInfo(@NotNull KRRPostPersonerRequest personidenter) {
                 return null;
             }
 

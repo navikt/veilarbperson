@@ -6,7 +6,7 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
-import no.nav.veilarbperson.client.digdir.PostPersonerResponse;
+import no.nav.veilarbperson.client.digdir.KRRPostPersonerResponse;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -64,11 +64,11 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
 
         // Mock PostPersonerResponse
-        PostPersonerResponse postPersonerResponse = new PostPersonerResponse(
+        KRRPostPersonerResponse KRRPostPersonerResponse = new KRRPostPersonerResponse(
                 Map.of(FNR.get(), digdirKontaktinfo), // Add DigdirKontaktinfo to the map
                 Map.of() // No errors
         );
-        when(digdirClient.hentKontaktInfo(any())).thenReturn(postPersonerResponse);
+        when(digdirClient.hentKontaktInfo(any())).thenReturn(KRRPostPersonerResponse);
 
         personV2Service = new PersonV2Service(
                 pdlClient,

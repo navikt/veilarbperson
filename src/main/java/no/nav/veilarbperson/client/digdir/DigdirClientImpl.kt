@@ -26,7 +26,7 @@ open class DigdirClientImpl(
 
     @Cacheable(CacheConfig.DIGDIR_KONTAKTINFO_CACHE_NAME)
     @SneakyThrows
-    override fun hentKontaktInfo(personidenter: PostPersonerRequest): PostPersonerResponse? {
+    override fun hentKontaktInfo(personidenter: KRRPostPersonerRequest): KRRPostPersonerResponse? {
         val requestBody = personidenter.toJson()
 
         val request = Request.Builder()
@@ -38,7 +38,7 @@ open class DigdirClientImpl(
 
         client.newCall(request).execute().use { response ->
             RestUtils.throwIfNotSuccessful(response)
-            return RestUtils.parseJsonResponse(response, PostPersonerResponse::class.java)
+            return RestUtils.parseJsonResponse(response, KRRPostPersonerResponse::class.java)
                 .orElseThrow { IllegalStateException("Digdir body is missing") }
         }
     }

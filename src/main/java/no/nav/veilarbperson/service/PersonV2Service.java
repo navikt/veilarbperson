@@ -5,8 +5,8 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
-import no.nav.veilarbperson.client.digdir.PostPersonerRequest;
-import no.nav.veilarbperson.client.digdir.PostPersonerResponse;
+import no.nav.veilarbperson.client.digdir.KRRPostPersonerRequest;
+import no.nav.veilarbperson.client.digdir.KRRPostPersonerResponse;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -251,13 +252,13 @@ public class PersonV2Service {
     }
 
     private void flettDigitalKontaktinformasjon(Fnr fnr, PersonV2Data personV2Data) {
-        PostPersonerRequest postPersonerRequest = new PostPersonerRequest(Set.of(fnr.get()));
+        KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
         try {
-            PostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(postPersonerRequest);
+            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
             assert kontaktinfo != null;
             DigdirKontaktinfo digdirKontaktinfo = kontaktinfo.getPersoner().get(fnr.get());
-            String epostSisteOppdatert = digdirKontaktinfo.getEpostadresseOppdatert();
-            String mobilSisteOppdatert = digdirKontaktinfo.getMobiltelefonnummerOppdatert();
+            String epostSisteOppdatert = parseZonedDateToDateString(ZonedDateTime.parse(digdirKontaktinfo.getEpostadresseOppdatert()));
+            String mobilSisteOppdatert = parseZonedDateToDateString(ZonedDateTime.parse(digdirKontaktinfo.getMobiltelefonnummerOppdatert()));
             Epost epost = digdirKontaktinfo.getEpostadresse() != null
                     ? new Epost().setEpostAdresse(digdirKontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert).setMaster("KRR")
                     : null;
@@ -343,9 +344,9 @@ public class PersonV2Service {
     }
 
     public String hentMalform(Fnr fnr) {
-        PostPersonerRequest postPersonerRequest = new PostPersonerRequest(Set.of(fnr.get()));
+        KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
         try {
-            PostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(postPersonerRequest);
+            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
             assert kontaktinfo != null;
             DigdirKontaktinfo digdirKontaktinfo = kontaktinfo.getPersoner().get(fnr.get());
             return digdirKontaktinfo.getSpraak();

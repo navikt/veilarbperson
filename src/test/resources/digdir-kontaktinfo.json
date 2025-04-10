@@ -1,15 +1,19 @@
 {
-  "personident": "12345678900",
-  "aktiv": true,
-  "kanVarsles": true,
-  "reservert": false,
-  "spraak": "NB",
-  "spraakOppdatert" : null,
-  "epostadresse": "noreply@nav.no",
-  "epostadresseOppdatert" : "2018-01-01T10:15:30+01:00",
-  "epostadresseVerifisert": null,
-  "mobiltelefonnummer": "11111111",
-  "mobiltelefonnummerOppdatert": "2011-12-03T10:15:30+01:00",
-  "mobiltelefonnummerVerifisert": "2022-12-03T10:15:30+01:00",
-  "sikkerDigitalPostkasse": null
+  "personer": {
+    "12345678900": {
+      "personident": "12345678900",
+      "aktiv": true,
+      "kanVarsles": true,
+      "reservert": false,
+      "spraak": "NB",
+      "spraakOppdatert": null,
+      "epostadresse": "noreply@nav.no",
+      "epostadresseOppdatert": "2018-01-01T10:15:30+01:00",
+      "epostadresseVerifisert": null,
+      "mobiltelefonnummer": "11111111",
+      "mobiltelefonnummerOppdatert": "2011-12-03T10:15:30+01:00",
+      "mobiltelefonnummerVerifisert": "2022-12-03T10:15:30+01:00",
+      "sikkerDigitalPostkasse": null
+    }
+  }
 }
