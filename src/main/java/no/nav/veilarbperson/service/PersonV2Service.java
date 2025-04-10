@@ -5,8 +5,9 @@ import no.nav.common.client.norg2.Norg2Client;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
+import no.nav.veilarbperson.client.digdir.KRRPostPersonerRequest;
+import no.nav.veilarbperson.client.digdir.KRRPostPersonerResponse;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
-import no.nav.veilarbperson.client.pdl.GqlVariables;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
@@ -21,11 +22,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.*;
@@ -251,17 +252,23 @@ public class PersonV2Service {
     }
 
     private void flettDigitalKontaktinformasjon(Fnr fnr, PersonV2Data personV2Data) {
+        KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
         try {
-            DigdirKontaktinfo kontaktinfo = digdirClient.hentKontaktInfo(fnr);
-            String epostSisteOppdatert = parseZonedDateToDateString(kontaktinfo.getEpostadresseOppdatert());
-            String mobilSisteOppdatert = parseZonedDateToDateString(kontaktinfo.getMobiltelefonnummerOppdatert());
-            Epost epost = kontaktinfo.getEpostadresse() != null
-                    ? new Epost().setEpostAdresse(kontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert).setMaster("KRR")
-                    : null;
+            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
+            DigdirKontaktinfo digdirKontaktinfo = kontaktinfo.getPersoner().get(fnr.get());
+            if (digdirKontaktinfo != null) {
+                String epostSisteOppdatert = parseZonedDateToDateString(ZonedDateTime.parse(digdirKontaktinfo.getEpostadresseOppdatert()));
+                String mobilSisteOppdatert = parseZonedDateToDateString(ZonedDateTime.parse(digdirKontaktinfo.getMobiltelefonnummerOppdatert()));
+                Epost epost = digdirKontaktinfo.getEpostadresse() != null
+                        ? new Epost().setEpostAdresse(digdirKontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert).setMaster("KRR")
+                        : null;
 
-            personV2Data.setEpost(epost);
-            personV2Data.setMalform(kontaktinfo.getSpraak());
-            leggKrrTelefonNrIListe(kontaktinfo.getMobiltelefonnummer(), mobilSisteOppdatert, personV2Data.getTelefon());
+                personV2Data.setEpost(epost);
+                personV2Data.setMalform(digdirKontaktinfo.getSpraak());
+                leggKrrTelefonNrIListe(digdirKontaktinfo.getMobiltelefonnummer(), mobilSisteOppdatert, personV2Data.getTelefon());
+            } else {
+                log.warn("Fant ikke kontaktinfo i KRR");
+            }
         } catch (Exception e) {
             log.warn("Kunne ikke flette digitalkontaktinfo fra KRR", e);
         }
@@ -281,7 +288,8 @@ public class PersonV2Service {
             for (Telefon telefon : telefonListe) {
                 if (telefon.getMaster().equals("PDL")) {
                     prioritet = Integer.parseInt(telefon.getPrioritet()) + 1;
-                    telefon.setPrioritet(prioritet + "");}
+                    telefon.setPrioritet(prioritet + "");
+                }
             }
         }
     }
@@ -340,9 +348,15 @@ public class PersonV2Service {
     }
 
     public String hentMalform(Fnr fnr) {
+        KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
         try {
-            DigdirKontaktinfo kontaktinfo = digdirClient.hentKontaktInfo(fnr);
-            return kontaktinfo.getSpraak();
+            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
+            if (kontaktinfo == null || kontaktinfo.getPersoner() == null) {
+                log.warn("Fant ikke kontaktinfo (målform) i KRR");
+                return null;
+            }
+            DigdirKontaktinfo digdirKontaktinfo = kontaktinfo.getPersoner().get(fnr.get());
+            return digdirKontaktinfo.getSpraak();
         } catch (Exception e) {
             log.warn("Kunne ikke hente malform fra KRR", e);
         }
