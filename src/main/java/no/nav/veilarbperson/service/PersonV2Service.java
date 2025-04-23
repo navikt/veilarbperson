@@ -369,7 +369,7 @@ public class PersonV2Service {
         if (personNavn.getNavn().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke navn til person");
         }
-
+        log.info("Ferdig med hentNavn i PersonV2Service");
         return PersonV2DataMapper.navnMapper(personNavn.getNavn());
     }
 
