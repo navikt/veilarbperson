@@ -84,6 +84,7 @@ public class PdlClientImpl implements PdlClient {
     @Override
     public HentPerson.PersonNavn hentPersonNavn(PdlRequest pdlRequest) {
         var request = new GqlRequest<>(hentPersonNavnQuery, new GqlVariables.HentPerson(pdlRequest.fnr(), false));
+        log.info("userToken i HentPerson.PersonNavn {}", userTokenProvider.get());
         return graphqlRequest(request, userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.HentFullmaktNavn.class).hentPerson;
     }
 
