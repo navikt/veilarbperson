@@ -271,8 +271,8 @@ public class PersonV2Service {
     public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, String sistOppdatert, List<Telefon> telefonListe) {
 
         if (telefonNummerFraKrr != null) {
-            if (telefonListe.stream().anyMatch(telefon -> telefonNummerFraKrr.equals(telefon.getTelefonNr()))) {
-                telefonListe.remove(telefonNummerFraKrr);
+            if (telefonListe.stream().anyMatch(telefon -> telefonNummerFraKrr.trim().equals(telefon.getTelefonNr().trim()))) {
+                telefonListe.removeIf(telefon -> telefonNummerFraKrr.equals(telefon.getTelefonNr()));
                 telefonListe.add(new Telefon()
                         .setPrioritet(1 + "")
                         .setTelefonNr(telefonNummerFraKrr)
