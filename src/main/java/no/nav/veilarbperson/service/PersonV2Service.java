@@ -6,7 +6,6 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
-import no.nav.veilarbperson.client.pdl.GqlVariables;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
@@ -25,7 +24,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.*;
@@ -267,21 +265,30 @@ public class PersonV2Service {
         }
     }
 
-    /* Legger telefonnummer fra PDL og KRR til en liste. Hvis de er like da kan liste inneholde kun en av dem */
+    /* Legger telefonnummer fra PDL og KRR til en liste. Hvis de er like da kan liste inneholde kun en av dem
+    KRR telefonnummeret vil alltid ha høyere prioritet enn PDL telefonnummeret. Hvis like nummer, fjernes PDL-nummeret
+    */
     public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, String sistOppdatert, List<Telefon> telefonListe) {
-        int prioritet;
-        boolean ikkeKrrTelefonIListe = telefonNummerFraKrr != null
-                && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
-        if (ikkeKrrTelefonIListe) {
-            telefonListe.add(new Telefon()
-                    .setPrioritet(1 + "")
-                    .setTelefonNr(telefonNummerFraKrr)
-                    .setRegistrertDato(sistOppdatert)
-                    .setMaster("KRR"));
+
+        if (telefonNummerFraKrr != null) {
+            if (telefonListe.stream().anyMatch(telefon -> telefonNummerFraKrr.equals(telefon.getTelefonNr()))) {
+                telefonListe.remove(telefonNummerFraKrr);
+                telefonListe.add(new Telefon()
+                        .setPrioritet(1 + "")
+                        .setTelefonNr(telefonNummerFraKrr)
+                        .setRegistrertDato(sistOppdatert)
+                        .setMaster("KRR"));
+            } else {
+                telefonListe.add(new Telefon()
+                        .setPrioritet(1 + "")
+                        .setTelefonNr(telefonNummerFraKrr)
+                        .setRegistrertDato(sistOppdatert)
+                        .setMaster("KRR"));
+            }
             for (Telefon telefon : telefonListe) {
-                if (telefon.getMaster().equals("PDL")) {
-                    prioritet = Integer.parseInt(telefon.getPrioritet()) + 1;
-                    telefon.setPrioritet(prioritet + "");}
+                if (!"KRR".equals(telefon.getMaster()) && "1".equals(telefon.getPrioritet())) {
+                    telefon.setPrioritet(2 + "");
+                }
             }
         }
     }
