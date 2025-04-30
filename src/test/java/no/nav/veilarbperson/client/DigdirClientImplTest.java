@@ -11,7 +11,6 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseDateFromDateTime;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseZonedDateToDateString;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
 import static org.junit.Assert.*;
