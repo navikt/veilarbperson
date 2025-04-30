@@ -274,19 +274,21 @@ public class PersonV2Service {
         }
     }
 
-    /* Legger telefonnummer fra PDL og KRR til en liste. Hvis de er like da kan liste inneholde kun en av dem */
+    /* Telefonnummer fra PDL og KRR legges sammen i en liste.
+       KRR telefonnummeret vil alltid ha høyere prioritet enn PDL telefonnummeret.
+       Hvis like nummer, fjernes PDL-nummeret
+    */
     public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, String sistOppdatert, List<Telefon> telefonListe) {
-        int prioritet;
-        boolean ikkeKrrTelefonIListe = telefonNummerFraKrr != null
-                && telefonListe.stream().noneMatch(t -> telefonNummerFraKrr.equals(t.getTelefonNr()));
-        if (ikkeKrrTelefonIListe) {
+    int prioritet;
+        if (telefonNummerFraKrr != null) {
+            telefonListe.removeIf(telefon -> telefonNummerFraKrr.equals(telefon.getTelefonNr()));
             telefonListe.add(new Telefon()
                     .setPrioritet(1 + "")
                     .setTelefonNr(telefonNummerFraKrr)
                     .setRegistrertDato(sistOppdatert)
                     .setMaster("KRR"));
             for (Telefon telefon : telefonListe) {
-                if (telefon.getMaster().equals("PDL")) {
+                if (!telefon.getMaster().equals("KRR")) {
                     prioritet = Integer.parseInt(telefon.getPrioritet()) + 1;
                     telefon.setPrioritet(prioritet + "");
                 }

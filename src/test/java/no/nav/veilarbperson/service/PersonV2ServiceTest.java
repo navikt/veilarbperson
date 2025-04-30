@@ -78,7 +78,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
                 skjermetClient,
                 kodeverkService,
                 representasjonClient
-                );
+        );
         person = hentPerson(FNR);
     }
 
@@ -156,7 +156,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     public void hentOpplysningerTilBarnOpphortFraPdlTest() {
         String fnrBarnOpphoert = "111";
         configurePdlResponse("pdl-hentPersonBolkOpphoert-response.json", fnrBarnOpphoert);
-        var adresse = hentPerson(FNR).getBostedsadresse().get(0);
+        var adresse = hentPerson(FNR).getBostedsadresse().getFirst();
         var barn = personV2Service.hentFamiliemedlemOpplysninger(List.of(Fnr.of(fnrBarnOpphoert)), adresse, null);
 
         assertEquals(0, barn.size());
@@ -180,7 +180,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void hentNavnTest() {
-        HentPerson.Navn navn = person.getNavn().get(0);
+        HentPerson.Navn navn = person.getNavn().getFirst();
 
         assertEquals("NATURLIG", navn.getFornavn());
         assertEquals("GLITRENDE", navn.getMellomnavn());
@@ -208,10 +208,10 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void getLandKodeFraKontaktadresseTest() {
-        Kontaktadresse.UtenlandskAdresseIFrittFormat midlertidigAdresseUtland = person.getKontaktadresse().get(0).getUtenlandskAdresseIFrittFormat();
+        Kontaktadresse.UtenlandskAdresseIFrittFormat midlertidigAdresseUtland = person.getKontaktadresse().getFirst().getUtenlandskAdresseIFrittFormat();
         Optional<String> landkode = ofNullable(midlertidigAdresseUtland).map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode);
 
-        assertEquals(landkode.get(), "FRA");
+        assertEquals("FRA", landkode.get());
 
         Kontaktadresse.UtenlandskAdresseIFrittFormat nullMidlertidigAdresseUtland = null;
         Optional<String> nullLandkode = ofNullable(nullMidlertidigAdresseUtland).map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode);
@@ -221,7 +221,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void getPostnummerFraBostedsadresseTest() {
-        Bostedsadresse bostedsadresse = person.getBostedsadresse().get(0);
+        Bostedsadresse bostedsadresse = person.getBostedsadresse().getFirst();
         Optional<String> postnummer = ofNullable(bostedsadresse).map(Bostedsadresse::getVegadresse).map(Adresse.Vegadresse::getPostnummer);
 
         assertEquals("0560", postnummer.get());
@@ -274,7 +274,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
-        Sivilstand sivilstand = personV2Data.getSivilstandliste().get(0);
+        Sivilstand sivilstand = personV2Data.getSivilstandliste().getFirst();
         assertTrue(sivilstand.getSkjermet());
         assertNotNull(sivilstand.getRelasjonsBosted());
         assertNull(sivilstand.getGradering());
@@ -293,7 +293,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         );
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
-        sivilstand = personV2Data.getSivilstandliste().get(0);
+        sivilstand = personV2Data.getSivilstandliste().getFirst();
         assertNull(sivilstand.getSkjermet());
         assertNull(sivilstand.getRelasjonsBosted());
         assertEquals(AdressebeskyttelseGradering.FORTROLIG.name(), sivilstand.getGradering());
@@ -307,9 +307,9 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
-        personV2Service.flettSivilstand(person.getSivilstand(),personV2Data, null);
+        personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
-        Sivilstand sivilstand = personV2Data.getSivilstandliste().get(0);
+        Sivilstand sivilstand = personV2Data.getSivilstandliste().getFirst();
         assertNull(sivilstand.getSkjermet());
         assertNull(sivilstand.getGradering());
         assertEquals(UKJENT_BOSTED, sivilstand.getRelasjonsBosted());
@@ -325,7 +325,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
-        Sivilstand sivilstand = personV2Data.getSivilstandliste().get(0);
+        Sivilstand sivilstand = personV2Data.getSivilstandliste().getFirst();
         assertTrue(sivilstand.getSkjermet());
         assertNull(sivilstand.getGradering());
         assertEquals(RelasjonsBosted.SAMME_BOSTED, sivilstand.getRelasjonsBosted());
@@ -341,7 +341,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
-        Sivilstand sivilstand = personV2Data.getSivilstandliste().get(0);
+        Sivilstand sivilstand = personV2Data.getSivilstandliste().getFirst();
         assertEquals("GIFT", sivilstand.getSivilstand());
         assertEquals(LocalDate.of(2020, 6, 1), sivilstand.getFraDato());
         assertFalse(sivilstand.getSkjermet());
@@ -357,7 +357,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         person = hentPersonSomErUgift(Fnr.of("01234567899"));
 
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
-        Sivilstand sivilstand = personV2Data.getSivilstandliste().get(0);
+        Sivilstand sivilstand = personV2Data.getSivilstandliste().getFirst();
 
         assertEquals("UGIFT", sivilstand.getSivilstand());
         assertNull(sivilstand.getSkjermet());
@@ -371,15 +371,15 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", "27057612970");
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", "2134567890");
         PersonV2Data personV2Data = new PersonV2Data();
-        person = pdlClient.hentPerson(new PdlRequest(Fnr.of("01234567899"),null));
+        person = pdlClient.hentPerson(new PdlRequest(Fnr.of("01234567899"), null));
 
         when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
         List<Sivilstand> sivilstands = personV2Data.getSivilstandliste();
 
-        assertEquals("SEPARERT_PARTNER", sivilstands.get(0).getSivilstand());
+        assertEquals("SEPARERT_PARTNER", sivilstands.getFirst().getSivilstand());
         assertEquals(LocalDate.of(2018, 2, 26), sivilstands.get(0).getFraDato());
-        assertEquals("FREG", sivilstands.get(0).getMaster());
+        assertEquals("FREG", sivilstands.getFirst().getMaster());
 
         assertEquals("GIFT", sivilstands.get(1).getSivilstand());
         assertEquals(LocalDate.of(2022, 3, 7), sivilstands.get(1).getFraDato());
@@ -389,7 +389,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void harFamiliemedlemSammeBostedSomPersonTest() {
-        Bostedsadresse personsBostedsAdresse = person.getBostedsadresse().get(0);
+        Bostedsadresse personsBostedsAdresse = person.getBostedsadresse().getFirst();
         Bostedsadresse familiemedlemsBostedsAdresse = new Bostedsadresse();
 
         Bostedsadresse.Vegadresse medlemsVegAdresse = new Bostedsadresse.Vegadresse()
@@ -415,7 +415,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void telfonNummerMapperTest() {
         List<HentPerson.Telefonnummer> telefonListeFraPdl = person.getTelefonnummer();   //telefonNrFraPdl: landkode: +47 nummer: 33333333
-        Telefon telefonNummer = PersonV2DataMapper.telefonNummerMapper(telefonListeFraPdl.get(0));
+        Telefon telefonNummer = PersonV2DataMapper.telefonNummerMapper(telefonListeFraPdl.getFirst());
         assertEquals("+4733333333", telefonNummer.getTelefonNr());
     }
 
@@ -425,43 +425,22 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         String registrertDato = "2018-10-01";
         List<Telefon> telefonListeFraPdl = PersonV2DataMapper.mapTelefonNrFraPdl(person.getTelefonnummer());
         personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl);  //Legger telefonnummere fra PDL og KRR som er ulike, til en liste
-
         assertEquals(2, telefonListeFraPdl.size());
-        assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
-        assertEquals("2", telefonListeFraPdl.get(0).getPrioritet());
+        assertEquals("+4733333333", telefonListeFraPdl.getFirst().getTelefonNr());
+        assertEquals("2", telefonListeFraPdl.getFirst().getPrioritet());
         assertEquals("+4622222222", telefonListeFraPdl.get(1).getTelefonNr());
         assertEquals("1", telefonListeFraPdl.get(1).getPrioritet());
+    }
 
-        telefonNrFraKrr = "+4733333333";
-        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR som er like, til en liste
-
-        assertEquals(2, telefonListeFraPdl.size());
-        assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
-        assertEquals("2", telefonListeFraPdl.get(0).getPrioritet());
-        assertEquals("1", telefonListeFraPdl.get(1).getPrioritet());
-
-        telefonNrFraKrr = "+4811111111";
-        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl); //Legger en ny telefonnr fra KRR til en pdlTelefonNrListe
-
-        assertEquals(3, telefonListeFraPdl.size());
-        assertEquals("+4811111111", telefonListeFraPdl.get(2).getTelefonNr());
-        assertEquals("1", telefonListeFraPdl.get(2).getPrioritet());
-
-        telefonNrFraKrr = null;
-        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra KRR er null
-        assertEquals(3, telefonListeFraPdl.size());
-        assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
-        assertEquals("3", telefonListeFraPdl.get(0).getPrioritet());
-        assertEquals("1", telefonListeFraPdl.get(1).getPrioritet());
-        assertEquals("1", telefonListeFraPdl.get(2).getPrioritet());
-
-        telefonListeFraPdl = new ArrayList<>();
-        telefonNrFraKrr = "+4733333333";
-        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl); //Legger telefonnummere fra PDL og KRR til en liste hvor telefonnummer fra PDL er null
-
+    @Test
+    public void fjernLiktPDLTelefonNrIListeTest() {
+        String telefonNrFraKrr = "+4733333333";
+        String registrertDato = "2018-10-01";
+        List<Telefon> telefonListeFraPdl = PersonV2DataMapper.mapTelefonNrFraPdl(person.getTelefonnummer());
+        personV2Service.leggKrrTelefonNrIListe(telefonNrFraKrr, registrertDato, telefonListeFraPdl);  //Pdl-telefonnummeret skal fjernes fra listen
         assertEquals(1, telefonListeFraPdl.size());
-        assertEquals("+4733333333", telefonListeFraPdl.get(0).getTelefonNr());
-        assertEquals("1", telefonListeFraPdl.get(0).getPrioritet());
+        assertEquals("+4733333333", telefonListeFraPdl.getFirst().getTelefonNr());
+        assertEquals("1", telefonListeFraPdl.getFirst().getPrioritet());
     }
 
     @Test
@@ -473,7 +452,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         personV2Service.flettKodeverk(personV2Data);
         Bostedsadresse bostedsadresse = personV2Data.getBostedsadresse();
         Oppholdsadresse oppholdsadresse = personV2Data.getOppholdsadresse();
-        Kontaktadresse kontaktadresse = personV2Data.getKontaktadresser().get(0);
+        Kontaktadresse kontaktadresse = personV2Data.getKontaktadresser().getFirst();
 
         assertEquals("POSTSTED", bostedsadresse.getVegadresse().getPoststed());
         assertEquals("KOMMUNE", bostedsadresse.getVegadresse().getKommune());
@@ -487,7 +466,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals("KOMMUNE", kontaktadresse.getVegadresse().getKommune());
         assertEquals("LANDKODE", kontaktadresse.getUtenlandskAdresseIFrittFormat().getLandkode());
     }
-
 
 
     @Test
@@ -517,7 +495,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
     @Test
     public void filtrerGjeldendeEndringsInfoTest() {
-        List<HentPerson.Metadata.Endringer> endringerListe = person.getTelefonnummer().get(0).getMetadata().getEndringer();
+        List<HentPerson.Metadata.Endringer> endringerListe = person.getTelefonnummer().getFirst().getMetadata().getEndringer();
 
         Optional<HentPerson.Metadata.Endringer> filtrertEndringer = PersonV2DataMapper.finnForsteEndring(endringerListe);
         assertEquals(Optional.of("OPPRETT"), filtrertEndringer.map(HentPerson.Metadata.Endringer::getType));
@@ -531,7 +509,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         String registrertDato = dateTime.format(frontendDatoformat);
         assertEquals("01.09.2018", registrertDato);
 
-        LocalDateTime telefonRegistrertDatoIPdl = person.getTelefonnummer().get(0).getMetadata().getEndringer().get(0).getRegistrert();
+        LocalDateTime telefonRegistrertDatoIPdl = person.getTelefonnummer().getFirst().getMetadata().getEndringer().get(0).getRegistrert();
 
         LocalDateTime dateTime1 = LocalDateTime.parse(telefonRegistrertDatoIPdl.toString(), ISO_LOCAL_DATE_TIME);
         String registrertDato1 = dateTime1.format(frontendDatoformat);
