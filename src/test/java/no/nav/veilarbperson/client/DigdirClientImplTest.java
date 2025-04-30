@@ -8,10 +8,11 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseDateFromDateTime;
+import static no.nav.veilarbperson.utils.PersonV2DataMapper.frontendDatoformat;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseZonedDateToDateString;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
 import static org.junit.Assert.*;
@@ -38,15 +39,19 @@ public class DigdirClientImplTest {
         );
 
         KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
+
         assert kontaktinfo != null;
         DigdirKontaktinfo digdirKontaktinfo = kontaktinfo.getPersoner().get(TEST_FNR.get());
+
         assertNotNull(digdirKontaktinfo);
         assertEquals("noreply@nav.no", digdirKontaktinfo.getEpostadresse());
         assertEquals("11111111", digdirKontaktinfo.getMobiltelefonnummer());
 
+        Optional<String> epostOppdatertDato = Optional.ofNullable(digdirKontaktinfo.getEpostadresseOppdatert()).map(dato -> ZonedDateTime.parse(dato).format(frontendDatoformat));
+
         Epost epost = new Epost()
                 .setEpostAdresse(digdirKontaktinfo.getEpostadresse())
-                .setEpostSistOppdatert(parseZonedDateToDateString(ZonedDateTime.parse(digdirKontaktinfo.getEpostadresseOppdatert())))
+                .setEpostSistOppdatert(epostOppdatertDato.orElse(null))
                 .setMaster("KRR");
 
         assertEquals(digdirKontaktinfo.getEpostadresse(), epost.getEpostAdresse());

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -255,17 +256,16 @@ public class PersonV2Service {
         KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
         try {
             KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
-            DigdirKontaktinfo digdirKontaktinfo = kontaktinfo.getPersoner().get(fnr.get());
+            DigdirKontaktinfo digdirKontaktinfo = kontaktinfo != null ? kontaktinfo.getPersoner().get(fnr.get()): null;
             if (digdirKontaktinfo != null) {
-                String epostSisteOppdatert = parseZonedDateToDateString(ZonedDateTime.parse(digdirKontaktinfo.getEpostadresseOppdatert()));
-                String mobilSisteOppdatert = parseZonedDateToDateString(ZonedDateTime.parse(digdirKontaktinfo.getMobiltelefonnummerOppdatert()));
+                Optional<String> epostSisteOppdatert =  Optional.ofNullable(digdirKontaktinfo.getEpostadresseOppdatert()).map(dato -> ZonedDateTime.parse(dato).format(frontendDatoformat));
+                Optional<String> mobilSisteOppdatert = Optional.ofNullable(digdirKontaktinfo.getMobiltelefonnummerOppdatert()).map(dato -> ZonedDateTime.parse(dato).format(frontendDatoformat));
                 Epost epost = digdirKontaktinfo.getEpostadresse() != null
-                        ? new Epost().setEpostAdresse(digdirKontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert).setMaster("KRR")
+                        ? new Epost().setEpostAdresse(digdirKontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert.orElse(null)).setMaster("KRR")
                         : null;
-
                 personV2Data.setEpost(epost);
                 personV2Data.setMalform(digdirKontaktinfo.getSpraak());
-                leggKrrTelefonNrIListe(digdirKontaktinfo.getMobiltelefonnummer(), mobilSisteOppdatert, personV2Data.getTelefon());
+                leggKrrTelefonNrIListe(digdirKontaktinfo.getMobiltelefonnummer(), mobilSisteOppdatert.orElse(null), personV2Data.getTelefon());
             } else {
                 log.warn("Fant ikke kontaktinfo i KRR");
             }
@@ -353,7 +353,7 @@ public class PersonV2Service {
         KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
         try {
             KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
-            if (kontaktinfo == null || kontaktinfo.getPersoner() == null) {
+            if (kontaktinfo == null) {
                 log.warn("Fant ikke kontaktinfo (målform) i KRR");
                 return null;
             }

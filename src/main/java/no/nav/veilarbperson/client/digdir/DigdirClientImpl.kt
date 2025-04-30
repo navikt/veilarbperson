@@ -15,6 +15,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import java.util.*
 import java.util.function.Supplier
 
 open class DigdirClientImpl(
@@ -33,6 +34,7 @@ open class DigdirClientImpl(
             .url(UrlUtils.joinPaths(digdirUrl, "/rest/v1/personer?inkluderSikkerDigitalPost=false"))
             .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + systemUserTokenProvider.get())
+            .header("Nav-Call-Id", UUID.randomUUID().toString())
             .post(requestBody.toRequestBody("application/json".toMediaType()))
             .build()
 

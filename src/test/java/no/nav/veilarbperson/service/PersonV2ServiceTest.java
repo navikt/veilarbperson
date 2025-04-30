@@ -62,7 +62,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         // Mock DigdirKontaktinfo
         DigdirKontaktinfo digdirKontaktinfo = new DigdirKontaktinfo("0123456789", true, true, null, false, "NB", null, "test@example.com", null, null, "12345678",  null, null);
 
-
         // Mock PostPersonerResponse
         KRRPostPersonerResponse KRRPostPersonerResponse = new KRRPostPersonerResponse(
                 Map.of(FNR.get(), digdirKontaktinfo), // Add DigdirKontaktinfo to the map
