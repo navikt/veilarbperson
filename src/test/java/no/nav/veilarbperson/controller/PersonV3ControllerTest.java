@@ -9,6 +9,7 @@ import no.nav.poao_tilgang.poao_tilgang_test_core.PrivatBruker;
 import no.nav.veilarbperson.config.ApplicationTestConfig;
 import no.nav.veilarbperson.controller.v3.PersonV3Controller;
 import no.nav.veilarbperson.domain.PersonFraPdlRequest;
+import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonV2Service;
@@ -504,6 +505,25 @@ public class PersonV3ControllerTest {
                 )
                 .andExpect(status().is(204));
     }
+    @Test
+    void test_av_hent_navn() throws Exception {
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+        when(personV2Service.hentNavn(new PersonFraPdlRequest(TEST_FNR, "B555"))).thenReturn(new PersonNavnV2().setFornavn("Knut").setMellomnavn("Roger").setEtternavn("Knutsen").setForkortetNavn("Knut Knutsen"));
 
+        String expectedJson = "{\"fornavn\":\"Knut\",\"mellomnavn\":\"Roger\",\"etternavn\":\"Knutsen\",\"forkortetNavn\":\"Knut Knutsen\"}";
 
+        mockMvc
+                .perform(
+                        post("/api/v3/person/hent-navn")
+                                .contentType(APPLICATION_JSON)
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(TEST_FNR, "B555")))
+                                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
+                .andExpect(content().json(expectedJson))
+                .andExpect(status().is(200));
+    }
 }
