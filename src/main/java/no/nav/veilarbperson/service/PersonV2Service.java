@@ -265,29 +265,23 @@ public class PersonV2Service {
         }
     }
 
-    /* Legger telefonnummer fra PDL og KRR til en liste. Hvis de er like da kan liste inneholde kun en av dem
-    KRR telefonnummeret vil alltid ha høyere prioritet enn PDL telefonnummeret. Hvis like nummer, fjernes PDL-nummeret
+    /* Telefonnummer fra PDL og KRR legges sammen i en liste.
+       KRR telefonnummeret vil alltid ha høyere prioritet enn PDL telefonnummeret.
+       Hvis like nummer, fjernes PDL-nummeret
     */
     public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, String sistOppdatert, List<Telefon> telefonListe) {
-
+    int prioritet;
         if (telefonNummerFraKrr != null) {
-            if (telefonListe.stream().anyMatch(telefon -> telefonNummerFraKrr.trim().equals(telefon.getTelefonNr().trim()))) {
-                telefonListe.removeIf(telefon -> telefonNummerFraKrr.equals(telefon.getTelefonNr()));
-                telefonListe.add(new Telefon()
-                        .setPrioritet(1 + "")
-                        .setTelefonNr(telefonNummerFraKrr)
-                        .setRegistrertDato(sistOppdatert)
-                        .setMaster("KRR"));
-            } else {
-                telefonListe.add(new Telefon()
-                        .setPrioritet(1 + "")
-                        .setTelefonNr(telefonNummerFraKrr)
-                        .setRegistrertDato(sistOppdatert)
-                        .setMaster("KRR"));
-            }
+            telefonListe.removeIf(telefon -> telefonNummerFraKrr.equals(telefon.getTelefonNr()));
+            telefonListe.add(new Telefon()
+                    .setPrioritet(1 + "")
+                    .setTelefonNr(telefonNummerFraKrr)
+                    .setRegistrertDato(sistOppdatert)
+                    .setMaster("KRR"));
             for (Telefon telefon : telefonListe) {
-                if (!"KRR".equals(telefon.getMaster()) && "1".equals(telefon.getPrioritet())) {
-                    telefon.setPrioritet(2 + "");
+                if (!telefon.getMaster().equals("KRR")) {
+                    prioritet = Integer.parseInt(telefon.getPrioritet()) + 1;
+                    telefon.setPrioritet(prioritet + "");
                 }
             }
         }
