@@ -365,6 +365,7 @@ public class PersonV2Service {
     }
 
     public Foedselsdato hentFoedselsdato(PersonFraPdlRequest personFraPdlRequest) {
+        log.info("Sender til client for foedselsdato");
         HentPerson.Foedselsdato person = pdlClient.hentFoedselsdato(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
         log.info("Har hentet foedselsdato person.getFoedselsdato() = {}", person.getFoedselsdato());
         if (person == null ) {
