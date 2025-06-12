@@ -366,15 +366,19 @@ public class PersonV2Service {
 
     public Foedselsdato hentFoedselsdato(PersonFraPdlRequest personFraPdlRequest) {
         log.info("Sender til client for foedselsdato");
-        HentPerson.Foedselsdato person = pdlClient.hentFoedselsdato(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
-        log.info("Har hentet foedselsdato person.getFoedselsdato() = {}", person.getFoedselsdato());
-        if (person == null ) {
+        HentPerson.PersonFoedselsdato person = pdlClient.hentFoedselsdato(
+                new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())
+        );
+        List<HentPerson.Foedselsdato> foedselsdatoer = person.getFoedselsdato();
+
+        log.info("Har hentet foedselsdato = {}", foedselsdatoer);
+
+        if (foedselsdatoer == null || foedselsdatoer.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke fødselsdato for person");
         }
-        return new Foedselsdato(
-                person.getFoedselsdato().toString(),
-                person.getFoedselsaar()
-        );
+
+        HentPerson.Foedselsdato firstFoedselsdato = foedselsdatoer.get(0);
+        return new Foedselsdato(firstFoedselsdato.getFoedselsdato().toString(), firstFoedselsdato.getFoedselsaar());
 
     }
 

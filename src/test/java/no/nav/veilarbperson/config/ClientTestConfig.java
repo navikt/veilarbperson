@@ -220,7 +220,7 @@ public class ClientTestConfig {
             }
 
             @Override
-            public HentPerson.Foedselsdato hentFoedselsdato(PdlRequest pdlRequest) {return null; }
+            public HentPerson.PersonFoedselsdato hentFoedselsdato(PdlRequest pdlRequest) {return null; }
         };
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 public class HentPerson {
-    public Person hentPerson;
+    public static Person hentPerson;
     public List<PersonFraBolk> hentPersonBolk;
     public GeografiskTilknytning hentGeografiskTilknytning;
 
@@ -245,6 +245,16 @@ public class HentPerson {
     @Data
     public static class HentFullmaktNavn {
         public PersonNavn hentPerson;
+    }
+
+    @Data
+    public static class PersonFoedselsdato {
+        public List<Foedselsdato> foedselsdato;
+    }
+
+    @Data
+    public static class HentPersonFoedselsdato {
+        public PersonFoedselsdato hentPerson;
     }
 
     @Data

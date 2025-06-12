@@ -21,5 +21,5 @@ public interface PdlClient extends HealthCheck {
 
     List<HentPerson.Adressebeskyttelse> hentAdressebeskyttelse(PdlRequest pdlRequest);
 
-    HentPerson.Foedselsdato hentFoedselsdato(PdlRequest pdlRequest);
+    HentPerson.PersonFoedselsdato hentFoedselsdato(PdlRequest pdlRequest);
 }

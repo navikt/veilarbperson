@@ -96,6 +96,15 @@ public class PdlClientImpl implements PdlClient {
     }
 
     @Override
+    public HentPerson.PersonFoedselsdato hentFoedselsdato(PdlRequest pdlRequest) {
+        Logger log1 = log;
+        var request = new GqlRequest<>(hentFoedselsdatoQuery, new GqlVariables.HentFoedselsdato(pdlRequest.fnr()));
+        log1.info("I clienten for foedsesldato med request ", request);
+        return graphqlRequest(request, authService.erSystemBruker() ? systemTokenProvider.get() : userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.HentPersonFoedselsdato.class).hentPerson;
+    }
+
+
+    @Override
     public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, String behandlingsnummer) {
         var request = new GqlRequest<>(hentPersonBolkQuery, new GqlVariables.HentPersonBolk(personIdenter, false));
         return (!personIdenter.isEmpty())
@@ -120,14 +129,6 @@ public class PdlClientImpl implements PdlClient {
     public List<HentPerson.Adressebeskyttelse> hentAdressebeskyttelse(PdlRequest pdlRequest) {
         var request = new GqlRequest<>(hentAdressebeskyttelseQuery, new GqlVariables.HentAdressebeskyttelse(pdlRequest.fnr()));
         return graphqlRequest(request, systemTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.class).hentPerson.getAdressebeskyttelse();
-    }
-
-    @Override
-    public HentPerson.Foedselsdato hentFoedselsdato(PdlRequest pdlRequest) {
-        Logger log1 = log;
-        var request = new GqlRequest<>(hentFoedselsdatoQuery, new GqlVariables.HentFoedselsdato(pdlRequest.fnr()));
-        log1.info("I clienten for foedsesldato");
-        return graphqlRequest(request, authService.erSystemBruker() ? systemTokenProvider.get() : userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.Foedselsdato.class);
     }
 
     @SneakyThrows
@@ -180,6 +181,7 @@ public class PdlClientImpl implements PdlClient {
     }
 
     private static <T> T parseGqlJsonResponse(String gqlJsonResponse, Class<T> gqlDataClass) throws JsonProcessingException {
+        secureLog.info("Parsing GraphQL response: {}", gqlJsonResponse);
         ObjectMapper mapper = JsonUtils.getMapper();
         JsonNode gqlResponseNode = mapper.readTree(gqlJsonResponse);
         JsonNode errorsNode = gqlResponseNode.get("errors");
