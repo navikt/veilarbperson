@@ -125,7 +125,7 @@ public class PdlClientImpl implements PdlClient {
     @Override
     public HentPerson.Foedselsdato hentFoedselsdato(PdlRequest pdlRequest) {
         Logger log1 = log;
-        var request = new GqlRequest<>(hentFoedselsdatoQuery, new GqlVariables.HentPerson(pdlRequest.fnr(), false));
+        var request = new GqlRequest<>(hentFoedselsdatoQuery, new GqlVariables.HentFoedselsdato(pdlRequest.fnr()));
         log1.info("I clienten for foedsesldato");
         return graphqlRequest(request, authService.erSystemBruker() ? systemTokenProvider.get() : userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.Foedselsdato.class);
     }

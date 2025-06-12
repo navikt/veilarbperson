@@ -1,4 +1,4 @@
-query($ident: ID!, $historikk: Boolean!) {
+query($ident: ID!) {
     hentPerson(ident: $ident) {
         foedselsdato {
             foedselsdato
