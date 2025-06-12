@@ -149,8 +149,7 @@ public class PersonV3Controller {
     public Foedselsdato hentFoedselsdato(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        //return personV2Service.hentFoedselsdato(personFraPdlRequest);
-        return new Foedselsdato("1990-01-01", 1990);
+        return personV2Service.hentFoedselsdato(personFraPdlRequest);
     }
 
     private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {
