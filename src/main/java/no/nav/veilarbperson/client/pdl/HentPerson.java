@@ -151,6 +151,7 @@ public class HentPerson {
     @Data
     public static class Foedselsdato {
         private LocalDate foedselsdato;
+        private Integer foedselsaar;
     }
 
     @Data

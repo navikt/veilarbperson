@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -363,6 +362,18 @@ public class PersonV2Service {
             log.warn("Kunne ikke hente malform fra KRR", e);
         }
         return null;
+    }
+
+    public Foedselsdato hentFoedselsdato(PersonFraPdlRequest personFraPdlRequest) {
+        HentPerson.Foedselsdato person = pdlClient.hentFoedselsdato(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
+        if (person == null ) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke fødselsdato for person");
+        }
+        return new Foedselsdato(
+                person.getFoedselsdato().toString(),
+                person.getFoedselsaar()
+        );
+
     }
 
     public PersonNavnV2 hentNavn(PersonFraPdlRequest personFraPdlRequest) {

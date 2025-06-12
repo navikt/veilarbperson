@@ -218,6 +218,9 @@ public class ClientTestConfig {
             public HealthCheckResult checkHealth() {
                 return HealthCheckResult.healthy();
             }
+
+            @Override
+            public HentPerson.Foedselsdato hentFoedselsdato(PdlRequest pdlRequest) {return null; }
         };
     }
 

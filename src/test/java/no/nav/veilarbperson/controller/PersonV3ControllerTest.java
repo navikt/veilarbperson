@@ -8,6 +8,7 @@ import no.nav.poao_tilgang.poao_tilgang_test_core.NavContext;
 import no.nav.poao_tilgang.poao_tilgang_test_core.PrivatBruker;
 import no.nav.veilarbperson.config.ApplicationTestConfig;
 import no.nav.veilarbperson.controller.v3.PersonV3Controller;
+import no.nav.veilarbperson.domain.Foedselsdato;
 import no.nav.veilarbperson.domain.PersonFraPdlRequest;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.PersonV2Data;
@@ -526,4 +527,27 @@ public class PersonV3ControllerTest {
                 .andExpect(content().json(expectedJson))
                 .andExpect(status().is(200));
     }
+
+    @Test
+    void test_av_hent_foedselsdato() throws Exception {
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+        when(personV2Service.hentFoedselsdato(new PersonFraPdlRequest(TEST_FNR, "B555"))).thenReturn(new Foedselsdato("1990-01-01", 1990));
+
+        String expectedJson = "{\"foedselsdato\":\"1990-01-01\",\"foedselsaar\":1990}";
+
+        mockMvc
+                .perform(
+                        post("/api/v3/person/hent-foedselsdato")
+                                .contentType(APPLICATION_JSON)
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(TEST_FNR, "B555")))
+                                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
+                .andExpect(content().string(expectedJson))
+                .andExpect(status().is(200));
+    }
+
 }
