@@ -150,7 +150,7 @@ public class PersonV3Controller {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
         //return personV2Service.hentFoedselsdato(personFraPdlRequest);
-        return new Foedselsdato("2000-01-01", 2000);
+        return new Foedselsdato("1990-01-01", 1990);
     }
 
     private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {
