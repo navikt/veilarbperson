@@ -53,6 +53,8 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentTilrettelagtKommunikasjonQuery;
 
+    private final String hentFoedselsdatoQuery;
+
     private final AuthService authService;
 
     private final Supplier<String> userTokenProvider;
@@ -71,6 +73,7 @@ public class PdlClientImpl implements PdlClient {
         this.hentGeografiskTilknytningQuery = FileUtils.getResourceFileAsString("graphql/hentGeografiskTilknytning.gql");
         this.hentTilrettelagtKommunikasjonQuery = FileUtils.getResourceFileAsString("graphql/hentTilrettelagtKommunikasjon.gql");
         this.hentAdressebeskyttelseQuery = FileUtils.getResourceFileAsString("graphql/hentAdressebeskyttelse.gql");
+        this.hentFoedselsdatoQuery = FileUtils.getResourceFileAsString("graphql/hentFoedselsdato.gql");
     }
 
     @Override
@@ -90,6 +93,13 @@ public class PdlClientImpl implements PdlClient {
         var request = new GqlRequest<>(hentPersonNavnQuery, new GqlVariables.HentPerson(pdlRequest.fnr(), false));
         return graphqlRequest(request, authService.erSystemBruker() ? systemTokenProvider.get() : userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.HentFullmaktNavn.class).hentPerson;
     }
+
+    @Override
+    public HentPerson.PersonFoedselsdato hentFoedselsdato(PdlRequest pdlRequest) {
+        var request = new GqlRequest<>(hentFoedselsdatoQuery, new GqlVariables.HentFoedselsdato(pdlRequest.fnr()));
+        return graphqlRequest(request, authService.erSystemBruker() ? systemTokenProvider.get() : userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.HentPersonFoedselsdato.class).hentPerson;
+    }
+
 
     @Override
     public List<HentPerson.PersonFraBolk> hentPersonBolk(List<Fnr> personIdenter, String behandlingsnummer) {

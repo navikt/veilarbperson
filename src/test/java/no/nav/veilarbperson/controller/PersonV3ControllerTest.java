@@ -8,6 +8,7 @@ import no.nav.poao_tilgang.poao_tilgang_test_core.NavContext;
 import no.nav.poao_tilgang.poao_tilgang_test_core.PrivatBruker;
 import no.nav.veilarbperson.config.ApplicationTestConfig;
 import no.nav.veilarbperson.controller.v3.PersonV3Controller;
+import no.nav.veilarbperson.domain.Foedselsdato;
 import no.nav.veilarbperson.domain.PersonFraPdlRequest;
 import no.nav.veilarbperson.domain.PersonNavnV2;
 import no.nav.veilarbperson.domain.PersonV2Data;
@@ -21,10 +22,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.http.HttpHeaders.ACCEPT;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -505,6 +509,7 @@ public class PersonV3ControllerTest {
                 )
                 .andExpect(status().is(204));
     }
+
     @Test
     void test_av_hent_navn() throws Exception {
         PrivatBruker ny = navContext.getPrivatBrukere().ny();
@@ -526,4 +531,28 @@ public class PersonV3ControllerTest {
                 .andExpect(content().json(expectedJson))
                 .andExpect(status().is(200));
     }
+
+    @Test
+    void test_av_hent_foedselsdato() throws Exception {
+        PrivatBruker ny = navContext.getPrivatBrukere().ny();
+        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
+        when(personV2Service.hentFoedselsdato(new PersonFraPdlRequest(TEST_FNR, "B555")))
+                .thenReturn(new Foedselsdato(LocalDate.of(1990, 1, 1), 1990));
+
+        String expectedJson = "{\"foedselsdato\":\"1990-01-01\",\"foedselsaar\":1990}";
+
+        mockMvc
+                .perform(
+                        post("/api/v3/person/hent-foedselsdato")
+                                .contentType(APPLICATION_JSON)
+                                .content(JsonUtils.toJson(new PersonFraPdlRequest(TEST_FNR, "B555")))
+                                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                .header("test_ident", navAnsatt.getNavIdent())
+                                .header("test_ident_type", "INTERN")
+                )
+                .andExpect(content().string(expectedJson))
+                .andExpect(status().is(200));
+    }
+
 }

@@ -151,6 +151,7 @@ public class HentPerson {
     @Data
     public static class Foedselsdato {
         private LocalDate foedselsdato;
+        private Integer foedselsaar;
     }
 
     @Data
@@ -244,6 +245,16 @@ public class HentPerson {
     @Data
     public static class HentFullmaktNavn {
         public PersonNavn hentPerson;
+    }
+
+    @Data
+    public static class PersonFoedselsdato {
+        public List<Foedselsdato> foedselsdato;
+    }
+
+    @Data
+    public static class HentPersonFoedselsdato {
+        public PersonFoedselsdato hentPerson;
     }
 
     @Data

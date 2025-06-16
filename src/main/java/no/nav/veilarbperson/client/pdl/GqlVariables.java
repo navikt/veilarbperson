@@ -39,4 +39,11 @@ public class GqlVariables {
     public static class HentAdressebeskyttelse {
         private Fnr ident;
     }
+
+    @Data
+    @AllArgsConstructor
+    public static class HentFoedselsdato {
+        private Fnr ident;
+    }
+
 }

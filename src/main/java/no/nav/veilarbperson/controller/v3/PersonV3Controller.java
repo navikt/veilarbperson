@@ -144,6 +144,14 @@ public class PersonV3Controller {
         return sisteArbeidssoekerPeriode;
     }
 
+    @PostMapping("/person/hent-foedselsdato")
+    @Operation(summary = "Henter fødselsdato til en person fra PDL")
+    public Foedselsdato hentFoedselsdato(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
+        return personV2Service.hentFoedselsdato(personFraPdlRequest);
+    }
+
     private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {
         Fnr fnr;
 

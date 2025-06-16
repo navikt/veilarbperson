@@ -14,7 +14,8 @@
       ],
       "foedselsdato": [
         {
-          "foedselsdato": "1981-12-13"
+          "foedselsdato": "1981-12-13",
+          "foedselsaar": 1981
         }
       ],
       "kjoenn": [],

@@ -11,6 +11,7 @@ query($ident: ID!, $historikk: Boolean!) {
         }
         foedselsdato {
             foedselsdato
+            foedselsaar
         }
         kjoenn {
             kjoenn

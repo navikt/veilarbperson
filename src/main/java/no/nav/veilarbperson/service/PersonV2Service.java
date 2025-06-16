@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -378,5 +377,19 @@ public class PersonV2Service {
     public HentPerson.Adressebeskyttelse hentAdressebeskyttelse(PersonFraPdlRequest personFraPdlRequest) {
         List<HentPerson.Adressebeskyttelse> adressebeskyttelse = Optional.ofNullable(pdlClient.hentAdressebeskyttelse(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()))).orElse(List.of());
         return adressebeskyttelse.stream().findFirst().orElse(new HentPerson.Adressebeskyttelse().setGradering("UGRADERT"));
+    }
+
+    public Foedselsdato hentFoedselsdato(PersonFraPdlRequest personFraPdlRequest) {
+        HentPerson.PersonFoedselsdato personFoedselsdato = pdlClient.hentFoedselsdato(
+                new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())
+        );
+
+        if (personFoedselsdato.getFoedselsdato().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke fødselsdato for person");
+        }
+
+        HentPerson.Foedselsdato foedselsdato = personFoedselsdato.getFoedselsdato().getFirst();
+        return new Foedselsdato(foedselsdato.getFoedselsdato(), foedselsdato.getFoedselsaar());
+
     }
 }

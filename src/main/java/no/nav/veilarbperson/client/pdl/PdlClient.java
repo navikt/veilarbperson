@@ -20,4 +20,6 @@ public interface PdlClient extends HealthCheck {
     HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest);
 
     List<HentPerson.Adressebeskyttelse> hentAdressebeskyttelse(PdlRequest pdlRequest);
+
+    HentPerson.PersonFoedselsdato hentFoedselsdato(PdlRequest pdlRequest);
 }
