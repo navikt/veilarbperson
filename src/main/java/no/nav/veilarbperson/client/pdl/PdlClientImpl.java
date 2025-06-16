@@ -178,7 +178,6 @@ public class PdlClientImpl implements PdlClient {
     }
 
     private static <T> T parseGqlJsonResponse(String gqlJsonResponse, Class<T> gqlDataClass) throws JsonProcessingException {
-        secureLog.info("Parsing GraphQL response: {}", gqlJsonResponse);
         ObjectMapper mapper = JsonUtils.getMapper();
         JsonNode gqlResponseNode = mapper.readTree(gqlJsonResponse);
         JsonNode errorsNode = gqlResponseNode.get("errors");
