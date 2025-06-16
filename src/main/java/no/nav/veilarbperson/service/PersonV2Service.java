@@ -364,24 +364,6 @@ public class PersonV2Service {
         return null;
     }
 
-    public Foedselsdato hentFoedselsdato(PersonFraPdlRequest personFraPdlRequest) {
-        log.info("Sender til client for foedselsdato");
-        HentPerson.PersonFoedselsdato person = pdlClient.hentFoedselsdato(
-                new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())
-        );
-        List<HentPerson.Foedselsdato> foedselsdatoer = person.getFoedselsdato();
-
-        log.info("Har hentet foedselsdato = {}", foedselsdatoer);
-
-        if (foedselsdatoer == null || foedselsdatoer.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke fødselsdato for person");
-        }
-
-        HentPerson.Foedselsdato firstFoedselsdato = foedselsdatoer.get(0);
-        return new Foedselsdato(firstFoedselsdato.getFoedselsdato().toString(), firstFoedselsdato.getFoedselsaar());
-
-    }
-
     public PersonNavnV2 hentNavn(PersonFraPdlRequest personFraPdlRequest) {
         HentPerson.PersonNavn personNavn = pdlClient.hentPersonNavn(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
 
@@ -395,5 +377,19 @@ public class PersonV2Service {
     public HentPerson.Adressebeskyttelse hentAdressebeskyttelse(PersonFraPdlRequest personFraPdlRequest) {
         List<HentPerson.Adressebeskyttelse> adressebeskyttelse = Optional.ofNullable(pdlClient.hentAdressebeskyttelse(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()))).orElse(List.of());
         return adressebeskyttelse.stream().findFirst().orElse(new HentPerson.Adressebeskyttelse().setGradering("UGRADERT"));
+    }
+
+    public Foedselsdato hentFoedselsdato(PersonFraPdlRequest personFraPdlRequest) {
+        HentPerson.PersonFoedselsdato personFoedselsdato = pdlClient.hentFoedselsdato(
+                new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())
+        );
+
+        if (personFoedselsdato.getFoedselsdato().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke fødselsdato for person");
+        }
+
+        HentPerson.Foedselsdato foedselsdato = personFoedselsdato.getFoedselsdato().getFirst();
+        return new Foedselsdato(foedselsdato.getFoedselsdato(), foedselsdato.getFoedselsaar());
+
     }
 }

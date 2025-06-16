@@ -92,6 +92,11 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         return pdlClient.hentPersonNavn(pdlRequest);
     }
 
+    public HentPerson.PersonFoedselsdato hentFoedselsdato(PdlRequest pdlRequest) {
+        configurePdlResponse("pdl-hentFoedselsdato-response.json", pdlRequest.fnr().get());
+        return pdlClient.hentFoedselsdato(pdlRequest);
+    }
+
     public HentPerson.Verge hentVerge(Fnr fnr) {
         configurePdlResponse("pdl-hentVerge-response.json", fnr.get());
         return pdlClient.hentVerge(new PdlRequest(fnr, null));
@@ -185,6 +190,14 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals("GLITRENDE", navn.getMellomnavn());
         assertEquals("STAFFELI", navn.getEtternavn());
         assertEquals("NATURLIG STAFFELI", navn.getForkortetNavn());
+    }
+
+    @Test
+    public void hentFoedselsdatoTest() {
+        HentPerson.Foedselsdato dato = person.getFoedselsdato().getFirst();
+
+        assertEquals(LocalDate.of(1981, 12, 13), dato.getFoedselsdato());
+        assertEquals(1981, dato.getFoedselsaar());
     }
 
     @Test
@@ -473,6 +486,14 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals("OLA", navn.getFornavn());
         assertEquals("NORDMANN", navn.getEtternavn());
         assertEquals("NORDMANN OLA", navn.getForkortetNavn());
+    }
+
+    @Test
+    public void foedselsdatoMapperTest() {
+        HentPerson.PersonFoedselsdato foedselsdatoPerson = hentFoedselsdato(new PdlRequest(FNR, null));
+        HentPerson.Foedselsdato foedselsdato = foedselsdatoPerson.getFoedselsdato().getFirst();
+        assertEquals(LocalDate.of(1982, 12, 13), foedselsdato.getFoedselsdato());
+        assertEquals(1982, foedselsdato.getFoedselsaar());
     }
 
     @Test

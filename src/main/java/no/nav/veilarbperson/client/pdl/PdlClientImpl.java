@@ -18,7 +18,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -97,9 +96,7 @@ public class PdlClientImpl implements PdlClient {
 
     @Override
     public HentPerson.PersonFoedselsdato hentFoedselsdato(PdlRequest pdlRequest) {
-        Logger log1 = log;
         var request = new GqlRequest<>(hentFoedselsdatoQuery, new GqlVariables.HentFoedselsdato(pdlRequest.fnr()));
-        log1.info("I clienten for foedsesldato med request ", request);
         return graphqlRequest(request, authService.erSystemBruker() ? systemTokenProvider.get() : userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.HentPersonFoedselsdato.class).hentPerson;
     }
 

@@ -22,10 +22,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.http.HttpHeaders.ACCEPT;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -506,6 +509,7 @@ public class PersonV3ControllerTest {
                 )
                 .andExpect(status().is(204));
     }
+
     @Test
     void test_av_hent_navn() throws Exception {
         PrivatBruker ny = navContext.getPrivatBrukere().ny();
@@ -532,7 +536,8 @@ public class PersonV3ControllerTest {
     void test_av_hent_foedselsdato() throws Exception {
         PrivatBruker ny = navContext.getPrivatBrukere().ny();
         NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
-        when(personV2Service.hentFoedselsdato(new PersonFraPdlRequest(TEST_FNR, "B555"))).thenReturn(new Foedselsdato("1990-01-01", 1990));
+        when(personV2Service.hentFoedselsdato(new PersonFraPdlRequest(TEST_FNR, "B555")))
+                .thenReturn(new Foedselsdato(LocalDate.of(1990, 1, 1), 1990));
 
         String expectedJson = "{\"foedselsdato\":\"1990-01-01\",\"foedselsaar\":1990}";
 
