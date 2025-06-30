@@ -7,7 +7,7 @@ API for uthenting av informasjon om brukere
 
 Spørsmål knyttet til koden eller prosjektet kan stilles ved å opprette en issue.
 
-## For NAV-ansatte
+## For Nav-ansatte
 
 Interne henvendelser kan sendes via Slack i kanalen #po-arbeidsoppfølging.
 
