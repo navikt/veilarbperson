@@ -11,6 +11,13 @@
               "mellomnavn": "vergeMellomnavn1",
               "etternavn": "vergeEtternavn1"
             },
+            "identifiserendeInformasjon": {
+              "navn": {
+                "fornavn": "vergeFornavn1",
+                "mellomnavn": "vergeMellomnavn1",
+                "etternavn": "vergeEtternavn1"
+              }
+            },
             "motpartsPersonident": "VergeMotpartsPersonident1",
             "omfang": "oekonomiskeInteresser"
           },
@@ -27,6 +34,13 @@
               "fornavn": "vergeFornavn2",
               "mellomnavn": "vergeMellomnavn2",
               "etternavn": "vergeEtternavn2"
+            },
+            "identifiserendeInformasjon": {
+              "navn": {
+                "fornavn": "vergeFornavn2",
+                "mellomnavn": "vergeMellomnavn2",
+                "etternavn": "vergeEtternavn2"
+              }
             },
             "motpartsPersonident": "VergeMotpartsPersonident2",
             "omfang": "personligeInteresser"
