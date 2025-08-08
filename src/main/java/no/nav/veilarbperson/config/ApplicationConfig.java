@@ -9,6 +9,7 @@ import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.auth.context.AuthContextHolderThreadLocal;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
+import no.nav.poao_tilgang.api.dto.response.TilgangsattributterResponse;
 import no.nav.poao_tilgang.client.*;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClient;
 import no.nav.veilarbperson.client.regoppslag.RegoppslagClientImpl;
@@ -37,6 +38,9 @@ public class ApplicationConfig {
 	private final Cache<String, Boolean> norskIdentToErSkjermetCache = Caffeine.newBuilder()
 			.expireAfterWrite(Duration.ofMinutes(30))
 			.build();
+	private final Cache<String, TilgangsattributterResponse> tilgangsAttributterCache = Caffeine.newBuilder()
+			.expireAfterWrite(Duration.ofMinutes(30))
+			.build();
 
 
 	@Bean
@@ -49,7 +53,8 @@ public class ApplicationConfig {
 				),
 				policyInputToDecisionCache,
 				navAnsattIdToAzureAdGrupperCache,
-				norskIdentToErSkjermetCache
+				norskIdentToErSkjermetCache,
+				tilgangsAttributterCache
 		);
 	}
 
