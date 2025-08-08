@@ -88,6 +88,7 @@ public class VergeOgFullmaktDataMapper {
     public static VergeData.Folkeregistermetadata folkeregisterMetadataMapper(HentPerson.Folkeregistermetadata folkeregistermetadata) {
         return new VergeData.Folkeregistermetadata()
                 .setAjourholdstidspunkt(folkeregistermetadata.getAjourholdstidspunkt())
-                .setGyldighetstidspunkt(folkeregistermetadata.getGyldighetstidspunkt());
+                .setGyldighetstidspunkt(folkeregistermetadata.getGyldighetstidspunkt())
+                .setOpphoerstidspunkt(folkeregistermetadata.getOpphoerstidspunkt());
     }
 }

@@ -231,6 +231,7 @@ public class HentPerson {
     public static class Folkeregistermetadata {
         public LocalDateTime ajourholdstidspunkt;
         public LocalDateTime gyldighetstidspunkt;
+        public LocalDateTime opphoerstidspunkt;
     }
 
     @Data
