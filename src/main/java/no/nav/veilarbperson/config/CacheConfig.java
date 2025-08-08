@@ -18,8 +18,8 @@ public class CacheConfig {
     public static final String SIKKERHETSTILTAK_CACHE_NAME = "sikkerhetstiltak_cache";
     public static final String DIGDIR_KONTAKTINFO_CACHE_NAME = "digdir_kontaktinfo_cache";
     public static final String KODEVERK_BETYDNING_CACHE_NAME = "kodeverk_betydning_cache";
+    public static final String ENSLIGFORSORGER_OVERGANGSSTONAD_CACHE_NAME = "ensligforsorger_overgangsstonad_cache";
 
-    public static final String KONTOREGISTER_CACHE_NAME = "kontoregister_person_cache";
 
     @Bean
     public Cache veilarboppfolgingUnderOppfolgingCache() {
@@ -45,6 +45,8 @@ public class CacheConfig {
         return litenCache(DIGDIR_KONTAKTINFO_CACHE_NAME);
     }
 
+    @Bean
+    public  Cache ensligForsorgerOvergangsstonadCache() { return litenCache(ENSLIGFORSORGER_OVERGANGSSTONAD_CACHE_NAME); }
 
     @Bean
     public Cache kodeverkBetydningCache() {
@@ -59,11 +61,6 @@ public class CacheConfig {
                 .expireAfterWrite(1, TimeUnit.MINUTES)
                 .maximumSize(15_000)
                 .build());
-    }
-
-    @Bean
-    public Cache kontoregisterPersonCache() {
-        return litenCache(KONTOREGISTER_CACHE_NAME);
     }
 
 }
