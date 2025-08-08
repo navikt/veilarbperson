@@ -209,8 +209,14 @@ public class HentPerson {
     @Data
     public static class VergeEllerFullmektig {
         private VergeNavn navn;
+        private IdentifiserendeInformasjon identifiserendeInformasjon;
         private String motpartsPersonident;
         private VergemaalEllerFullmaktOmfangType omfang;
+    }
+
+    @Data
+    public static class IdentifiserendeInformasjon {
+        private VergeNavn navn;
     }
 
     @Data

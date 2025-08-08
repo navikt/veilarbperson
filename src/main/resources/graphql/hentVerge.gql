@@ -9,6 +9,13 @@ query($ident: ID!, $historikk: Boolean!) {
                     mellomnavn
                     etternavn
                 }
+                identifiserendeInformasjon {
+                    navn {
+                        fornavn
+                        mellomnavn
+                        etternavn
+                    }
+                }
                 motpartsPersonident
                 omfang
             }

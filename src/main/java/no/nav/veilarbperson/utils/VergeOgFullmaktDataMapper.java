@@ -64,8 +64,14 @@ public class VergeOgFullmaktDataMapper {
     public static VergeData.VergeEllerFullmektig vergeEllerFullmektigMapper(HentPerson.VergeEllerFullmektig vergeEllerFullmektig) {
         return new VergeData.VergeEllerFullmektig()
                 .setNavn(vergeNavnMapper(vergeEllerFullmektig.getNavn()))
+                .setIdentifiserendeInformasjon(identifiserendeInformasjonMapper(vergeEllerFullmektig.getIdentifiserendeInformasjon()))
                 .setMotpartsPersonident(vergeEllerFullmektig.getMotpartsPersonident())
                 .setOmfang(vergeEllerFullmektig.getOmfang());
+    }
+
+    public static VergeData.IdentifiserendeInformasjon identifiserendeInformasjonMapper(HentPerson.IdentifiserendeInformasjon identifiserendeInformasjon) {
+        return new VergeData.IdentifiserendeInformasjon()
+                .setNavn(vergeNavnMapper(identifiserendeInformasjon.getNavn()));
     }
 
     public static VergeData.VergeNavn vergeNavnMapper(HentPerson.VergeNavn vergeNavn) {
