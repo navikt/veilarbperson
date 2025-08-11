@@ -22,6 +22,7 @@ query($ident: ID!, $historikk: Boolean!) {
             folkeregistermetadata {
                 ajourholdstidspunkt
                 gyldighetstidspunkt
+                opphoerstidspunkt
             }
         }
     }
