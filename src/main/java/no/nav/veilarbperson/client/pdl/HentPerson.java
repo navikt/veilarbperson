@@ -208,10 +208,17 @@ public class HentPerson {
 
     @Data
     public static class VergeEllerFullmektig {
-        private VergeNavn navn;
-        private IdentifiserendeInformasjon identifiserendeInformasjon;
+        //private VergeNavn navn;  deprecated
+        private IdentifiserendeInformasjon identifiserendeInformasjon; // kun for de som ikke har motpartsPersonident
         private String motpartsPersonident;
-        private VergemaalEllerFullmaktOmfangType omfang;
+        private VergemaalEllerFullmaktOmfangType omfang; // kun på historiske vergemål før 11.2023
+        private List<Tjenesteomraade> tjenesteomraade;
+    }
+
+    @Data
+    public static class Tjenesteomraade {
+        private String tjenesteoppgave;
+        private String tjenestevirksomhet;
     }
 
     @Data

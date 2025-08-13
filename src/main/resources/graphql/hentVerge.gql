@@ -18,6 +18,10 @@ query($ident: ID!, $historikk: Boolean!) {
                 }
                 motpartsPersonident
                 omfang
+                tjenesteomraade {
+                    tjenesteoppgave
+                    tjenestevirksomhet
+                  }
             }
             folkeregistermetadata {
                 ajourholdstidspunkt

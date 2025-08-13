@@ -15,14 +15,6 @@ public class VergeData {
     public List<VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
 
     @Data
-    public static class Navn {
-        private String fornavn;
-        private String mellomnavn;
-        private String etternavn;
-        private String forkortetNavn;
-    }
-
-    @Data
     public static class VergeNavn {
         private String fornavn;
         private String mellomnavn;
@@ -32,14 +24,15 @@ public class VergeData {
     @Data
     public static class VergeEllerFullmektig {
         private VergeNavn navn;
-        private IdentifiserendeInformasjon identifiserendeInformasjon;
         private String motpartsPersonident;
         private VergemaalEllerFullmaktOmfangType omfang;
+        private List<Tjenesteomraade> tjenesteomraade;
     }
 
     @Data
-    public static class IdentifiserendeInformasjon {
-        private VergeNavn navn;
+    public static class Tjenesteomraade {
+        private String tjenesteoppgave;
+        private String tjenestevirksomhet;
     }
 
     @Data

@@ -183,7 +183,6 @@ public class PdlClientImplTest {
         assertEquals("VergemallEmbete", vergemaal.getEmbete());
         assertEquals(VergemaalEllerFullmaktOmfangType.OEKONOMISKE_INTERESSER, vergeEllerFullmektig.getOmfang());
         assertEquals("VergeMotpartsPersonident1", vergeEllerFullmektig.getMotpartsPersonident());
-        assertEquals("vergeEtternavn1", vergeEllerFullmektig.getNavn().getEtternavn());
     }
 
     @Test

@@ -255,9 +255,9 @@ public class PersonV2Service {
         KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
         try {
             KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
-            DigdirKontaktinfo digdirKontaktinfo = kontaktinfo != null ? kontaktinfo.getPersoner().get(fnr.get()): null;
+            DigdirKontaktinfo digdirKontaktinfo = kontaktinfo != null ? kontaktinfo.getPersoner().get(fnr.get()) : null;
             if (digdirKontaktinfo != null) {
-                Optional<String> epostSisteOppdatert =  Optional.ofNullable(digdirKontaktinfo.getEpostadresseOppdatert()).map(dato -> ZonedDateTime.parse(dato).format(frontendDatoformat));
+                Optional<String> epostSisteOppdatert = Optional.ofNullable(digdirKontaktinfo.getEpostadresseOppdatert()).map(dato -> ZonedDateTime.parse(dato).format(frontendDatoformat));
                 Optional<String> mobilSisteOppdatert = Optional.ofNullable(digdirKontaktinfo.getMobiltelefonnummerOppdatert()).map(dato -> ZonedDateTime.parse(dato).format(frontendDatoformat));
                 Epost epost = digdirKontaktinfo.getEpostadresse() != null
                         ? new Epost().setEpostAdresse(digdirKontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert.orElse(null)).setMaster("KRR")
@@ -278,7 +278,7 @@ public class PersonV2Service {
        Hvis like nummer, fjernes PDL-nummeret
     */
     public void leggKrrTelefonNrIListe(String telefonNummerFraKrr, String sistOppdatert, List<Telefon> telefonListe) {
-    int prioritet;
+        int prioritet;
         if (telefonNummerFraKrr != null) {
             telefonListe.removeIf(telefon -> telefonNummerFraKrr.equals(telefon.getTelefonNr()));
             telefonListe.add(new Telefon()
@@ -318,7 +318,26 @@ public class PersonV2Service {
 
     public VergeData hentVerge(PersonFraPdlRequest personFraPdlRequest) {
         HentPerson.Verge vergeOgFullmaktFraPdl = pdlClient.hentVerge(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
-        return toVerge(vergeOgFullmaktFraPdl);
+
+        List<VergeData.VergemaalEllerFremtidsfullmakt> vergeMedNavn =
+                vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt()
+                        .stream()
+                        .map(vergemaalEllerFremtidsfullmakt -> {
+                            String motpartsFnr = vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig().getMotpartsPersonident();
+                            PersonNavnV2 vergeNavn = null;
+
+                            if (motpartsFnr != null) {
+                                Fnr vergeFnr = Fnr.of(motpartsFnr);
+                                vergeNavn = hentNavn(new PersonFraPdlRequest(vergeFnr, personFraPdlRequest.getBehandlingsnummer()));
+                            }
+
+                            return toVergemaalEllerFremtidsfullmakt(vergemaalEllerFremtidsfullmakt, vergeNavn);
+                        })
+                        .collect(Collectors.toList());
+
+        VergeData vergeData = new VergeData();
+        vergeData.setVergemaalEllerFremtidsfullmakt(vergeMedNavn);
+        return vergeData;
     }
 
     public FullmaktDTO hentFullmakt(PersonRequest personRequest) throws IOException {
