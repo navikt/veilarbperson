@@ -3,6 +3,7 @@ package no.nav.veilarbperson.domain;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
+import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktTjenesteoppgaveType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 
 import java.time.LocalDateTime;
@@ -31,7 +32,7 @@ public class VergeData {
 
     @Data
     public static class Tjenesteomraade {
-        private String tjenesteoppgave;
+        private VergemaalEllerFullmaktTjenesteoppgaveType tjenesteoppgave;
         private String tjenestevirksomhet;
     }
 

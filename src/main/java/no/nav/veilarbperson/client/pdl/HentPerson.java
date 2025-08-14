@@ -217,7 +217,7 @@ public class HentPerson {
 
     @Data
     public static class Tjenesteomraade {
-        private String tjenesteoppgave;
+        private VergemaalEllerFullmaktTjenesteoppgaveType tjenesteoppgave;
         private String tjenestevirksomhet;
     }
 
