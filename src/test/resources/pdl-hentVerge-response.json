@@ -6,34 +6,63 @@
           "type": "midlertidigForVoksen",
           "embete": "VergemallEmbete",
           "vergeEllerFullmektig" : {
-            "navn": {
-              "fornavn": "vergeFornavn1",
-              "mellomnavn": "vergeMellomnavn1",
-              "etternavn": "vergeEtternavn1"
+            "identifiserendeInformasjon": {
+              "navn": {
+                "fornavn": "vergeFornavn1",
+                "mellomnavn": "vergeMellomnavn1",
+                "etternavn": "vergeEtternavn1"
+              }
             },
             "motpartsPersonident": "VergeMotpartsPersonident1",
-            "omfang": "oekonomiskeInteresser"
+            "omfang": "oekonomiskeInteresser",
+            "tjenesteomraade": []
           },
           "folkeregistermetadata": {
             "ajourholdstidspunkt":  "2021-03-02T13:00:42",
-            "gyldighetstidspunkt":  "2021-03-02T13:00:42"
+            "gyldighetstidspunkt":  "2021-03-02T13:00:42",
+            "opphoerstidspunkt": "2021-03-12T13:00:42"
           }
         },
         {
           "type": "stadfestetFremtidsfullmakt",
           "embete": "VergemallEmbete",
           "vergeEllerFullmektig" : {
-            "navn": {
-              "fornavn": "vergeFornavn2",
-              "mellomnavn": "vergeMellomnavn2",
-              "etternavn": "vergeEtternavn2"
+            "identifiserendeInformasjon": {
+              "navn": {
+                "fornavn": "vergeFornavn2",
+                "mellomnavn": "vergeMellomnavn2",
+                "etternavn": "vergeEtternavn2"
+              }
             },
             "motpartsPersonident": "VergeMotpartsPersonident2",
-            "omfang": "personligeInteresser"
+            "omfang": "personligeInteresser",
+            "tjenesteomraade": [
+              {
+                "tjenesteoppgave": "arbeid",
+                "tjenestevirksomhet": "nav"
+              },
+              {
+                "tjenesteoppgave": "familie",
+                "tjenestevirksomhet": "nav"
+              },
+              {
+                "tjenesteoppgave": "hjelpemidler",
+                "tjenestevirksomhet": "nav"
+              },
+              {
+                "tjenesteoppgave": "pensjon",
+                "tjenestevirksomhet": "nav"
+              },
+              {
+                "tjenesteoppgave": "sosialeTjenester",
+                "tjenestevirksomhet": "nav"
+              }
+            ]
           },
           "folkeregistermetadata": {
             "ajourholdstidspunkt":  "2021-03-02T13:00:42",
-            "gyldighetstidspunkt":  "2021-03-02T13:00:42"
+            "gyldighetstidspunkt":  "2021-03-02T13:00:42",
+            "opphoerstidspunkt": "2021-03-12T13:00:42"
           }
         }
       ]

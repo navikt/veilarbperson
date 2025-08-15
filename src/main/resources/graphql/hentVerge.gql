@@ -9,12 +9,24 @@ query($ident: ID!, $historikk: Boolean!) {
                     mellomnavn
                     etternavn
                 }
+                identifiserendeInformasjon {
+                    navn {
+                        fornavn
+                        mellomnavn
+                        etternavn
+                    }
+                }
                 motpartsPersonident
                 omfang
+                tjenesteomraade {
+                    tjenesteoppgave
+                    tjenestevirksomhet
+                  }
             }
             folkeregistermetadata {
                 ajourholdstidspunkt
                 gyldighetstidspunkt
+                opphoerstidspunkt
             }
         }
     }

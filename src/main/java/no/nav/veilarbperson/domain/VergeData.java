@@ -3,6 +3,7 @@ package no.nav.veilarbperson.domain;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
+import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktTjenesteoppgaveType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 
 import java.time.LocalDateTime;
@@ -13,14 +14,6 @@ import java.util.List;
 public class VergeData {
 
     public List<VergemaalEllerFremtidsfullmakt> vergemaalEllerFremtidsfullmakt;
-
-    @Data
-    public static class Navn {
-        private String fornavn;
-        private String mellomnavn;
-        private String etternavn;
-        private String forkortetNavn;
-    }
 
     @Data
     public static class VergeNavn {
@@ -34,6 +27,13 @@ public class VergeData {
         private VergeNavn navn;
         private String motpartsPersonident;
         private VergemaalEllerFullmaktOmfangType omfang;
+        private List<Tjenesteomraade> tjenesteomraade;
+    }
+
+    @Data
+    public static class Tjenesteomraade {
+        private VergemaalEllerFullmaktTjenesteoppgaveType tjenesteoppgave;
+        private String tjenestevirksomhet;
     }
 
     @Data
@@ -48,5 +48,6 @@ public class VergeData {
     public static class Folkeregistermetadata {
         public LocalDateTime ajourholdstidspunkt;
         public LocalDateTime gyldighetstidspunkt;
+        public LocalDateTime opphoerstidspunkt;
     }
 }
