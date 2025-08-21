@@ -4,7 +4,6 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
-import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktTjenesteoppgaveType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
 import no.nav.veilarbperson.domain.PersonNavnV2;
@@ -70,7 +69,7 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
         VergeData.VergeEllerFullmektig vergeEllerFullmektigDataLast = vergeOgFullmaktDataLast.getVergeEllerFullmektig();
         assertEquals("Testfornavnavn1", vergeEllerFullmektigDataLast.getNavn().getFornavn());
         assertEquals(5, vergeEllerFullmektigDataLast.getTjenesteomraade().size());
-        assertEquals(VergemaalEllerFullmaktTjenesteoppgaveType.ARBEID, vergeEllerFullmektigDataLast.getTjenesteomraade().getFirst().getTjenesteoppgave());
+        assertEquals("arbeid", vergeEllerFullmektigDataLast.getTjenesteomraade().getFirst().getTjenesteoppgave());
     }
 
 }
