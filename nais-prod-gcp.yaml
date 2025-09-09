@@ -71,7 +71,7 @@ spec:
           namespace: team-rocket
         - application: poao-tilgang
           namespace: poao
-        - application: paw-arbeidssoekerregisteret-api-oppslag
+        - application: paw-arbeidssoekerregisteret-api-oppslag-v2
           namespace: paw
         - application: skjermede-personer-pip
           namespace: nom
@@ -124,9 +124,9 @@ spec:
     - name: VEILARBOPPFOLGING_URL
       value: http://veilarboppfolging.poao/veilarboppfolging
     - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_URL
-      value: http://paw-arbeidssoekerregisteret-api-oppslag.paw
+      value: http://paw-arbeidssoekerregisteret-api-oppslag-v2.paw
     - name: OPPSLAG_ARBEIDSSOEKERREGISTERET_SCOPE
-      value: api://prod-gcp.paw.paw-arbeidssoekerregisteret-api-oppslag/.default
+      value: api://prod-gcp.paw.paw-arbeidssoekerregisteret-api-oppslag-v2/.default
     - name: NORG2_URL
       value: http://norg2.org/norg2
     - name: NORG2_SCOPE
