@@ -30,8 +30,6 @@ spec:
     min: 2
     max: 4
     cpuThresholdPercentage: 75
-  secureLogs:
-    enabled: true
   azure:
     application:
       enabled: true
@@ -81,6 +79,8 @@ spec:
           namespace: poao
         - application: repr-api
           namespace: repr
+        - application: logging
+          namespace: nais-system
       external:
         - host: pdl-api.prod-fss-pub.nais.io
         - host: veilarboppfolging.prod-fss-pub.nais.io
