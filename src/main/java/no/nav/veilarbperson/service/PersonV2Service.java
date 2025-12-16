@@ -80,6 +80,22 @@ public class PersonV2Service {
         return personV2Data;
     }
 
+    public PersonV2Data hentFlettetPersonTilgangsstyrt(PersonFraPdlRequest personFraPdlRequest) {
+        HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Fant ikke person i hentPerson operasjonen i PDL"));
+
+        PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
+        flettInnEgenAnsatt(personV2Data, personFraPdlRequest.getFnr());
+        flettBarnTilgangsstyrt(personDataFraPdl.getForelderBarnRelasjon(), personV2Data, personFraPdlRequest.getBehandlingsnummer());
+        flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data, personFraPdlRequest.getBehandlingsnummer());
+        flettDigitalKontaktinformasjon(personFraPdlRequest.getFnr(), personV2Data);
+        flettGeografiskEnhet(personFraPdlRequest, personV2Data);
+        flettKodeverk(personV2Data);
+
+        return personV2Data;
+    }
+
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse, String behandlingsnummer) {
         List<HentPerson.PersonFraBolk> familiemedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr, behandlingsnummer);
 
@@ -92,6 +108,17 @@ public class PersonV2Service {
                 .collect(Collectors.toList());
     }
 
+    public List<FamiliemedlemTilgangsstyrt> hentFamiliemedlemOpplysningerTilgangsstyrt(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse, String behandlingsnummer) {
+        List<HentPerson.PersonFraBolk> familiemedlemInfo = pdlClient.hentPersonBolk(familemedlemFnr, behandlingsnummer);
+
+        return familiemedlemInfo
+                .stream()
+                .filter(medlemInfo -> medlemInfo.getCode().equals("ok"))
+                .map(HentPerson.PersonFraBolk::getPerson)
+                .filter(PersonV2DataMapper::harGyldigIdent)
+                .map(familiemedlemTilgangsstyrt -> mapFamiliemedlemTilgangsstyrt(familiemedlemTilgangsstyrt, bostedsadresse))
+                .collect(Collectors.toList());
+    }
     private boolean erSkjermet(Fnr fnr) {
         return skjermetClient.hentSkjermet(fnr);
     }
@@ -100,6 +127,17 @@ public class PersonV2Service {
         Fnr familiemedlemFnr = PersonV2DataMapper.hentFamiliemedlemFnr(familiemedlem);
 
         return PersonV2DataMapper.familiemedlemMapper(
+                familiemedlem,
+                erSkjermet(familiemedlemFnr),
+                bostedsadresse,
+                authService
+        );
+    }
+
+    public FamiliemedlemTilgangsstyrt mapFamiliemedlemTilgangsstyrt(HentPerson.Familiemedlem familiemedlem, Bostedsadresse bostedsadresse) {
+        Fnr familiemedlemFnr = PersonV2DataMapper.hentFamiliemedlemFnr(familiemedlem);
+
+        return PersonV2DataMapper.familiemedlemTilgangsstyrtMapper(
                 familiemedlem,
                 erSkjermet(familiemedlemFnr),
                 bostedsadresse,
@@ -120,7 +158,14 @@ public class PersonV2Service {
         List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
         List<Familiemedlem> barnInfo = hentFamiliemedlemOpplysninger(barnFnrListe, personV2Data.getBostedsadresse(), behandlingsnummer);
 
-        personV2Data.setBarn(barnInfo);
+        personV2Data.setBarn(new ArrayList<>(barnInfo));
+    }
+
+    public void flettBarnTilgangsstyrt(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data, String behandlingsnummer) {
+        List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
+        List<FamiliemedlemTilgangsstyrt> barnInfo = hentFamiliemedlemOpplysningerTilgangsstyrt(barnFnrListe, personV2Data.getBostedsadresse(), behandlingsnummer);
+
+        personV2Data.setBarn(new ArrayList<>(barnInfo));
     }
 
     public void flettSivilstand(List<HentPerson.Sivilstand> sivilstands, PersonV2Data personV2Data, String behandlingsnummer) {

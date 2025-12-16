@@ -97,11 +97,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         return pdlClient.hentFoedselsdato(pdlRequest);
     }
 
-    public HentPerson.Verge hentVerge(Fnr fnr) {
-        configurePdlResponse("pdl-hentVerge-response.json", fnr.get());
-        return pdlClient.hentVerge(new PdlRequest(fnr, null));
-    }
-
     public HentPerson.GeografiskTilknytning hentGeografisktilknytning(PdlRequest pdlRequest) {
         configurePdlResponse("pdl-hentGeografiskTilknytning-response.json", "hentGeografiskTilknytning");
         return pdlClient.hentGeografiskTilknytning(pdlRequest);
@@ -151,7 +146,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         configurePdlResponse("pdl-hentPersonBolk-response.json", fnrBarn1, fnrBarn2);
         PersonFraPdlRequest personFraPdlRequest = new PersonFraPdlRequest(FNR, null);
         hentGeografisktilknytning(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())); // Må ha med fnr fordi dette flettes
-        List<Familiemedlem> barn = personV2Service.hentFlettetPerson(personFraPdlRequest).getBarn();
+        List<Object> barn = personV2Service.hentFlettetPerson(personFraPdlRequest).getBarn();
 
         assertEquals(1, barn.size());
     }
@@ -226,7 +221,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals("FRA", landkode.get());
 
         Kontaktadresse.UtenlandskAdresseIFrittFormat nullMidlertidigAdresseUtland = null;
-        Optional<String> nullLandkode = ofNullable(nullMidlertidigAdresseUtland).map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode);
+        ofNullable(nullMidlertidigAdresseUtland).map(Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode);
 
         assertTrue(true);
     }
@@ -239,7 +234,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         assertEquals("0560", postnummer.get());
 
         Bostedsadresse nullBostedsadresse = null;
-        Optional<String> nullPostnummer = ofNullable(nullBostedsadresse).map(Bostedsadresse::getVegadresse).map(Adresse.Vegadresse::getPostnummer);
+        ofNullable(nullBostedsadresse).map(Bostedsadresse::getVegadresse).map(Adresse.Vegadresse::getPostnummer);
 
         assertTrue(true);
     }
@@ -529,7 +524,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         String registrertDato = dateTime.format(frontendDatoformat);
         assertEquals("01.09.2018", registrertDato);
 
-        LocalDateTime telefonRegistrertDatoIPdl = person.getTelefonnummer().getFirst().getMetadata().getEndringer().get(0).getRegistrert();
+        LocalDateTime telefonRegistrertDatoIPdl = person.getTelefonnummer().getFirst().getMetadata().getEndringer().getFirst().getRegistrert();
 
         LocalDateTime dateTime1 = LocalDateTime.parse(telefonRegistrertDatoIPdl.toString(), ISO_LOCAL_DATE_TIME);
         String registrertDato1 = dateTime1.format(frontendDatoformat);

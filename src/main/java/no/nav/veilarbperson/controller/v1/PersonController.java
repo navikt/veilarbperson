@@ -8,6 +8,7 @@ import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.CvJobbprofilService;
 import no.nav.veilarbperson.service.PersonV2Service;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,6 +80,11 @@ public class PersonController {
     // TODO: Det er hårete å måtte skille på ekstern og intern
     //  Lag istedenfor en egen controller for interne operasjoner og en annen for eksterne
     private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {
+        return getFnr(queryParamFnr, authService);
+    }
+
+    @NotNull
+    public static Fnr getFnr(Fnr queryParamFnr, AuthService authService) {
         Fnr fnr;
 
         if (authService.erInternBruker()) {

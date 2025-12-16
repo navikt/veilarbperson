@@ -17,6 +17,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
+import static no.nav.veilarbperson.controller.v1.PersonController.getFnr;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -37,6 +39,14 @@ public class PersonV3Controller {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
         return personV2Service.hentFlettetPerson(personFraPdlRequest);
+    }
+
+    @PostMapping("/hent-person-tilgangsstyrt")
+    @Operation(summary = "Henter informasjon om en person fra PDL")
+    public PersonV2Data hentPersonTilgangsstyrt(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
+        return personV2Service.hentFlettetPersonTilgangsstyrt(personFraPdlRequest);
     }
 
     @PostMapping("/person/hent-aktorid")
@@ -78,7 +88,7 @@ public class PersonV3Controller {
 
     @PostMapping("/person/hent-vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
-    public VergeData hentVergemaal(@RequestBody PersonFraPdlRequest personFraPdlRequest) throws IOException {
+    public VergeData hentVergemaal(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
         return personV2Service.hentVerge(personFraPdlRequest);
@@ -153,21 +163,7 @@ public class PersonV3Controller {
     }
 
     private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {
-        Fnr fnr;
-
-        if (authService.erInternBruker()) {
-            if (queryParamFnr == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler fnr");
-            }
-            fnr = queryParamFnr;
-        } else if (authService.erEksternBruker()) {
-            fnr = Fnr.of(authService.getInnloggerBrukerUid());
-        } else {
-            // Systembruker har ikke tilgang
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-
-        return fnr;
+        return getFnr(queryParamFnr, authService);
     }
 
 }

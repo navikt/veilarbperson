@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.domain.*;
+import org.glassfish.jaxb.runtime.v2.schemagen.xmlschema.Any;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class PersonV2Data {
     List<String> statsborgerskapKoder;
     List<String> statsborgerskap;
     String sikkerhetstiltak;
-    List<Familiemedlem> barn;
+    List<Object> barn;
     List<Sivilstand> sivilstandliste;
     Bostedsadresse bostedsadresse;
     Oppholdsadresse oppholdsadresse;
