@@ -1,6 +1,10 @@
 package no.nav.veilarbperson.controller.v3;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.types.identer.Fnr;
@@ -31,8 +35,26 @@ public class PersonV3Controller {
 
     private final OppslagArbeidssoekerregisteretService oppslagArbeidssoekerregisteretService;
 
+    @Tag(name = "eksternt")
     @PostMapping("/hent-person")
-    @Operation(summary = "Henter informasjon om en person fra PDL")
+    @Operation(
+            summary = "Henter informasjon om en person fra PDL",
+            description = "Henter informasjon om en person fra PDL",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            content = @Content(
+                                    schema = @Schema(implementation = PersonFraPdlRequest.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            content = @Content(
+                                    schema = @Schema(hidden = true)
+                            )
+                    )
+            }
+    )
     public PersonV2Data hentPerson(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());

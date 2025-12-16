@@ -3,6 +3,8 @@ Veilarbperson
 
 API for uthenting av informasjon om brukere
 
+Swagger: /veilarbperson/internal/swagger-ui/index.html
+
 # Henvendelser
 
 Spørsmål knyttet til koden eller prosjektet kan stilles ved å opprette en issue.
