@@ -1,11 +1,14 @@
 package no.nav.veilarbperson.config
 
+import io.swagger.v3.oas.models.security.SecurityRequirement
+import io.swagger.v3.oas.models.security.SecurityScheme
 import io.swagger.v3.oas.models.OpenAPI
 import org.springdoc.core.customizers.OpenApiCustomizer
 import org.springdoc.core.models.GroupedOpenApi
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.models.Components
 import org.springframework.web.method.HandlerMethod
 
 @Configuration
@@ -64,5 +67,19 @@ class SwaggerConfig {
                 .toSet()
             openApi.tags = openApi.tags?.filter { it.name in usedTags }
         }
+    }
+    @Bean
+    fun openApi(): OpenAPI {
+        return OpenAPI()
+            .security(listOf(SecurityRequirement().addList("bearer-key")))
+            .components(
+                Components()
+                    .addSecuritySchemes(
+                        "bearer-key", SecurityScheme()
+                            .type(SecurityScheme.Type.HTTP)
+                            .scheme("bearer")
+                            .bearerFormat("JWT")
+                    )
+            )
     }
 }
