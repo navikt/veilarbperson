@@ -2,7 +2,12 @@ package no.nav.veilarbperson.config
 
 import io.swagger.v3.oas.models.security.SecurityRequirement
 import io.swagger.v3.oas.models.security.SecurityScheme
+import io.swagger.v3.oas.models.security.OAuthFlow
+import io.swagger.v3.oas.models.security.OAuthFlows
+import io.swagger.v3.oas.models.security.Scopes
+import org.springframework.beans.factory.annotation.Value
 import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Info
 import org.springdoc.core.customizers.OpenApiCustomizer
 import org.springdoc.core.models.GroupedOpenApi
 import org.springframework.context.annotation.Bean
@@ -12,7 +17,14 @@ import io.swagger.v3.oas.models.Components
 import org.springframework.web.method.HandlerMethod
 
 @Configuration
-class SwaggerConfig {
+class SwaggerConfig(
+    @Value("\${AUTHORIZATION_URL}")
+    val authorizationUrl: String,
+    @Value("\${AZUREAD_TOKEN_ENDPOINT_URL}")
+    val tokenUrl: String,
+    @Value("\${API_SCOPE}")
+    val apiScope: String,
+) {
 
 
     /**
@@ -71,15 +83,35 @@ class SwaggerConfig {
     @Bean
     fun openApi(): OpenAPI {
         return OpenAPI()
-            .security(listOf(SecurityRequirement().addList("bearer-key")))
+            .info(Info().title("veilarbperson").version("v1"))
             .components(
                 Components()
-                    .addSecuritySchemes(
-                        "bearer-key", SecurityScheme()
-                            .type(SecurityScheme.Type.HTTP)
-                            .scheme("bearer")
-                            .bearerFormat("JWT")
-                    )
+                    .addSecuritySchemes("oauth2", oauth2SecurityScheme())
+                    .addSecuritySchemes("bearer", bearerTokenSecurityScheme()),
             )
+            // By adding them as separate items in the list, they become alternatives in Swagger UI
+            .addSecurityItem(SecurityRequirement().addList("oauth2"))
+            .addSecurityItem(SecurityRequirement().addList("bearer"))
+    }
+
+    private fun oauth2SecurityScheme(): SecurityScheme {
+        return SecurityScheme().apply {
+            type = SecurityScheme.Type.OAUTH2
+            flows = OAuthFlows().apply {
+                authorizationCode = OAuthFlow().apply {
+                    authorizationUrl = this@SwaggerConfig.authorizationUrl
+                    tokenUrl = this@SwaggerConfig.tokenUrl
+                    scopes = Scopes().addString(apiScope, "Access API")
+                }
+            }
+        }
+    }
+
+    private fun bearerTokenSecurityScheme(): SecurityScheme {
+        return SecurityScheme().apply {
+            type = SecurityScheme.Type.HTTP
+            scheme = "bearer"
+            bearerFormat = "JWT"
+        }
     }
 }
