@@ -22,7 +22,7 @@
         <common.version>3.2025.06.23_14.50-3af3985d8555</common.version>
         <tjenestespesifikasjoner.version>1.2021.02.22-10.45-4201aaea72fb</tjenestespesifikasjoner.version>
         <kotlin.version>2.2.21</kotlin.version>
-        <poao-tilgang.version>2025.10.16_11.29-aaf8578da14c</poao-tilgang.version>
+        <poao-tilgang.version>2025.11.03_13.40-18456d0598be</poao-tilgang.version>
     </properties>
 
     <build>
@@ -202,7 +202,11 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>8.1</version>
+        </dependency>
         <!-- test -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

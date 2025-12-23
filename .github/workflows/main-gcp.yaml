@@ -15,10 +15,10 @@ jobs:
     if: github.ref != 'refs/heads/main'
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v6
 
       - name: Set up Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # ratchet:actions/setup-java@v5
         with:
           java-version: 21
           distribution: 'temurin'
@@ -37,10 +37,10 @@ jobs:
       image: ${{ steps.docker-build-push.outputs.image }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v6
 
       - name: Set up Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # ratchet:actions/setup-java@v5
         with:
           java-version: 21
           distribution: 'temurin'
@@ -50,12 +50,10 @@ jobs:
         run: mvn -B package -D skipTests
 
       - name: Build and push Docker image
-        uses: nais/docker-build-push@v0
+        uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # ratchet:nais/docker-build-push@v0
         id: docker-build-push
         with:
           team: obo
-          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
-          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
 
   deploy-dev:
     name: Deploy application to dev
@@ -64,10 +62,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v6
 
       - name: Deploy application
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
           RESOURCE: nais-dev-gcp.yaml
@@ -80,10 +78,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # ratchet:actions/checkout@v6
 
       - name: Deploy application
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: prod-gcp
           RESOURCE: nais-prod-gcp.yaml
@@ -95,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # ratchet:softprops/action-gh-release@v2
         with:
           name: Release to prod
           target_commitish: main
