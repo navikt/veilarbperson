@@ -9,6 +9,7 @@ import no.nav.veilarbperson.service.AuthService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -161,7 +162,7 @@ public class PersonV2DataMapper {
                     d.navn().map(HentPerson.Navn::getFornavn).orElse(null),
                     d.fodselsdato(),
                     d.dodsdato() != null,
-                    null,
+                    beregnAlder(d.fodselsdato()),
                     erEgenAnsatt,
                     true,
                     d.graderingskode(),
@@ -174,7 +175,7 @@ public class PersonV2DataMapper {
                     null,
                     d.fodselsdato(),
                     null,
-                    null,
+                    beregnAlder(d.fodselsdato()),
                     null,
                     false,
                     d.graderingskode(),
@@ -187,7 +188,7 @@ public class PersonV2DataMapper {
                     null,
                     d.fodselsdato(),
                     null,
-                    null,
+                    beregnAlder(d.fodselsdato()),
                     true,
                     false,
                     null,
@@ -199,7 +200,7 @@ public class PersonV2DataMapper {
                 d.navn().map(HentPerson.Navn::getFornavn).orElse(null),
                 d.fodselsdato(),
                 d.dodsdato() != null,
-                null,
+                beregnAlder(d.fodselsdato()),
                 null,
                 false,
                 null,
@@ -293,6 +294,12 @@ public class PersonV2DataMapper {
             return null;
         }
         return dato.format(frontendDatoformat);
+    }
+    public static Integer beregnAlder(LocalDate fodselsdato) {
+        if (fodselsdato == null) {
+            return null;
+        }
+        return Period.between(fodselsdato, LocalDate.now()).getYears();
     }
 
     public static Optional<HentPerson.Navn> hentGjeldeneNavn(List<HentPerson.Navn> response) {
