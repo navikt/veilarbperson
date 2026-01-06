@@ -158,14 +158,22 @@ public class PersonV2Service {
         List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
         List<Familiemedlem> barnInfo = hentFamiliemedlemOpplysninger(barnFnrListe, personV2Data.getBostedsadresse(), behandlingsnummer);
 
-        personV2Data.setBarn(new ArrayList<>(barnInfo));
+        if (barnInfo.isEmpty()) {
+            personV2Data.setBarn(Collections.emptyList());
+        } else {
+            personV2Data.setBarn(new ArrayList<>(barnInfo));
+        }
     }
 
     public void flettBarnTilgangsstyrt(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data, String behandlingsnummer) {
         List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
         List<FamiliemedlemTilgangsstyrt> barnInfo = hentFamiliemedlemOpplysningerTilgangsstyrt(barnFnrListe, personV2Data.getBostedsadresse(), behandlingsnummer);
 
-        personV2Data.setBarn(new ArrayList<>(barnInfo));
+        if (barnInfo.isEmpty()) {
+            personV2Data.setBarn(Collections.emptyList());
+        } else {
+            personV2Data.setBarn(new ArrayList<>(barnInfo));
+        }
     }
 
     public void flettSivilstand(List<HentPerson.Sivilstand> sivilstands, PersonV2Data personV2Data, String behandlingsnummer) {

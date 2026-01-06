@@ -71,123 +71,94 @@ public class PersonV2DataMapper {
                 .orElse(null));
     }
 
-    private static CommonFamiliemedlemData extractCommonFamiliemedlemData(
-            HentPerson.Familiemedlem familiemedlem,
-            Bostedsadresse personsBostedsadresse,
-            AuthService authService
-    ) {
+    public static Familiemedlem familiemedlemMapper(HentPerson.Familiemedlem familiemedlem,
+                                                    boolean erEgenAnsatt,
+                                                    Bostedsadresse personsBostedsadresse,
+                                                    AuthService authService) {
         Optional<HentPerson.Navn> navn = hentGjeldeneNavn(familiemedlem.getNavn());
-
+        Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
         LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedselsdato()))
-                .map(HentPerson.Foedselsdato::getFoedselsdato)
-                .orElse(null);
-
-        LocalDate dodsdato = ofNullable(getFirstElement(familiemedlem.getDoedsfall()))
-                .map(HentPerson.Doedsfall::getDoedsdato)
-                .orElse(null);
-
+                .map(HentPerson.Foedselsdato::getFoedselsdato).orElse(null);
         String graderingskode = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
                 .map(HentPerson.Adressebeskyttelse::getGradering)
                 .orElse(null);
-
-        AdressebeskyttelseGradering gradering = AdressebeskyttelseGradering.mapGradering(graderingskode);
-
-        boolean harAdressebeskyttelse = (AdressebeskyttelseGradering.FORTROLIG).equals(gradering)
-                || (AdressebeskyttelseGradering.STRENGT_FORTROLIG).equals(gradering)
-                || (AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND).equals(gradering);
-
-        boolean ukjentGradering = AdressebeskyttelseGradering.UKJENT.equals(gradering);
-
-        Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
+        AdressebeskyttelseGradering gradering = mapGradering(graderingskode);
         boolean harVeilederLeseTilgang = authService.harLesetilgang(medlemFnr);
+        RelasjonsBosted harSammeBosted = erSammeAdresse(getFirstElement(familiemedlem.getBostedsadresse()),
+                personsBostedsadresse);
+        Familiemedlem medlem = new Familiemedlem().setFodselsdato(fodselsdato);
 
-        RelasjonsBosted harSammeBosted = erSammeAdresse(
-                getFirstElement(familiemedlem.getBostedsadresse()),
-                personsBostedsadresse
-        );
-
-        return new CommonFamiliemedlemData(
-                navn, fodselsdato, dodsdato, graderingskode,
-                harAdressebeskyttelse, ukjentGradering, harVeilederLeseTilgang, harSammeBosted
-        );
-    }
-
-    public static Familiemedlem familiemedlemMapper(
-            HentPerson.Familiemedlem familiemedlem,
-            boolean erEgenAnsatt,
-            Bostedsadresse personsBostedsadresse,
-            AuthService authService
-    ) {
-        CommonFamiliemedlemData d = extractCommonFamiliemedlemData(familiemedlem, personsBostedsadresse, authService);
-
-        Familiemedlem medlem = new Familiemedlem().setFodselsdato(d.fodselsdato());
-
-        if (d.harVeilederLeseTilgang()) {
+        if (harVeilederLeseTilgang) {
             return medlem
-                    .setGradering(d.graderingskode())
+                    .setGradering(graderingskode)
                     .setErEgenAnsatt(erEgenAnsatt)
-                    .setHarVeilederTilgang(true)
-                    .setRelasjonsBosted(d.harSammeBosted())
-                    .setFornavn(d.navn().map(HentPerson.Navn::getFornavn).orElse(null))
-                    .setDodsdato(d.dodsdato());
+                    .setHarVeilederTilgang(harVeilederLeseTilgang)
+                    .setRelasjonsBosted(harSammeBosted)
+                    .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
+                    .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));
+        } else {
+            if ((harAdressebeskyttelse(gradering) || ukjentGradering(gradering))) {
+                return medlem
+                        .setGradering(graderingskode);
+            } else if (erEgenAnsatt) {
+                return medlem
+                        .setErEgenAnsatt(erEgenAnsatt)
+                        .setRelasjonsBosted(harSammeBosted);
+            } else {
+                return medlem
+                        .setHarVeilederTilgang(harVeilederLeseTilgang)
+                        .setRelasjonsBosted(harSammeBosted)
+                        .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
+                        .setDodsdato(ofNullable(getFirstElement(familiemedlem.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null));
+            }
         }
-
-        if (d.harAdressebeskyttelse() || d.ukjentGradering()) {
-            return medlem.setGradering(d.graderingskode());
-        }
-
-        if (erEgenAnsatt) {
-            return medlem
-                    .setErEgenAnsatt(true)
-                    .setRelasjonsBosted(d.harSammeBosted());
-        }
-
-        return medlem
-                .setHarVeilederTilgang(false)
-                .setRelasjonsBosted(d.harSammeBosted())
-                .setFornavn(d.navn().map(HentPerson.Navn::getFornavn).orElse(null))
-                .setDodsdato(d.dodsdato());
     }
-
     public static FamiliemedlemTilgangsstyrt familiemedlemTilgangsstyrtMapper(
             HentPerson.Familiemedlem familiemedlem,
             boolean erEgenAnsatt,
             Bostedsadresse personsBostedsadresse,
             AuthService authService
     ) {
-        CommonFamiliemedlemData d = extractCommonFamiliemedlemData(familiemedlem, personsBostedsadresse, authService);
+        Familiemedlem f = familiemedlemMapper(familiemedlem, erEgenAnsatt, personsBostedsadresse, authService);
+        FamiliemedlemTilgangsstyrt medlemTilgangsstyrt = new FamiliemedlemTilgangsstyrt()
+                .setFornavn(null)
+                .setFodselsdato(null)
+                .setErDod(null)
+                .setAlder(null)
+                .setErEgenAnsatt(null)
+                .setHarVeilederTilgang(false)
+                .setGradering(null)
+                .setRelasjonsBosted(null);
 
-        FamiliemedlemTilgangsstyrt medlem = new FamiliemedlemTilgangsstyrt()
-                .setFodselsdato(d.fodselsdato())
-                .setAlder(beregnAlder(d.fodselsdato()));
-
-        if (d.harVeilederLeseTilgang()) {
-            return medlem
-                    .setFornavn(d.navn().map(HentPerson.Navn::getFornavn).orElse(null))
-                    .setErDod(d.dodsdato() != null)
+        if (f.isHarVeilederTilgang()) {
+            return medlemTilgangsstyrt
+                    .setFornavn(f.getFornavn())
+                    .setFodselsdato(f.getFodselsdato())
+                    .setErDod(f.getDodsdato() != null)
+                    .setAlder(beregnAlder(f.getFodselsdato()))
                     .setErEgenAnsatt(erEgenAnsatt)
-                    .setHarVeilederTilgang(true)
-                    .setGradering(d.graderingskode())
-                    .setRelasjonsBosted(d.harSammeBosted());
+                    .setHarVeilederTilgang(f.isHarVeilederTilgang())
+                    .setGradering(f.getGradering())
+                    .setRelasjonsBosted(f.getRelasjonsBosted());
         }
 
-        if (d.harAdressebeskyttelse() || d.ukjentGradering()) {
-            return medlem.setGradering(d.graderingskode());
+        if (harAdressebeskyttelse(mapGradering(f.getGradering())) || ukjentGradering(mapGradering(f.getGradering()))) {
+            return medlemTilgangsstyrt.setGradering(f.getGradering());
         }
 
         if (erEgenAnsatt) {
-            return medlem
+            return medlemTilgangsstyrt
                     .setErEgenAnsatt(true)
-                    .setRelasjonsBosted(d.harSammeBosted());
+                    .setRelasjonsBosted(f.getRelasjonsBosted());
         }
 //Veileder har ikke tilgang, men vi returnerer data likevel. Kan dette være riktig?
-        return medlem
-                .setFornavn(d.navn().map(HentPerson.Navn::getFornavn).orElse(null))
-                .setErDod(d.dodsdato() != null)
-                .setRelasjonsBosted(d.harSammeBosted());
+        return medlemTilgangsstyrt
+                .setFornavn(f.getFornavn())
+                .setErDod(f.getDodsdato() != null)
+                .setRelasjonsBosted(f.getRelasjonsBosted());
     }
-
     /* Sammeligner persons bostesadresse med familiemedlems bostedsadresse for å se om de har samme bosted */
+
     public static RelasjonsBosted erSammeAdresse(Bostedsadresse adresse1,
                                                  Bostedsadresse adresse2) {
         Bostedsadresse.Vegadresse medlemsVegadresse = ofNullable(adresse1)
@@ -216,6 +187,12 @@ public class PersonV2DataMapper {
 
         return UKJENT_BOSTED;
     }
+
+    public static AdressebeskyttelseGradering  mapGradering(String graderingskode) { return AdressebeskyttelseGradering.mapGradering(graderingskode);}
+    public static boolean harAdressebeskyttelse(AdressebeskyttelseGradering gradering) {return (AdressebeskyttelseGradering.FORTROLIG).equals(gradering)
+            || (AdressebeskyttelseGradering.STRENGT_FORTROLIG).equals(gradering)
+            || (AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND).equals(gradering);}
+    public static boolean ukjentGradering(AdressebeskyttelseGradering gradering) { return AdressebeskyttelseGradering.UKJENT.equals(gradering);}
 
     public static Sivilstand sivilstandMapper(HentPerson.Sivilstand sivilstand, Optional<Familiemedlem> relatertPerson) {
         Optional<HentPerson.Metadata.Endringer> endring = finnForsteEndring(sivilstand.getMetadata().getEndringer());
@@ -269,10 +246,14 @@ public class PersonV2DataMapper {
 
 
     public static String parseZonedDateToDateString(ZonedDateTime dato) {
-        if (dato == null) {
+        if(dato == null){
             return null;
         }
         return dato.format(frontendDatoformat);
+    }
+
+    public static Optional<HentPerson.Navn> hentGjeldeneNavn(List<HentPerson.Navn> response) {
+        return response.stream().min(Comparator.comparing(n -> n.getMetadata().getMaster().prioritet));
     }
     public static Integer beregnAlder(LocalDate fodselsdato) {
         if (fodselsdato == null) {
@@ -280,19 +261,4 @@ public class PersonV2DataMapper {
         }
         return Period.between(fodselsdato, LocalDate.now()).getYears();
     }
-
-    public static Optional<HentPerson.Navn> hentGjeldeneNavn(List<HentPerson.Navn> response) {
-        return response.stream().min(Comparator.comparing(n -> n.getMetadata().getMaster().prioritet));
-    }
-
-    private record CommonFamiliemedlemData(
-            Optional<HentPerson.Navn> navn,
-            LocalDate fodselsdato,
-            LocalDate dodsdato,
-            String graderingskode,
-            boolean harAdressebeskyttelse,
-            boolean ukjentGradering,
-            boolean harVeilederLeseTilgang,
-            RelasjonsBosted harSammeBosted
-    ) {}
 }

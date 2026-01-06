@@ -17,8 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
-import static no.nav.veilarbperson.controller.v1.PersonController.getFnr;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -163,7 +161,21 @@ public class PersonV3Controller {
     }
 
     private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {
-        return getFnr(queryParamFnr, authService);
+        Fnr fnr;
+
+        if (authService.erInternBruker()) {
+            if (queryParamFnr == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler fnr");
+            }
+            fnr = queryParamFnr;
+        } else if (authService.erEksternBruker()) {
+            fnr = Fnr.of(authService.getInnloggerBrukerUid());
+        } else {
+            // Systembruker har ikke tilgang
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        return fnr;
     }
 
 }

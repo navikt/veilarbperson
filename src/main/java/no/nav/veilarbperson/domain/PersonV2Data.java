@@ -4,12 +4,9 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.domain.*;
-import org.glassfish.jaxb.runtime.v2.schemagen.xmlschema.Any;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import static java.util.Optional.ofNullable;
 
 @Data
