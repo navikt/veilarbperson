@@ -157,55 +157,34 @@ public class PersonV2DataMapper {
     ) {
         CommonFamiliemedlemData d = extractCommonFamiliemedlemData(familiemedlem, personsBostedsadresse, authService);
 
+        FamiliemedlemTilgangsstyrt medlem = new FamiliemedlemTilgangsstyrt()
+                .setFodselsdato(d.fodselsdato())
+                .setAlder(beregnAlder(d.fodselsdato()));
+
         if (d.harVeilederLeseTilgang()) {
-            return new FamiliemedlemTilgangsstyrt(
-                    d.navn().map(HentPerson.Navn::getFornavn).orElse(null),
-                    d.fodselsdato(),
-                    d.dodsdato() != null,
-                    beregnAlder(d.fodselsdato()),
-                    erEgenAnsatt,
-                    true,
-                    d.graderingskode(),
-                    d.harSammeBosted()
-            );
+            return medlem
+                    .setFornavn(d.navn().map(HentPerson.Navn::getFornavn).orElse(null))
+                    .setErDod(d.dodsdato() != null)
+                    .setErEgenAnsatt(erEgenAnsatt)
+                    .setHarVeilederTilgang(true)
+                    .setGradering(d.graderingskode())
+                    .setRelasjonsBosted(d.harSammeBosted());
         }
 
         if (d.harAdressebeskyttelse() || d.ukjentGradering()) {
-            return new FamiliemedlemTilgangsstyrt(
-                    null,
-                    d.fodselsdato(),
-                    null,
-                    beregnAlder(d.fodselsdato()),
-                    null,
-                    false,
-                    d.graderingskode(),
-                    null
-            );
+            return medlem.setGradering(d.graderingskode());
         }
 
         if (erEgenAnsatt) {
-            return new FamiliemedlemTilgangsstyrt(
-                    null,
-                    d.fodselsdato(),
-                    null,
-                    beregnAlder(d.fodselsdato()),
-                    true,
-                    false,
-                    null,
-                    d.harSammeBosted()
-            );
+            return medlem
+                    .setErEgenAnsatt(true)
+                    .setRelasjonsBosted(d.harSammeBosted());
         }
-
-        return new FamiliemedlemTilgangsstyrt(
-                d.navn().map(HentPerson.Navn::getFornavn).orElse(null),
-                d.fodselsdato(),
-                d.dodsdato() != null,
-                beregnAlder(d.fodselsdato()),
-                null,
-                false,
-                null,
-                d.harSammeBosted()
-        );
+//Veileder har ikke tilgang, men vi returnerer data likevel. Kan dette være riktig?
+        return medlem
+                .setFornavn(d.navn().map(HentPerson.Navn::getFornavn).orElse(null))
+                .setErDod(d.dodsdato() != null)
+                .setRelasjonsBosted(d.harSammeBosted());
     }
 
     /* Sammeligner persons bostesadresse med familiemedlems bostedsadresse for å se om de har samme bosted */
