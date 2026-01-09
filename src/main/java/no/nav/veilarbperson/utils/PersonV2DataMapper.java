@@ -157,33 +157,58 @@ public class PersonV2DataMapper {
     ) {
         FellesFamiliemedlemData data = hentFellesFamiliemedlemData(familiemedlem, personsBostedsadresse, authService);
 
-        FamiliemedlemTilgangsstyrt medlem = new FamiliemedlemTilgangsstyrt()
-                .setFodselsdato(data.fodselsdato())
-                .setAlder(beregnAlder(data.fodselsdato()));
+        FamiliemedlemTilgangsstyrt medlem = new FamiliemedlemTilgangsstyrt();
+/*
+Kommentarene under er hentet fra avklaring om hvilke opplysninger som kan vises, gjort av Ingunn Sørlie og Sikkerhetsseksjonen.
+Regler ble gitt for partner og barn. Her er det kun barn som er relevant, derfor er reglene for partner utelatt.
+Merk at opplysninger om at barnet er dødt, og om veileder har tilgang eller ikke, alltid sendes.
 
+1. Veileder har tilgang både til bruker, partner og barn
+Tillatt å vise: Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruker
+ */
         if (data.harVeilederLeseTilgang()) {
             return medlem
                     .setFornavn(data.navn().map(HentPerson.Navn::getFornavn).orElse(null))
+                    .setFodselsdato(data.fodselsdato())
                     .setErDod(data.dodsdato() != null)
+                    .setAlder(beregnAlder(data.fodselsdato()))
                     .setErEgenAnsatt(erEgenAnsatt)
                     .setHarVeilederTilgang(true)
                     .setGradering(data.graderingskode())
                     .setRelasjonsBosted(data.harSammeBosted());
         }
-
+ /*
+ 2. Partner/barn har diskresjonskode (kode 6, 7 eller 19). Veileder har ikke denne tilgangen.
+ Tillatt å vise: Diskresjonskode
+ */
         if (data.harAdressebeskyttelse() || data.ukjentGradering()) {
-            return medlem.setGradering(data.graderingskode());
+            return medlem
+                    .setGradering(data.graderingskode())
+                    .setErDod(data.dodsdato() != null)
+                    .setHarVeilederTilgang(false);
         }
-
+/*
+3. Partner/barn har skjerming (egen ansatt). Veileder har ikke denne tilgangen.
+Tillatt å vise: Alder, Bor med bruker/bor ikke med bruker
+ */
         if (erEgenAnsatt) {
             return medlem
+                    .setAlder(beregnAlder(data.fodselsdato()))
+                    .setErDod(data.dodsdato() != null)
                     .setErEgenAnsatt(true)
+                    .setHarVeilederTilgang(false)
                     .setRelasjonsBosted(data.harSammeBosted());
         }
-
+/*
+4. Partner/barn bor i annen kommune/bydel enn bruker. Veileder har ikke tilgang til dette nav-kontoret.
+Tillatt å vise: Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruker
+ */
         return medlem
                 .setFornavn(data.navn().map(HentPerson.Navn::getFornavn).orElse(null))
+                .setFodselsdato(data.fodselsdato())
+                .setAlder(beregnAlder(data.fodselsdato()))
                 .setErDod(data.dodsdato() != null)
+                .setHarVeilederTilgang(false)
                 .setRelasjonsBosted(data.harSammeBosted());
     }
 
