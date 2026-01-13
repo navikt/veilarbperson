@@ -27,7 +27,7 @@ import java.util.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Optional.ofNullable;
-import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.UKJENT_BOSTED;
+import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.*;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.frontendDatoformat;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,7 +51,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     private final String fnrRelatertSivilstand = "2134567890";
     private final String fnrBarn1 = "12345678910";
     private final String fnrBarn2 = "12345678911";
-
     List<Fnr> testFnrsTilBarna = new ArrayList<>(List.of(Fnr.of(fnrBarn1), Fnr.of(fnrBarn2)));
 
     @Before
@@ -112,9 +111,9 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         return pdlClient.hentPerson(new PdlRequest(fnr, null));
     }
 
-    public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
+    public void hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
         configurePdlResponse("pdl-hentTilrettelagtKommunikasjon-response.json", pdlRequest.fnr().get());
-        return pdlClient.hentTilrettelagtKommunikasjon(pdlRequest);
+        pdlClient.hentTilrettelagtKommunikasjon(pdlRequest);
     }
 
     @Test
@@ -256,8 +255,42 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     }
 
     @Test
+    public void flettBarnTilgangsstyrtTest() {
+        String fnrBarn3 = "12345678912";
+        configurePdlResponse("pdl-hentPersonBolkBarn-response.json", fnrBarn1, fnrBarn2, fnrBarn3);
+        when(authService.harLesetilgang(Fnr.of(fnrBarn1))).thenReturn(false);
+        when(authService.harLesetilgang(Fnr.of(fnrBarn2))).thenReturn(true);
+        when(authService.harLesetilgang(Fnr.of(fnrBarn3))).thenReturn(false);
+
+        PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(person);
+
+        assertEquals(0, personV2Data.getBarn().size());
+
+        personV2Service.flettBarnTilgangsstyrt(person.getForelderBarnRelasjon(), personV2Data, null);
+
+        FamiliemedlemTilgangsstyrt barnPaaAnnetBosted = (FamiliemedlemTilgangsstyrt) personV2Data.getBarn().get(0);
+        FamiliemedlemTilgangsstyrt barnPaaSammeBosted = (FamiliemedlemTilgangsstyrt) personV2Data.getBarn().get(1);
+        FamiliemedlemTilgangsstyrt barnMedAdressebeskyttelse = (FamiliemedlemTilgangsstyrt) personV2Data.getBarn().get(2);
+
+        assertNotNull(barnPaaAnnetBosted.getFornavn());
+        assertNotNull(barnPaaSammeBosted.getFornavn());
+        assertNull(barnMedAdressebeskyttelse.getFornavn());
+
+        assertNotNull(barnPaaAnnetBosted.getAlder());
+        assertNotNull(barnPaaSammeBosted.getAlder());
+        assertNull(barnMedAdressebeskyttelse.getAlder());
+
+        assertEquals(ANNET_BOSTED, barnPaaAnnetBosted.getRelasjonsBosted());
+        assertEquals(SAMME_BOSTED, barnPaaSammeBosted.getRelasjonsBosted());
+        assertNull(barnMedAdressebeskyttelse.getRelasjonsBosted());
+
+        assertEquals(3, personV2Data.getBarn().size());
+    }
+
+    @Test
     public void flettSivilstandOgBarnInfoNarPersonHarIngenSivilstandEllerBarn() {
         PersonV2Data personV2Data = new PersonV2Data();
+        PersonV2Data personV2Data2 = new PersonV2Data();
 
         assertEquals(0, personV2Data.getBarn().size());
         assertNull(personV2Data.getSivilstandliste());
@@ -266,8 +299,11 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         personV2Service.flettBarn(person.getForelderBarnRelasjon(), personV2Data, null);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
+        personV2Service.flettBarnTilgangsstyrt(person.getForelderBarnRelasjon(), personV2Data2, null);
+
         assertEquals(Collections.emptyList(), personV2Data.getSivilstandliste());
         assertEquals(Collections.emptyList(), personV2Data.getBarn());
+        assertEquals(Collections.emptyList(), personV2Data2.getBarn());
     }
 
     @Test
