@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Data
 @Accessors(chain = true)
-public class FamiliemedlemTilgangsstyrt {
+public class FamiliemedlemTilgangsstyrt implements Barn{
     private String fornavn;
     private LocalDate fodselsdato;
     private Boolean erDod;

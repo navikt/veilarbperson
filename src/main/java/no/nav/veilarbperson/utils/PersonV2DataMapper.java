@@ -71,7 +71,7 @@ public class PersonV2DataMapper {
                 .orElse(null));
     }
 
-    private static FellesFamiliemedlemData hentFellesFamiliemedlemData(
+    private static FellesForFamiliemedlemOgFamiliemedlemTilgangsstyrtData hentFellesFamiliemedlemData(
             HentPerson.Familiemedlem familiemedlem,
             Bostedsadresse personsBostedsadresse,
             AuthService authService
@@ -106,7 +106,7 @@ public class PersonV2DataMapper {
                 personsBostedsadresse
         );
 
-        return new FellesFamiliemedlemData(
+        return new FellesForFamiliemedlemOgFamiliemedlemTilgangsstyrtData(
                 navn, fodselsdato, dodsdato, graderingskode,
                 harAdressebeskyttelse, ukjentGradering, harVeilederLeseTilgang, harSammeBosted
         );
@@ -118,7 +118,7 @@ public class PersonV2DataMapper {
             Bostedsadresse personsBostedsadresse,
             AuthService authService
     ) {
-        FellesFamiliemedlemData data = hentFellesFamiliemedlemData(familiemedlem, personsBostedsadresse, authService);
+        FellesForFamiliemedlemOgFamiliemedlemTilgangsstyrtData data = hentFellesFamiliemedlemData(familiemedlem, personsBostedsadresse, authService);
 
         Familiemedlem medlem = new Familiemedlem().setFodselsdato(data.fodselsdato());
 
@@ -155,7 +155,7 @@ public class PersonV2DataMapper {
             Bostedsadresse personsBostedsadresse,
             AuthService authService
     ) {
-        FellesFamiliemedlemData data = hentFellesFamiliemedlemData(familiemedlem, personsBostedsadresse, authService);
+        FellesForFamiliemedlemOgFamiliemedlemTilgangsstyrtData data = hentFellesFamiliemedlemData(familiemedlem, personsBostedsadresse, authService);
 
         FamiliemedlemTilgangsstyrt medlem = new FamiliemedlemTilgangsstyrt();
 /*
@@ -163,8 +163,8 @@ Kommentarene under er hentet fra avklaring om hvilke opplysninger som kan vises,
 Regler ble gitt for partner og barn. Her er det kun barn som er relevant, derfor er reglene for partner utelatt.
 Merk at opplysninger om at barnet er dødt, og om veileder har tilgang eller ikke, alltid sendes.
 
-1. Veileder har tilgang både til bruker, partner og barn
-Tillatt å vise: Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruker
+1. Veileder har tilgang både til bruker, partner og barn. Her er alle felt i grensesnittet utfylt.
+Tillatt å vise (fra avklaring): Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruker
  */
         if (data.harVeilederLeseTilgang()) {
             return medlem
@@ -179,7 +179,8 @@ Tillatt å vise: Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruke
         }
  /*
  2. Partner/barn har diskresjonskode (kode 6, 7 eller 19). Veileder har ikke denne tilgangen.
- Tillatt å vise: Diskresjonskode
+ Tillatt å vise (fra avklaring): Diskresjonskode
+ I tillegg sendes erDød og harVeilederTilgang.
  */
         if (data.harAdressebeskyttelse() || data.ukjentGradering()) {
             return medlem
@@ -189,7 +190,8 @@ Tillatt å vise: Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruke
         }
 /*
 3. Partner/barn har skjerming (egen ansatt). Veileder har ikke denne tilgangen.
-Tillatt å vise: Alder, Bor med bruker/bor ikke med bruker
+Tillatt å vise (fra avklaring): Alder, Bor med bruker/bor ikke med bruker
+I tillegg sendes erDød og harVeilederTilgang.
  */
         if (erEgenAnsatt) {
             return medlem
@@ -201,7 +203,8 @@ Tillatt å vise: Alder, Bor med bruker/bor ikke med bruker
         }
 /*
 4. Partner/barn bor i annen kommune/bydel enn bruker. Veileder har ikke tilgang til dette nav-kontoret.
-Tillatt å vise: Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruker
+Tillatt å vise (fra avklaring): Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruker
+I tillegg sendes erDød og harVeilederTilgang.
  */
         return medlem
                 .setFornavn(data.navn().map(HentPerson.Navn::getFornavn).orElse(null))
@@ -212,7 +215,7 @@ Tillatt å vise: Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruke
                 .setRelasjonsBosted(data.harSammeBosted());
     }
 
-    /* Sammeligner persons bostesadresse med familiemedlems bostedsadresse for å se om de har samme bosted */
+    /* Sammeligner persons bostedsadresse med familiemedlems bostedsadresse for å se om de har samme bosted */
     public static RelasjonsBosted erSammeAdresse(Bostedsadresse adresse1,
                                                  Bostedsadresse adresse2) {
         Bostedsadresse.Vegadresse medlemsVegadresse = ofNullable(adresse1)
@@ -310,7 +313,7 @@ Tillatt å vise: Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruke
         return response.stream().min(Comparator.comparing(n -> n.getMetadata().getMaster().prioritet));
     }
 
-    private record FellesFamiliemedlemData(
+    private record FellesForFamiliemedlemOgFamiliemedlemTilgangsstyrtData(
             Optional<HentPerson.Navn> navn,
             LocalDate fodselsdato,
             LocalDate dodsdato,

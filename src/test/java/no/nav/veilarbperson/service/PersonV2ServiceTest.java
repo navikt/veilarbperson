@@ -145,7 +145,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         configurePdlResponse("pdl-hentPersonBolk-response.json", fnrBarn1, fnrBarn2);
         PersonFraPdlRequest personFraPdlRequest = new PersonFraPdlRequest(FNR, null);
         hentGeografisktilknytning(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())); // Må ha med fnr fordi dette flettes
-        List<Object> barn = personV2Service.hentFlettetPerson(personFraPdlRequest).getBarn();
+        List<Barn> barn = personV2Service.hentFlettetPerson(personFraPdlRequest).getBarn();
 
         assertEquals(1, barn.size());
     }

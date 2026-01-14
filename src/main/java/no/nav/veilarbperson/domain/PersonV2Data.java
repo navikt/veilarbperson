@@ -29,7 +29,7 @@ public class PersonV2Data {
     List<String> statsborgerskapKoder;
     List<String> statsborgerskap;
     String sikkerhetstiltak;
-    List<Object> barn;
+    List<Barn> barn;
     List<Sivilstand> sivilstandliste;
     Bostedsadresse bostedsadresse;
     Oppholdsadresse oppholdsadresse;
