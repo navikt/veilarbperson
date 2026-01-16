@@ -4,11 +4,9 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.domain.*;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import static java.util.Optional.ofNullable;
 
 @Data
@@ -31,7 +29,7 @@ public class PersonV2Data {
     List<String> statsborgerskapKoder;
     List<String> statsborgerskap;
     String sikkerhetstiltak;
-    List<Familiemedlem> barn;
+    List<Barn> barn;
     List<Sivilstand> sivilstandliste;
     Bostedsadresse bostedsadresse;
     Oppholdsadresse oppholdsadresse;

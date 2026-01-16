@@ -39,6 +39,14 @@ public class PersonV3Controller {
         return personV2Service.hentFlettetPerson(personFraPdlRequest);
     }
 
+    @PostMapping("/hent-person-tilgangsstyrt")
+    @Operation(summary = "Henter informasjon om en person fra PDL")
+    public PersonV2Data hentPersonTilgangsstyrt(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
+        return personV2Service.hentFlettetPersonTilgangsstyrt(personFraPdlRequest);
+    }
+
     @PostMapping("/person/hent-aktorid")
     @Operation(summary = "Henter aktørId til person")
     public AktoerId aktorid(@RequestBody PersonRequest personRequest) {
@@ -78,7 +86,7 @@ public class PersonV3Controller {
 
     @PostMapping("/person/hent-vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
-    public VergeData hentVergemaal(@RequestBody PersonFraPdlRequest personFraPdlRequest) throws IOException {
+    public VergeData hentVergemaal(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
         return personV2Service.hentVerge(personFraPdlRequest);
