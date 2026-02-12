@@ -16,4 +16,9 @@ public class FamiliemedlemTilgangsstyrt implements Barn{
     private boolean harVeilederTilgang = false;
     private String gradering; // diskresjonskode
     private RelasjonsBosted relasjonsBosted;
+
+    public FamiliemedlemTilgangsstyrt setGradering(String gradering) {
+        this.gradering = gradering != null ? gradering : "UGRADERT";
+        return this;
+    }
 }
