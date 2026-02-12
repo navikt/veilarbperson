@@ -169,7 +169,8 @@ Merk at opplysninger om at barnet er dødt, og om veileder har tilgang eller ikk
 1. Veileder har tilgang både til bruker, partner og barn. Her er alle felt i grensesnittet utfylt.
 Tillatt å vise (fra avklaring): Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruker
  */
-        if (data.graderingskode == null) {secureLog.warn("Sender null for graderingskode for person {}", familiemedlem.getFolkeregisteridentifikator());}
+        secureLog.info("Graderingskode for person {} , {}", familiemedlem.getFolkeregisteridentifikator(), data.graderingskode);
+
         if (data.harVeilederLeseTilgang()) {
             return medlem
                     .setFornavn(data.navn().map(HentPerson.Navn::getFornavn).orElse(null))
