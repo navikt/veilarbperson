@@ -1,6 +1,5 @@
 package no.nav.veilarbperson.utils;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.domain.*;
@@ -19,9 +18,7 @@ import java.util.stream.Collectors;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.*;
-import static no.nav.veilarbperson.utils.SecureLog.secureLog;
 
-@Slf4j
 public class PersonV2DataMapper {
     public static final DateTimeFormatter frontendDatoformat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -169,8 +166,6 @@ Merk at opplysninger om at barnet er dødt, og om veileder har tilgang eller ikk
 1. Veileder har tilgang både til bruker, partner og barn. Her er alle felt i grensesnittet utfylt.
 Tillatt å vise (fra avklaring): Fornavn, Fødselsdato, Alder, Bor med bruker/bor ikke med bruker
  */
-        secureLog.info("Graderingskode for person {} , {}", familiemedlem.getFolkeregisteridentifikator(), data.graderingskode);
-
         if (data.harVeilederLeseTilgang()) {
             return medlem
                     .setFornavn(data.navn().map(HentPerson.Navn::getFornavn).orElse(null))
