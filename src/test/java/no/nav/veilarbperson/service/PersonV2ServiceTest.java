@@ -278,7 +278,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         assertNotNull(barnPaaAnnetBosted.getAlder());
         assertNotNull(barnPaaSammeBosted.getAlder());
-        assertNull(barnMedAdressebeskyttelse.getAlder());
+        assertNotNull(barnMedAdressebeskyttelse.getAlder());
 
         assertEquals(ANNET_BOSTED, barnPaaAnnetBosted.getRelasjonsBosted());
         assertEquals(SAMME_BOSTED, barnPaaSammeBosted.getRelasjonsBosted());

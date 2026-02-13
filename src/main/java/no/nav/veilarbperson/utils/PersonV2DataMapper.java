@@ -185,6 +185,7 @@ Tillatt å vise (fra avklaring): Fornavn, Fødselsdato, Alder, Bor med bruker/bo
         if (data.harAdressebeskyttelse() || data.ukjentGradering()) {
             return medlem
                     .setGradering(data.graderingskode())
+                    .setAlder(beregnAlder(data.fodselsdato()))
                     .setErDod(data.dodsdato() != null)
                     .setHarVeilederTilgang(false);
         }
