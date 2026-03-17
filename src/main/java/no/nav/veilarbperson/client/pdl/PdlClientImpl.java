@@ -170,6 +170,8 @@ public class PdlClientImpl implements PdlClient {
         try {
             String gqlResponse = rawRequest(JsonUtils.toJson(gqlRequest), token, behandlingsnummer);
             return parseGqlJsonResponse(gqlResponse, gqlResponseDataClass);
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Graphql request feilet", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
