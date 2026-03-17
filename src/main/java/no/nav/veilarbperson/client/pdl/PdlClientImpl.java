@@ -183,6 +183,11 @@ public class PdlClientImpl implements PdlClient {
 
         if (errorsNode != null) {
             log.error("Kall mot PDL feilet:\n" + errorsNode.toPrettyString());
+
+            if (errorsNode.get(0).get("message").asText().equals("Ikke tilgang til å se person")) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            }
+
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
