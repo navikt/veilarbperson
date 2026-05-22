@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 @Slf4j
 public class TestUtils {
@@ -36,7 +37,7 @@ public class TestUtils {
     @SneakyThrows
     public static String readTestResourceFile(String fileName) {
         URL fileUrl = TestUtils.class.getClassLoader().getResource(fileName);
-        Path resPath = Paths.get(fileUrl.toURI());
+        Path resPath = Paths.get(Objects.requireNonNull(fileUrl, "fileUrl kan ikke være null").toURI());
         return Files.readString(resPath);
     }
 
