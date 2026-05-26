@@ -217,6 +217,7 @@
                     <artifactId>wiremock-standalone</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>no.nav.poao-tilgang</groupId>
