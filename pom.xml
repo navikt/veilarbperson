@@ -76,7 +76,6 @@
                     </annotationProcessorPaths>
                     <release>${java.version}</release>
                     <encoding>UTF-8</encoding>
-                    <release>21</release>
                 </configuration>
             </plugin>
             <plugin>
