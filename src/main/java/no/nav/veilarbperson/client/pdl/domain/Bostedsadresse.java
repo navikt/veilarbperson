@@ -1,7 +1,9 @@
 package no.nav.veilarbperson.client.pdl.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class Bostedsadresse extends Adresse {
 
@@ -20,14 +22,12 @@ public class Bostedsadresse extends Adresse {
         private String kommunenummer;
         private String kommune;
 
-        public Matrikkeladresse withPoststed(String poststed) {
+        public void withPoststed(String poststed) {
             this.poststed = poststed;
-            return this;
         }
 
-        public Matrikkeladresse withKommune(String kommune) {
+        public void withKommune(String kommune) {
             this.kommune = kommune;
-            return this;
         }
     }
 
@@ -36,9 +36,8 @@ public class Bostedsadresse extends Adresse {
         private String bostedskommune;
         private String kommune;
 
-        public UkjentBosted withKommune(String kommune) {
+        public void withKommune(String kommune) {
             this.kommune = kommune;
-            return this;
         }
     }
 
