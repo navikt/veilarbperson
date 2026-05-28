@@ -16,12 +16,11 @@ import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonV2Service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.time.LocalDate;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;

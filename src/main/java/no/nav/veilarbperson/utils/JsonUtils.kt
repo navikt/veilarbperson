@@ -1,20 +1,17 @@
 package no.nav.veilarbperson.utils
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.common.json.JsonUtils
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.readValue
 import no.nav.common.rest.client.RestUtils
 import okhttp3.Response
 
-object JsonUtils {
-    val objectMapper: ObjectMapper =
-        no.nav.common.json.JsonUtils.getMapper().registerModule(KotlinModule.Builder().build())
-}
+val objectMapper: ObjectMapper = JsonUtils.getMapper()
 
 inline fun <reified T> Response.deserializeJson(): T? {
     return RestUtils.getBodyStr(this)
         .map {
-            val result: T = JsonUtils.objectMapper.readValue(it)
+            val result: T = objectMapper.readValue(it)
             result
         }
         .orElse(null)
@@ -25,5 +22,5 @@ inline fun <reified T> Response.deserializeJsonOrThrow(): T {
 }
 
 fun <T> T.toJson(): String {
-    return JsonUtils.objectMapper.writeValueAsString(this)
+    return objectMapper.writeValueAsString(this)
 }
