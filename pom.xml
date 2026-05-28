@@ -76,7 +76,6 @@
                     </annotationProcessorPaths>
                     <release>${java.version}</release>
                     <encoding>UTF-8</encoding>
-                    <release>21</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -212,6 +211,7 @@
                     <artifactId>wiremock-standalone</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>no.nav.poao-tilgang</groupId>
@@ -276,7 +276,7 @@
             <scope>test</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>com.vaadin.external.google</groupId>
+                    <groupId>com.vaadin.external.google.android</groupId>
                     <artifactId>android-json</artifactId>
                 </exclusion>
             </exclusions>
