@@ -1,8 +1,10 @@
 package no.nav.veilarbperson.client.pdl.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class Kontaktadresse extends Adresse {
 
