@@ -100,6 +100,19 @@ public class AuthService {
             return harAADRolleForSystemTilSystemTilgang();
         }
     }
+    public boolean harLesetilgangFamiliemedlem(Fnr fnr) {
+        if (erEksternBruker()) {
+            harSikkerhetsNivaa4();
+            return harEksternBrukerTilgangTilEksternBruker(fnr.get());
+        } else if (erInternBruker()) {
+            return harVeilederTilgangTilEksternBrukersFamiliemedlem(fnr.get());
+        } else {
+            if (!erSystemBruker()) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            }
+            return harAADRolleForSystemTilSystemTilgang();
+        }
+    }
 
     private boolean harEksternBrukerTilgangTilEksternBruker(String ressursNorskIdent) {
         Decision desicion = poaoTilgangClient.evaluatePolicy(new EksternBrukerTilgangTilEksternBrukerPolicyInput(
@@ -120,6 +133,23 @@ public class AuthService {
     }
 
     private boolean harVeilederTilgangTilEksternBruker(String eksternBruker) {
+        Decision desicion = poaoTilgangClient.evaluatePolicy(new NavAnsattTilgangTilEksternBrukerPolicyInput(
+                hentInnloggetVeilederUUID(), TilgangType.LESE, eksternBruker
+        )).getOrThrow();
+
+        if (auditLogger != null){
+            auditLogWithMessageAndDestinationUserId(
+                    "Veileder har gjort oppslag på bruker",
+                    eksternBruker,
+                    getNavIdentClaimHvisTilgjengelig().orElseThrow().get(),
+                    desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
+            );
+        }
+
+        return desicion.isPermit();
+    }
+
+    private boolean harVeilederTilgangTilEksternBrukersFamiliemedlem(String eksternBruker) {
         Decision desicion = poaoTilgangClient.evaluatePolicy(new NavAnsattTilgangTilEksternBrukerPolicyInput(
                 hentInnloggetVeilederUUID(), TilgangType.LESE, eksternBruker
         )).getOrThrow();

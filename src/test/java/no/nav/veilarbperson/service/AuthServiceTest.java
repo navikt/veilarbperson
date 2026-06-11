@@ -57,7 +57,7 @@ public class AuthServiceTest {
 
 		Boolean answer = authService.harLesetilgang(FNR);
 
-		Assertions.assertEquals(answer, true);
+		Assertions.assertEquals(true, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
 
 	}
@@ -98,7 +98,7 @@ public class AuthServiceTest {
 
 		Boolean answer = authService.harLesetilgang(FNR);
 
-		Assertions.assertEquals(answer, false);
+		Assertions.assertEquals(false, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
 	}
 
@@ -120,7 +120,7 @@ public class AuthServiceTest {
 
 		Boolean answer = authService.harLesetilgang(FNR);
 
-		Assertions.assertEquals(answer, true);
+		Assertions.assertEquals(true, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
 
 	}
@@ -143,7 +143,7 @@ public class AuthServiceTest {
 
 		Boolean answer = authService.harLesetilgang(FNR);
 
-		Assertions.assertEquals(answer, false);
+		Assertions.assertEquals(false, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
 	}
 
@@ -184,7 +184,71 @@ public class AuthServiceTest {
 
 		Boolean answer = authService.harLesetilgang(FNR);
 
-		Assertions.assertEquals(answer, true);
+		Assertions.assertEquals(true, answer);
 		verify(auditLogger, times(0)).log(any(CefMessage.class));
+	}
+
+	@Test
+	public void harLesetilgangFamiliemedlem_VeilederPermit() {
+		Fnr FNR = new Fnr("123");
+		NavIdent navIdent = new NavIdent("A678910");
+		JWTClaimsSet claims = new JWTClaimsSet.Builder()
+				.claim("roles", "INTERN")
+				.claim("NAVident", navIdent.get())
+				.claim("acr", "Level4")
+				.claim("oid", "00000000-0000-0001-0000-0000000003e8")
+				.build();
+		when(authContextHolder.requireIdTokenClaims()).thenReturn(claims);
+		when(authContextHolder.erInternBruker()).thenReturn(true);
+		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
+
+		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, Decision.Permit.INSTANCE));
+
+		Boolean answer = authService.harLesetilgangFamiliemedlem(FNR);
+
+		Assertions.assertEquals(true, answer);
+		verify(auditLogger, times(1)).log(any(CefMessage.class));
+	}
+
+	@Test
+	public void harLesetilgangFamiliemedlem_VeilederDeny() {
+		Fnr FNR = new Fnr("123");
+		NavIdent navIdent = new NavIdent("A678910");
+		JWTClaimsSet claims = new JWTClaimsSet.Builder()
+				.claim("roles", "INTERN")
+				.claim("NAVident", navIdent.get())
+				.claim("acr", "Level4")
+				.claim("oid", "00000000-0000-0001-0000-0000000003e8")
+				.build();
+		when(authContextHolder.requireIdTokenClaims()).thenReturn(claims);
+		when(authContextHolder.erInternBruker()).thenReturn(true);
+		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
+
+		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, new Decision.Deny("", "")));
+
+		Boolean answer = authService.harLesetilgangFamiliemedlem(FNR);
+
+		Assertions.assertEquals(false, answer);
+		verify(auditLogger, times(1)).log(any(CefMessage.class));
+	}
+
+	@Test
+	public void harLesetilgangFamiliemedlem_EksternBrukerNivaa4_Permit() {
+		Fnr FNR = new Fnr("123");
+		JWTClaimsSet claims = new JWTClaimsSet.Builder()
+				.claim("roles", "EKSTERN")
+				.claim("acr", "Level4")
+				.claim("pid", FNR.get())
+				.build();
+		when(authContextHolder.getUid()).thenReturn(Optional.of(FNR.get()));
+		when(authContextHolder.erEksternBruker()).thenReturn(true);
+		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
+
+		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, Decision.Permit.INSTANCE));
+
+		Boolean answer = authService.harLesetilgangFamiliemedlem(FNR);
+
+		Assertions.assertEquals(true, answer);
+		verify(auditLogger, times(1)).log(any(CefMessage.class));
 	}
 }
