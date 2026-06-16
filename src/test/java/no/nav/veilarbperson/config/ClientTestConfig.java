@@ -27,11 +27,12 @@ import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.cloud.contract.wiremock.WireMockConfiguration;
-import org.springframework.cloud.contract.wiremock.WireMockConfigurationCustomizer;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,14 +43,16 @@ import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
 import static org.mockito.Mockito.mock;
 
 @Configuration
-@Import({WireMockConfiguration.class})
 public class ClientTestConfig {
 
     public static final int WIREMOCK_PORT = 8081;
 
-    @Bean
-    WireMockConfigurationCustomizer optionsCustomizer() {
-        return config -> config.port(WIREMOCK_PORT);
+    @Bean(destroyMethod = "stop")
+    public WireMockServer wireMockServer() {
+        WireMockServer server = new WireMockServer(options().port(WIREMOCK_PORT));
+        server.start();
+        WireMock.configureFor("localhost", WIREMOCK_PORT);
+        return server;
     }
 
     @Bean
