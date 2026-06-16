@@ -10,6 +10,7 @@ import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.types.identer.Fnr;
 import no.nav.common.types.identer.NavIdent;
 import no.nav.poao_tilgang.client.Decision;
+import no.nav.poao_tilgang.client.NavAnsattTilgangTilEksternBrukerKjernereglerPolicyInput;
 import no.nav.poao_tilgang.client.PoaoTilgangClient;
 import no.nav.poao_tilgang.client.api.ApiResult;
 import no.nav.veilarbperson.config.EnvironmentProperties;
@@ -21,6 +22,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 public class AuthServiceTest {
@@ -208,6 +210,7 @@ public class AuthServiceTest {
 
 		Assertions.assertEquals(true, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
+		verify(poaoTilgangClient).evaluatePolicy(argThat(p -> p instanceof NavAnsattTilgangTilEksternBrukerKjernereglerPolicyInput));
 	}
 
 	@Test
@@ -230,6 +233,7 @@ public class AuthServiceTest {
 
 		Assertions.assertEquals(false, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
+		verify(poaoTilgangClient).evaluatePolicy(argThat(p -> p instanceof NavAnsattTilgangTilEksternBrukerKjernereglerPolicyInput));
 	}
 
 	@Test

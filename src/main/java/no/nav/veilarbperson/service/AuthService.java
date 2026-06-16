@@ -150,13 +150,13 @@ public class AuthService {
     }
 
     private boolean harVeilederTilgangTilEksternBrukersFamiliemedlem(String eksternBruker) {
-        Decision desicion = poaoTilgangClient.evaluatePolicy(new NavAnsattTilgangTilEksternBrukerPolicyInput(
+        Decision desicion = poaoTilgangClient.evaluatePolicy(new NavAnsattTilgangTilEksternBrukerKjernereglerPolicyInput(
                 hentInnloggetVeilederUUID(), TilgangType.LESE, eksternBruker
         )).getOrThrow();
 
         if (auditLogger != null){
             auditLogWithMessageAndDestinationUserId(
-                    "Veileder har gjort oppslag på bruker",
+                    "Veileder har gjort oppslag på brukers familiemedlem",
                     eksternBruker,
                     getNavIdentClaimHvisTilgjengelig().orElseThrow().get(),
                     desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
