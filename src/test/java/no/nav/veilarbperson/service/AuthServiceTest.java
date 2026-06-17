@@ -45,19 +45,19 @@ public class AuthServiceTest {
 
 	@Test
 	public void sjekkHarTilgangEksternBruker_Permit() {
-		Fnr FNR = new Fnr("123");
+		Fnr fodselsnr = new Fnr("123");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", "EKSTERN")
 				.claim("acr", "Level4")
-				.claim("pid", FNR.get())
+				.claim("pid", fodselsnr.get())
 				.build();
-		when(authContextHolder.getUid()).thenReturn(Optional.of(FNR.get()));
+		when(authContextHolder.getUid()).thenReturn(Optional.of(fodselsnr.get()));
 		when(authContextHolder.erEksternBruker()).thenReturn(true);
 		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
 
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, Decision.Permit.INSTANCE));
 
-		Boolean answer = authService.harLesetilgang(FNR);
+		Boolean answer = authService.harLesetilgang(fodselsnr);
 
 		Assertions.assertEquals(true, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
@@ -66,27 +66,27 @@ public class AuthServiceTest {
 
 	@Test
 	public void sjekkHarTilgangEksternBrukerIkkeNivaa4_Deny() {
-		Fnr FNR = new Fnr("123");
+		Fnr fodselsnr = new Fnr("123");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", "EKSTERN")
 				.claim("acr", "Level3")
-				.claim("pid", FNR.get())
+				.claim("pid", fodselsnr.get())
 				.build();
-		when(authContextHolder.getUid()).thenReturn(Optional.of(FNR.get()));
+		when(authContextHolder.getUid()).thenReturn(Optional.of(fodselsnr.get()));
 		when(authContextHolder.erEksternBruker()).thenReturn(true);
 		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
 
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, Decision.Permit.INSTANCE));
 
 
-		Assertions.assertThrows(ResponseStatusException.class, () -> authService.harLesetilgang(FNR));
+		Assertions.assertThrows(ResponseStatusException.class, () -> authService.harLesetilgang(fodselsnr));
 		verify(auditLogger, times(0)).log(any(CefMessage.class));
 
 	}
 
 	@Test
 	public void sjekkHarTilgangEksternBruker_Deny() {
-		Fnr FNR = new Fnr("123");
+		Fnr fodselsnr = new Fnr("123");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", "EKSTERN")
 				.claim("acr", "Level4")
@@ -98,7 +98,7 @@ public class AuthServiceTest {
 
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, new Decision.Deny("","")));
 
-		Boolean answer = authService.harLesetilgang(FNR);
+		Boolean answer = authService.harLesetilgang(fodselsnr);
 
 		Assertions.assertEquals(false, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
@@ -106,7 +106,7 @@ public class AuthServiceTest {
 
 	@Test
 	public void sjekkVeilederHarTilgangEksternBruker_Permit() {
-		Fnr FNR = new Fnr("123");
+		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", "INTERN")
@@ -120,7 +120,7 @@ public class AuthServiceTest {
 
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, Decision.Permit.INSTANCE));
 
-		Boolean answer = authService.harLesetilgang(FNR);
+		Boolean answer = authService.harLesetilgang(fodselsnr);
 
 		Assertions.assertEquals(true, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
@@ -129,7 +129,7 @@ public class AuthServiceTest {
 
 	@Test
 	public void sjekkVeilederHarTilgangEksternBruker_Deny() {
-		Fnr FNR = new Fnr("123");
+		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", "INTERN")
@@ -143,7 +143,7 @@ public class AuthServiceTest {
 
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, new Decision.Deny("","")));
 
-		Boolean answer = authService.harLesetilgang(FNR);
+		Boolean answer = authService.harLesetilgang(fodselsnr);
 
 		Assertions.assertEquals(false, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
@@ -151,7 +151,7 @@ public class AuthServiceTest {
 
 	@Test
 	public void sjekkSystembrukerHarTilgang_Permit() {
-		Fnr FNR = new Fnr("123");
+		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("NAVident", navIdent.get())
@@ -163,12 +163,12 @@ public class AuthServiceTest {
 
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, new Decision.Deny("","")));
 
-		Assertions.assertThrows(ResponseStatusException.class, () -> authService.harLesetilgang(FNR));
+		Assertions.assertThrows(ResponseStatusException.class, () -> authService.harLesetilgang(fodselsnr));
 	}
 
 	@Test
 	public void sjekkIkkeRolleIkkeTilgang() {
-		Fnr FNR = new Fnr("123");
+		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", Collections.singletonList("access_as_application"))
@@ -184,7 +184,7 @@ public class AuthServiceTest {
 
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, new Decision.Deny("","")));
 
-		Boolean answer = authService.harLesetilgang(FNR);
+		Boolean answer = authService.harLesetilgang(fodselsnr);
 
 		Assertions.assertEquals(true, answer);
 		verify(auditLogger, times(0)).log(any(CefMessage.class));
@@ -192,7 +192,7 @@ public class AuthServiceTest {
 
 	@Test
 	public void harLesetilgangFamiliemedlem_VeilederPermit() {
-		Fnr FNR = new Fnr("123");
+		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", "INTERN")
@@ -206,7 +206,7 @@ public class AuthServiceTest {
 
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, Decision.Permit.INSTANCE));
 
-		Boolean answer = authService.harLesetilgangFamiliemedlem(FNR);
+		Boolean answer = authService.harLesetilgangFamiliemedlem(fodselsnr);
 
 		Assertions.assertEquals(true, answer);
 		verify(poaoTilgangClient).evaluatePolicy(argThat(p -> p instanceof NavAnsattTilgangTilEksternBrukerKjernereglerPolicyInput));
@@ -214,7 +214,7 @@ public class AuthServiceTest {
 
 	@Test
 	public void harLesetilgangFamiliemedlem_VeilederDeny() {
-		Fnr FNR = new Fnr("123");
+		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", "INTERN")
@@ -228,7 +228,7 @@ public class AuthServiceTest {
 
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, new Decision.Deny("", "")));
 
-		Boolean answer = authService.harLesetilgangFamiliemedlem(FNR);
+		Boolean answer = authService.harLesetilgangFamiliemedlem(fodselsnr);
 
 		Assertions.assertEquals(false, answer);
 		verify(poaoTilgangClient).evaluatePolicy(argThat(p -> p instanceof NavAnsattTilgangTilEksternBrukerKjernereglerPolicyInput));
@@ -236,19 +236,19 @@ public class AuthServiceTest {
 
 	@Test
 	public void harLesetilgangFamiliemedlem_EksternBrukerNivaa4_Permit() {
-		Fnr FNR = new Fnr("123");
+		Fnr fodselsnr = new Fnr("123");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", "EKSTERN")
 				.claim("acr", "Level4")
-				.claim("pid", FNR.get())
+				.claim("pid", fodselsnr.get())
 				.build();
-		when(authContextHolder.getUid()).thenReturn(Optional.of(FNR.get()));
+		when(authContextHolder.getUid()).thenReturn(Optional.of(fodselsnr.get()));
 		when(authContextHolder.erEksternBruker()).thenReturn(true);
 		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
 
 		when(poaoTilgangClient.evaluatePolicy(any())).thenReturn(new ApiResult<>(null, Decision.Permit.INSTANCE));
 
-		Boolean answer = authService.harLesetilgangFamiliemedlem(FNR);
+		Boolean answer = authService.harLesetilgangFamiliemedlem(fodselsnr);
 
 		Assertions.assertEquals(true, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
