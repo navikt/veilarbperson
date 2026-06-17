@@ -209,7 +209,6 @@ public class AuthServiceTest {
 		Boolean answer = authService.harLesetilgangFamiliemedlem(FNR);
 
 		Assertions.assertEquals(true, answer);
-		verify(auditLogger, times(1)).log(any(CefMessage.class));
 		verify(poaoTilgangClient).evaluatePolicy(argThat(p -> p instanceof NavAnsattTilgangTilEksternBrukerKjernereglerPolicyInput));
 	}
 
@@ -232,7 +231,6 @@ public class AuthServiceTest {
 		Boolean answer = authService.harLesetilgangFamiliemedlem(FNR);
 
 		Assertions.assertEquals(false, answer);
-		verify(auditLogger, times(1)).log(any(CefMessage.class));
 		verify(poaoTilgangClient).evaluatePolicy(argThat(p -> p instanceof NavAnsattTilgangTilEksternBrukerKjernereglerPolicyInput));
 	}
 

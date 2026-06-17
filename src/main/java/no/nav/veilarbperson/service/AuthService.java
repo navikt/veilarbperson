@@ -150,18 +150,15 @@ public class AuthService {
     }
 
     private boolean harVeilederTilgangTilEksternBrukersFamiliemedlem(String eksternBruker) {
+/*      Ikke auditlogging her, oppsummering fra team Tilgangsmaskinen:
+        Logg til arcsight kun når dere viser personopplysninger om en bruker i GUI
+        Ikke lag logginnslag på brukers familiemedlemmer, selv når familiemedlemmenes navn evt vises i bildet
+        Dette gjelder uavhengig av hvilket regelsett (kjerne/komplett) som er brukt
+*/
+
         Decision desicion = poaoTilgangClient.evaluatePolicy(new NavAnsattTilgangTilEksternBrukerKjernereglerPolicyInput(
                 hentInnloggetVeilederUUID(), TilgangType.LESE, eksternBruker
         )).getOrThrow();
-
-        if (auditLogger != null){
-            auditLogWithMessageAndDestinationUserId(
-                    "Veileder har gjort oppslag på brukers familiemedlem",
-                    eksternBruker,
-                    getNavIdentClaimHvisTilgjengelig().orElseThrow().get(),
-                    desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
-            );
-        }
 
         return desicion.isPermit();
     }
