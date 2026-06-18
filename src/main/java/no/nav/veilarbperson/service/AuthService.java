@@ -93,25 +93,22 @@ public class AuthService {
             return harEksternBrukerTilgangTilEksternBruker(fnr.get());
         } else if (erInternBruker()) {
             return harVeilederTilgangTilEksternBruker(fnr.get());
-        } else {
-            if (!erSystemBruker()) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-            }
+        } else if (erSystemBruker()) {
             return harAADRolleForSystemTilSystemTilgang();
         }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
+
     public boolean harLesetilgangFamiliemedlem(Fnr fnr) {
         if (erEksternBruker()) {
             harSikkerhetsNivaa4();
             return harEksternBrukerTilgangTilEksternBruker(fnr.get());
         } else if (erInternBruker()) {
             return harVeilederTilgangTilEksternBrukersFamiliemedlem(fnr.get());
-        } else {
-            if (!erSystemBruker()) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-            }
+        } else if (erSystemBruker()) {
             return harAADRolleForSystemTilSystemTilgang();
         }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
 
     private boolean harEksternBrukerTilgangTilEksternBruker(String ressursNorskIdent) {

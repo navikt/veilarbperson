@@ -44,7 +44,7 @@ public class AuthServiceTest {
 	);
 
 	@Test
-	public void sjekkHarTilgangEksternBruker_Permit() {
+	public void harLesetilgang_EksternBrukerNivaa4_Permit() {
 		Fnr fodselsnr = new Fnr("123");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", "EKSTERN")
@@ -65,7 +65,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	public void sjekkHarTilgangEksternBrukerIkkeNivaa4_Deny() {
+	public void harLesetilgang_EksternBrukerIkkeNivaa4_Forbidden() {
 		Fnr fodselsnr = new Fnr("123");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", "EKSTERN")
@@ -85,7 +85,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	public void sjekkHarTilgangEksternBruker_Deny() {
+	public void harLesetilgang_EksternBrukerNivaa4_Deny() {
 		Fnr fodselsnr = new Fnr("123");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
 				.claim("roles", "EKSTERN")
@@ -105,7 +105,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	public void sjekkVeilederHarTilgangEksternBruker_Permit() {
+	public void harLesetilgang_Veileder_Permit() {
 		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -128,7 +128,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	public void sjekkVeilederHarTilgangEksternBruker_Deny() {
+	public void harLesetilgang_Veileder_Deny() {
 		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -150,7 +150,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	public void sjekkSystembrukerHarTilgang_Permit() {
+	public void harLesetilgang_IngenRolle_Forbidden() {
 		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -167,7 +167,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	public void sjekkIkkeRolleIkkeTilgang() {
+	public void harLesetilgang_Systembruker_Permit() {
 		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -191,7 +191,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	public void harLesetilgangFamiliemedlem_VeilederPermit() {
+	public void harLesetilgangFamiliemedlem_Veileder_Permit() {
 		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -213,7 +213,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	public void harLesetilgangFamiliemedlem_VeilederDeny() {
+	public void harLesetilgangFamiliemedlem_Veileder_Deny() {
 		Fnr fodselsnr = new Fnr("123");
 		NavIdent navIdent = new NavIdent("A678910");
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -252,5 +252,35 @@ public class AuthServiceTest {
 
 		Assertions.assertEquals(true, answer);
 		verify(auditLogger, times(1)).log(any(CefMessage.class));
+	}
+
+	@Test
+	public void harLesetilgangFamiliemedlem_Systembruker_Permit() {
+		Fnr fodselsnr = new Fnr("123");
+		JWTClaimsSet claims = new JWTClaimsSet.Builder()
+				.claim("roles", Collections.singletonList("access_as_application"))
+				.claim("iss", "tokendings")
+				.build();
+		when(authContextHolder.requireIdTokenClaims()).thenReturn(claims);
+		when(authContextHolder.erSystemBruker()).thenReturn(true);
+		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
+		when(environmentProperties.getNaisAadIssuer()).thenReturn("tokendings");
+
+		Boolean answer = authService.harLesetilgangFamiliemedlem(fodselsnr);
+
+		Assertions.assertEquals(true, answer);
+		verify(auditLogger, times(0)).log(any(CefMessage.class));
+	}
+
+	@Test
+	public void harLesetilgangFamiliemedlem_IngenRolle_Forbidden() {
+		Fnr fodselsnr = new Fnr("123");
+		JWTClaimsSet claims = new JWTClaimsSet.Builder()
+				.claim("acr", "Level4")
+				.build();
+		when(authContextHolder.requireIdTokenClaims()).thenReturn(claims);
+		when(authContextHolder.getIdTokenClaims()).thenReturn(Optional.of(claims));
+
+		Assertions.assertThrows(ResponseStatusException.class, () -> authService.harLesetilgangFamiliemedlem(fodselsnr));
 	}
 }
