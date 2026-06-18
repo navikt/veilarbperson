@@ -314,7 +314,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         // flett sivilstandinfo når relatert person ikke har gradering/adressebeskyttelse
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
-        when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
+        when(authService.harLesetilgangFamiliemedlem(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
         Sivilstand sivilstand = personV2Data.getSivilstandliste().getFirst();
@@ -324,7 +324,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
 
         // flett partnerinfo når relatert person har gradering/adressebeskyttelse
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
-        when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
+        when(authService.harLesetilgangFamiliemedlem(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         givenThat(
                 post(WireMock.urlEqualTo("/graphql"))
                         .withRequestBody(containing(fnrRelatertSivilstand))
@@ -349,7 +349,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         person = hentPerson(FNR);
 
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
-        when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
+        when(authService.harLesetilgangFamiliemedlem(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
         Sivilstand sivilstand = personV2Data.getSivilstandliste().getFirst();
@@ -365,7 +365,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(person);
 
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
-        when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
+        when(authService.harLesetilgangFamiliemedlem(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
         Sivilstand sivilstand = personV2Data.getSivilstandliste().getFirst();
@@ -381,7 +381,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         person = hentPerson(FNR);
 
         when(skjermetClient.hentSkjermet(Fnr.of(fnrRelatertSivilstand))).thenReturn(false);
-        when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
+        when(authService.harLesetilgangFamiliemedlem(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
         Sivilstand sivilstand = personV2Data.getSivilstandliste().getFirst();
@@ -416,7 +416,7 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         PersonV2Data personV2Data = new PersonV2Data();
         person = pdlClient.hentPerson(new PdlRequest(Fnr.of("01234567899"), null));
 
-        when(authService.harLesetilgang(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
+        when(authService.harLesetilgangFamiliemedlem(Fnr.of(fnrRelatertSivilstand))).thenReturn(true);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
         List<Sivilstand> sivilstands = personV2Data.getSivilstandliste();
 

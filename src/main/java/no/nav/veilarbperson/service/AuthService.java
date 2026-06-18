@@ -93,12 +93,22 @@ public class AuthService {
             return harEksternBrukerTilgangTilEksternBruker(fnr.get());
         } else if (erInternBruker()) {
             return harVeilederTilgangTilEksternBruker(fnr.get());
-        } else {
-            if (!erSystemBruker()) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-            }
+        } else if (erSystemBruker()) {
             return harAADRolleForSystemTilSystemTilgang();
         }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    public boolean harLesetilgangFamiliemedlem(Fnr fnr) {
+        if (erEksternBruker()) {
+            harSikkerhetsNivaa4();
+            return harEksternBrukerTilgangTilEksternBruker(fnr.get());
+        } else if (erInternBruker()) {
+            return harVeilederTilgangTilEksternBrukersFamiliemedlem(fnr.get());
+        } else if (erSystemBruker()) {
+            return harAADRolleForSystemTilSystemTilgang();
+        }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
 
     private boolean harEksternBrukerTilgangTilEksternBruker(String ressursNorskIdent) {
@@ -132,6 +142,20 @@ public class AuthService {
                     desicion.isPermit() ? AuthorizationDecision.PERMIT : AuthorizationDecision.DENY
             );
         }
+
+        return desicion.isPermit();
+    }
+
+    private boolean harVeilederTilgangTilEksternBrukersFamiliemedlem(String eksternBruker) {
+/*      Ikke auditlogging her, oppsummering fra team Tilgangsmaskinen:
+        Logg til arcsight kun når dere viser personopplysninger om en bruker i GUI
+        Ikke lag logginnslag på brukers familiemedlemmer, selv når familiemedlemmenes navn evt vises i bildet
+        Dette gjelder uavhengig av hvilket regelsett (kjerne/komplett) som er brukt
+*/
+
+        Decision desicion = poaoTilgangClient.evaluatePolicy(new NavAnsattTilgangTilEksternBrukerKjernereglerPolicyInput(
+                hentInnloggetVeilederUUID(), TilgangType.LESE, eksternBruker
+        )).getOrThrow();
 
         return desicion.isPermit();
     }
