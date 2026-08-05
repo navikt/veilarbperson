@@ -41,7 +41,7 @@ class PersonGraphQLControllerTest {
 
         graphQlTester.document("""
                 query {
-                    person(fnr: "%s") {
+                    person(fnr: "%s", behandlingsnummer: "B643") {
                         fornavn
                         etternavn
                         fodselsdato
@@ -63,7 +63,7 @@ class PersonGraphQLControllerTest {
 
         graphQlTester.document("""
                 query {
-                    person(fnr: "%s") {
+                    person(fnr: "%s", behandlingsnummer: "B643") {
                         egenAnsatt
                     }
                 }
@@ -87,7 +87,7 @@ class PersonGraphQLControllerTest {
 
         graphQlTester.document("""
                 query {
-                    person(fnr: "%s") {
+                    person(fnr: "%s", behandlingsnummer: "B643") {
                         fornavn
                         egenAnsatt
                     }

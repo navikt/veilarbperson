@@ -11,6 +11,26 @@ Spørsmål knyttet til koden eller prosjektet kan stilles ved å opprette en iss
 
 Interne henvendelser kan sendes via Slack i kanalen #po-arbeidsoppfølging.
 
+# GraphQL — visittkortdata
+
+Endepunktet er tiltenkt `veilarbvisittkortfs` og returnerer de feltene visittkortvisningen trenger.
+
+```
+POST /veilarbperson/graphql
+Content-Type: application/json
+Authorization: Bearer <TokenX-token>
+```
+
+Eksempelspørring:
+```json
+{
+  "query": "{ person(fnr: \"12345678901\", behandlingsnummer: \"B643\") { fornavn mellomnavn etternavn fodselsdato dodsdato kjonn diskresjonskode egenAnsatt sikkerhetstiltak telefon { telefonNr prioritet registrertDato master } } }"
+}
+```
+
+`behandlingsnummer` er påkrevd og skal være konsumentens eget B-nummer fra behandlingskatalogen.
+Feltet `fnr` skal ikke hentes ut fra responsen — det er ikke med i svaret.
+
 # PDL
 PDL dok anbefaler å bruke Altair programvare for å kjøre graphql eller for å gjøre oppslag mot PDL. 
 
