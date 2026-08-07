@@ -1,6 +1,10 @@
 package no.nav.veilarbperson.controller;
 
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.digdir.DigdirClient;
+import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
+import no.nav.veilarbperson.client.digdir.KRRPostPersonerRequest;
+import no.nav.veilarbperson.client.digdir.KRRPostPersonerResponse;
 import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
@@ -14,6 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,12 +37,16 @@ class PersonGraphQLControllerTest {
     private SkjermetClient skjermetClient;
 
     @MockitoBean
+    private DigdirClient digdirClient;
+
+    @MockitoBean
     private AuthService authService;
 
     @Test
     void henter_navn_og_fodselsdato() {
         when(pdlClient.hentPerson(any(PdlRequest.class))).thenReturn(lagTestPerson());
         when(skjermetClient.hentSkjermet(any(Fnr.class))).thenReturn(false);
+        when(digdirClient.hentKontaktInfo(any(KRRPostPersonerRequest.class))).thenReturn(null);
 
         graphQlTester.document("""
                 query {
@@ -60,6 +69,7 @@ class PersonGraphQLControllerTest {
     void skjermet_person_returnerer_egenAnsatt_true() {
         when(pdlClient.hentPerson(any(PdlRequest.class))).thenReturn(lagTestPerson());
         when(skjermetClient.hentSkjermet(any(Fnr.class))).thenReturn(true);
+        when(digdirClient.hentKontaktInfo(any(KRRPostPersonerRequest.class))).thenReturn(null);
 
         graphQlTester.document("""
                 query {
@@ -84,6 +94,7 @@ class PersonGraphQLControllerTest {
         tomPerson.setTelefonnummer(List.of());
         when(pdlClient.hentPerson(any(PdlRequest.class))).thenReturn(tomPerson);
         when(skjermetClient.hentSkjermet(any(Fnr.class))).thenReturn(false);
+        when(digdirClient.hentKontaktInfo(any(KRRPostPersonerRequest.class))).thenReturn(null);
 
         graphQlTester.document("""
                 query {
@@ -96,6 +107,39 @@ class PersonGraphQLControllerTest {
                 .execute()
                 .path("person.fornavn").valueIsNull()
                 .path("person.egenAnsatt").entity(Boolean.class).isEqualTo(false);
+    }
+
+    @Test
+    void krr_telefon_faar_prioritet_1_og_pdl_telefon_bumpes() {
+        var pdlPersonMedTelefon = lagTestPerson();
+        var pdlTelefon = new HentPerson.Telefonnummer();
+        pdlTelefon.setNummer("11111111");
+        pdlTelefon.setPrioritet("1");
+        pdlPersonMedTelefon.setTelefonnummer(List.of(pdlTelefon));
+
+        var krrInfo = new DigdirKontaktinfo(
+                TEST_FNR.get(), true, true, null, false,
+                null, null, null, null, null,
+                "99999999", "2024-01-15T12:00:00+01:00", null);
+        var krrResponse = new KRRPostPersonerResponse(Map.of(TEST_FNR.get(), krrInfo), null);
+
+        when(pdlClient.hentPerson(any(PdlRequest.class))).thenReturn(pdlPersonMedTelefon);
+        when(skjermetClient.hentSkjermet(any(Fnr.class))).thenReturn(false);
+        when(digdirClient.hentKontaktInfo(any(KRRPostPersonerRequest.class))).thenReturn(krrResponse);
+
+        graphQlTester.document("""
+                query {
+                    person(fnr: "%s", behandlingsnummer: "B643") {
+                        telefon { telefonNr prioritet master }
+                    }
+                }
+                """.formatted(TEST_FNR))
+                .execute()
+                .path("person.telefon[0].telefonNr").entity(String.class).isEqualTo("99999999")
+                .path("person.telefon[0].prioritet").entity(String.class).isEqualTo("1")
+                .path("person.telefon[0].master").entity(String.class).isEqualTo("KRR")
+                .path("person.telefon[1].telefonNr").entity(String.class).isEqualTo("11111111")
+                .path("person.telefon[1].prioritet").entity(String.class).isEqualTo("2");
     }
 
     // 🔴 RØD SONE — skriv disse testene selv etter at du har implementert auth-blokkene:
