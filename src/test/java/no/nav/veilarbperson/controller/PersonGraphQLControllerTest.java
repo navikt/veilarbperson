@@ -112,9 +112,13 @@ class PersonGraphQLControllerTest {
     @Test
     void krr_telefon_faar_prioritet_1_og_pdl_telefon_bumpes() {
         var pdlPersonMedTelefon = lagTestPerson();
+        var pdlMetadata = new HentPerson.Metadata();
+        pdlMetadata.setMaster("PDL");
+        pdlMetadata.setEndringer(List.of());
         var pdlTelefon = new HentPerson.Telefonnummer();
         pdlTelefon.setNummer("11111111");
         pdlTelefon.setPrioritet("1");
+        pdlTelefon.setMetadata(pdlMetadata);
         pdlPersonMedTelefon.setTelefonnummer(List.of(pdlTelefon));
 
         var krrInfo = new DigdirKontaktinfo(

@@ -28,23 +28,23 @@ public class PersonVisittkortDataMapper {
                 .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
                 .setMellomnavn(navn.map(HentPerson.Navn::getMellomnavn).orElse(null))
                 .setEtternavn(navn.map(HentPerson.Navn::getEtternavn).orElse(null))
-                .setFodselsdato(Optional.of(getFirstElement(person.getFoedselsdato()))
+                .setFodselsdato(Optional.ofNullable(getFirstElement(person.getFoedselsdato()))
                         .map(HentPerson.Foedselsdato::getFoedselsdato)
                         .map(Object::toString)
                         .orElse(null))
-                .setDodsdato(Optional.of(getFirstElement(person.getDoedsfall()))
+                .setDodsdato(Optional.ofNullable(getFirstElement(person.getDoedsfall()))
                         .map(HentPerson.Doedsfall::getDoedsdato)
                         .map(Object::toString)
                         .orElse(null))
-                .setKjonn(Optional.of(getFirstElement(person.getKjoenn()))
+                .setKjonn(Optional.ofNullable(getFirstElement(person.getKjoenn()))
                         .map(HentPerson.Kjoenn::getKjoenn)
                         .orElse(null))
-                .setDiskresjonskode(Optional.of(getFirstElement(person.getAdressebeskyttelse()))
+                .setDiskresjonskode(Optional.ofNullable(getFirstElement(person.getAdressebeskyttelse()))
                         .map(HentPerson.Adressebeskyttelse::getGradering)
                         .map(Diskresjonskode::mapKodeTilTall)
                         .orElse(null))
                 .setEgenAnsatt(erSkjermet)
-                .setSikkerhetstiltak(Optional.of(getFirstElement(person.getSikkerhetstiltak()))
+                .setSikkerhetstiltak(Optional.ofNullable(getFirstElement(person.getSikkerhetstiltak()))
                         .map(HentPerson.Sikkerhetstiltak::getBeskrivelse)
                         .orElse(null))
                 .setTelefon(telefoner);
@@ -54,9 +54,9 @@ public class PersonVisittkortDataMapper {
     static void leggKrrTelefonIListe(String krrTelefon, String oppdatert, List<Telefon> liste) {
         if (krrTelefon == null) return;
         liste.removeIf(t -> krrTelefon.equals(t.getTelefonNr()));
-        liste.add(new Telefon().setPrioritet("1").setTelefonNr(krrTelefon).setRegistrertDato(oppdatert).setMaster("KRR"));
         liste.stream()
                 .filter(t -> !"KRR".equals(t.getMaster()))
                 .forEach(t -> t.setPrioritet(String.valueOf(Integer.parseInt(t.getPrioritet()) + 1)));
+        liste.add(0, new Telefon().setPrioritet("1").setTelefonNr(krrTelefon).setRegistrertDato(oppdatert).setMaster("KRR"));
     }
 }
