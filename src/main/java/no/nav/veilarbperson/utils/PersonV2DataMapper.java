@@ -29,21 +29,21 @@ public class PersonV2DataMapper {
                 .setMellomnavn(navn.map(HentPerson.Navn::getMellomnavn).orElse(null))
                 .setEtternavn(navn.map(HentPerson.Navn::getEtternavn).orElse(null))
                 .setForkortetNavn(navn.map(HentPerson.Navn::getForkortetNavn).orElse(null))
-                .setKjonn(ofNullable(getFirstElement(person.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
-                .setFodselsdato(ofNullable(getFirstElement(person.getFoedselsdato())).map(HentPerson.Foedselsdato::getFoedselsdato).orElse(null))
+                .setKjonn(Optional.ofNullable(getFirstElement(person.getKjoenn())).map(HentPerson.Kjoenn::getKjoenn).orElse(null))
+                .setFodselsdato(Optional.ofNullable(getFirstElement(person.getFoedselsdato())).map(HentPerson.Foedselsdato::getFoedselsdato).orElse(null))
                 .setStatsborgerskapKoder(ofNullable(person.getStatsborgerskap()).map(statsborgerskap -> statsborgerskap.stream().map(HentPerson.Statsborgerskap::getLand).toList()).orElse(Collections.emptyList()))
-                .setDodsdato(ofNullable(getFirstElement(person.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null))
-                .setFodselsnummer(ofNullable(getFirstElement(person.getFolkeregisteridentifikator()))
+                .setDodsdato(Optional.ofNullable(getFirstElement(person.getDoedsfall())).map(HentPerson.Doedsfall::getDoedsdato).orElse(null))
+                .setFodselsnummer(Optional.ofNullable(getFirstElement(person.getFolkeregisteridentifikator()))
                         .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer)
                         .map(Fnr::of).orElse(null))
-                .setDiskresjonskode(ofNullable(getFirstElement(person.getAdressebeskyttelse()))
+                .setDiskresjonskode(Optional.ofNullable(getFirstElement(person.getAdressebeskyttelse()))
                         .map(HentPerson.Adressebeskyttelse::getGradering)
                         .map(Diskresjonskode::mapKodeTilTall).orElse(null))
                 .setTelefon(mapTelefonNrFraPdl(person.getTelefonnummer()))
                 .setBostedsadresse(getFirstElement(person.getBostedsadresse()))
                 .setOppholdsadresse(getFirstElement(person.getOppholdsadresse()))
                 .setKontaktadresser(person.getKontaktadresse())
-                .setSikkerhetstiltak(ofNullable(getFirstElement(person.getSikkerhetstiltak())).map(HentPerson.Sikkerhetstiltak::getBeskrivelse).orElse(null));
+                .setSikkerhetstiltak(Optional.ofNullable(getFirstElement(person.getSikkerhetstiltak())).map(HentPerson.Sikkerhetstiltak::getBeskrivelse).orElse(null));
     }
 
     public static <T> T getFirstElement(List<T> list) {
@@ -61,12 +61,12 @@ public class PersonV2DataMapper {
     }
 
     public static Fnr hentFamiliemedlemFnr(HentPerson.Familiemedlem familiemedlem) {
-        return ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
+        return Optional.ofNullable(getFirstElement(familiemedlem.getFolkeregisteridentifikator()))
                 .map(HentPerson.Folkeregisteridentifikator::getIdentifikasjonsnummer).map(Fnr::of).orElse(null);
     }
 
     public static boolean harGyldigIdent(HentPerson.Familiemedlem familiemedlem) {
-        return !"opphoert".equals(ofNullable(getFirstElement(familiemedlem.getFolkeregisterpersonstatus()))
+        return !"opphoert".equals(Optional.ofNullable(getFirstElement(familiemedlem.getFolkeregisterpersonstatus()))
                 .map(HentPerson.Folkeregisterpersonstatus::getForenkletStatus)
                 .orElse(null));
     }
@@ -78,15 +78,15 @@ public class PersonV2DataMapper {
     ) {
         Optional<HentPerson.Navn> navn = hentGjeldeneNavn(familiemedlem.getNavn());
 
-        LocalDate fodselsdato = ofNullable(getFirstElement(familiemedlem.getFoedselsdato()))
+        LocalDate fodselsdato = Optional.ofNullable(getFirstElement(familiemedlem.getFoedselsdato()))
                 .map(HentPerson.Foedselsdato::getFoedselsdato)
                 .orElse(null);
 
-        LocalDate dodsdato = ofNullable(getFirstElement(familiemedlem.getDoedsfall()))
+        LocalDate dodsdato = Optional.ofNullable(getFirstElement(familiemedlem.getDoedsfall()))
                 .map(HentPerson.Doedsfall::getDoedsdato)
                 .orElse(null);
 
-        String graderingskode = ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
+        String graderingskode = Optional.ofNullable(getFirstElement(familiemedlem.getAdressebeskyttelse()))
                 .map(HentPerson.Adressebeskyttelse::getGradering)
                 .orElse(null);
 
@@ -99,7 +99,7 @@ public class PersonV2DataMapper {
         boolean ukjentGradering = AdressebeskyttelseGradering.UKJENT.equals(gradering);
 
         Fnr medlemFnr = hentFamiliemedlemFnr(familiemedlem);
-        boolean harVeilederLeseTilgang = authService.harLesetilgang(medlemFnr);
+        boolean harVeilederLeseTilgang = authService.harLesetilgangFamiliemedlem(medlemFnr);
 
         RelasjonsBosted harSammeBosted = erSammeAdresse(
                 getFirstElement(familiemedlem.getBostedsadresse()),

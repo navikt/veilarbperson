@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.0.7</version>
         <relativePath/>
     </parent>
 
@@ -22,7 +22,7 @@
         <common.version>4.2026.05.29_05.35-a81a45859c9c</common.version>
         <tjenestespesifikasjoner.version>1.2021.02.22-10.45-4201aaea72fb</tjenestespesifikasjoner.version>
         <kotlin.version>2.3.20</kotlin.version>
-        <poao-tilgang.version>4.2026.05.11_07.01-54ab6eae4dde</poao-tilgang.version>
+        <poao-tilgang.version>4.2026.06.16_06.29-0135da432633</poao-tilgang.version>
     </properties>
 
     <build>
@@ -260,6 +260,13 @@
             <artifactId>test</artifactId>
             <version>${common.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <!-- cxf-rt-ws-security drar inn OpenSAML som ikke er tilgjengelig fra central/nav-github -->
+                <exclusion>
+                    <groupId>org.apache.cxf</groupId>
+                    <artifactId>cxf-rt-ws-security</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
