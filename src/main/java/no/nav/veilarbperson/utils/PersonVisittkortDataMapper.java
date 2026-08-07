@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
 
 public class PersonVisittkortDataMapper {
@@ -29,23 +28,23 @@ public class PersonVisittkortDataMapper {
                 .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
                 .setMellomnavn(navn.map(HentPerson.Navn::getMellomnavn).orElse(null))
                 .setEtternavn(navn.map(HentPerson.Navn::getEtternavn).orElse(null))
-                .setFodselsdato(ofNullable(getFirstElement(person.getFoedselsdato()))
+                .setFodselsdato(Optional.of(getFirstElement(person.getFoedselsdato()))
                         .map(HentPerson.Foedselsdato::getFoedselsdato)
                         .map(Object::toString)
                         .orElse(null))
-                .setDodsdato(ofNullable(getFirstElement(person.getDoedsfall()))
+                .setDodsdato(Optional.of(getFirstElement(person.getDoedsfall()))
                         .map(HentPerson.Doedsfall::getDoedsdato)
                         .map(Object::toString)
                         .orElse(null))
-                .setKjonn(ofNullable(getFirstElement(person.getKjoenn()))
+                .setKjonn(Optional.of(getFirstElement(person.getKjoenn()))
                         .map(HentPerson.Kjoenn::getKjoenn)
                         .orElse(null))
-                .setDiskresjonskode(ofNullable(getFirstElement(person.getAdressebeskyttelse()))
+                .setDiskresjonskode(Optional.of(getFirstElement(person.getAdressebeskyttelse()))
                         .map(HentPerson.Adressebeskyttelse::getGradering)
                         .map(Diskresjonskode::mapKodeTilTall)
                         .orElse(null))
                 .setEgenAnsatt(erSkjermet)
-                .setSikkerhetstiltak(ofNullable(getFirstElement(person.getSikkerhetstiltak()))
+                .setSikkerhetstiltak(Optional.of(getFirstElement(person.getSikkerhetstiltak()))
                         .map(HentPerson.Sikkerhetstiltak::getBeskrivelse)
                         .orElse(null))
                 .setTelefon(telefoner);
