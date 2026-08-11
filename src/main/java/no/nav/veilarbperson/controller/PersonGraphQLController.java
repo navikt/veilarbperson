@@ -37,20 +37,9 @@ public class PersonGraphQLController {
             @Argument String fnr,
             @Argument String behandlingsnummer) {
 
-        // 🔴 RØD SONE — implementer og forstå selv før du merger:
-        //
-        // TODO 1: Valider fnr-input. Kast GraphQL-feil med kode BAD_USER_INPUT ved ugyldig/manglende input.
-        //         Bruk: throw new GraphQlException("Ugyldig fnr") eller tilsvarende Spring GraphQL-mekanisme.
-        //         Ikke la Fnr.of() kaste NPE/IllegalArgumentException ukontrollert (gir INTERNAL_ERROR til klient).
-        //
-        // TODO 2: Kall authService.stoppHvisEksternBruker() for å blokkere eksterne brukere.
-        //         Se PersonV3Controller for referanseimplementasjon. Forstå hva dette kallet faktisk gjør.
-        //
-        // TODO 3: Kall authService.sjekkLesetilgang(validertFnr) for å sjekke at innlogget veileder
-        //         har lesetilgang til personen. Dette er tilgangskontroll mot poao-tilgang + skjerming.
-        //         Se PersonV3Controller for referanseimplementasjon. Forstå hva dette kallet faktisk gjør.
-
         Fnr validertFnr = Fnr.of(fnr);
+        authService.stoppHvisEksternBruker();
+        authService.sjekkLesetilgang(validertFnr);
 
         HentPerson.Person person = pdlClient.hentPerson(new PdlRequest(validertFnr, behandlingsnummer));
         if (person == null) {

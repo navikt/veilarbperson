@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.controller;
 
+import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
@@ -14,15 +15,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.graphql.test.autoconfigure.GraphQlTest;
 import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @GraphQlTest(PersonGraphQLController.class)
 class PersonGraphQLControllerTest {
@@ -41,6 +45,9 @@ class PersonGraphQLControllerTest {
 
     @MockitoBean
     private AuthService authService;
+
+    @MockitoBean
+    private AuthContextHolder authContextHolder;
 
     @Test
     void henter_navn_og_fodselsdato() {
@@ -146,23 +153,40 @@ class PersonGraphQLControllerTest {
                 .path("person.telefon[1].prioritet").entity(String.class).isEqualTo("2");
     }
 
-    // 🔴 RØD SONE — skriv disse testene selv etter at du har implementert auth-blokkene:
-    //
-    // @Test
-    // void blokkerer_ekstern_bruker() {
-    //     // TODO: Verifiser at authService.stoppHvisEksternBruker() kastes og gir GraphQL-feil
-    // }
-    //
-    // @Test
-    // void blokkerer_veileder_uten_lesetilgang() {
-    //     // TODO: Verifiser at authService.sjekkLesetilgang() ved 403 gir riktig GraphQL-feil
-    // }
-    //
-    // @Test
-    // void gir_BAD_USER_INPUT_ved_ugyldig_fnr() {
-    //     // TODO: Verifiser at ugyldig fnr gir extensions.code = BAD_USER_INPUT, ikke INTERNAL_ERROR
-    // }
+    @Test
+    void blokkerer_ekstern_bruker() {
+    doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN))
+    .when(authService).stoppHvisEksternBruker();
+        graphQlTester.document("""
+                query {
+                    person(fnr: "%s", behandlingsnummer: "B643") {
+                    fornavn
+                    }
+                }
+                """.formatted(TEST_FNR))
+                .execute()
+                .errors()
+                .satisfy(errors -> assertThat(errors).isNotEmpty());
+        verify(authService).stoppHvisEksternBruker();
+    }
 
+    @Test
+    void blokkerer_veileder_uten_lesetilgang() {
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN))
+                .when(authService).sjekkLesetilgang(any(Fnr.class));
+
+        graphQlTester.document("""
+               query {
+                   person(fnr: "%s", behandlingsnummer: "B643") {
+                       fornavn
+                   }
+               }
+               """.formatted(TEST_FNR))
+                .execute()
+                .errors()
+                .satisfy(errors -> assertThat(errors).isNotEmpty());
+        verify(authService).sjekkLesetilgang(Fnr.of(TEST_FNR.get()));
+    }
     private static HentPerson.Person lagTestPerson() {
         var navn = new HentPerson.Navn();
         navn.setFornavn("Kari");
