@@ -13,6 +13,8 @@ import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
 
 public class PersonVisittkortDataMapper {
 
+    private PersonVisittkortDataMapper() {}
+
     public static PersonVisittkortData tilPersonVisittkortData(
             HentPerson.Person person,
             boolean erSkjermet,
