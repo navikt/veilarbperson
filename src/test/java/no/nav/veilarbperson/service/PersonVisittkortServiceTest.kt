@@ -1,14 +1,11 @@
 package no.nav.veilarbperson.service
 
-import no.nav.common.types.identer.Fnr
 import no.nav.veilarbperson.client.digdir.DigdirClient
 import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo
-import no.nav.veilarbperson.client.digdir.KRRPostPersonerRequest
 import no.nav.veilarbperson.client.digdir.KRRPostPersonerResponse
 import no.nav.veilarbperson.client.nom.SkjermetClient
 import no.nav.veilarbperson.client.pdl.HentPerson
 import no.nav.veilarbperson.client.pdl.PdlClient
-import no.nav.veilarbperson.client.pdl.domain.PdlRequest
 import no.nav.veilarbperson.utils.TestData.TEST_FNR
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -16,8 +13,6 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
-import org.mockito.kotlin.doThrow
-import org.mockito.kotlin.verify
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
