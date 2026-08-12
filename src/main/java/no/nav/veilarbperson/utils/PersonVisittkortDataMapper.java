@@ -24,30 +24,31 @@ public class PersonVisittkortDataMapper {
         List<Telefon> telefoner = new ArrayList<>(mapTelefonNrFraPdl(person.getTelefonnummer()));
         leggKrrTelefonIListe(krrTelefon, krrTelefonOppdatert, telefoner);
 
-        return new PersonVisittkortData()
-                .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
-                .setMellomnavn(navn.map(HentPerson.Navn::getMellomnavn).orElse(null))
-                .setEtternavn(navn.map(HentPerson.Navn::getEtternavn).orElse(null))
-                .setFodselsdato(Optional.ofNullable(getFirstElement(person.getFoedselsdato()))
+        return new PersonVisittkortData(
+                navn.map(HentPerson.Navn::getFornavn).orElse(null),
+                navn.map(HentPerson.Navn::getMellomnavn).orElse(null),
+                navn.map(HentPerson.Navn::getEtternavn).orElse(null),
+                Optional.ofNullable(getFirstElement(person.getFoedselsdato()))
                         .map(HentPerson.Foedselsdato::getFoedselsdato)
                         .map(Object::toString)
-                        .orElse(null))
-                .setDodsdato(Optional.ofNullable(getFirstElement(person.getDoedsfall()))
+                        .orElse(null),
+                Optional.ofNullable(getFirstElement(person.getDoedsfall()))
                         .map(HentPerson.Doedsfall::getDoedsdato)
                         .map(Object::toString)
-                        .orElse(null))
-                .setKjonn(Optional.ofNullable(getFirstElement(person.getKjoenn()))
+                        .orElse(null),
+                Optional.ofNullable(getFirstElement(person.getKjoenn()))
                         .map(HentPerson.Kjoenn::getKjoenn)
-                        .orElse(null))
-                .setDiskresjonskode(Optional.ofNullable(getFirstElement(person.getAdressebeskyttelse()))
+                        .orElse(null),
+                Optional.ofNullable(getFirstElement(person.getAdressebeskyttelse()))
                         .map(HentPerson.Adressebeskyttelse::getGradering)
                         .map(Diskresjonskode::mapKodeTilTall)
-                        .orElse(null))
-                .setEgenAnsatt(erSkjermet)
-                .setSikkerhetstiltak(Optional.ofNullable(getFirstElement(person.getSikkerhetstiltak()))
+                        .orElse(null),
+                erSkjermet,
+                Optional.ofNullable(getFirstElement(person.getSikkerhetstiltak()))
                         .map(HentPerson.Sikkerhetstiltak::getBeskrivelse)
-                        .orElse(null))
-                .setTelefon(telefoner);
+                        .orElse(null),
+                telefoner
+        );
     }
 
     /** KRR-telefon får alltid prioritet 1. PDL-nummer med samme nummer fjernes. Øvrige PDL-prioriteter bumpes. */

@@ -1,211 +1,154 @@
-package no.nav.veilarbperson.controller;
+package no.nav.veilarbperson.controller
 
-import no.nav.common.auth.context.AuthContextHolder;
-import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.digdir.DigdirClient;
-import no.nav.veilarbperson.client.digdir.DigdirKontaktinfo;
-import no.nav.veilarbperson.client.digdir.KRRPostPersonerRequest;
-import no.nav.veilarbperson.client.digdir.KRRPostPersonerResponse;
-import no.nav.veilarbperson.client.nom.SkjermetClient;
-import no.nav.veilarbperson.client.pdl.HentPerson;
-import no.nav.veilarbperson.client.pdl.PdlClient;
-import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
-import no.nav.veilarbperson.service.AuthService;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.graphql.test.autoconfigure.GraphQlTest;
-import org.springframework.graphql.test.tester.GraphQlTester;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.web.server.ResponseStatusException;
+import no.nav.common.types.identer.Fnr
+import no.nav.veilarbperson.client.pdl.domain.Telefon
+import no.nav.veilarbperson.domain.PersonVisittkortData
+import no.nav.veilarbperson.service.AuthService
+import no.nav.veilarbperson.service.PersonVisittkortService
+import no.nav.veilarbperson.utils.TestData.TEST_FNR
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.verify
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.graphql.test.autoconfigure.GraphQlTest
+import org.springframework.graphql.test.tester.GraphQlTester
+import org.springframework.graphql.test.tester.entity
+import org.springframework.http.HttpStatus
+import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.web.server.ResponseStatusException
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-
-import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-@GraphQlTest(PersonGraphQLController.class)
-class PersonGraphQLControllerTest {
+@GraphQlTest(PersonGraphQLController::class)
+internal class PersonGraphQLControllerTest {
 
     @Autowired
-    private GraphQlTester graphQlTester;
+    lateinit var graphQlTester: GraphQlTester
 
     @MockitoBean
-    private PdlClient pdlClient;
+    lateinit var personVisittkortService: PersonVisittkortService
 
     @MockitoBean
-    private SkjermetClient skjermetClient;
-
-    @MockitoBean
-    private DigdirClient digdirClient;
-
-    @MockitoBean
-    private AuthService authService;
-
-    @MockitoBean
-    private AuthContextHolder authContextHolder;
+    lateinit var authService: AuthService
 
     @Test
-    void henter_navn_og_fodselsdato() {
-        when(pdlClient.hentPerson(any(PdlRequest.class))).thenReturn(lagTestPerson());
-        when(skjermetClient.hentSkjermet(any(Fnr.class))).thenReturn(false);
-        when(digdirClient.hentKontaktInfo(any(KRRPostPersonerRequest.class))).thenReturn(null);
+    fun henter_navn_og_fodselsdato() {
+        whenever(personVisittkortService.hentVisittkortData(any(), any())).thenReturn(
+            PersonVisittkortData(fornavn = "Kari", etternavn = "Nordmann", fodselsdato = "1980-01-15")
+        )
 
         graphQlTester.document("""
-                query {
-                    person(fnr: "%s", behandlingsnummer: "B643") {
-                        fornavn
-                        etternavn
-                        fodselsdato
-                        egenAnsatt
-                    }
-                }
-                """.formatted(TEST_FNR))
-                .execute()
-                .path("person.fornavn").entity(String.class).isEqualTo("Kari")
-                .path("person.etternavn").entity(String.class).isEqualTo("Nordmann")
-                .path("person.fodselsdato").entity(String.class).isEqualTo("1980-01-15")
-                .path("person.egenAnsatt").entity(Boolean.class).isEqualTo(false);
-    }
-
-    @Test
-    void skjermet_person_returnerer_egenAnsatt_true() {
-        when(pdlClient.hentPerson(any(PdlRequest.class))).thenReturn(lagTestPerson());
-        when(skjermetClient.hentSkjermet(any(Fnr.class))).thenReturn(true);
-        when(digdirClient.hentKontaktInfo(any(KRRPostPersonerRequest.class))).thenReturn(null);
-
-        graphQlTester.document("""
-                query {
-                    person(fnr: "%s", behandlingsnummer: "B643") {
-                        egenAnsatt
-                    }
-                }
-                """.formatted(TEST_FNR))
-                .execute()
-                .path("person.egenAnsatt").entity(Boolean.class).isEqualTo(true);
-    }
-
-    @Test
-    void returnerer_null_felt_uten_feil_naar_pdl_mangler_data() {
-        HentPerson.Person tomPerson = new HentPerson.Person();
-        tomPerson.setNavn(List.of());
-        tomPerson.setFoedselsdato(List.of());
-        tomPerson.setDoedsfall(List.of());
-        tomPerson.setKjoenn(List.of());
-        tomPerson.setAdressebeskyttelse(List.of());
-        tomPerson.setSikkerhetstiltak(List.of());
-        tomPerson.setTelefonnummer(List.of());
-        when(pdlClient.hentPerson(any(PdlRequest.class))).thenReturn(tomPerson);
-        when(skjermetClient.hentSkjermet(any(Fnr.class))).thenReturn(false);
-        when(digdirClient.hentKontaktInfo(any(KRRPostPersonerRequest.class))).thenReturn(null);
-
-        graphQlTester.document("""
-                query {
-                    person(fnr: "%s", behandlingsnummer: "B643") {
-                        fornavn
-                        egenAnsatt
-                    }
-                }
-                """.formatted(TEST_FNR))
-                .execute()
-                .path("person.fornavn").valueIsNull()
-                .path("person.egenAnsatt").entity(Boolean.class).isEqualTo(false);
-    }
-
-    @Test
-    void krr_telefon_faar_prioritet_1_og_pdl_telefon_bumpes() {
-        var pdlPersonMedTelefon = lagTestPerson();
-        var pdlMetadata = new HentPerson.Metadata();
-        pdlMetadata.setMaster("PDL");
-        pdlMetadata.setEndringer(List.of());
-        var pdlTelefon = new HentPerson.Telefonnummer();
-        pdlTelefon.setNummer("11111111");
-        pdlTelefon.setPrioritet("1");
-        pdlTelefon.setMetadata(pdlMetadata);
-        pdlPersonMedTelefon.setTelefonnummer(List.of(pdlTelefon));
-
-        var krrInfo = new DigdirKontaktinfo(
-                TEST_FNR.get(), true, true, null, false,
-                null, null, null, null, null,
-                "99999999", "2024-01-15T12:00:00+01:00", null);
-        var krrResponse = new KRRPostPersonerResponse(Map.of(TEST_FNR.get(), krrInfo), null);
-
-        when(pdlClient.hentPerson(any(PdlRequest.class))).thenReturn(pdlPersonMedTelefon);
-        when(skjermetClient.hentSkjermet(any(Fnr.class))).thenReturn(false);
-        when(digdirClient.hentKontaktInfo(any(KRRPostPersonerRequest.class))).thenReturn(krrResponse);
-
-        graphQlTester.document("""
-                query {
-                    person(fnr: "%s", behandlingsnummer: "B643") {
-                        telefon { telefonNr prioritet master }
-                    }
-                }
-                """.formatted(TEST_FNR))
-                .execute()
-                .path("person.telefon[0].telefonNr").entity(String.class).isEqualTo("99999999")
-                .path("person.telefon[0].prioritet").entity(String.class).isEqualTo("1")
-                .path("person.telefon[0].master").entity(String.class).isEqualTo("KRR")
-                .path("person.telefon[1].telefonNr").entity(String.class).isEqualTo("11111111")
-                .path("person.telefon[1].prioritet").entity(String.class).isEqualTo("2");
-    }
-
-    @Test
-    void blokkerer_ekstern_bruker() {
-    doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN))
-    .when(authService).stoppHvisEksternBruker();
-        graphQlTester.document("""
-                query {
-                    person(fnr: "%s", behandlingsnummer: "B643") {
+            query {
+                person(fnr: "$TEST_FNR", behandlingsnummer: "B643") {
                     fornavn
-                    }
+                    etternavn
+                    fodselsdato
+                    egenAnsatt
                 }
-                """.formatted(TEST_FNR))
-                .execute()
-                .errors()
-                .satisfy(errors -> assertThat(errors).isNotEmpty());
-        verify(authService).stoppHvisEksternBruker();
+            }
+        """)
+            .execute()
+            .path("person.fornavn").entity<String>().isEqualTo("Kari")
+            .path("person.etternavn").entity<String>().isEqualTo("Nordmann")
+            .path("person.fodselsdato").entity<String>().isEqualTo("1980-01-15")
+            .path("person.egenAnsatt").entity<Boolean>().isEqualTo(false)
     }
 
     @Test
-    void blokkerer_veileder_uten_lesetilgang() {
-        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN))
-                .when(authService).sjekkLesetilgang(any(Fnr.class));
+    fun skjermet_person_returnerer_egenAnsatt_true() {
+        whenever(personVisittkortService.hentVisittkortData(any(), any())).thenReturn(
+            PersonVisittkortData(egenAnsatt = true)
+        )
 
         graphQlTester.document("""
-               query {
-                   person(fnr: "%s", behandlingsnummer: "B643") {
-                       fornavn
-                   }
-               }
-               """.formatted(TEST_FNR))
-                .execute()
-                .errors()
-                .satisfy(errors -> assertThat(errors).isNotEmpty());
-        verify(authService).sjekkLesetilgang(Fnr.of(TEST_FNR.get()));
+            query {
+                person(fnr: "$TEST_FNR", behandlingsnummer: "B643") {
+                    egenAnsatt
+                }
+            }
+        """)
+            .execute()
+            .path("person.egenAnsatt").entity<Boolean>().isEqualTo(true)
     }
-    private static HentPerson.Person lagTestPerson() {
-        var navn = new HentPerson.Navn();
-        navn.setFornavn("Kari");
-        navn.setEtternavn("Nordmann");
-        var metadata = new HentPerson.MetadataNavn();
-        metadata.setMaster(HentPerson.PdlNavnMaster.PDL);
-        navn.setMetadata(metadata);
 
-        var foedselsdato = new HentPerson.Foedselsdato();
-        foedselsdato.setFoedselsdato(LocalDate.of(1980, 1, 15));
+    @Test
+    fun returnerer_null_felt_naar_service_returnerer_tomme_verdier() {
+        whenever(personVisittkortService.hentVisittkortData(any(), any())).thenReturn(
+            PersonVisittkortData()
+        )
 
-        var person = new HentPerson.Person();
-        person.setNavn(List.of(navn));
-        person.setFoedselsdato(List.of(foedselsdato));
-        person.setDoedsfall(List.of());
-        person.setKjoenn(List.of());
-        person.setAdressebeskyttelse(List.of());
-        person.setSikkerhetstiltak(List.of());
-        person.setTelefonnummer(List.of());
-        return person;
+        graphQlTester.document("""
+            query {
+                person(fnr: "$TEST_FNR", behandlingsnummer: "B643") {
+                    fornavn
+                    egenAnsatt
+                }
+            }
+        """)
+            .execute()
+            .path("person.fornavn").valueIsNull()
+            .path("person.egenAnsatt").entity<Boolean>().isEqualTo(false)
+    }
+
+    @Test
+    fun returnerer_telefoner_fra_service() {
+        val telefoner = listOf(
+            Telefon().setPrioritet("1").setTelefonNr("99999999").setMaster("KRR"),
+            Telefon().setPrioritet("2").setTelefonNr("11111111").setMaster("PDL")
+        )
+        whenever(personVisittkortService.hentVisittkortData(any(), any())).thenReturn(
+            PersonVisittkortData(telefon = telefoner)
+        )
+
+        graphQlTester.document("""
+            query {
+                person(fnr: "$TEST_FNR", behandlingsnummer: "B643") {
+                    telefon { telefonNr prioritet master }
+                }
+            }
+        """)
+            .execute()
+            .path("person.telefon[0].telefonNr").entity<String>().isEqualTo("99999999")
+            .path("person.telefon[0].prioritet").entity<String>().isEqualTo("1")
+            .path("person.telefon[0].master").entity<String>().isEqualTo("KRR")
+            .path("person.telefon[1].telefonNr").entity<String>().isEqualTo("11111111")
+            .path("person.telefon[1].prioritet").entity<String>().isEqualTo("2")
+    }
+
+    @Test
+    fun blokkerer_ekstern_bruker() {
+        doThrow(ResponseStatusException(HttpStatus.FORBIDDEN)).`when`(authService).stoppHvisEksternBruker()
+
+        graphQlTester.document("""
+            query {
+                person(fnr: "$TEST_FNR", behandlingsnummer: "B643") {
+                    fornavn
+                }
+            }
+        """)
+            .execute()
+            .errors()
+            .satisfy { errors -> assertThat(errors).isNotEmpty() }
+
+        verify(authService).stoppHvisEksternBruker()
+    }
+
+    @Test
+    fun blokkerer_veileder_uten_lesetilgang() {
+        doThrow(ResponseStatusException(HttpStatus.FORBIDDEN)).`when`(authService).sjekkLesetilgang(any())
+
+        graphQlTester.document("""
+            query {
+                person(fnr: "$TEST_FNR", behandlingsnummer: "B643") {
+                    fornavn
+                }
+            }
+        """)
+            .execute()
+            .errors()
+            .satisfy { errors -> assertThat(errors).isNotEmpty() }
+
+        verify(authService).sjekkLesetilgang(Fnr.of(TEST_FNR.get()))
     }
 }

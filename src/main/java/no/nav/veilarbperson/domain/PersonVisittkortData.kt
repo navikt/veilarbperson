@@ -1,22 +1,16 @@
-package no.nav.veilarbperson.domain;
+package no.nav.veilarbperson.domain
 
-import lombok.Data;
-import lombok.experimental.Accessors;
-import no.nav.veilarbperson.client.pdl.domain.Telefon;
+import no.nav.veilarbperson.client.pdl.domain.Telefon
 
-import java.util.List;
-
-@Data
-@Accessors(chain = true)
-public class PersonVisittkortData {
-    private String fornavn;
-    private String mellomnavn;
-    private String etternavn;
-    private String fodselsdato;
-    private String dodsdato;
-    private String kjonn;
-    private String diskresjonskode;
-    private boolean egenAnsatt;
-    private String sikkerhetstiltak;
-    private List<Telefon> telefon;
-}
+data class PersonVisittkortData(
+    val fornavn: String? = null,
+    val mellomnavn: String? = null,
+    val etternavn: String? = null,
+    val fodselsdato: String? = null,
+    val dodsdato: String? = null,
+    val kjonn: String? = null,
+    val diskresjonskode: String? = null,
+    val egenAnsatt: Boolean = false,
+    val sikkerhetstiltak: String? = null,
+    val telefon: List<Telefon> = emptyList()
+)
