@@ -13,12 +13,12 @@ Interne henvendelser kan sendes via Slack i kanalen #po-arbeidsoppfølging.
 
 # GraphQL — visittkortdata
 
-Endepunktet er tiltenkt `veilarbvisittkortfs` og returnerer de feltene visittkortvisningen trenger.
+Endepunktet er tiltenkt `veilarbvisittkortfs` og returnerer feltene visittkortvisningen trenger.
 
 ```
 POST /veilarbperson/graphql
 Content-Type: application/json
-Authorization: Bearer <TokenX-token>
+Authorization: Bearer <Azure AD-token>
 ```
 
 Eksempelspørring:
@@ -29,7 +29,6 @@ Eksempelspørring:
 ```
 
 `behandlingsnummer` er påkrevd og skal være konsumentens eget B-nummer fra behandlingskatalogen.
-Feltet `fnr` skal ikke hentes ut fra responsen — det er ikke med i svaret.
 
 # PDL
 PDL dok anbefaler å bruke Altair programvare for å kjøre graphql eller for å gjøre oppslag mot PDL. 

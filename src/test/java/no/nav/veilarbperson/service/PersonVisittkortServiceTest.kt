@@ -108,16 +108,14 @@ class PersonVisittkortServiceTest {
     }
 
     @Test
-    fun skjermet_feil_gir_egenAnsatt_false() {
+    fun skjermet_feil_propagerer_exception() {
         whenever(pdlClient.hentPerson(any())).thenReturn(lagTestPerson())
         whenever(skjermetClient.hentSkjermet(any()))
             .thenThrow(RuntimeException("Opplysninger om Skjermet er utilgjengelig"))
-        whenever(digdirClient.hentKontaktInfo(any())).thenReturn(null)
 
-        val result = service.hentVisittkortData(TEST_FNR, "B643")
-
-        assertThat(result.egenAnsatt).isFalse()
-        assertThat(result.fornavn).isEqualTo("Kari")
+        assertThrows<RuntimeException> {
+            service.hentVisittkortData(TEST_FNR, "B643")
+        }
     }
 
     private fun lagTestPerson() = HentPerson.Person().apply {
