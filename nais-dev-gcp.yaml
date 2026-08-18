@@ -65,9 +65,6 @@ spec:
           cluster: dev-gcp
         - application: inngar
           namespace: dab
-        - application: veilarbvisittkortfs
-          namespace: obo
-          cluster: dev-gcp
     outbound:
       rules:
         - application: kodeverk-api

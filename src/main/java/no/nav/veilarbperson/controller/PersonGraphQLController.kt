@@ -16,13 +16,13 @@ class PersonGraphQLController(
     @QueryMapping
     fun person(
         @Argument fnr: String,
-        @Argument behandlingsnummer: String?
+        @Argument behandlingsnummer: String
     ): PersonVisittkortData {
-        val validertFnr = Fnr.of(fnr)
+        val personIdentifier = Fnr.of(fnr)
         authService.stoppHvisEksternBruker()
-        authService.sjekkLesetilgang(validertFnr)
+        authService.sjekkLesetilgang(personIdentifier)
 
-        return personVisittkortService.hentVisittkortData(validertFnr, behandlingsnummer)
+        return personVisittkortService.hentVisittkortData(personIdentifier, behandlingsnummer)
     }
 }
 
