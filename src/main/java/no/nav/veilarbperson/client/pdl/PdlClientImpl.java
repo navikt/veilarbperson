@@ -87,7 +87,7 @@ public class PdlClientImpl implements PdlClient {
     @Override
     public HentPerson.Person hentPersonVisittkort(PdlRequest pdlRequest) {
         var request = new GqlRequest<>(hentPersonVisittkortQuery, new GqlVariables.HentPerson(pdlRequest.fnr(), false));
-        return graphqlRequest(request, userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.class).hentPerson;
+        return graphqlRequest(request, authService.erSystemBruker() ? systemTokenProvider.get() : userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.class).hentPerson;
     }
 
     @Override
