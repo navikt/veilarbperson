@@ -27,7 +27,7 @@ class PersonVisittkortServiceTest {
 
     @Test
     fun henter_navn_og_fodselsdato() {
-        whenever(pdlClient.hentPerson(any())).thenReturn(lagTestPerson())
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(lagTestPerson())
         whenever(skjermetClient.hentSkjermet(any())).thenReturn(false)
         whenever(digdirClient.hentKontaktInfo(any())).thenReturn(null)
 
@@ -41,7 +41,7 @@ class PersonVisittkortServiceTest {
 
     @Test
     fun kaster_NOT_FOUND_naar_pdl_returnerer_null() {
-        whenever(pdlClient.hentPerson(any())).thenReturn(null)
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(null)
 
         val ex = assertThrows<ResponseStatusException> {
             service.hentVisittkortData(TEST_FNR, "B643")
@@ -51,7 +51,7 @@ class PersonVisittkortServiceTest {
 
     @Test
     fun skjermet_person_returnerer_egenAnsatt_true() {
-        whenever(pdlClient.hentPerson(any())).thenReturn(lagTestPerson())
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(lagTestPerson())
         whenever(skjermetClient.hentSkjermet(any())).thenReturn(true)
         whenever(digdirClient.hentKontaktInfo(any())).thenReturn(null)
 
@@ -80,7 +80,7 @@ class PersonVisittkortServiceTest {
         )
         val krrResponse = KRRPostPersonerResponse(mapOf(TEST_FNR.get() to krrInfo), null)
 
-        whenever(pdlClient.hentPerson(any())).thenReturn(personMedTelefon)
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(personMedTelefon)
         whenever(skjermetClient.hentSkjermet(any())).thenReturn(false)
         whenever(digdirClient.hentKontaktInfo(any())).thenReturn(krrResponse)
 
@@ -96,7 +96,7 @@ class PersonVisittkortServiceTest {
 
     @Test
     fun krr_feil_gir_person_uten_krr_telefon() {
-        whenever(pdlClient.hentPerson(any())).thenReturn(lagTestPerson())
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(lagTestPerson())
         whenever(skjermetClient.hentSkjermet(any())).thenReturn(false)
         whenever(digdirClient.hentKontaktInfo(any()))
             .thenThrow(RuntimeException("KRR utilgjengelig"))
@@ -109,7 +109,7 @@ class PersonVisittkortServiceTest {
 
     @Test
     fun skjermet_feil_propagerer_exception() {
-        whenever(pdlClient.hentPerson(any())).thenReturn(lagTestPerson())
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(lagTestPerson())
         whenever(skjermetClient.hentSkjermet(any()))
             .thenThrow(RuntimeException("Opplysninger om Skjermet er utilgjengelig"))
 

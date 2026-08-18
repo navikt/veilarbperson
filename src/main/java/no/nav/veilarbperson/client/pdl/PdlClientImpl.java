@@ -40,6 +40,8 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentPersonQuery;
 
+    private final String hentPersonVisittkortQuery;
+
     private final String hentVergeQuery;
 
     private final String hentPersonNavnQuery;
@@ -66,6 +68,7 @@ public class PdlClientImpl implements PdlClient {
         this.userTokenProvider = userTokenProvider;
         this.systemTokenProvider = systemTokenProvider;
         this.hentPersonQuery = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
+        this.hentPersonVisittkortQuery = FileUtils.getResourceFileAsString("graphql/hentPersonVisittkort.gql");
         this.hentPersonBolkQuery = FileUtils.getResourceFileAsString("graphql/hentPersonBolk.gql");
         this.hentPersonNavnQuery = FileUtils.getResourceFileAsString("graphql/hentPersonNavn.gql");
         this.hentVergeQuery = FileUtils.getResourceFileAsString("graphql/hentVerge.gql");
@@ -78,6 +81,12 @@ public class PdlClientImpl implements PdlClient {
     @Override
     public HentPerson.Person hentPerson(PdlRequest pdlRequest) {
         var request = new GqlRequest<>(hentPersonQuery, new GqlVariables.HentPerson(pdlRequest.fnr(), false));
+        return graphqlRequest(request, userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.class).hentPerson;
+    }
+
+    @Override
+    public HentPerson.Person hentPersonVisittkort(PdlRequest pdlRequest) {
+        var request = new GqlRequest<>(hentPersonVisittkortQuery, new GqlVariables.HentPerson(pdlRequest.fnr(), false));
         return graphqlRequest(request, userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.class).hentPerson;
     }
 

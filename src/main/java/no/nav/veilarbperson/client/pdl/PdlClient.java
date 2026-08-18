@@ -9,6 +9,8 @@ import java.util.List;
 public interface PdlClient extends HealthCheck {
     HentPerson.Person hentPerson(PdlRequest pdlRequest);
 
+    HentPerson.Person hentPersonVisittkort(PdlRequest pdlRequest);
+
     HentPerson.Verge hentVerge(PdlRequest pdlRequest);
 
     HentPerson.PersonNavn hentPersonNavn(PdlRequest pdlRequest);

@@ -26,7 +26,7 @@ class PersonVisittkortService(
     private val log = LoggerFactory.getLogger(PersonVisittkortService::class.java)
 
     fun hentVisittkortData(fnr: Fnr, behandlingsnummer: String?): PersonVisittkortData  {
-        val person = pdlClient.hentPerson(PdlRequest(fnr, behandlingsnummer))
+        val person = pdlClient.hentPersonVisittkort(PdlRequest(fnr, behandlingsnummer))
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
 
         val erSkjermet = skjermetClient.hentSkjermet(fnr)

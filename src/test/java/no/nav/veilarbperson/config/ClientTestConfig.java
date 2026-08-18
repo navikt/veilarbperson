@@ -188,6 +188,11 @@ public class ClientTestConfig {
             }
 
             @Override
+            public HentPerson.Person hentPersonVisittkort(PdlRequest pdlRequest) {
+                return null;
+            }
+
+            @Override
             public HentPerson.Verge hentVerge(PdlRequest pdlRequest) {
                 return null;
             }
