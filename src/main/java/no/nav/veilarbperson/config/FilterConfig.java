@@ -58,7 +58,7 @@ public class FilterConfig {
 
         registration.setFilter(authenticationFilter);
         registration.setOrder(3);
-        registration.addUrlPatterns("/api/*");
+        registration.addUrlPatterns("/api/*", "/graphql");
         return registration;
     }
 

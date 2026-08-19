@@ -1,0 +1,23 @@
+type Query {
+    person(fnr: ID!, behandlingsnummer: String!): PersonVisittkort
+}
+
+type PersonVisittkort {
+    fornavn: String
+    mellomnavn: String
+    etternavn: String
+    fodselsdato: String
+    dodsdato: String
+    kjonn: String
+    diskresjonskode: String
+    egenAnsatt: Boolean!
+    sikkerhetstiltak: String
+    telefon: [Telefon!]!
+}
+
+type Telefon {
+    prioritet: String
+    telefonNr: String
+    registrertDato: String
+    master: String
+}
