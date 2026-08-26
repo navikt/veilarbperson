@@ -3,7 +3,6 @@ package no.nav.veilarbperson.controller.v1;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.difi.HarLoggetInnRespons;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.CvJobbprofilService;
@@ -23,6 +22,9 @@ public class PersonController {
 
     private final CvJobbprofilService cvJobbprofilService;
 
+    /**
+     * @deprecated Bruk POST /api/v3/person/hent-aktorid
+     */
     @Deprecated
     @GetMapping("/aktorid")
     public AktoerId aktorid(@RequestParam("fnr") Fnr fnr) {
@@ -31,13 +33,19 @@ public class PersonController {
         return new AktoerId(authService.getAktorId(fnr));
     }
 
+    /**
+     * @deprecated Bruk POST /api/v3/person/hent-navn
+     */
     @Deprecated
     @GetMapping("/navn")
     @Operation(summary = "Henter navnet til en person")
-    public PersonNavn navn(@RequestParam(value = "fnr", required = false) Fnr fnr) {
+    public ResponseEntity<?> navn(@RequestParam(value = "fnr", required = false) Fnr fnr) {
         throw new ResponseStatusException(HttpStatus.GONE, "Bytt til v2 endepunkt");
     }
 
+    /**
+     * @deprecated Bruk POST /api/v3/person/hent-malform
+     */
     @Deprecated
     @GetMapping("/{fodselsnummer}/malform")
     @Operation(summary = "Henter målform til en person")
@@ -45,23 +53,18 @@ public class PersonController {
         throw new ResponseStatusException(HttpStatus.GONE,
                 "Bytt til v2 endepunkt");
     }
+    /**
+     * @deprecated Bruk POST /api/v3/person/hent-tilgangTilBruker
+     */
     @Deprecated
     @GetMapping("/{fodselsnummer}/tilgangTilBruker")
     public boolean tilgangTilBruker(@PathVariable("fodselsnummer") Fnr fodselsnummer) {
         return authService.harLesetilgang(fodselsnummer);
     }
 
-    // TODO: 21/08/2023 denne skal slettes etter vi har ryddet opp i kode i de andre appene da dkif slutter å tilby tjenesten
-    @GetMapping("/{fodselsnummer}/harNivaa4")
-    public HarLoggetInnRespons harNivaa4(@PathVariable("fodselsnummer") Fnr fodselsnummer) {
-        authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(fodselsnummer);
-        return new HarLoggetInnRespons()
-                .setErRegistrertIdPorten(true)
-                .setHarbruktnivaa4(true)
-                .setPersonidentifikator(fodselsnummer);
-    }
-
+    /**
+     * @deprecated Bruk POST /api/v3/person/hent-geografisktilknytning
+     */
     @Deprecated
     @GetMapping("/geografisktilknytning")
     public GeografiskTilknytning geografisktilknytning(@RequestParam(value = "fnr", required = false) Fnr fnr) {
@@ -70,6 +73,9 @@ public class PersonController {
         return personV2Service.hentGeografiskTilknytning(new PersonFraPdlRequest(fodselsnummer, null));
     }
 
+    /**
+     * @deprecated Bruk POST /api/v3/person/hent-cv_jobbprofil
+     */
     @Deprecated
     @GetMapping("/cv_jobbprofil")
     public ResponseEntity<String> cvOgJobbprofil(@RequestParam(value = "fnr", required = false) Fnr fnr) {

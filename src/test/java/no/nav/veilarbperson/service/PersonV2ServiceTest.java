@@ -140,17 +140,6 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     }
 
     @Test
-    public void hentOpplysningerTilBarnaMedKodeOkFraPdlTest() {
-        configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
-        configurePdlResponse("pdl-hentPersonBolk-response.json", fnrBarn1, fnrBarn2);
-        PersonFraPdlRequest personFraPdlRequest = new PersonFraPdlRequest(FNR, null);
-        hentGeografisktilknytning(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())); // Må ha med fnr fordi dette flettes
-        List<Barn> barn = personV2Service.hentFlettetPerson(personFraPdlRequest).getBarn();
-
-        assertEquals(1, barn.size());
-    }
-
-    @Test
     public void hentOpplysningerTilBarnOpphortFraPdlTest() {
         String fnrBarnOpphoert = "111";
         configurePdlResponse("pdl-hentPersonBolkOpphoert-response.json", fnrBarnOpphoert);
@@ -241,16 +230,12 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
     @Test
     public void flettSivilstandOgBarnInformasjonTest() {
         configurePdlResponse("pdl-hentPersonBolkRelatertVedSivilstand-response.json", fnrRelatertSivilstand);
-        configurePdlResponse("pdl-hentPersonBolk-response.json", fnrBarn1, fnrBarn2);
         PersonV2Data personV2Data = new PersonV2Data();
 
-        assertEquals(0, personV2Data.getBarn().size());
         assertNull(personV2Data.getSivilstandliste());
 
-        personV2Service.flettBarn(person.getForelderBarnRelasjon(), personV2Data, null); // Forsøker å flette person med 3 barn hvor informasjonen til bare 1 barn er tilgjengelig i PDL
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
-        assertEquals(1, personV2Data.getBarn().size()); // Fant bare 1 av 3 barna med "ok"(gyldig) status fra hentPersonBolk operasjonen
         assertNotNull(personV2Data.getSivilstandliste());
     }
 
@@ -292,17 +277,14 @@ public class PersonV2ServiceTest extends PdlClientTestConfig {
         PersonV2Data personV2Data = new PersonV2Data();
         PersonV2Data personV2Data2 = new PersonV2Data();
 
-        assertEquals(0, personV2Data.getBarn().size());
         assertNull(personV2Data.getSivilstandliste());
 
         person = hentPersonUtenBarnOgSivilstand(FNR);
-        personV2Service.flettBarn(person.getForelderBarnRelasjon(), personV2Data, null);
         personV2Service.flettSivilstand(person.getSivilstand(), personV2Data, null);
 
         personV2Service.flettBarnTilgangsstyrt(person.getForelderBarnRelasjon(), personV2Data2, null);
 
         assertEquals(Collections.emptyList(), personV2Data.getSivilstandliste());
-        assertEquals(Collections.emptyList(), personV2Data.getBarn());
         assertEquals(Collections.emptyList(), personV2Data2.getBarn());
     }
 

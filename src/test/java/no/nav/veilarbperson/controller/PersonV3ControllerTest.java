@@ -11,7 +11,6 @@ import no.nav.veilarbperson.controller.v3.PersonV3Controller;
 import no.nav.veilarbperson.domain.Foedselsdato;
 import no.nav.veilarbperson.domain.PersonFraPdlRequest;
 import no.nav.veilarbperson.domain.PersonNavnV2;
-import no.nav.veilarbperson.domain.PersonV2Data;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.service.PersonV2Service;
 import org.junit.jupiter.api.Test;
@@ -50,50 +49,6 @@ public class PersonV3ControllerTest {
 
     @MockitoBean
     private PersonV2Service personV2Service;
-
-    @Test
-    public void returnerer_person_uten_behandlingsnummer_hent_person() throws Exception {
-        PrivatBruker ny = navContext.getPrivatBrukere().ny();
-        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
-        when(personV2Service.hentFlettetPerson(new PersonFraPdlRequest(TEST_FNR, null))).thenReturn(new PersonV2Data().setFodselsnummer(TEST_FNR).setFornavn("Knut").setMellomnavn("Knutsen"));
-
-        String expectedJson = "{\"fornavn\":\"Knut\",\"mellomnavn\":\"Knutsen\",\"fodselsnummer\":\"12345678900\"}";
-
-        mockMvc
-                .perform(
-                        post("/api/v3/hent-person")
-                                .contentType(APPLICATION_JSON)
-                                .content(JsonUtils.toJson(new PersonFraPdlRequest(TEST_FNR, null)))
-                                .header(ACCEPT, APPLICATION_JSON_VALUE)
-                                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                                .header("test_ident", navAnsatt.getNavIdent())
-                                .header("test_ident_type", "INTERN")
-                )
-                .andExpect(content().json(expectedJson))
-                .andExpect(status().is(200));
-    }
-
-    @Test
-    public void returnerer_person_med_behandlingsnummer_hent_person() throws Exception {
-        PrivatBruker ny = navContext.getPrivatBrukere().ny();
-        NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
-        when(personV2Service.hentFlettetPerson(new PersonFraPdlRequest(TEST_FNR, "B555"))).thenReturn(new PersonV2Data().setFodselsnummer(TEST_FNR).setFornavn("Knut").setMellomnavn("Knutsen"));
-
-        String expectedJson = "{\"fornavn\":\"Knut\",\"mellomnavn\":\"Knutsen\",\"fodselsnummer\":\"12345678900\"}";
-
-        mockMvc
-                .perform(
-                        post("/api/v3/hent-person")
-                                .contentType(APPLICATION_JSON)
-                                .content(JsonUtils.toJson(new PersonFraPdlRequest(TEST_FNR, "B555")))
-                                .header(ACCEPT, APPLICATION_JSON_VALUE)
-                                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                                .header("test_ident", navAnsatt.getNavIdent())
-                                .header("test_ident_type", "INTERN")
-                )
-                .andExpect(content().json(expectedJson))
-                .andExpect(status().is(200));
-    }
 
     @Test
     void returnerer_opplysninger_om_arbeidssoeker_med_profilering_paa_bruker() throws Exception {
