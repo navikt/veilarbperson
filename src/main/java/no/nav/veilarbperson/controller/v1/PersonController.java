@@ -1,6 +1,5 @@
 package no.nav.veilarbperson.controller.v1;
 
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.domain.*;
@@ -15,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/person")
 @AllArgsConstructor
+@SuppressWarnings("java:S1133")
 public class PersonController {
     private final PersonV2Service personV2Service;
 
@@ -33,26 +33,6 @@ public class PersonController {
         return new AktoerId(authService.getAktorId(fnr));
     }
 
-    /**
-     * @deprecated Bruk POST /api/v3/person/hent-navn
-     */
-    @Deprecated
-    @GetMapping("/navn")
-    @Operation(summary = "Henter navnet til en person")
-    public ResponseEntity<?> navn(@RequestParam(value = "fnr", required = false) Fnr fnr) {
-        throw new ResponseStatusException(HttpStatus.GONE, "Bytt til v2 endepunkt");
-    }
-
-    /**
-     * @deprecated Bruk POST /api/v3/person/hent-malform
-     */
-    @Deprecated
-    @GetMapping("/{fodselsnummer}/malform")
-    @Operation(summary = "Henter målform til en person")
-    public Malform malform(@PathVariable("fodselsnummer") Fnr fnr) {
-        throw new ResponseStatusException(HttpStatus.GONE,
-                "Bytt til v2 endepunkt");
-    }
     /**
      * @deprecated Bruk POST /api/v3/person/hent-tilgangTilBruker
      */
