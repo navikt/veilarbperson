@@ -60,26 +60,6 @@ public class PersonV2Service {
         this.representasjonClient = representasjonClient;
     }
 
-    public HentPerson.Person hentPerson(PersonFraPdlRequest personFraPdlRequest) {
-        return pdlClient.hentPerson(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
-    }
-
-    public PersonV2Data hentFlettetPerson(PersonFraPdlRequest personFraPdlRequest) {
-        HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Fant ikke person i hentPerson operasjonen i PDL"));
-
-        PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
-        flettInnEgenAnsatt(personV2Data, personFraPdlRequest.getFnr());
-        flettBarn(personDataFraPdl.getForelderBarnRelasjon(), personV2Data, personFraPdlRequest.getBehandlingsnummer());
-        flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data, personFraPdlRequest.getBehandlingsnummer());
-        flettDigitalKontaktinformasjon(personFraPdlRequest.getFnr(), personV2Data);
-        flettGeografiskEnhet(personFraPdlRequest, personV2Data);
-        flettKodeverk(personV2Data);
-
-        return personV2Data;
-    }
-
     public PersonV2Data hentFlettetPersonTilgangsstyrt(PersonFraPdlRequest personFraPdlRequest) {
         HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -152,17 +132,6 @@ public class PersonV2Service {
                 .filter(Objects::nonNull)
                 .map(Fnr::of)
                 .collect(Collectors.toList());
-    }
-
-    public void flettBarn(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data, String behandlingsnummer) {
-        List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
-        List<Familiemedlem> barnInfo = hentFamiliemedlemOpplysninger(barnFnrListe, personV2Data.getBostedsadresse(), behandlingsnummer);
-
-        if (barnInfo.isEmpty()) {
-            personV2Data.setBarn(Collections.emptyList());
-        } else {
-            personV2Data.setBarn(new ArrayList<>(barnInfo));
-        }
     }
 
     public void flettBarnTilgangsstyrt(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data, String behandlingsnummer) {

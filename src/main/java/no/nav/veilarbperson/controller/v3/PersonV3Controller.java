@@ -31,14 +31,6 @@ public class PersonV3Controller {
 
     private final OppslagArbeidssoekerregisteretService oppslagArbeidssoekerregisteretService;
 
-    @PostMapping("/hent-person")
-    @Operation(summary = "Henter informasjon om en person fra PDL")
-    public PersonV2Data hentPerson(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
-        authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        return personV2Service.hentFlettetPerson(personFraPdlRequest);
-    }
-
     @PostMapping("/hent-person-tilgangsstyrt")
     @Operation(summary = "Henter informasjon om en person fra PDL")
     public PersonV2Data hentPersonTilgangsstyrt(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
