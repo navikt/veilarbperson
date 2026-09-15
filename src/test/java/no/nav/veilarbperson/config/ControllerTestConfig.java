@@ -1,17 +1,15 @@
 package no.nav.veilarbperson.config;
 
 import no.nav.veilarbperson.controller.PersonGraphQLController;
-import no.nav.veilarbperson.controller.v1.InternalController;
-import no.nav.veilarbperson.controller.v1.PersonController;
-import no.nav.veilarbperson.controller.v3.PersonV3Controller;
+import no.nav.veilarbperson.controller.InternalController;
+import no.nav.veilarbperson.controller.PersonController;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import({
-        PersonController.class,
         InternalController.class,
-        PersonV3Controller.class,
+        PersonController.class,
         PersonGraphQLController.class
 })
 public class ControllerTestConfig {}

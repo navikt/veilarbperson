@@ -13,23 +13,23 @@ object PersonVisittkortDataMapper {
         krrTelefon: String?,
         krrTelefonOppdatert: String?
     ): PersonVisittkortData {
-        val navn = PersonV2DataMapper.hentGjeldeneNavn(person.navn).orElse(null)
+        val navn = PersonDataMapper.hentGjeldeneNavn(person.navn).orElse(null)
 
-        val telefoner = PersonV2DataMapper.mapTelefonNrFraPdl(person.telefonnummer).toMutableList()
+        val telefoner = PersonDataMapper.mapTelefonNrFraPdl(person.telefonnummer).toMutableList()
         leggKrrTelefonIListe(krrTelefon, krrTelefonOppdatert, telefoner)
 
         return PersonVisittkortData(
             fornavn = navn?.fornavn,
             mellomnavn = navn?.mellomnavn,
             etternavn = navn?.etternavn,
-            fodselsdato = PersonV2DataMapper.getFirstElement(person.foedselsdato)?.foedselsdato?.toString(),
-            dodsdato = PersonV2DataMapper.getFirstElement(person.doedsfall)?.doedsdato?.toString(),
-            kjonn = PersonV2DataMapper.getFirstElement(person.kjoenn)?.kjoenn,
-            diskresjonskode = PersonV2DataMapper.getFirstElement(person.adressebeskyttelse)
+            fodselsdato = PersonDataMapper.getFirstElement(person.foedselsdato)?.foedselsdato?.toString(),
+            dodsdato = PersonDataMapper.getFirstElement(person.doedsfall)?.doedsdato?.toString(),
+            kjonn = PersonDataMapper.getFirstElement(person.kjoenn)?.kjoenn,
+            diskresjonskode = PersonDataMapper.getFirstElement(person.adressebeskyttelse)
                 ?.gradering
                 ?.let { Diskresjonskode.mapKodeTilTall(it) },
             egenAnsatt = erSkjermet,
-            sikkerhetstiltak = PersonV2DataMapper.getFirstElement(person.sikkerhetstiltak)?.beskrivelse,
+            sikkerhetstiltak = PersonDataMapper.getFirstElement(person.sikkerhetstiltak)?.beskrivelse,
             telefon = telefoner
         )
     }

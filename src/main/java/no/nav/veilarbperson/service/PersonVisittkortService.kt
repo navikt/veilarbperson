@@ -8,7 +8,7 @@ import no.nav.veilarbperson.client.nom.SkjermetClient
 import no.nav.veilarbperson.client.pdl.PdlClient
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest
 import no.nav.veilarbperson.domain.PersonVisittkortData
-import no.nav.veilarbperson.utils.PersonV2DataMapper
+import no.nav.veilarbperson.utils.PersonDataMapper
 import no.nav.veilarbperson.utils.PersonVisittkortDataMapper
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -48,7 +48,7 @@ class PersonVisittkortService(
             if (digdirInfo != null) {
                 krrTelefon = digdirInfo.mobiltelefonnummer
                 krrTelefonOppdatert = digdirInfo.mobiltelefonnummerOppdatert
-                    ?.let { ZonedDateTime.parse(it).format(PersonV2DataMapper.frontendDatoformat) }
+                    ?.let { ZonedDateTime.parse(it).format(PersonDataMapper.frontendDatoformat) }
             }
         } catch (e: java.lang.Exception) {
             log.warn("Kunne ikke hente telefon fra KRR, fortsetter uten KRR-telefon", e)

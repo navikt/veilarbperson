@@ -5,7 +5,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class PersonNavnV2 {
+public class PersonNavn {
     private String fornavn;
     private String mellomnavn;
     private String etternavn;

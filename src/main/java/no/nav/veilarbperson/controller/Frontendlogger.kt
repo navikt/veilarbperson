@@ -1,8 +1,7 @@
-package no.nav.veilarbperson.controller.v1
+package no.nav.veilarbperson.controller
 
 import no.nav.common.metrics.Event
 import no.nav.common.metrics.MetricsClient
-import no.nav.common.utils.EnvironmentUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.PostMapping

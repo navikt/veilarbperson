@@ -11,7 +11,7 @@ import static java.util.Optional.ofNullable;
 
 @Data
 @Accessors(chain = true)
-public class PersonV2Data {
+public class PersonData {
     String fornavn;
     String mellomnavn;
     String etternavn;
@@ -36,7 +36,7 @@ public class PersonV2Data {
     List<Kontaktadresse> kontaktadresser;
     String malform;
 
-    public PersonV2Data() {
+    public PersonData() {
         telefon = new ArrayList<>();
         barn = new ArrayList<>();
         kontaktadresser = new ArrayList<>();

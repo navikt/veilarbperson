@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.hentGjeldeneNavn;
+import static no.nav.veilarbperson.utils.PersonDataMapper.hentGjeldeneNavn;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;

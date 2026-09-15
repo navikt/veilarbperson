@@ -12,8 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.frontendDatoformat;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.parseZonedDateToDateString;
+import static no.nav.veilarbperson.utils.PersonDataMapper.frontendDatoformat;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;

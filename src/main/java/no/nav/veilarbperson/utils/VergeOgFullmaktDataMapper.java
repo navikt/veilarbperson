@@ -3,7 +3,7 @@ package no.nav.veilarbperson.utils;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
 import no.nav.veilarbperson.domain.FullmaktDTO;
-import no.nav.veilarbperson.domain.PersonNavnV2;
+import no.nav.veilarbperson.domain.PersonNavn;
 import no.nav.veilarbperson.domain.VergeData;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class VergeOgFullmaktDataMapper {
         }).toList();
     }
 
-    public static VergeData.VergemaalEllerFremtidsfullmakt toVergemaalEllerFremtidsfullmakt(HentPerson.VergemaalEllerFremtidsfullmakt vergemaalEllerFremtidsfullmakt, PersonNavnV2 navn) {
+    public static VergeData.VergemaalEllerFremtidsfullmakt toVergemaalEllerFremtidsfullmakt(HentPerson.VergemaalEllerFremtidsfullmakt vergemaalEllerFremtidsfullmakt, PersonNavn navn) {
         return new VergeData.VergemaalEllerFremtidsfullmakt()
                 .setType(vergemaalEllerFremtidsfullmakt.getType())
                 .setEmbete(vergemaalEllerFremtidsfullmakt.getEmbete())
@@ -53,7 +53,7 @@ public class VergeOgFullmaktDataMapper {
                 .setFolkeregistermetadata(folkeregisterMetadataMapper(vergemaalEllerFremtidsfullmakt.getFolkeregistermetadata()));
     }
 
-    public static VergeData.VergeEllerFullmektig vergeEllerFullmektigMapper(HentPerson.VergeEllerFullmektig vergeEllerFullmektig, PersonNavnV2 navn) {
+    public static VergeData.VergeEllerFullmektig vergeEllerFullmektigMapper(HentPerson.VergeEllerFullmektig vergeEllerFullmektig, PersonNavn navn) {
         VergeData.VergeNavn vergeNavn;
 
         if (navn != null) {
@@ -73,7 +73,7 @@ public class VergeOgFullmaktDataMapper {
                         .collect(Collectors.toList()));
     }
 
-    public static VergeData.VergeNavn personnavnTilVergenavnMapper(PersonNavnV2 navn) {
+    public static VergeData.VergeNavn personnavnTilVergenavnMapper(PersonNavn navn) {
         return (navn != null)
                 ? new VergeData.VergeNavn().setFornavn(navn.getFornavn()).setMellomnavn(navn.getMellomnavn()).setEtternavn(navn.getEtternavn())
                 : null;

@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.controller.v1;
+package no.nav.veilarbperson.controller;
 
 import no.nav.common.health.selftest.SelfTestChecks;
 import no.nav.common.health.selftest.SelfTestUtils;
