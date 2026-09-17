@@ -7,12 +7,11 @@ import no.nav.poao_tilgang.poao_tilgang_test_core.NavAnsatt;
 import no.nav.poao_tilgang.poao_tilgang_test_core.NavContext;
 import no.nav.poao_tilgang.poao_tilgang_test_core.PrivatBruker;
 import no.nav.veilarbperson.config.ApplicationTestConfig;
-import no.nav.veilarbperson.controller.v3.PersonV3Controller;
 import no.nav.veilarbperson.domain.Foedselsdato;
-import no.nav.veilarbperson.domain.PersonFraPdlRequest;
-import no.nav.veilarbperson.domain.PersonNavnV2;
+import no.nav.veilarbperson.domain.PersonRequest;
+import no.nav.veilarbperson.domain.PersonNavn;
 import no.nav.veilarbperson.service.AuthService;
-import no.nav.veilarbperson.service.PersonV2Service;
+import no.nav.veilarbperson.service.PersonService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -33,10 +32,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = PersonV3Controller.class)
+@WebMvcTest(controllers = PersonController.class)
 @Import({ApplicationTestConfig.class})
 @DirtiesContext
-public class PersonV3ControllerTest {
+public class PersonControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -48,7 +47,7 @@ public class PersonV3ControllerTest {
     private AuthService authService;
 
     @MockitoBean
-    private PersonV2Service personV2Service;
+    private PersonService personService;
 
     @Test
     void returnerer_opplysninger_om_arbeidssoeker_med_profilering_paa_bruker() throws Exception {
@@ -150,7 +149,7 @@ public class PersonV3ControllerTest {
                 .perform(
                         post("/api/v3/person/hent-siste-opplysninger-om-arbeidssoeker-med-profilering")
                                 .contentType(APPLICATION_JSON)
-                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .content(JsonUtils.toJson(new PersonRequest(Fnr.of(fnr), null)))
                                 .header("test_ident", navAnsatt.getNavIdent())
                                 .header("test_ident_type", "INTERN")
                 )
@@ -239,7 +238,7 @@ public class PersonV3ControllerTest {
                 .perform(
                         post("/api/v3/person/hent-siste-opplysninger-om-arbeidssoeker-med-profilering")
                                 .contentType(APPLICATION_JSON)
-                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .content(JsonUtils.toJson(new PersonRequest(Fnr.of(fnr), null)))
                                 .header("test_ident", navAnsatt.getNavIdent())
                                 .header("test_ident_type", "INTERN")
                 )
@@ -353,7 +352,7 @@ public class PersonV3ControllerTest {
                 .perform(
                         post("/api/v3/person/hent-siste-opplysninger-om-arbeidssoeker-med-profilering")
                                 .contentType(APPLICATION_JSON)
-                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .content(JsonUtils.toJson(new PersonRequest(Fnr.of(fnr), null)))
                                 .header("test_ident", navAnsatt.getNavIdent())
                                 .header("test_ident_type", "INTERN")
                 )
@@ -410,7 +409,7 @@ public class PersonV3ControllerTest {
                 .perform(
                         post("/api/v3/person/hent-siste-aktiv-arbeidssoekerperiode")
                                 .contentType(APPLICATION_JSON)
-                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .content(JsonUtils.toJson(new PersonRequest(Fnr.of(fnr), null)))
                                 .header("test_ident", navAnsatt.getNavIdent())
                                 .header("test_ident_type", "INTERN")
                 )
@@ -457,7 +456,7 @@ public class PersonV3ControllerTest {
                 .perform(
                         post("/api/v3/person/hent-siste-aktiv-arbeidssoekerperiode")
                                 .contentType(APPLICATION_JSON)
-                                .content(JsonUtils.toJson(new PersonFraPdlRequest(Fnr.of(fnr), null)))
+                                .content(JsonUtils.toJson(new PersonRequest(Fnr.of(fnr), null)))
                                 .header("test_ident", navAnsatt.getNavIdent())
                                 .header("test_ident_type", "INTERN")
                 )
@@ -468,7 +467,7 @@ public class PersonV3ControllerTest {
     void test_av_hent_navn() throws Exception {
         PrivatBruker ny = navContext.getPrivatBrukere().ny();
         NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
-        when(personV2Service.hentNavn(new PersonFraPdlRequest(TEST_FNR, "B555"))).thenReturn(new PersonNavnV2().setFornavn("Knut").setMellomnavn("Roger").setEtternavn("Knutsen").setForkortetNavn("Knut Knutsen"));
+        when(personService.hentNavn(new PersonRequest(TEST_FNR, "B555"))).thenReturn(new PersonNavn().setFornavn("Knut").setMellomnavn("Roger").setEtternavn("Knutsen").setForkortetNavn("Knut Knutsen"));
 
         String expectedJson = "{\"fornavn\":\"Knut\",\"mellomnavn\":\"Roger\",\"etternavn\":\"Knutsen\",\"forkortetNavn\":\"Knut Knutsen\"}";
 
@@ -476,7 +475,7 @@ public class PersonV3ControllerTest {
                 .perform(
                         post("/api/v3/person/hent-navn")
                                 .contentType(APPLICATION_JSON)
-                                .content(JsonUtils.toJson(new PersonFraPdlRequest(TEST_FNR, "B555")))
+                                .content(JsonUtils.toJson(new PersonRequest(TEST_FNR, "B555")))
                                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                                 .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                 .header("test_ident", navAnsatt.getNavIdent())
@@ -490,7 +489,7 @@ public class PersonV3ControllerTest {
     void test_av_hent_foedselsdato() throws Exception {
         PrivatBruker ny = navContext.getPrivatBrukere().ny();
         NavAnsatt navAnsatt = navContext.getNavAnsatt().nyFor(ny);
-        when(personV2Service.hentFoedselsdato(new PersonFraPdlRequest(TEST_FNR, "B555")))
+        when(personService.hentFoedselsdato(new PersonRequest(TEST_FNR, "B555")))
                 .thenReturn(new Foedselsdato(LocalDate.of(1990, 1, 1), 1990));
 
         String expectedJson = "{\"foedselsdato\":\"1990-01-01\",\"foedselsaar\":1990}";
@@ -499,7 +498,7 @@ public class PersonV3ControllerTest {
                 .perform(
                         post("/api/v3/person/hent-foedselsdato")
                                 .contentType(APPLICATION_JSON)
-                                .content(JsonUtils.toJson(new PersonFraPdlRequest(TEST_FNR, "B555")))
+                                .content(JsonUtils.toJson(new PersonRequest(TEST_FNR, "B555")))
                                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                                 .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                 .header("test_ident", navAnsatt.getNavIdent())

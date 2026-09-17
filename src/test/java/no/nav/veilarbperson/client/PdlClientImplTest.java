@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.hentGjeldeneNavn;
+import static no.nav.veilarbperson.utils.PersonDataMapper.hentGjeldeneNavn;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -94,7 +94,7 @@ public class PdlClientImplTest {
         assertEquals("NORGE", statsborgerskap.getLand());
 
         Bostedsadresse bostedsadresse = person.getBostedsadresse().get(0);
-        Bostedsadresse.Vegadresse vegadresse = bostedsadresse.getVegadresse();
+        Adresse.Vegadresse vegadresse = bostedsadresse.getVegadresse();
         assertEquals("ARENDALSGATE", vegadresse.getAdressenavn());
         assertEquals("A", vegadresse.getHusbokstav());
         assertEquals("21", vegadresse.getHusnummer());
@@ -125,7 +125,7 @@ public class PdlClientImplTest {
         assertEquals(localDateTime, kontaktAdresse.getGyldigFraOgMed());
         assertNull(kontaktAdresse.getGyldigTilOgMed());
 
-        Kontaktadresse.Vegadresse kontaktsVegadresse = kontaktAdresse.getVegadresse();
+        Adresse.Vegadresse kontaktsVegadresse = kontaktAdresse.getVegadresse();
         assertEquals(123456789L, kontaktsVegadresse.getMatrikkelId());
         assertEquals("postnummer", kontaktsVegadresse.getPostnummer());
         assertEquals("adressenavn", kontaktsVegadresse.getAdressenavn());
@@ -139,7 +139,7 @@ public class PdlClientImplTest {
         assertEquals("postboks", kontaktsPostboksadresse.getPostboks());
         assertEquals("postbokseier", kontaktsPostboksadresse.getPostbokseier());
 
-        Kontaktadresse.Utenlandskadresse utenlandskAdresse = kontaktAdresse.getUtenlandskAdresse();
+        Adresse.Utenlandskadresse utenlandskAdresse = kontaktAdresse.getUtenlandskAdresse();
         assertEquals("adressenavnNummer", utenlandskAdresse.getAdressenavnNummer());
         assertEquals("bygningEtasjeLeilighet", utenlandskAdresse.getBygningEtasjeLeilighet());
         assertEquals("postboksNummerNavn", utenlandskAdresse.getPostboksNummerNavn());

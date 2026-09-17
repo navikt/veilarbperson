@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import;
 @Import({
 		AuthService.class,
 		KodeverkService.class,
-		PersonV2Service.class,
+		PersonService.class,
 		CvJobbprofilService.class,
 		OppslagArbeidssoekerregisteretService.class,
 		PersonVisittkortService.class

@@ -1,4 +1,4 @@
-package no.nav.veilarbperson.controller.v3;
+package no.nav.veilarbperson.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,9 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v3")
-public class PersonV3Controller {
+public class PersonController {
 
-    private final PersonV2Service personV2Service;
+    private final PersonService personService;
     private final AuthService authService;
     private final RegoppslagClient regoppslagClient;
 
@@ -33,10 +33,10 @@ public class PersonV3Controller {
 
     @PostMapping("/hent-person-tilgangsstyrt")
     @Operation(summary = "Henter informasjon om en person fra PDL")
-    public PersonV2Data hentPersonTilgangsstyrt(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+    public PersonData hentPersonTilgangsstyrt(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        return personV2Service.hentFlettetPersonTilgangsstyrt(personFraPdlRequest);
+        authService.sjekkLesetilgang(personRequest.getFnr());
+        return personService.hentFlettetPersonTilgangsstyrt(personRequest);
     }
 
     @PostMapping("/person/hent-aktorid")
@@ -55,10 +55,10 @@ public class PersonV3Controller {
 
     @PostMapping("/person/hent-geografisktilknytning")
     @Operation(summary = "Henter persons geografisk tilknytning")
-    public GeografiskTilknytning geografisktilknytning(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
-        Fnr fodselsnummer = hentIdentForEksternEllerIntern(personFraPdlRequest.getFnr());
+    public GeografiskTilknytning geografisktilknytning(@RequestBody PersonRequest personRequest) {
+        Fnr fodselsnummer = hentIdentForEksternEllerIntern(personRequest.getFnr());
         authService.sjekkLesetilgang(fodselsnummer);
-        return personV2Service.hentGeografiskTilknytning(personFraPdlRequest);
+        return personService.hentGeografiskTilknytning(personRequest);
     }
 
     @PostMapping("/person/hent-cv_jobbprofil")
@@ -72,16 +72,16 @@ public class PersonV3Controller {
     public Malform malform(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personRequest.getFnr());
-        String malform = personV2Service.hentMalform(personRequest.getFnr());
+        String malform = personService.hentMalform(personRequest.getFnr());
         return new Malform(malform);
     }
 
     @PostMapping("/person/hent-vergeOgFullmakt")
     @Operation(summary = "Henter informasjon om verge og fullmakt for en person fra PDL")
-    public VergeData hentVergemaal(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+    public VergeData hentVergemaal(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        return personV2Service.hentVerge(personFraPdlRequest);
+        authService.sjekkLesetilgang(personRequest.getFnr());
+        return personService.hentVerge(personRequest);
     }
 
     @PostMapping("/person/hent-fullmakt")
@@ -89,31 +89,31 @@ public class PersonV3Controller {
     public FullmaktDTO hentFullmakt(@RequestBody PersonRequest personRequest) throws IOException {
         authService.stoppHvisEksternBruker();
         authService.sjekkLesetilgang(personRequest.getFnr());
-        return personV2Service.hentFullmakt(personRequest);
+        return personService.hentFullmakt(personRequest);
     }
 
     @PostMapping("/person/hent-tolk")
     @Operation(summary = "Henter tolk informajon til en person fra PDL")
-    public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+    public TilrettelagtKommunikasjonData hentSpraakTolk(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        return personV2Service.hentSpraakTolkInfo(personFraPdlRequest);
+        authService.sjekkLesetilgang(personRequest.getFnr());
+        return personService.hentSpraakTolkInfo(personRequest);
     }
 
     @PostMapping("/person/hent-navn")
     @Operation(summary = "Henter navn til en person fra PDL")
-    public PersonNavnV2 hentNavn(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+    public PersonNavn hentNavn(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        return personV2Service.hentNavn(personFraPdlRequest);
+        authService.sjekkLesetilgang(personRequest.getFnr());
+        return personService.hentNavn(personRequest);
     }
 
     @PostMapping("/person/hent-adressebeskyttelse")
     @Operation(summary = "Henter gradering på adressebeskyttelse til en person fra PDL")
-    public HentPerson.Adressebeskyttelse hentAdressebeskyttelse(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+    public HentPerson.Adressebeskyttelse hentAdressebeskyttelse(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        return personV2Service.hentAdressebeskyttelse(personFraPdlRequest);
+        authService.sjekkLesetilgang(personRequest.getFnr());
+        return personService.hentAdressebeskyttelse(personRequest);
     }
 
     @PostMapping("/person/hent-postadresse")
@@ -146,10 +146,10 @@ public class PersonV3Controller {
 
     @PostMapping("/person/hent-foedselsdato")
     @Operation(summary = "Henter fødselsdato til en person fra PDL")
-    public Foedselsdato hentFoedselsdato(@RequestBody PersonFraPdlRequest personFraPdlRequest) {
+    public Foedselsdato hentFoedselsdato(@RequestBody PersonRequest personRequest) {
         authService.stoppHvisEksternBruker();
-        authService.sjekkLesetilgang(personFraPdlRequest.getFnr());
-        return personV2Service.hentFoedselsdato(personFraPdlRequest);
+        authService.sjekkLesetilgang(personRequest.getFnr());
+        return personService.hentFoedselsdato(personRequest);
     }
 
     private Fnr hentIdentForEksternEllerIntern(Fnr queryParamFnr) {

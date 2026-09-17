@@ -14,7 +14,7 @@ import no.nav.veilarbperson.client.pdl.domain.*;
 import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
 import no.nav.veilarbperson.domain.*;
-import no.nav.veilarbperson.utils.PersonV2DataMapper;
+import no.nav.veilarbperson.utils.PersonDataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -28,12 +28,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static no.nav.veilarbperson.utils.PersonV2DataMapper.*;
+import static no.nav.veilarbperson.utils.PersonDataMapper.*;
 import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.*;
 
 @Slf4j
 @Service
-public class PersonV2Service {
+public class PersonService {
+    private static final String KRR = "KRR";
+
     private final PdlClient pdlClient;
     private final AuthService authService;
     private final DigdirClient digdirClient;
@@ -44,13 +46,13 @@ public class PersonV2Service {
 
 
     @Autowired
-    public PersonV2Service(PdlClient pdlClient,
-                           @Qualifier("authServiceWithoutAuditLog") AuthService authServiceWithoutAuditLogg,
-                           DigdirClient digdirClient,
-                           Norg2Client norg2Client,
-                           SkjermetClient skjermetClient,
-                           KodeverkService kodeverkService,
-                           RepresentasjonClient representasjonClient) {
+    public PersonService(PdlClient pdlClient,
+                         @Qualifier("authServiceWithoutAuditLog") AuthService authServiceWithoutAuditLogg,
+                         DigdirClient digdirClient,
+                         Norg2Client norg2Client,
+                         SkjermetClient skjermetClient,
+                         KodeverkService kodeverkService,
+                         RepresentasjonClient representasjonClient) {
         this.pdlClient = pdlClient;
         this.authService = authServiceWithoutAuditLogg;
         this.digdirClient = digdirClient;
@@ -60,20 +62,20 @@ public class PersonV2Service {
         this.representasjonClient = representasjonClient;
     }
 
-    public PersonV2Data hentFlettetPersonTilgangsstyrt(PersonFraPdlRequest personFraPdlRequest) {
-        HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())))
+    public PersonData hentFlettetPersonTilgangsstyrt(PersonRequest personRequest) {
+        HentPerson.Person personDataFraPdl = ofNullable(pdlClient.hentPerson(new PdlRequest(personRequest.getFnr(), personRequest.getBehandlingsnummer())))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Fant ikke person i hentPerson operasjonen i PDL"));
 
-        PersonV2Data personV2Data = PersonV2DataMapper.toPersonV2Data(personDataFraPdl);
-        flettInnEgenAnsatt(personV2Data, personFraPdlRequest.getFnr());
-        flettBarnTilgangsstyrt(personDataFraPdl.getForelderBarnRelasjon(), personV2Data, personFraPdlRequest.getBehandlingsnummer());
-        flettSivilstand(personDataFraPdl.getSivilstand(), personV2Data, personFraPdlRequest.getBehandlingsnummer());
-        flettDigitalKontaktinformasjon(personFraPdlRequest.getFnr(), personV2Data);
-        flettGeografiskEnhet(personFraPdlRequest, personV2Data);
-        flettKodeverk(personV2Data);
+        PersonData personData = PersonDataMapper.toPersonData(personDataFraPdl);
+        flettInnEgenAnsatt(personData, personRequest.getFnr());
+        flettBarnTilgangsstyrt(personDataFraPdl.getForelderBarnRelasjon(), personData, personRequest.getBehandlingsnummer());
+        flettSivilstand(personDataFraPdl.getSivilstand(), personData, personRequest.getBehandlingsnummer());
+        flettDigitalKontaktinformasjon(personRequest.getFnr(), personData);
+        flettGeografiskEnhet(personRequest, personData);
+        flettKodeverk(personData);
 
-        return personV2Data;
+        return personData;
     }
 
     public List<Familiemedlem> hentFamiliemedlemOpplysninger(List<Fnr> familemedlemFnr, Bostedsadresse bostedsadresse, String behandlingsnummer) {
@@ -83,7 +85,7 @@ public class PersonV2Service {
                 .stream()
                 .filter(medlemInfo -> medlemInfo.getCode().equals("ok"))
                 .map(HentPerson.PersonFraBolk::getPerson)
-                .filter(PersonV2DataMapper::harGyldigIdent)
+                .filter(PersonDataMapper::harGyldigIdent)
                 .map(familiemedlem -> mapFamiliemedlem(familiemedlem, bostedsadresse))
                 .collect(Collectors.toList());
     }
@@ -95,7 +97,7 @@ public class PersonV2Service {
                 .stream()
                 .filter(medlemInfo -> medlemInfo.getCode().equals("ok"))
                 .map(HentPerson.PersonFraBolk::getPerson)
-                .filter(PersonV2DataMapper::harGyldigIdent)
+                .filter(PersonDataMapper::harGyldigIdent)
                 .map(familiemedlemTilgangsstyrt -> mapFamiliemedlemTilgangsstyrt(familiemedlemTilgangsstyrt, bostedsadresse))
                 .collect(Collectors.toList());
     }
@@ -104,9 +106,9 @@ public class PersonV2Service {
     }
 
     public Familiemedlem mapFamiliemedlem(HentPerson.Familiemedlem familiemedlem, Bostedsadresse bostedsadresse) {
-        Fnr familiemedlemFnr = PersonV2DataMapper.hentFamiliemedlemFnr(familiemedlem);
+        Fnr familiemedlemFnr = PersonDataMapper.hentFamiliemedlemFnr(familiemedlem);
 
-        return PersonV2DataMapper.familiemedlemMapper(
+        return PersonDataMapper.familiemedlemMapper(
                 familiemedlem,
                 erSkjermet(familiemedlemFnr),
                 bostedsadresse,
@@ -115,9 +117,9 @@ public class PersonV2Service {
     }
 
     public FamiliemedlemTilgangsstyrt mapFamiliemedlemTilgangsstyrt(HentPerson.Familiemedlem familiemedlem, Bostedsadresse bostedsadresse) {
-        Fnr familiemedlemFnr = PersonV2DataMapper.hentFamiliemedlemFnr(familiemedlem);
+        Fnr familiemedlemFnr = PersonDataMapper.hentFamiliemedlemFnr(familiemedlem);
 
-        return PersonV2DataMapper.familiemedlemTilgangsstyrtMapper(
+        return PersonDataMapper.familiemedlemTilgangsstyrtMapper(
                 familiemedlem,
                 erSkjermet(familiemedlemFnr),
                 bostedsadresse,
@@ -134,36 +136,36 @@ public class PersonV2Service {
                 .collect(Collectors.toList());
     }
 
-    public void flettBarnTilgangsstyrt(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonV2Data personV2Data, String behandlingsnummer) {
+    public void flettBarnTilgangsstyrt(List<HentPerson.ForelderBarnRelasjon> forelderBarnRelasjoner, PersonData personData, String behandlingsnummer) {
         List<Fnr> barnFnrListe = hentBarnaFnr(forelderBarnRelasjoner);
-        List<FamiliemedlemTilgangsstyrt> barnInfo = hentFamiliemedlemOpplysningerTilgangsstyrt(barnFnrListe, personV2Data.getBostedsadresse(), behandlingsnummer);
+        List<FamiliemedlemTilgangsstyrt> barnInfo = hentFamiliemedlemOpplysningerTilgangsstyrt(barnFnrListe, personData.getBostedsadresse(), behandlingsnummer);
 
         if (barnInfo.isEmpty()) {
-            personV2Data.setBarn(Collections.emptyList());
+            personData.setBarn(Collections.emptyList());
         } else {
-            personV2Data.setBarn(new ArrayList<>(barnInfo));
+            personData.setBarn(new ArrayList<>(barnInfo));
         }
     }
 
-    public void flettSivilstand(List<HentPerson.Sivilstand> sivilstands, PersonV2Data personV2Data, String behandlingsnummer) {
+    public void flettSivilstand(List<HentPerson.Sivilstand> sivilstands, PersonData personData, String behandlingsnummer) {
         List<Sivilstand> mappetSivilstand = sivilstands.stream().flatMap(sivilstand -> {
             Optional<Familiemedlem> relatert = Optional.ofNullable(sivilstand.getRelatertVedSivilstand())
                     .map(Fnr::of)
-                    .map(fnr -> hentFamiliemedlemOpplysninger(List.of(fnr), personV2Data.getBostedsadresse(), behandlingsnummer))
+                    .map(fnr -> hentFamiliemedlemOpplysninger(List.of(fnr), personData.getBostedsadresse(), behandlingsnummer))
                     .flatMap(list -> list.stream().findFirst());
             return Stream.of(sivilstandMapper(sivilstand, relatert));
-        }).collect(Collectors.toList());
+        }).toList();
 
-        personV2Data.setSivilstandliste(mappetSivilstand);
+        personData.setSivilstandliste(mappetSivilstand);
     }
 
-    private void flettInnEgenAnsatt(PersonV2Data personV2Data, Fnr fodselsnummer) {
+    private void flettInnEgenAnsatt(PersonData personData, Fnr fodselsnummer) {
         Boolean egenAnsatt = skjermetClient.hentSkjermet(fodselsnummer);
-        personV2Data.setEgenAnsatt(egenAnsatt);
+        personData.setEgenAnsatt(egenAnsatt);
     }
 
-    public GeografiskTilknytning hentGeografiskTilknytning(PersonFraPdlRequest personFraPdlRequest) {
-        HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
+    public GeografiskTilknytning hentGeografiskTilknytning(PersonRequest personRequest) {
+        HentPerson.GeografiskTilknytning geografiskTilknytning = pdlClient.hentGeografiskTilknytning(new PdlRequest(personRequest.getFnr(), personRequest.getBehandlingsnummer()));
 
         if (geografiskTilknytning == null) {
             return null;
@@ -178,19 +180,19 @@ public class PersonV2Service {
         };
     }
 
-    private void flettGeografiskEnhet(PersonFraPdlRequest personFraPdlRequest, PersonV2Data personV2Data) {
-        String geografiskTilknytning = Optional.ofNullable(hentGeografiskTilknytning(personFraPdlRequest))
+    private void flettGeografiskEnhet(PersonRequest personRequest, PersonData personData) {
+        String geografiskTilknytning = Optional.ofNullable(hentGeografiskTilknytning(personRequest))
                 .map(GeografiskTilknytning::getGeografiskTilknytning)
                 .orElse(null);
 
-        personV2Data.setGeografiskTilknytning(geografiskTilknytning);
+        personData.setGeografiskTilknytning(geografiskTilknytning);
 
         // Sjekk at geografiskTilknytning er satt og at det ikke er en tre-bokstavs landkode (ISO 3166 Alpha-3, for utenlandske brukere så blir landskode brukt istedenfor nummer)
         if (geografiskTilknytning != null && geografiskTilknytning.matches("\\d+")) {
             try {
                 // Henter geografisk enhet, derfor settes ikke diskresjonskode og skjermet
                 Enhet enhet = fraNorg2Enhet(norg2Client.hentTilhorendeEnhet(geografiskTilknytning, null, false));
-                personV2Data.setGeografiskEnhet(enhet);
+                personData.setGeografiskEnhet(enhet);
             } catch (Exception e) {
                 log.error("Klarte ikke å flette inn geografisk enhet", e);
             }
@@ -201,62 +203,62 @@ public class PersonV2Service {
         return new Enhet(enhet.getEnhetNr(), enhet.getNavn());
     }
 
-    public void flettKodeverk(PersonV2Data personV2Data) {
-        Optional<String> postnrIBostedsVegAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(
-                Bostedsadresse.Vegadresse::getPostnummer);
-        Optional<String> postnrIBostedsMatrikkelAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getMatrikkeladresse).map(
+    public void flettKodeverk(PersonData personData) {
+        Optional<String> postnrIBostedsVegAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(
+                Adresse.Vegadresse::getPostnummer);
+        Optional<String> postnrIBostedsMatrikkelAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getMatrikkeladresse).map(
                 Bostedsadresse.Matrikkeladresse::getPostnummer);
-        Optional<String> kommunenrIBostedsVegAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(
-                Bostedsadresse.Vegadresse::getKommunenummer);
-        Optional<String> kommunenrIBostedsMatrikkelAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getMatrikkeladresse).map(
+        Optional<String> kommunenrIBostedsVegAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(
+                Adresse.Vegadresse::getKommunenummer);
+        Optional<String> kommunenrIBostedsMatrikkelAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getMatrikkeladresse).map(
                 Bostedsadresse.Matrikkeladresse::getKommunenummer);
-        Optional<String> kommunenrIBostedsUkjentAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getUkjentBosted).map(
+        Optional<String> kommunenrIBostedsUkjentAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getUkjentBosted).map(
                 Bostedsadresse.UkjentBosted::getBostedskommune);
-        Optional<String> kommunenrIOppholdsVegAdr = ofNullable(personV2Data.getOppholdsadresse()).map(Oppholdsadresse::getVegadresse).map(
-                Oppholdsadresse.Vegadresse::getKommunenummer);
-        Optional<String> kommunenrIOppholdsMatrikkelAdr = ofNullable(personV2Data.getOppholdsadresse()).map(
+        Optional<String> kommunenrIOppholdsVegAdr = ofNullable(personData.getOppholdsadresse()).map(Oppholdsadresse::getVegadresse).map(
+                Adresse.Vegadresse::getKommunenummer);
+        Optional<String> kommunenrIOppholdsMatrikkelAdr = ofNullable(personData.getOppholdsadresse()).map(
                 Oppholdsadresse::getMatrikkeladresse).map(Oppholdsadresse.Matrikkeladresse::getKommunenummer);
-        Optional<String> landkodeIBostedsUtenlandskAdr = ofNullable(personV2Data.getBostedsadresse()).map(Bostedsadresse::getUtenlandskAdresse).map(
-                Bostedsadresse.Utenlandskadresse::getLandkode);
-        Optional<String> postnrIOppholdsVegAdr = ofNullable(personV2Data.getOppholdsadresse()).map(Oppholdsadresse::getVegadresse).map(
-                Oppholdsadresse.Vegadresse::getPostnummer);
-        Optional<String> postnrIOppholdsMatrikkelAdr = ofNullable(personV2Data.getOppholdsadresse()).map(Oppholdsadresse::getMatrikkeladresse).map(
+        Optional<String> landkodeIBostedsUtenlandskAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getUtenlandskAdresse).map(
+                Adresse.Utenlandskadresse::getLandkode);
+        Optional<String> postnrIOppholdsVegAdr = ofNullable(personData.getOppholdsadresse()).map(Oppholdsadresse::getVegadresse).map(
+                Adresse.Vegadresse::getPostnummer);
+        Optional<String> postnrIOppholdsMatrikkelAdr = ofNullable(personData.getOppholdsadresse()).map(Oppholdsadresse::getMatrikkeladresse).map(
                 Oppholdsadresse.Matrikkeladresse::getPostnummer);
-        Optional<String> landkodeIOppholdsUtenlandskAdr = ofNullable(personV2Data.getOppholdsadresse()).map(
-                Oppholdsadresse::getUtenlandskAdresse).map(Oppholdsadresse.Utenlandskadresse::getLandkode);
+        Optional<String> landkodeIOppholdsUtenlandskAdr = ofNullable(personData.getOppholdsadresse()).map(
+                Oppholdsadresse::getUtenlandskAdresse).map(Adresse.Utenlandskadresse::getLandkode);
 
-        postnrIBostedsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIBostedsVegadresse);
-        postnrIBostedsMatrikkelAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIBostedsMatrikkeladresse);
-        kommunenrIBostedsVegAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personV2Data::setKommuneIBostedsVegadresse);
-        kommunenrIBostedsMatrikkelAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personV2Data::setKommuneIBostedsMatrikkeladresse);
-        kommunenrIBostedsUkjentAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personV2Data::setKommuneIBostedsUkjentadresse);
-        kommunenrIOppholdsVegAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personV2Data::setKommuneIOppholdssVegadresse);
-        kommunenrIOppholdsMatrikkelAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personV2Data::setKommuneIOppholdsMatrikkeladresse);
-        postnrIOppholdsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIOppholdsVegadresse);
-        postnrIOppholdsMatrikkelAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personV2Data::setPoststedIOppholdsMatrikkeladresse);
-        landkodeIBostedsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setLandkodeIBostedsUtenlandskadresse);
-        landkodeIOppholdsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personV2Data::setLandkodeIOppholdsUtenlandskadresse);
-        personV2Data.setStatsborgerskap(personV2Data.getStatsborgerskapKoder()
+        postnrIBostedsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personData::setPoststedIBostedsVegadresse);
+        postnrIBostedsMatrikkelAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personData::setPoststedIBostedsMatrikkeladresse);
+        kommunenrIBostedsVegAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personData::setKommuneIBostedsVegadresse);
+        kommunenrIBostedsMatrikkelAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personData::setKommuneIBostedsMatrikkeladresse);
+        kommunenrIBostedsUkjentAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personData::setKommuneIBostedsUkjentadresse);
+        kommunenrIOppholdsVegAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personData::setKommuneIOppholdssVegadresse);
+        kommunenrIOppholdsMatrikkelAdr.map(kodeverkService::getBeskrivelseForKommunenummer).ifPresent(personData::setKommuneIOppholdsMatrikkeladresse);
+        postnrIOppholdsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personData::setPoststedIOppholdsVegadresse);
+        postnrIOppholdsMatrikkelAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personData::setPoststedIOppholdsMatrikkeladresse);
+        landkodeIBostedsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personData::setLandkodeIBostedsUtenlandskadresse);
+        landkodeIOppholdsUtenlandskAdr.map(kodeverkService::getBeskrivelseForLandkode).ifPresent(personData::setLandkodeIOppholdsUtenlandskadresse);
+        personData.setStatsborgerskap(personData.getStatsborgerskapKoder()
                 .stream()
                 .map(kodeverkService::getBeskrivelseForLandkode)
                 .filter(Objects::nonNull)
                 .toList());
 
-        List<Kontaktadresse> kontaktadresseList = personV2Data.getKontaktadresser();
+        List<Kontaktadresse> kontaktadresseList = personData.getKontaktadresser();
 
         for (Kontaktadresse kontaktadresse : kontaktadresseList) {
             Optional<String> postnrIKontaktsVegAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getVegadresse).map(
-                    Kontaktadresse.Vegadresse::getPostnummer);
+                    Adresse.Vegadresse::getPostnummer);
             Optional<String> postnrIKontaktsPostboksAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getPostboksadresse).map(
                     Kontaktadresse.Postboksadresse::getPostnummer);
             Optional<String> postnrIPostAdresseIFrittFormat = ofNullable(kontaktadresse).map(Kontaktadresse::getPostadresseIFrittFormat).map(
                     Kontaktadresse.PostadresseIFrittFormat::getPostnummer);
             Optional<String> landkodeIKontaktsUtenlandskAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getUtenlandskAdresse).map(
-                    Kontaktadresse.Utenlandskadresse::getLandkode);
+                    Adresse.Utenlandskadresse::getLandkode);
             Optional<String> landkodeIUtenlandskAdresseIFrittFormat = ofNullable(kontaktadresse).map(Kontaktadresse::getUtenlandskAdresseIFrittFormat).map(
                     Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode);
             Optional<String> kommunenrIKontaktsVegAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getVegadresse).map(
-                    Kontaktadresse.Vegadresse::getKommunenummer);
+                    Adresse.Vegadresse::getKommunenummer);
 
             postnrIKontaktsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(poststed -> kontaktadresse.getVegadresse().setPoststed(
                     poststed));
@@ -273,20 +275,20 @@ public class PersonV2Service {
         }
     }
 
-    private void flettDigitalKontaktinformasjon(Fnr fnr, PersonV2Data personV2Data) {
-        KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
+    private void flettDigitalKontaktinformasjon(Fnr fnr, PersonData personData) {
+        KRRPostPersonerRequest krrPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
         try {
-            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
+            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(krrPostPersonerRequest);
             DigdirKontaktinfo digdirKontaktinfo = kontaktinfo != null ? kontaktinfo.getPersoner().get(fnr.get()) : null;
             if (digdirKontaktinfo != null) {
                 Optional<String> epostSisteOppdatert = Optional.ofNullable(digdirKontaktinfo.getEpostadresseOppdatert()).map(dato -> ZonedDateTime.parse(dato).format(frontendDatoformat));
                 Optional<String> mobilSisteOppdatert = Optional.ofNullable(digdirKontaktinfo.getMobiltelefonnummerOppdatert()).map(dato -> ZonedDateTime.parse(dato).format(frontendDatoformat));
                 Epost epost = digdirKontaktinfo.getEpostadresse() != null
-                        ? new Epost().setEpostAdresse(digdirKontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert.orElse(null)).setMaster("KRR")
+                        ? new Epost().setEpostAdresse(digdirKontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert.orElse(null)).setMaster(KRR)
                         : null;
-                personV2Data.setEpost(epost);
-                personV2Data.setMalform(digdirKontaktinfo.getSpraak());
-                leggKrrTelefonNrIListe(digdirKontaktinfo.getMobiltelefonnummer(), mobilSisteOppdatert.orElse(null), personV2Data.getTelefon());
+                personData.setEpost(epost);
+                personData.setMalform(digdirKontaktinfo.getSpraak());
+                leggKrrTelefonNrIListe(digdirKontaktinfo.getMobiltelefonnummer(), mobilSisteOppdatert.orElse(null), personData.getTelefon());
             } else {
                 log.warn("Fant ikke kontaktinfo i KRR");
             }
@@ -307,9 +309,9 @@ public class PersonV2Service {
                     .setPrioritet(1 + "")
                     .setTelefonNr(telefonNummerFraKrr)
                     .setRegistrertDato(sistOppdatert)
-                    .setMaster("KRR"));
+                    .setMaster(KRR));
             for (Telefon telefon : telefonListe) {
-                if (!telefon.getMaster().equals("KRR")) {
+                if (!telefon.getMaster().equals(KRR)) {
                     prioritet = Integer.parseInt(telefon.getPrioritet()) + 1;
                     telefon.setPrioritet(prioritet + "");
                 }
@@ -317,8 +319,8 @@ public class PersonV2Service {
         }
     }
 
-    public TilrettelagtKommunikasjonData hentSpraakTolkInfo(PersonFraPdlRequest personFraPdlRequest) {
-        HentPerson.HentSpraakTolk spraakTolkInfo = pdlClient.hentTilrettelagtKommunikasjon(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
+    public TilrettelagtKommunikasjonData hentSpraakTolkInfo(PersonRequest personRequest) {
+        HentPerson.HentSpraakTolk spraakTolkInfo = pdlClient.hentTilrettelagtKommunikasjon(new PdlRequest(personRequest.getFnr(), personRequest.getBehandlingsnummer()));
 
         if (spraakTolkInfo.getTilrettelagtKommunikasjon().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT,
@@ -338,19 +340,19 @@ public class PersonV2Service {
         return new TilrettelagtKommunikasjonData().setTegnspraak(tegnSpraak).setTalespraak(taleSpraak);
     }
 
-    public VergeData hentVerge(PersonFraPdlRequest personFraPdlRequest) {
-        HentPerson.Verge vergeOgFullmaktFraPdl = pdlClient.hentVerge(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
+    public VergeData hentVerge(PersonRequest personRequest) {
+        HentPerson.Verge vergeOgFullmaktFraPdl = pdlClient.hentVerge(new PdlRequest(personRequest.getFnr(), personRequest.getBehandlingsnummer()));
 
         List<VergeData.VergemaalEllerFremtidsfullmakt> vergeMedNavn =
                 vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt()
                         .stream()
                         .map(vergemaalEllerFremtidsfullmakt -> {
                             String motpartsFnr = vergemaalEllerFremtidsfullmakt.getVergeEllerFullmektig().getMotpartsPersonident();
-                            PersonNavnV2 vergeNavn = null;
+                            PersonNavn vergeNavn = null;
 
                             if (motpartsFnr != null) {
                                 Fnr vergeFnr = Fnr.of(motpartsFnr);
-                                vergeNavn = hentNavn(new PersonFraPdlRequest(vergeFnr, personFraPdlRequest.getBehandlingsnummer()));
+                                vergeNavn = hentNavn(new PersonRequest(vergeFnr, personRequest.getBehandlingsnummer()));
                             }
 
                             return toVergemaalEllerFremtidsfullmakt(vergemaalEllerFremtidsfullmakt, vergeNavn);
@@ -390,9 +392,9 @@ public class PersonV2Service {
     }
 
     public String hentMalform(Fnr fnr) {
-        KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
+        KRRPostPersonerRequest krrPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
         try {
-            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
+            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(krrPostPersonerRequest);
             if (kontaktinfo == null) {
                 log.warn("Fant ikke kontaktinfo (målform) i KRR");
                 return null;
@@ -405,24 +407,24 @@ public class PersonV2Service {
         return null;
     }
 
-    public PersonNavnV2 hentNavn(PersonFraPdlRequest personFraPdlRequest) {
-        HentPerson.PersonNavn personNavn = pdlClient.hentPersonNavn(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()));
+    public PersonNavn hentNavn(PersonRequest personRequest) {
+        HentPerson.PersonNavn personNavn = pdlClient.hentPersonNavn(new PdlRequest(personRequest.getFnr(), personRequest.getBehandlingsnummer()));
 
         if (personNavn.getNavn().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke navn til person");
         }
-        log.info("Ferdig med hentNavn i PersonV2Service");
-        return PersonV2DataMapper.navnMapper(personNavn.getNavn());
+        log.info("Ferdig med hentNavn i PersonService");
+        return PersonDataMapper.navnMapper(personNavn.getNavn());
     }
 
-    public HentPerson.Adressebeskyttelse hentAdressebeskyttelse(PersonFraPdlRequest personFraPdlRequest) {
-        List<HentPerson.Adressebeskyttelse> adressebeskyttelse = Optional.ofNullable(pdlClient.hentAdressebeskyttelse(new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer()))).orElse(List.of());
+    public HentPerson.Adressebeskyttelse hentAdressebeskyttelse(PersonRequest personRequest) {
+        List<HentPerson.Adressebeskyttelse> adressebeskyttelse = Optional.ofNullable(pdlClient.hentAdressebeskyttelse(new PdlRequest(personRequest.getFnr(), personRequest.getBehandlingsnummer()))).orElse(List.of());
         return adressebeskyttelse.stream().findFirst().orElse(new HentPerson.Adressebeskyttelse().setGradering("UGRADERT"));
     }
 
-    public Foedselsdato hentFoedselsdato(PersonFraPdlRequest personFraPdlRequest) {
+    public Foedselsdato hentFoedselsdato(PersonRequest personRequest) {
         HentPerson.PersonFoedselsdato personFoedselsdato = pdlClient.hentFoedselsdato(
-                new PdlRequest(personFraPdlRequest.getFnr(), personFraPdlRequest.getBehandlingsnummer())
+                new PdlRequest(personRequest.getFnr(), personRequest.getBehandlingsnummer())
         );
 
         if (personFoedselsdato.getFoedselsdato().isEmpty()) {

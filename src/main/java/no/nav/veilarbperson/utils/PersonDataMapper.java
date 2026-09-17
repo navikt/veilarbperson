@@ -3,8 +3,8 @@ package no.nav.veilarbperson.utils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.domain.*;
-import no.nav.veilarbperson.domain.PersonNavnV2;
-import no.nav.veilarbperson.domain.PersonV2Data;
+import no.nav.veilarbperson.domain.PersonNavn;
+import no.nav.veilarbperson.domain.PersonData;
 import no.nav.veilarbperson.service.AuthService;
 
 import java.time.LocalDate;
@@ -19,12 +19,12 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Optional.ofNullable;
 import static no.nav.veilarbperson.client.pdl.domain.RelasjonsBosted.*;
 
-public class PersonV2DataMapper {
+public class PersonDataMapper {
     public static final DateTimeFormatter frontendDatoformat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    public static PersonV2Data toPersonV2Data(HentPerson.Person person) {
+    public static PersonData toPersonData(HentPerson.Person person) {
         Optional<HentPerson.Navn> navn = hentGjeldeneNavn(person.getNavn());
-        return new PersonV2Data()
+        return new PersonData()
                 .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
                 .setMellomnavn(navn.map(HentPerson.Navn::getMellomnavn).orElse(null))
                 .setEtternavn(navn.map(HentPerson.Navn::getEtternavn).orElse(null))
@@ -50,10 +50,10 @@ public class PersonV2DataMapper {
         return list.stream().findFirst().orElse(null);
     }
 
-    public static PersonNavnV2 navnMapper(List<HentPerson.Navn> personNavn) {
+    public static PersonNavn navnMapper(List<HentPerson.Navn> personNavn) {
         Optional<HentPerson.Navn> navn = hentGjeldeneNavn(personNavn);
 
-        return new PersonNavnV2()
+        return new PersonNavn()
                 .setFornavn(navn.map(HentPerson.Navn::getFornavn).orElse(null))
                 .setMellomnavn(navn.map(HentPerson.Navn::getMellomnavn).orElse(null))
                 .setEtternavn(navn.map(HentPerson.Navn::getEtternavn).orElse(null))
@@ -219,12 +219,12 @@ I tillegg sendes erDød og harVeilederTilgang.
     /* Sammeligner persons bostedsadresse med familiemedlems bostedsadresse for å se om de har samme bosted */
     public static RelasjonsBosted erSammeAdresse(Bostedsadresse adresse1,
                                                  Bostedsadresse adresse2) {
-        Bostedsadresse.Vegadresse medlemsVegadresse = ofNullable(adresse1)
+        Adresse.Vegadresse medlemsVegadresse = ofNullable(adresse1)
                 .map(Bostedsadresse::getVegadresse).orElse(null);
         Bostedsadresse.Matrikkeladresse medlemsMatrikkeladresse = ofNullable(adresse1)
                 .map(Bostedsadresse::getMatrikkeladresse).orElse(null);
 
-        Bostedsadresse.Vegadresse personsVegadresse = ofNullable(adresse2)
+        Adresse.Vegadresse personsVegadresse = ofNullable(adresse2)
                 .map(Bostedsadresse::getVegadresse).orElse(null);
         Bostedsadresse.Matrikkeladresse personsMatrikkeladresse = ofNullable(adresse2)
                 .map(Bostedsadresse::getMatrikkeladresse).orElse(null);
@@ -263,9 +263,9 @@ I tillegg sendes erDød og harVeilederTilgang.
     public static List<Telefon> mapTelefonNrFraPdl(List<HentPerson.Telefonnummer> telefonnummer) {
         return (!telefonnummer.isEmpty())
                 ? telefonnummer.stream()
-                .map(PersonV2DataMapper::telefonNummerMapper)
+                .map(PersonDataMapper::telefonNummerMapper)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList())
+                .collect(Collectors.toCollection(ArrayList::new))
                 : new ArrayList<>();
     }
 

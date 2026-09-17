@@ -6,7 +6,7 @@ import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
 import no.nav.veilarbperson.config.PdlClientTestConfig;
-import no.nav.veilarbperson.domain.PersonNavnV2;
+import no.nav.veilarbperson.domain.PersonNavn;
 import no.nav.veilarbperson.domain.VergeData;
 import no.nav.veilarbperson.utils.TestUtils;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
@@ -63,7 +63,7 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
         assertEquals(localDateTime, folkeregistermetadata.getAjourholdstidspunkt());
         assertEquals(localDateTime, folkeregistermetadata.getGyldighetstidspunkt());
 
-        PersonNavnV2 personnavn = new PersonNavnV2().setFornavn("Testfornavnavn1").setEtternavn("Testetternavn1");
+        PersonNavn personnavn = new PersonNavn().setFornavn("Testfornavnavn1").setEtternavn("Testetternavn1");
         VergeData.VergemaalEllerFremtidsfullmakt vergeOgFullmaktDataLast = VergeOgFullmaktDataMapper.toVergemaalEllerFremtidsfullmakt(vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().getLast(), personnavn);
 
         VergeData.VergeEllerFullmektig vergeEllerFullmektigDataLast = vergeOgFullmaktDataLast.getVergeEllerFullmektig();
