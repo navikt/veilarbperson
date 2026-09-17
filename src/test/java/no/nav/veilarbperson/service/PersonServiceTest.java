@@ -62,11 +62,11 @@ public class PersonServiceTest extends PdlClientTestConfig {
         DigdirKontaktinfo digdirKontaktinfo = new DigdirKontaktinfo("0123456789", true, true, null, false, "NB", null, "test@example.com", null, null, "12345678",  null, null);
 
         // Mock PostPersonerResponse
-        KRRPostPersonerResponse KRRPostPersonerResponse = new KRRPostPersonerResponse(
+        KRRPostPersonerResponse krrPostPersonerResponse = new KRRPostPersonerResponse(
                 Map.of(FNR.get(), digdirKontaktinfo), // Add DigdirKontaktinfo to the map
                 Map.of() // No errors
         );
-        when(digdirClient.hentKontaktInfo(any())).thenReturn(KRRPostPersonerResponse);
+        when(digdirClient.hentKontaktInfo(any())).thenReturn(krrPostPersonerResponse);
 
         personService = new PersonService(
                 pdlClient,
@@ -275,17 +275,17 @@ public class PersonServiceTest extends PdlClientTestConfig {
     @Test
     public void flettSivilstandOgBarnInfoNarPersonHarIngenSivilstandEllerBarn() {
         PersonData personData = new PersonData();
-        PersonData person = new PersonData();
+        PersonData barnPersonData = new PersonData();
 
         assertNull(personData.getSivilstandliste());
 
-        this.person = hentPersonUtenBarnOgSivilstand(FNR);
-        personService.flettSivilstand(this.person.getSivilstand(), personData, null);
+        person = hentPersonUtenBarnOgSivilstand(FNR);
+        personService.flettSivilstand(person.getSivilstand(), personData, null);
 
-        personService.flettBarnTilgangsstyrt(this.person.getForelderBarnRelasjon(), person, null);
+        personService.flettBarnTilgangsstyrt(person.getForelderBarnRelasjon(), barnPersonData, null);
 
         assertEquals(Collections.emptyList(), personData.getSivilstandliste());
-        assertEquals(Collections.emptyList(), person.getBarn());
+        assertEquals(Collections.emptyList(), barnPersonData.getBarn());
     }
 
     @Test
@@ -417,7 +417,7 @@ public class PersonServiceTest extends PdlClientTestConfig {
         Bostedsadresse personsBostedsAdresse = person.getBostedsadresse().getFirst();
         Bostedsadresse familiemedlemsBostedsAdresse = new Bostedsadresse();
 
-        Bostedsadresse.Vegadresse medlemsVegAdresse = new Bostedsadresse.Vegadresse()
+        Adresse.Vegadresse medlemsVegAdresse = new Adresse.Vegadresse()
                 .setMatrikkelId(123456789L)
                 .setAdressenavn("ARENDALSGATE")
                 .setHusnummer("21")

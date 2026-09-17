@@ -34,6 +34,8 @@ import static no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper.*;
 @Slf4j
 @Service
 public class PersonService {
+    private static final String KRR = "KRR";
+
     private final PdlClient pdlClient;
     private final AuthService authService;
     private final DigdirClient digdirClient;
@@ -152,7 +154,7 @@ public class PersonService {
                     .map(fnr -> hentFamiliemedlemOpplysninger(List.of(fnr), personData.getBostedsadresse(), behandlingsnummer))
                     .flatMap(list -> list.stream().findFirst());
             return Stream.of(sivilstandMapper(sivilstand, relatert));
-        }).collect(Collectors.toList());
+        }).toList();
 
         personData.setSivilstandliste(mappetSivilstand);
     }
@@ -203,27 +205,27 @@ public class PersonService {
 
     public void flettKodeverk(PersonData personData) {
         Optional<String> postnrIBostedsVegAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(
-                Bostedsadresse.Vegadresse::getPostnummer);
+                Adresse.Vegadresse::getPostnummer);
         Optional<String> postnrIBostedsMatrikkelAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getMatrikkeladresse).map(
                 Bostedsadresse.Matrikkeladresse::getPostnummer);
         Optional<String> kommunenrIBostedsVegAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(
-                Bostedsadresse.Vegadresse::getKommunenummer);
+                Adresse.Vegadresse::getKommunenummer);
         Optional<String> kommunenrIBostedsMatrikkelAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getMatrikkeladresse).map(
                 Bostedsadresse.Matrikkeladresse::getKommunenummer);
         Optional<String> kommunenrIBostedsUkjentAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getUkjentBosted).map(
                 Bostedsadresse.UkjentBosted::getBostedskommune);
         Optional<String> kommunenrIOppholdsVegAdr = ofNullable(personData.getOppholdsadresse()).map(Oppholdsadresse::getVegadresse).map(
-                Oppholdsadresse.Vegadresse::getKommunenummer);
+                Adresse.Vegadresse::getKommunenummer);
         Optional<String> kommunenrIOppholdsMatrikkelAdr = ofNullable(personData.getOppholdsadresse()).map(
                 Oppholdsadresse::getMatrikkeladresse).map(Oppholdsadresse.Matrikkeladresse::getKommunenummer);
         Optional<String> landkodeIBostedsUtenlandskAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getUtenlandskAdresse).map(
-                Bostedsadresse.Utenlandskadresse::getLandkode);
+                Adresse.Utenlandskadresse::getLandkode);
         Optional<String> postnrIOppholdsVegAdr = ofNullable(personData.getOppholdsadresse()).map(Oppholdsadresse::getVegadresse).map(
-                Oppholdsadresse.Vegadresse::getPostnummer);
+                Adresse.Vegadresse::getPostnummer);
         Optional<String> postnrIOppholdsMatrikkelAdr = ofNullable(personData.getOppholdsadresse()).map(Oppholdsadresse::getMatrikkeladresse).map(
                 Oppholdsadresse.Matrikkeladresse::getPostnummer);
         Optional<String> landkodeIOppholdsUtenlandskAdr = ofNullable(personData.getOppholdsadresse()).map(
-                Oppholdsadresse::getUtenlandskAdresse).map(Oppholdsadresse.Utenlandskadresse::getLandkode);
+                Oppholdsadresse::getUtenlandskAdresse).map(Adresse.Utenlandskadresse::getLandkode);
 
         postnrIBostedsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personData::setPoststedIBostedsVegadresse);
         postnrIBostedsMatrikkelAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(personData::setPoststedIBostedsMatrikkeladresse);
@@ -246,17 +248,17 @@ public class PersonService {
 
         for (Kontaktadresse kontaktadresse : kontaktadresseList) {
             Optional<String> postnrIKontaktsVegAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getVegadresse).map(
-                    Kontaktadresse.Vegadresse::getPostnummer);
+                    Adresse.Vegadresse::getPostnummer);
             Optional<String> postnrIKontaktsPostboksAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getPostboksadresse).map(
                     Kontaktadresse.Postboksadresse::getPostnummer);
             Optional<String> postnrIPostAdresseIFrittFormat = ofNullable(kontaktadresse).map(Kontaktadresse::getPostadresseIFrittFormat).map(
                     Kontaktadresse.PostadresseIFrittFormat::getPostnummer);
             Optional<String> landkodeIKontaktsUtenlandskAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getUtenlandskAdresse).map(
-                    Kontaktadresse.Utenlandskadresse::getLandkode);
+                    Adresse.Utenlandskadresse::getLandkode);
             Optional<String> landkodeIUtenlandskAdresseIFrittFormat = ofNullable(kontaktadresse).map(Kontaktadresse::getUtenlandskAdresseIFrittFormat).map(
                     Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode);
             Optional<String> kommunenrIKontaktsVegAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getVegadresse).map(
-                    Kontaktadresse.Vegadresse::getKommunenummer);
+                    Adresse.Vegadresse::getKommunenummer);
 
             postnrIKontaktsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(poststed -> kontaktadresse.getVegadresse().setPoststed(
                     poststed));
@@ -274,15 +276,15 @@ public class PersonService {
     }
 
     private void flettDigitalKontaktinformasjon(Fnr fnr, PersonData personData) {
-        KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
+        KRRPostPersonerRequest krrPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
         try {
-            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
+            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(krrPostPersonerRequest);
             DigdirKontaktinfo digdirKontaktinfo = kontaktinfo != null ? kontaktinfo.getPersoner().get(fnr.get()) : null;
             if (digdirKontaktinfo != null) {
                 Optional<String> epostSisteOppdatert = Optional.ofNullable(digdirKontaktinfo.getEpostadresseOppdatert()).map(dato -> ZonedDateTime.parse(dato).format(frontendDatoformat));
                 Optional<String> mobilSisteOppdatert = Optional.ofNullable(digdirKontaktinfo.getMobiltelefonnummerOppdatert()).map(dato -> ZonedDateTime.parse(dato).format(frontendDatoformat));
                 Epost epost = digdirKontaktinfo.getEpostadresse() != null
-                        ? new Epost().setEpostAdresse(digdirKontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert.orElse(null)).setMaster("KRR")
+                        ? new Epost().setEpostAdresse(digdirKontaktinfo.getEpostadresse()).setEpostSistOppdatert(epostSisteOppdatert.orElse(null)).setMaster(KRR)
                         : null;
                 personData.setEpost(epost);
                 personData.setMalform(digdirKontaktinfo.getSpraak());
@@ -307,9 +309,9 @@ public class PersonService {
                     .setPrioritet(1 + "")
                     .setTelefonNr(telefonNummerFraKrr)
                     .setRegistrertDato(sistOppdatert)
-                    .setMaster("KRR"));
+                    .setMaster(KRR));
             for (Telefon telefon : telefonListe) {
-                if (!telefon.getMaster().equals("KRR")) {
+                if (!telefon.getMaster().equals(KRR)) {
                     prioritet = Integer.parseInt(telefon.getPrioritet()) + 1;
                     telefon.setPrioritet(prioritet + "");
                 }
@@ -390,9 +392,9 @@ public class PersonService {
     }
 
     public String hentMalform(Fnr fnr) {
-        KRRPostPersonerRequest KRRPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
+        KRRPostPersonerRequest krrPostPersonerRequest = new KRRPostPersonerRequest(Set.of(fnr.get()));
         try {
-            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(KRRPostPersonerRequest);
+            KRRPostPersonerResponse kontaktinfo = digdirClient.hentKontaktInfo(krrPostPersonerRequest);
             if (kontaktinfo == null) {
                 log.warn("Fant ikke kontaktinfo (målform) i KRR");
                 return null;
