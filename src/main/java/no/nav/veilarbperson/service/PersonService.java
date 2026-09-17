@@ -203,23 +203,23 @@ public class PersonService {
 
     public void flettKodeverk(PersonData personData) {
         Optional<String> postnrIBostedsVegAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(
-                Bostedsadresse.Vegadresse::getPostnummer);
+                Adresse.Vegadresse::getPostnummer);
         Optional<String> postnrIBostedsMatrikkelAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getMatrikkeladresse).map(
                 Bostedsadresse.Matrikkeladresse::getPostnummer);
         Optional<String> kommunenrIBostedsVegAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getVegadresse).map(
-                Bostedsadresse.Vegadresse::getKommunenummer);
+                Adresse.Vegadresse::getKommunenummer);
         Optional<String> kommunenrIBostedsMatrikkelAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getMatrikkeladresse).map(
                 Bostedsadresse.Matrikkeladresse::getKommunenummer);
         Optional<String> kommunenrIBostedsUkjentAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getUkjentBosted).map(
                 Bostedsadresse.UkjentBosted::getBostedskommune);
         Optional<String> kommunenrIOppholdsVegAdr = ofNullable(personData.getOppholdsadresse()).map(Oppholdsadresse::getVegadresse).map(
-                Oppholdsadresse.Vegadresse::getKommunenummer);
+                Adresse.Vegadresse::getKommunenummer);
         Optional<String> kommunenrIOppholdsMatrikkelAdr = ofNullable(personData.getOppholdsadresse()).map(
                 Oppholdsadresse::getMatrikkeladresse).map(Oppholdsadresse.Matrikkeladresse::getKommunenummer);
         Optional<String> landkodeIBostedsUtenlandskAdr = ofNullable(personData.getBostedsadresse()).map(Bostedsadresse::getUtenlandskAdresse).map(
                 Bostedsadresse.Utenlandskadresse::getLandkode);
         Optional<String> postnrIOppholdsVegAdr = ofNullable(personData.getOppholdsadresse()).map(Oppholdsadresse::getVegadresse).map(
-                Oppholdsadresse.Vegadresse::getPostnummer);
+                Adresse.Vegadresse::getPostnummer);
         Optional<String> postnrIOppholdsMatrikkelAdr = ofNullable(personData.getOppholdsadresse()).map(Oppholdsadresse::getMatrikkeladresse).map(
                 Oppholdsadresse.Matrikkeladresse::getPostnummer);
         Optional<String> landkodeIOppholdsUtenlandskAdr = ofNullable(personData.getOppholdsadresse()).map(
@@ -246,7 +246,7 @@ public class PersonService {
 
         for (Kontaktadresse kontaktadresse : kontaktadresseList) {
             Optional<String> postnrIKontaktsVegAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getVegadresse).map(
-                    Kontaktadresse.Vegadresse::getPostnummer);
+                    Adresse.Vegadresse::getPostnummer);
             Optional<String> postnrIKontaktsPostboksAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getPostboksadresse).map(
                     Kontaktadresse.Postboksadresse::getPostnummer);
             Optional<String> postnrIPostAdresseIFrittFormat = ofNullable(kontaktadresse).map(Kontaktadresse::getPostadresseIFrittFormat).map(
@@ -256,7 +256,7 @@ public class PersonService {
             Optional<String> landkodeIUtenlandskAdresseIFrittFormat = ofNullable(kontaktadresse).map(Kontaktadresse::getUtenlandskAdresseIFrittFormat).map(
                     Kontaktadresse.UtenlandskAdresseIFrittFormat::getLandkode);
             Optional<String> kommunenrIKontaktsVegAdr = ofNullable(kontaktadresse).map(Kontaktadresse::getVegadresse).map(
-                    Kontaktadresse.Vegadresse::getKommunenummer);
+                    Adresse.Vegadresse::getKommunenummer);
 
             postnrIKontaktsVegAdr.map(kodeverkService::getPoststedForPostnummer).ifPresent(poststed -> kontaktadresse.getVegadresse().setPoststed(
                     poststed));

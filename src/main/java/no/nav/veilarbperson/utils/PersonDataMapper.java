@@ -219,12 +219,12 @@ I tillegg sendes erDød og harVeilederTilgang.
     /* Sammeligner persons bostedsadresse med familiemedlems bostedsadresse for å se om de har samme bosted */
     public static RelasjonsBosted erSammeAdresse(Bostedsadresse adresse1,
                                                  Bostedsadresse adresse2) {
-        Bostedsadresse.Vegadresse medlemsVegadresse = ofNullable(adresse1)
+        Adresse.Vegadresse medlemsVegadresse = ofNullable(adresse1)
                 .map(Bostedsadresse::getVegadresse).orElse(null);
         Bostedsadresse.Matrikkeladresse medlemsMatrikkeladresse = ofNullable(adresse1)
                 .map(Bostedsadresse::getMatrikkeladresse).orElse(null);
 
-        Bostedsadresse.Vegadresse personsVegadresse = ofNullable(adresse2)
+        Adresse.Vegadresse personsVegadresse = ofNullable(adresse2)
                 .map(Bostedsadresse::getVegadresse).orElse(null);
         Bostedsadresse.Matrikkeladresse personsMatrikkeladresse = ofNullable(adresse2)
                 .map(Bostedsadresse::getMatrikkeladresse).orElse(null);

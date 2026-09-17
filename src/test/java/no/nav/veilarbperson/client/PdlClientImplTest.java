@@ -94,7 +94,7 @@ public class PdlClientImplTest {
         assertEquals("NORGE", statsborgerskap.getLand());
 
         Bostedsadresse bostedsadresse = person.getBostedsadresse().get(0);
-        Bostedsadresse.Vegadresse vegadresse = bostedsadresse.getVegadresse();
+        Adresse.Vegadresse vegadresse = bostedsadresse.getVegadresse();
         assertEquals("ARENDALSGATE", vegadresse.getAdressenavn());
         assertEquals("A", vegadresse.getHusbokstav());
         assertEquals("21", vegadresse.getHusnummer());
@@ -125,7 +125,7 @@ public class PdlClientImplTest {
         assertEquals(localDateTime, kontaktAdresse.getGyldigFraOgMed());
         assertNull(kontaktAdresse.getGyldigTilOgMed());
 
-        Kontaktadresse.Vegadresse kontaktsVegadresse = kontaktAdresse.getVegadresse();
+        Adresse.Vegadresse kontaktsVegadresse = kontaktAdresse.getVegadresse();
         assertEquals(123456789L, kontaktsVegadresse.getMatrikkelId());
         assertEquals("postnummer", kontaktsVegadresse.getPostnummer());
         assertEquals("adressenavn", kontaktsVegadresse.getAdressenavn());

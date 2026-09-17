@@ -417,7 +417,7 @@ public class PersonServiceTest extends PdlClientTestConfig {
         Bostedsadresse personsBostedsAdresse = person.getBostedsadresse().getFirst();
         Bostedsadresse familiemedlemsBostedsAdresse = new Bostedsadresse();
 
-        Bostedsadresse.Vegadresse medlemsVegAdresse = new Bostedsadresse.Vegadresse()
+        Adresse.Vegadresse medlemsVegAdresse = new Adresse.Vegadresse()
                 .setMatrikkelId(123456789L)
                 .setAdressenavn("ARENDALSGATE")
                 .setHusnummer("21")
