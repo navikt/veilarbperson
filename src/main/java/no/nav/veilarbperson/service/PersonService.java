@@ -11,7 +11,7 @@ import no.nav.veilarbperson.client.nom.SkjermetClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
 import no.nav.veilarbperson.client.pdl.domain.*;
-import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
+import no.nav.veilarbperson.client.representasjon.ReprFullmaktV2Data;
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
 import no.nav.veilarbperson.domain.*;
 import no.nav.veilarbperson.utils.PersonDataMapper;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -365,13 +366,44 @@ public class PersonService {
     }
 
     public FullmaktDTO hentFullmakt(PersonRequest personRequest) throws IOException {
-        List<ReprFullmaktData.Fullmakt> fullmaktListe = representasjonClient.hentFullmakt(personRequest.getFnr().get());
+        return hentFullmakt(personRequest, LocalDate.now());
+    }
+
+    FullmaktDTO hentFullmakt(PersonRequest personRequest, LocalDate idag) throws IOException {
+        List<ReprFullmaktV2Data> alleFullmakter = representasjonClient.hentFullmakt(personRequest.getFnr().get());
+        if (alleFullmakter.stream().anyMatch(fullmakt -> !personRequest.getFnr().equals(fullmakt.getFullmaktsgiver()))) {
+            throw new IllegalStateException("Fullmaktsgiver i representasjon samsvarer ikke med forespurt person");
+        }
+        List<ReprFullmaktV2Data> fullmaktListe = alleFullmakter.stream()
+                .filter(fullmakt -> fullmakt.getGyldigTilOgMed() == null || !fullmakt.getGyldigTilOgMed().isBefore(idag))
+                .toList();
         if (fullmaktListe.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Person har ikke fullmakt i representasjon");
         }
-        FullmaktDTO fullmaktDTO = toFullmaktDTO(fullmaktListe);
+        Map<Fnr, PersonNavn> navn = new HashMap<>();
+        for (ReprFullmaktV2Data fullmakt : fullmaktListe) {
+            for (Fnr fnr : List.of(fullmakt.getFullmaktsgiver(), fullmakt.getFullmektig())) {
+                navn.computeIfAbsent(fnr, ident -> hentFullmaktsnavn(new PersonRequest(ident, personRequest.getBehandlingsnummer())));
+            }
+        }
+        FullmaktDTO fullmaktDTO = toFullmaktDTO(fullmaktListe, navn);
         flettBeskrivelseTilFullmaktTema(fullmaktDTO);
         return fullmaktDTO;
+    }
+
+    private PersonNavn hentFullmaktsnavn(PersonRequest personRequest) {
+        PersonNavn navn;
+        try {
+            navn = hentNavn(personRequest);
+        } catch (ResponseStatusException e) {
+            // Behold status, men ikke en eventuell feilbody med persondata fra PDL.
+            throw new ResponseStatusException(e.getStatusCode(), "Kunne ikke hente navn til fullmakt");
+        }
+        if (navn.getFornavn() == null || navn.getFornavn().isBlank()
+                || navn.getEtternavn() == null || navn.getEtternavn().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke fullstendig navn til person");
+        }
+        return navn;
     }
 
     public void flettBeskrivelseTilFullmaktTema(FullmaktDTO fullmaktDto) {

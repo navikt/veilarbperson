@@ -1,47 +1,62 @@
 package no.nav.veilarbperson.utils;
 
+import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.HentPerson;
-import no.nav.veilarbperson.client.representasjon.ReprFullmaktData;
+import no.nav.veilarbperson.client.representasjon.ReprFullmaktV2Data;
 import no.nav.veilarbperson.domain.FullmaktDTO;
 import no.nav.veilarbperson.domain.PersonNavn;
 import no.nav.veilarbperson.domain.VergeData;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class VergeOgFullmaktDataMapper {
-    public static FullmaktDTO toFullmaktDTO(List<ReprFullmaktData.Fullmakt> fullmaktListe) {
+    public static FullmaktDTO toFullmaktDTO(List<ReprFullmaktV2Data> fullmaktListe, Map<Fnr, PersonNavn> navn) {
         return new FullmaktDTO()
-                .setFullmakt(representasjonFullmaktMapper(fullmaktListe)
-                );
+                .setFullmakt(representasjonFullmaktMapper(fullmaktListe, navn));
     }
 
-    public static List<FullmaktDTO.Fullmakt> representasjonFullmaktMapper(List<ReprFullmaktData.Fullmakt> fullmaktListe) {
+    public static List<FullmaktDTO.Fullmakt> representasjonFullmaktMapper(List<ReprFullmaktV2Data> fullmaktListe, Map<Fnr, PersonNavn> navn) {
         return fullmaktListe.stream()
                 .map(fullmakt ->
                         new FullmaktDTO.Fullmakt()
-                                .setFullmaktsgiver(fullmakt.getFullmaktsgiver())
-                                .setFullmaktsgiverNavn(fullmakt.getFullmaktsgiverNavn())
-                                .setFullmektig(fullmakt.getFullmektig())
-                                .setFullmektigsNavn(fullmakt.getFullmektigsNavn())
-                                .setOmraade(omraadeMapper(fullmakt.getOmraade()))
+                                .setFullmaktsgiver(fullmakt.getFullmaktsgiver().get())
+                                .setFullmaktsgiverNavn(fulltNavn(navn.get(fullmakt.getFullmaktsgiver())))
+                                .setFullmektig(fullmakt.getFullmektig().get())
+                                .setFullmektigsNavn(fulltNavn(navn.get(fullmakt.getFullmektig())))
+                                .setOmraade(omraadeMapper(fullmakt.getLeserettigheter(), fullmakt.getSkriverettigheter()))
                                 .setGyldigFraOgMed(fullmakt.getGyldigFraOgMed())
                                 .setGyldigTilOgMed(fullmakt.getGyldigTilOgMed()))
                 .collect(Collectors.toList());
     }
 
-    public static List<FullmaktDTO.OmraadeMedHandling> omraadeMapper(List<ReprFullmaktData.OmraadeMedHandling> omraade) {
-        return omraade.stream().map(omraadeMedHandling -> {
-            List<ReprFullmaktData.OmraadeHandlingType> reprHandlingTyper = omraadeMedHandling.getHandling();
-            List<FullmaktDTO.OmraadeHandlingType> fullmaktHandlingTyper =
-                    reprHandlingTyper.stream().map(
-                                    omraadeHandlingType -> FullmaktDTO.OmraadeHandlingType.valueOf(omraadeHandlingType.name()))
-                            .toList();
-            FullmaktDTO.OmraadeMedHandling omraadeMedHandlingMapper = new FullmaktDTO.OmraadeMedHandling();
-            omraadeMedHandlingMapper
-                    .setTema(omraadeMedHandling.getTema())
-                    .setHandling(fullmaktHandlingTyper);
-            return omraadeMedHandlingMapper;
+    private static String fulltNavn(PersonNavn navn) {
+        Objects.requireNonNull(navn, "Mangler navn ved mapping av fullmakt");
+        return Stream.of(navn.getFornavn(), navn.getMellomnavn(), navn.getEtternavn())
+                .filter(del -> del != null && !del.isBlank())
+                .collect(Collectors.joining(" "));
+    }
+
+    public static List<FullmaktDTO.OmraadeMedHandling> omraadeMapper(List<String> leserettigheter, List<String> skriverettigheter) {
+        Set<String> lesetemaer = new LinkedHashSet<>(leserettigheter);
+        Set<String> skrivetemaer = new LinkedHashSet<>(skriverettigheter);
+        Set<String> temaer = new LinkedHashSet<>(lesetemaer);
+        temaer.addAll(skrivetemaer);
+        return temaer.stream().map(tema -> {
+            List<FullmaktDTO.OmraadeHandlingType> handlinger = new ArrayList<>();
+            if (lesetemaer.contains(tema)) {
+                handlinger.add(FullmaktDTO.OmraadeHandlingType.LES);
+            }
+            if (skrivetemaer.contains(tema)) {
+                handlinger.add(FullmaktDTO.OmraadeHandlingType.SKRIV);
+            }
+            return new FullmaktDTO.OmraadeMedHandling().setTema(tema).setHandling(handlinger);
         }).toList();
     }
 
