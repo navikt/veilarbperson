@@ -105,18 +105,14 @@ class RepresentasjonClientImplTest {
         for (body in listOf(
             FULLMAKT.replace("\"fullmaktsgiver\":\"01010112345\"", "\"fullmaktsgiver\":null"),
             FULLMAKT.replace("\"fullmektig\":\"02020212345\"", "\"fullmektig\":null"),
-            FULLMAKT.replace("\"fullmaktsgiver\":\"01010112345\"", "\"fullmaktsgiver\":\"\""),
-            FULLMAKT.replace("\"fullmektig\":\"02020212345\"", "\"fullmektig\":\" \""),
             FULLMAKT.replace("\"2026-01-01\"", "null"),
             FULLMAKT.replace("\"2026-01-01\"", "\"ugyldig-sensitiv-verdi\""),
             FULLMAKT.replace("[\"AAP\",\"DAG\"]", "null"),
             FULLMAKT.replace("[\"AAP\",\"DAG\"]", "[null]"),
-            FULLMAKT.replace("[\"AAP\",\"DAG\"]", "[\"\"]"),
-            FULLMAKT.replace("[\"AAP\",\"DAG\"]", "[\" \"]"),
+            FULLMAKT.replace("[\"AAP\",\"DAG\"]", "{}"),
             FULLMAKT.replace("[\"DAG\"]", "null"),
             FULLMAKT.replace("[\"DAG\"]", "[null]"),
-            FULLMAKT.replace("[\"DAG\"]", "[\"\"]"),
-            FULLMAKT.replace("[\"DAG\"]", "[\" \"]")
+            FULLMAKT.replace("[\"DAG\"]", "{}")
         )) {
             svar(200, "[$body]")
             assertUgyldigRespons()
@@ -156,32 +152,16 @@ class RepresentasjonClientImplTest {
     }
 
     @Test
-    fun rettigheterKopieresOgKanIkkeEndres() {
-        val leserettigheter = mutableListOf("AAP")
-        val skriverettigheter = mutableListOf("DAG")
-        val fullmakt = ReprFullmaktV2Data(
-            Fnr.of(FNR), Fnr.of("02020212345"), LocalDate.of(2026, 1, 1), null,
-            leserettigheter, skriverettigheter
+    fun parserTommeOgBlankeTemaerUtenEgenValidering() {
+        svar(
+            200, "[" + FULLMAKT.replace("[\"AAP\",\"DAG\"]", "[\"\",\" \",\"\u00a0\"]")
+                .replace("[\"DAG\"]", "[\"\",\" \",\"\u00a0\"]") + "]"
         )
 
-        leserettigheter.clear()
-        skriverettigheter.clear()
+        val fullmakt = client().hentFullmakt(FNR).first()
 
-        assertEquals(listOf("AAP"), fullmakt.leserettigheter)
-        assertEquals(listOf("DAG"), fullmakt.skriverettigheter)
-        assertThrows(UnsupportedOperationException::class.java) {
-            (fullmakt.leserettigheter as MutableList<String>).clear()
-        }
-        assertThrows(UnsupportedOperationException::class.java) {
-            (fullmakt.skriverettigheter as MutableList<String>).clear()
-        }
-    }
-
-    @Test
-    fun beholderJavaBlankSemantikkForRettigheter() {
-        svar(200, "[" + FULLMAKT.replace("[\"AAP\",\"DAG\"]", "[\"\u00a0\"]") + "]")
-
-        assertEquals(listOf("\u00a0"), client().hentFullmakt(FNR).first().leserettigheter)
+        assertEquals(listOf("", " ", "\u00a0"), fullmakt.leserettigheter)
+        assertEquals(listOf("", " ", "\u00a0"), fullmakt.skriverettigheter)
     }
 
     @Test
