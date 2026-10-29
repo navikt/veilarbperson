@@ -6,15 +6,26 @@ import no.nav.veilarbperson.client.digdir.KRRPostPersonerResponse
 import no.nav.veilarbperson.client.nom.SkjermetClient
 import no.nav.veilarbperson.client.pdl.HentPerson
 import no.nav.veilarbperson.client.pdl.PdlClient
+import no.nav.veilarbperson.client.pdl.PdlUtilgjengeligException
+import no.nav.veilarbperson.client.pdl.domain.PdlRequest
+import no.nav.veilarbperson.client.representasjon.Fullmakt
+import no.nav.veilarbperson.client.representasjon.ReprKanRepresenteresAvData
+import no.nav.veilarbperson.client.representasjon.RepresentasjonClient
+import no.nav.veilarbperson.domain.Etiketter
 import no.nav.veilarbperson.utils.TestData.TEST_FNR
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
+import java.io.IOException
 import java.time.LocalDate
 
 class PersonVisittkortServiceTest {
@@ -22,8 +33,17 @@ class PersonVisittkortServiceTest {
     private val pdlClient = mock(PdlClient::class.java)
     private val skjermetClient = mock(SkjermetClient::class.java)
     private val digdirClient = mock(DigdirClient::class.java)
+    private val representasjonClient = mock(RepresentasjonClient::class.java)
 
-    private val service = PersonVisittkortService(pdlClient, digdirClient, skjermetClient)
+    private val service = PersonVisittkortService(pdlClient, digdirClient, skjermetClient, representasjonClient)
+
+    @BeforeEach
+    fun settOppEtikettkilder() {
+        whenever(representasjonClient.hentRepresenteresAv(any()))
+            .thenReturn(ReprKanRepresenteresAvData(emptyList(), emptyList()))
+        whenever(pdlClient.hentTilrettelagtKommunikasjonVisittkort(any()))
+            .thenReturn(HentPerson.HentSpraakTolk().apply { tilrettelagtKommunikasjon = emptyList() })
+    }
 
     @Test
     fun henter_navn_og_fodselsdato() {
@@ -116,6 +136,102 @@ class PersonVisittkortServiceTest {
         assertThrows<RuntimeException> {
             service.hentVisittkortData(TEST_FNR, "B643")
         }
+    }
+
+    @Test
+    fun tomt_tolkeoppslag_gir_ingen_etiketter_og_bruker_ny_klientmetode() {
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(lagTestPerson())
+
+        val result = service.hentVisittkortData(TEST_FNR, "B643")
+
+        assertThat(result.etiketter).isEmpty()
+        verify(pdlClient).hentTilrettelagtKommunikasjonVisittkort(PdlRequest(TEST_FNR, "B643"))
+        verify(pdlClient, never()).hentTilrettelagtKommunikasjon(any())
+    }
+
+    @Test
+    fun vellykket_tolkeoppslag_beholder_tolkeetiketter() {
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(lagTestPerson())
+        whenever(pdlClient.hentTilrettelagtKommunikasjonVisittkort(any()))
+            .thenReturn(HentPerson.HentSpraakTolk().apply {
+                tilrettelagtKommunikasjon = listOf(HentPerson.TilrettelagtKommunikasjon().apply {
+                    talespraaktolk = HentPerson.Tolk().apply { spraak = "EN" }
+                    tegnspraaktolk = HentPerson.Tolk().apply { spraak = "NO" }
+                })
+            })
+
+        val result = service.hentVisittkortData(TEST_FNR, "B643")
+
+        assertThat(result.etiketter).containsExactly(Etiketter.TALETOLK, Etiketter.SPRAAKTOLK)
+    }
+
+    @Test
+    fun transportfeil_i_tolkeoppslag_gir_tolk_ukjent() {
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(lagTestPerson())
+        whenever(pdlClient.hentTilrettelagtKommunikasjonVisittkort(any()))
+            .thenThrow(IOException("PDL utilgjengelig"))
+
+        val result = service.hentVisittkortData(TEST_FNR, "B643")
+
+        assertThat(result.fornavn).isEqualTo("Kari")
+        assertThat(result.etiketter).containsExactly(Etiketter.TOLK_UKJENT)
+    }
+
+    @Test
+    fun http_5xx_i_tolkeoppslag_gir_tolk_ukjent_og_beholder_representasjon() {
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(lagTestPerson())
+        whenever(representasjonClient.hentRepresenteresAv(any()))
+            .thenReturn(ReprKanRepresenteresAvData(
+                listOf(Fullmakt(TEST_FNR, TEST_FNR, emptyList(), listOf("OPP"))),
+                emptyList()
+            ))
+        whenever(pdlClient.hentTilrettelagtKommunikasjonVisittkort(any()))
+            .thenThrow(PdlUtilgjengeligException())
+
+        val result = service.hentVisittkortData(TEST_FNR, "B643")
+
+        assertThat(result.etiketter).containsExactly(Etiketter.FULLMEKTIG_OPPFOLGING, Etiketter.TOLK_UKJENT)
+    }
+
+    @Test
+    fun andre_http_og_graphql_feil_i_tolkeoppslag_propageres() {
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(lagTestPerson())
+        for (status in listOf(
+            HttpStatus.BAD_REQUEST,
+            HttpStatus.UNAUTHORIZED,
+            HttpStatus.FORBIDDEN,
+            HttpStatus.TOO_MANY_REQUESTS,
+            HttpStatus.INTERNAL_SERVER_ERROR
+        )) {
+            val feil = ResponseStatusException(status)
+            doThrow(feil).whenever(pdlClient).hentTilrettelagtKommunikasjonVisittkort(any())
+
+            val kastet = assertThrows<ResponseStatusException> { service.hentVisittkortData(TEST_FNR, "B643") }
+
+            assertThat(kastet).isSameAs(feil)
+        }
+    }
+
+    @Test
+    fun ugyldig_tolkerespons_propageres() {
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(lagTestPerson())
+        val feil = IllegalStateException("Ugyldig tolkerespons fra PDL")
+        whenever(pdlClient.hentTilrettelagtKommunikasjonVisittkort(any())).thenThrow(feil)
+
+        val kastet = assertThrows<IllegalStateException> { service.hentVisittkortData(TEST_FNR, "B643") }
+
+        assertThat(kastet).isSameAs(feil)
+    }
+
+    @Test
+    fun feil_i_hovedoppslaget_propageres_uten_tolkeoppslag() {
+        val feil = ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE)
+        whenever(pdlClient.hentPersonVisittkort(any())).thenThrow(feil)
+
+        val kastet = assertThrows<ResponseStatusException> { service.hentVisittkortData(TEST_FNR, "B643") }
+
+        assertThat(kastet).isSameAs(feil)
+        verify(pdlClient, never()).hentTilrettelagtKommunikasjonVisittkort(any())
     }
 
     private fun lagTestPerson() = HentPerson.Person().apply {
