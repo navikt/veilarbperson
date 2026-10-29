@@ -369,7 +369,7 @@ public class PersonService {
         return hentFullmakt(personRequest, LocalDate.now());
     }
 
-    FullmaktDTO hentFullmakt(PersonRequest personRequest, LocalDate idag) throws IOException {
+    private FullmaktDTO hentFullmakt(PersonRequest personRequest, LocalDate idag) throws IOException {
         List<ReprFullmaktV2Data> alleFullmakter = representasjonClient.hentFullmakt(personRequest.getFnr().get());
         if (alleFullmakter.stream().anyMatch(fullmakt -> !personRequest.getFnr().equals(fullmakt.getFullmaktsgiver()))) {
             throw new IllegalStateException("Fullmaktsgiver i representasjon samsvarer ikke med forespurt person");
