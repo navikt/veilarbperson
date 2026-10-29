@@ -1,204 +1,269 @@
-package no.nav.veilarbperson.service;
+package no.nav.veilarbperson.service
 
-import no.nav.common.types.identer.Fnr;
-import no.nav.veilarbperson.client.pdl.HentPerson;
-import no.nav.veilarbperson.client.pdl.PdlClient;
-import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
-import no.nav.veilarbperson.client.representasjon.ReprFullmaktV2Data;
-import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
-import no.nav.veilarbperson.domain.FullmaktDTO;
-import no.nav.veilarbperson.domain.PersonRequest;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import no.nav.common.types.identer.Fnr
+import no.nav.veilarbperson.client.pdl.HentPerson
+import no.nav.veilarbperson.client.pdl.HentPerson.MetadataNavn
+import no.nav.veilarbperson.client.pdl.PdlClient
+import no.nav.veilarbperson.client.pdl.domain.PdlRequest
+import no.nav.veilarbperson.client.representasjon.ReprFullmaktV2Data
+import no.nav.veilarbperson.client.representasjon.RepresentasjonClient
+import no.nav.veilarbperson.domain.FullmaktDTO.OmraadeHandlingType
+import no.nav.veilarbperson.domain.PersonRequest
+import org.junit.After
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
+import org.mockito.MockedStatic
+import org.mockito.Mockito.CALLS_REAL_METHODS
+import org.mockito.Mockito.mockStatic
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
+import java.io.IOException
+import java.time.LocalDate
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.List;
+class PersonServiceFullmaktTest {
+    private val pdlClient = mock<PdlClient>()
+    private val representasjonClient = mock<RepresentasjonClient>()
+    private val kodeverkService = mock<KodeverkService>()
+    private var datoMock: MockedStatic<LocalDate>? = null
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-public class PersonServiceFullmaktTest {
-    private static final Fnr GIVER = Fnr.of("01010112345");
-    private static final Fnr MEKTIG = Fnr.of("02020212345");
-    private static final Fnr UTGAATT_MEKTIG = Fnr.of("03030312345");
-    private static final LocalDate IDAG = LocalDate.of(2026, 10, 22);
-    private static final PersonRequest REQUEST = new PersonRequest(GIVER, "B555");
-    private final PdlClient pdlClient = mock(PdlClient.class);
-    private final RepresentasjonClient representasjonClient = mock(RepresentasjonClient.class);
-    private final KodeverkService kodeverkService = mock(KodeverkService.class);
-    private final PersonService service = new PersonService(pdlClient, null, null, null, null,
-            kodeverkService, representasjonClient);
+    private val service = PersonService(
+        pdlClient, null, null, null, null,
+        kodeverkService, representasjonClient
+    )
 
     @Before
-    public void setup() {
-        when(pdlClient.hentPersonNavn(new PdlRequest(GIVER, "B555"))).thenReturn(navn("Giver"));
-        when(pdlClient.hentPersonNavn(new PdlRequest(MEKTIG, "B555"))).thenReturn(navn("Fullmektig"));
-        when(kodeverkService.getBeskrivelseForTema("AAP")).thenReturn("Arbeidsavklaringspenger");
+    fun setup() {
+        val mock = mockStatic(LocalDate::class.java, CALLS_REAL_METHODS)
+        datoMock = mock
+        mock.`when`<LocalDate> { LocalDate.now() }.thenReturn(IDAG)
+
+        whenever(pdlClient.hentPersonNavn(PdlRequest(GIVER, "B555")))
+            .thenReturn(navn("Giver"))
+        whenever(pdlClient.hentPersonNavn(PdlRequest(MEKTIG, "B555")))
+            .thenReturn(navn("Fullmektig"))
+        whenever(kodeverkService.getBeskrivelseForTema("AAP")).thenReturn("Arbeidsavklaringspenger")
+    }
+
+    @After
+    fun ryddOppDatoMock() {
+        datoMock?.close()
     }
 
     @Test
-    public void filtrererPaaSluttdatoOgBeholderFremtidigStartOgIngenSluttdato() throws IOException {
-        when(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(List.of(
+    fun `mocker dagens dato`() {
+        assertEquals(IDAG, LocalDate.now())
+        assertEquals(IDAG, LocalDate.of(2026, 10, 22))
+    }
+
+    @Test
+    fun filtrererPaaSluttdatoOgBeholderFremtidigStartOgIngenSluttdato() {
+        whenever(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(
+            listOf(
                 fullmakt(UTGAATT_MEKTIG, IDAG.minusYears(1), IDAG.minusDays(1)),
                 fullmakt(MEKTIG, IDAG.minusDays(10), IDAG),
                 fullmakt(MEKTIG, IDAG.minusDays(10), IDAG.plusDays(1)),
                 fullmakt(MEKTIG, IDAG.plusYears(2), IDAG.plusYears(3)),
                 fullmakt(MEKTIG, IDAG.minusYears(1), null),
-                fullmakt(MEKTIG, IDAG.plusYears(2), null)));
+                fullmakt(MEKTIG, IDAG.plusYears(2), null)
+            )
+        )
 
-        var resultat = service.hentFullmakt(REQUEST, IDAG).getFullmakt();
+        val resultat = service.hentFullmakt(REQUEST).fullmakt
 
-        assertEquals(5, resultat.size());
-        assertEquals(IDAG, resultat.get(0).getGyldigTilOgMed());
-        assertEquals(IDAG.plusDays(1), resultat.get(1).getGyldigTilOgMed());
-        assertEquals(IDAG.plusYears(2), resultat.get(2).getGyldigFraOgMed());
-        assertNull(resultat.get(3).getGyldigTilOgMed());
-        assertNull(resultat.get(4).getGyldigTilOgMed());
-        assertEquals(IDAG.plusYears(2), resultat.get(4).getGyldigFraOgMed());
-        verify(pdlClient).hentPersonNavn(new PdlRequest(GIVER, "B555"));
-        verify(pdlClient).hentPersonNavn(new PdlRequest(MEKTIG, "B555"));
-        verifyNoMoreInteractions(pdlClient);
+        assertEquals(5, resultat.size)
+        assertEquals(IDAG, resultat[0].gyldigTilOgMed)
+        assertEquals(IDAG.plusDays(1), resultat[1].gyldigTilOgMed)
+        assertEquals(IDAG.plusYears(2), resultat[2].gyldigFraOgMed)
+        assertNull(resultat[3].gyldigTilOgMed)
+        assertNull(resultat[4].gyldigTilOgMed)
+        assertEquals(IDAG.plusYears(2), resultat[4].gyldigFraOgMed)
+        verify(pdlClient).hentPersonNavn(PdlRequest(GIVER, "B555"))
+        verify(pdlClient).hentPersonNavn(PdlRequest(MEKTIG, "B555"))
+        verifyNoMoreInteractions(pdlClient)
     }
 
     @Test
-    public void tomListeOgBareUtgaatteEllerTidligAvsluttedeGir204UtenNavneoppslag() throws IOException {
-        for (List<ReprFullmaktV2Data> fullmakter : List.of(
-                List.<ReprFullmaktV2Data>of(),
-                List.of(fullmakt(MEKTIG, IDAG.minusYears(1), IDAG.minusDays(1))),
-                List.of(fullmakt(MEKTIG, IDAG.plusDays(10), IDAG.minusDays(1))))) {
-            when(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(fullmakter);
+    fun tomListeOgBareUtgaatteEllerTidligAvsluttedeGir204UtenNavneoppslag() {
+        for (fullmakter in listOf(
+            emptyList(),
+            listOf(fullmakt(MEKTIG, IDAG.minusYears(1), IDAG.minusDays(1))),
+            listOf(fullmakt(MEKTIG, IDAG.plusDays(10), IDAG.minusDays(1)))
+        )) {
+            whenever(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(fullmakter)
 
-            var feil = assertThrows(ResponseStatusException.class, () -> service.hentFullmakt(REQUEST, IDAG));
+            val feil = assertThrows(ResponseStatusException::class.java) { service.hentFullmakt(REQUEST) }
 
-            assertEquals(HttpStatus.NO_CONTENT, feil.getStatusCode());
+            assertEquals(HttpStatus.NO_CONTENT, feil.statusCode)
         }
-        verifyNoInteractions(pdlClient, kodeverkService);
+        verifyNoInteractions(pdlClient, kodeverkService)
     }
 
     @Test
-    public void konsistenskontrollSkjerForHeleListenFoerNavneoppslag() throws IOException {
-        when(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(List.of(
+    fun konsistenskontrollSkjerForHeleListenFoerNavneoppslag() {
+        whenever(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(
+            listOf(
                 fullmakt(MEKTIG, IDAG, null),
-                new ReprFullmaktV2Data(MEKTIG, GIVER, IDAG.minusYears(1), IDAG.minusDays(1), List.of(), List.of())));
+                ReprFullmaktV2Data(
+                    MEKTIG,
+                    GIVER,
+                    IDAG.minusYears(1),
+                    IDAG.minusDays(1),
+                    emptyList(),
+                    emptyList()
+                )
+            )
+        )
 
-        var feil = assertThrows(IllegalStateException.class, () -> service.hentFullmakt(REQUEST, IDAG));
+        val feil = assertThrows(IllegalStateException::class.java) { service.hentFullmakt(REQUEST) }
 
-        assertFalse(feil.toString().contains(GIVER.get()));
-        assertFalse(feil.toString().contains(MEKTIG.get()));
-        verifyNoInteractions(pdlClient, kodeverkService);
+        assertFalse(feil.toString().contains(GIVER.get()))
+        assertFalse(feil.toString().contains(MEKTIG.get()))
+        verifyNoInteractions(pdlClient, kodeverkService)
     }
 
     @Test
-    public void berikerBeggeNavnOgTemabeskrivelserOgDeduplisererBarePerRequest() throws IOException {
-        when(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(List.of(
-                fullmakt(MEKTIG, IDAG, null), fullmakt(MEKTIG, IDAG.plusDays(1), null)));
+    fun berikerBeggeNavnOgTemabeskrivelserOgDeduplisererBarePerRequest() {
+        whenever(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(
+            listOf(
+                fullmakt(MEKTIG, IDAG, null), fullmakt(MEKTIG, IDAG.plusDays(1), null)
+            )
+        )
 
-        var resultat = service.hentFullmakt(REQUEST, IDAG).getFullmakt().getFirst();
+        val resultat = service.hentFullmakt(REQUEST).fullmakt.first()
 
-        assertEquals(GIVER.get(), resultat.getFullmaktsgiver());
-        assertEquals(MEKTIG.get(), resultat.getFullmektig());
-        assertEquals("Giver Mellom Testesen", resultat.getFullmaktsgiverNavn());
-        assertEquals("Fullmektig Mellom Testesen", resultat.getFullmektigsNavn());
-        assertEquals("Arbeidsavklaringspenger", resultat.getOmraade().get(0).getTema());
-        assertEquals("alle ytelser", resultat.getOmraade().get(1).getTema());
-        assertEquals(List.of(FullmaktDTO.OmraadeHandlingType.SKRIV), resultat.getOmraade().get(1).getHandling());
-        verify(pdlClient).hentPersonNavn(new PdlRequest(GIVER, "B555"));
-        verify(pdlClient).hentPersonNavn(new PdlRequest(MEKTIG, "B555"));
-        verifyNoMoreInteractions(pdlClient);
+        assertEquals(GIVER.get(), resultat.fullmaktsgiver)
+        assertEquals(MEKTIG.get(), resultat.fullmektig)
+        assertEquals("Giver Mellom Testesen", resultat.fullmaktsgiverNavn)
+        assertEquals("Fullmektig Mellom Testesen", resultat.fullmektigsNavn)
+        assertEquals("Arbeidsavklaringspenger", resultat.omraade[0].tema)
+        assertEquals("alle ytelser", resultat.omraade[1].tema)
+        assertEquals(listOf(OmraadeHandlingType.SKRIV), resultat.omraade[1].handling)
+        verify(pdlClient).hentPersonNavn(PdlRequest(GIVER, "B555"))
+        verify(pdlClient).hentPersonNavn(PdlRequest(MEKTIG, "B555"))
+        verifyNoMoreInteractions(pdlClient)
 
-        service.hentFullmakt(REQUEST, IDAG);
-        verify(pdlClient, times(2)).hentPersonNavn(new PdlRequest(GIVER, "B555"));
-        verify(pdlClient, times(2)).hentPersonNavn(new PdlRequest(MEKTIG, "B555"));
+        service.hentFullmakt(REQUEST)
+        verify(pdlClient, times(2)).hentPersonNavn(PdlRequest(GIVER, "B555"))
+        verify(pdlClient, times(2)).hentPersonNavn(PdlRequest(MEKTIG, "B555"))
     }
 
     @Test
-    public void sammeIdentIParteneHentesBareEnGang() throws IOException {
-        when(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(List.of(fullmakt(GIVER, IDAG, null)));
-        service.hentFullmakt(REQUEST, IDAG);
-        verify(pdlClient).hentPersonNavn(new PdlRequest(GIVER, "B555"));
-        verifyNoMoreInteractions(pdlClient);
+    fun sammeIdentIParteneHentesBareEnGang() {
+        whenever(representasjonClient.hentFullmakt(GIVER.get()))
+            .thenReturn(listOf(fullmakt(GIVER, IDAG, null)))
+        service.hentFullmakt(REQUEST)
+        verify(pdlClient).hentPersonNavn(PdlRequest(GIVER, "B555"))
+        verifyNoMoreInteractions(pdlClient)
     }
 
     @Test
-    public void manglendeNavnPaaHverAvParteneFeilerHeleKallet() throws IOException {
-        when(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(List.of(fullmakt(MEKTIG, IDAG, null)));
-        for (Fnr ident : List.of(MEKTIG, GIVER)) {
-            when(pdlClient.hentPersonNavn(new PdlRequest(ident, "B555")))
-                    .thenReturn(new HentPerson.PersonNavn().setNavn(List.of()));
+    fun manglendeNavnPaaHverAvParteneFeilerHeleKallet() {
+        whenever(representasjonClient.hentFullmakt(GIVER.get()))
+            .thenReturn(listOf(fullmakt(MEKTIG, IDAG, null)))
+        for (ident in listOf(MEKTIG, GIVER)) {
+            whenever(pdlClient.hentPersonNavn(PdlRequest(ident, "B555")))
+                .thenReturn(HentPerson.PersonNavn().setNavn(emptyList()))
 
-            var feil = assertThrows(ResponseStatusException.class, () -> service.hentFullmakt(REQUEST, IDAG));
+            val feil = assertThrows(ResponseStatusException::class.java) { service.hentFullmakt(REQUEST) }
 
-            assertEquals(HttpStatus.NOT_FOUND, feil.getStatusCode());
+            assertEquals(HttpStatus.NOT_FOUND, feil.statusCode)
         }
-        verifyNoInteractions(kodeverkService);
+        verifyNoInteractions(kodeverkService)
     }
 
     @Test
-    public void ufullstendigNavnGirIkkeTilsynelatendeGyldigRespons() throws IOException {
-        when(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(List.of(fullmakt(MEKTIG, IDAG, null)));
-        var ufullstendigNavn = navn("Fullmektig");
-        ufullstendigNavn.getNavn().getFirst().setEtternavn(null);
-        when(pdlClient.hentPersonNavn(new PdlRequest(MEKTIG, "B555"))).thenReturn(ufullstendigNavn);
+    fun ufullstendigNavnGirIkkeTilsynelatendeGyldigRespons() {
+        whenever(representasjonClient.hentFullmakt(GIVER.get()))
+            .thenReturn(listOf(fullmakt(MEKTIG, IDAG, null)))
+        val ufullstendigNavn = navn("Fullmektig")
+        ufullstendigNavn.navn.first().etternavn = null
+        whenever(pdlClient.hentPersonNavn(PdlRequest(MEKTIG, "B555")))
+            .thenReturn(ufullstendigNavn)
 
-        var feil = assertThrows(ResponseStatusException.class, () -> service.hentFullmakt(REQUEST, IDAG));
+        val feil = assertThrows(ResponseStatusException::class.java) { service.hentFullmakt(REQUEST) }
 
-        assertEquals(HttpStatus.NOT_FOUND, feil.getStatusCode());
-        verifyNoInteractions(kodeverkService);
+        assertEquals(HttpStatus.NOT_FOUND, feil.statusCode)
+        verifyNoInteractions(kodeverkService)
     }
 
     @Test
-    public void pdl403OgTekniskFeilBeholderFeiltypeUtenDelvisRespons() throws IOException {
-        when(representasjonClient.hentFullmakt(GIVER.get())).thenReturn(List.of(fullmakt(MEKTIG, IDAG, null)));
-        for (Fnr ident : List.of(MEKTIG, GIVER)) {
-            for (RuntimeException aarsak : List.of(
-                    new ResponseStatusException(HttpStatus.FORBIDDEN, "Feilbody med " + ident.get()),
-                    new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Feilbody med " + ident.get()),
-                    new IllegalStateException("PDL utilgjengelig"))) {
-                doThrow(aarsak).when(pdlClient).hentPersonNavn(new PdlRequest(ident, "B555"));
+    fun pdl403OgTekniskFeilBeholderFeiltypeUtenDelvisRespons() {
+        whenever(representasjonClient.hentFullmakt(GIVER.get()))
+            .thenReturn(listOf(fullmakt(MEKTIG, IDAG, null)))
+        for (ident in listOf(MEKTIG, GIVER)) {
+            for (aarsak in listOf(
+                ResponseStatusException(HttpStatus.FORBIDDEN, "Feilbody med " + ident.get()),
+                ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Feilbody med " + ident.get()),
+                IllegalStateException("PDL utilgjengelig")
+            )) {
+                doThrow(aarsak).whenever(pdlClient).hentPersonNavn(PdlRequest(ident, "B555"))
 
-                var feil = assertThrows(RuntimeException.class, () -> service.hentFullmakt(REQUEST, IDAG));
-                if (aarsak instanceof ResponseStatusException pdlFeil) {
-                    assertEquals(pdlFeil.getStatusCode(), ((ResponseStatusException) feil).getStatusCode());
-                    assertFalse(feil.toString().contains(ident.get()));
-                    assertNull(feil.getCause());
+                val feil = assertThrows(RuntimeException::class.java) { service.hentFullmakt(REQUEST) }
+                if (aarsak is ResponseStatusException) {
+                    assertEquals(aarsak.statusCode, (feil as ResponseStatusException).statusCode)
+                    assertFalse(feil.toString().contains(ident.get()))
+                    assertNull(feil.cause)
                 } else {
-                    assertSame(aarsak, feil);
+                    assertSame(aarsak, feil)
                 }
             }
         }
-        verifyNoInteractions(kodeverkService);
+        verifyNoInteractions(kodeverkService)
     }
 
     @Test
-    public void offentligMetodeBrukerSammeFullmaktsflyt() throws IOException {
-        when(representasjonClient.hentFullmakt(GIVER.get()))
-                .thenReturn(List.of(fullmakt(MEKTIG, IDAG, null)));
+    fun offentligMetodeBrukerSammeFullmaktsflyt() {
+        whenever(representasjonClient.hentFullmakt(GIVER.get()))
+            .thenReturn(listOf(fullmakt(MEKTIG, IDAG, null)))
 
-        assertEquals(1, service.hentFullmakt(REQUEST).getFullmakt().size());
-        verify(pdlClient).hentPersonNavn(new PdlRequest(GIVER, "B555"));
-        verify(pdlClient).hentPersonNavn(new PdlRequest(MEKTIG, "B555"));
+        assertEquals(1, service.hentFullmakt(REQUEST).fullmakt.size)
+        verify(pdlClient).hentPersonNavn(PdlRequest(GIVER, "B555"))
+        verify(pdlClient).hentPersonNavn(PdlRequest(MEKTIG, "B555"))
     }
 
     @Test
-    public void representasjonsfeilPropageresUtenNavneoppslag() throws IOException {
-        var feil = new IOException("Representasjon utilgjengelig");
-        when(representasjonClient.hentFullmakt(GIVER.get())).thenThrow(feil);
+    fun representasjonsfeilPropageresUtenNavneoppslag() {
+        val feil = IOException("Representasjon utilgjengelig")
+        whenever(representasjonClient.hentFullmakt(GIVER.get())).thenThrow(feil)
 
-        assertSame(feil, assertThrows(IOException.class, () -> service.hentFullmakt(REQUEST, IDAG)));
-        verifyNoInteractions(pdlClient, kodeverkService);
+        assertSame(feil, assertThrows(IOException::class.java) { service.hentFullmakt(REQUEST) })
+        verifyNoInteractions(pdlClient, kodeverkService)
     }
 
-    private static ReprFullmaktV2Data fullmakt(Fnr fullmektig, LocalDate fra, LocalDate til) {
-        return new ReprFullmaktV2Data(GIVER, fullmektig, fra, til, List.of("AAP"), List.of("*"));
-    }
+    companion object {
+        private val GIVER: Fnr = Fnr.of("01010112345")
+        private val MEKTIG: Fnr = Fnr.of("02020212345")
+        private val UTGAATT_MEKTIG: Fnr = Fnr.of("03030312345")
+        private val IDAG: LocalDate = LocalDate.of(2026, 10, 22)
+        private val REQUEST = PersonRequest(GIVER, "B555")
+        private fun fullmakt(fullmektig: Fnr, fra: LocalDate, til: LocalDate?): ReprFullmaktV2Data {
+            return ReprFullmaktV2Data(
+                GIVER,
+                fullmektig,
+                fra,
+                til,
+                listOf("AAP"),
+                listOf("*")
+            )
+        }
 
-    private static HentPerson.PersonNavn navn(String fornavn) {
-        return new HentPerson.PersonNavn().setNavn(List.of(new HentPerson.Navn()
-                .setFornavn(fornavn).setMellomnavn("Mellom").setEtternavn("Testesen")
-                .setForkortetNavn("Skal ikke brukes")
-                .setMetadata(new HentPerson.MetadataNavn().setMaster(HentPerson.PdlNavnMaster.PDL))));
+        private fun navn(fornavn: String): HentPerson.PersonNavn {
+            return HentPerson.PersonNavn().setNavn(
+                listOf(
+                    HentPerson.Navn()
+                        .setFornavn(fornavn).setMellomnavn("Mellom").setEtternavn("Testesen")
+                        .setForkortetNavn("Skal ikke brukes")
+                        .setMetadata(MetadataNavn().setMaster(HentPerson.PdlNavnMaster.PDL))
+                )
+            )
+        }
     }
 }
