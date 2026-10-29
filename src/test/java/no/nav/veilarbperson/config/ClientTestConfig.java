@@ -218,6 +218,13 @@ public class ClientTestConfig {
             }
 
             @Override
+            public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjonVisittkort(PdlRequest pdlRequest) {
+                HentPerson.HentSpraakTolk data = new HentPerson.HentSpraakTolk();
+                data.setTilrettelagtKommunikasjon(Collections.emptyList());
+                return data;
+            }
+
+            @Override
             public List<HentPerson.Adressebeskyttelse> hentAdressebeskyttelse(PdlRequest pdlRequest) {
                 return null;
             }

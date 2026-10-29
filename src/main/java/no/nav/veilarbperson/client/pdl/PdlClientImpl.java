@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.client.pdl;
 
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -18,8 +19,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -127,6 +130,69 @@ public class PdlClientImpl implements PdlClient {
     public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest) {
         var request = new GqlRequest<>(hentTilrettelagtKommunikasjonQuery, new GqlVariables.HentTilrettelagtKommunikasjon(pdlRequest.fnr()));
         return graphqlRequest(request, userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.HentTilrettelagtKommunikasjon.class).hentPerson;
+    }
+
+    @Override
+    public HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjonVisittkort(PdlRequest pdlRequest) throws IOException {
+        var gqlRequest = new GqlRequest<>(hentTilrettelagtKommunikasjonQuery, new GqlVariables.HentTilrettelagtKommunikasjon(pdlRequest.fnr()));
+        Request request = new Request.Builder()
+                .url(joinPaths(pdlUrl, "/graphql"))
+                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, createBearerToken(userTokenProvider.get()))
+                .header("Tema", "GEN")
+                .header("behandlingsnummer", pdlRequest.behandlingsnummer() != null ? pdlRequest.behandlingsnummer() : "")
+                .post(RequestBody.create(JsonUtils.toJson(gqlRequest), MEDIA_TYPE_JSON))
+                .build();
+
+        // Egen transportsti bevarer HTTP-status uten å endre eksisterende PDL-kall.
+        String responseJson;
+        try (Response response = client.newCall(request).execute()) {
+            if (response.code() >= 500 && response.code() < 600) {
+                throw new PdlUtilgjengeligException();
+            }
+            if (!response.isSuccessful()) {
+                throw new ResponseStatusException(HttpStatusCode.valueOf(response.code()), "Tolkeoppslaget i PDL feilet");
+            }
+            responseJson = RestUtils.getBodyStr(response)
+                    .orElseThrow(() -> new IllegalStateException("Mangler body i tolkeresponsen fra PDL"));
+        }
+
+        return parseTolkeresponsVisittkort(responseJson);
+    }
+
+    private static HentPerson.HentSpraakTolk parseTolkeresponsVisittkort(String response) {
+        try {
+            ObjectMapper mapper = JsonUtils.getMapper();
+            JsonNode root = mapper.readTree(response);
+            if (root == null || !root.isObject()) {
+                throw new IllegalStateException("Ugyldig tolkerespons fra PDL");
+            }
+
+            JsonNode errors = root.get("errors");
+            if (errors != null && !errors.isNull()) {
+                if (!errors.isArray() || errors.isEmpty()) {
+                    throw new IllegalStateException("Ugyldig tolkerespons fra PDL");
+                }
+                if ("Ikke tilgang til å se person".equals(errors.get(0).path("message").asText())) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+                }
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Tolkeoppslaget i PDL returnerte GraphQL-feil");
+            }
+
+            JsonNode person = root.path("data").path("hentPerson");
+            if (!person.isObject()) {
+                throw new IllegalStateException("Ugyldig tolkerespons fra PDL");
+            }
+            HentPerson.HentSpraakTolk data = mapper.treeToValue(person, HentPerson.HentSpraakTolk.class);
+            if (data.getTilrettelagtKommunikasjon() == null
+                    || data.getTilrettelagtKommunikasjon().stream().anyMatch(kommunikasjon -> kommunikasjon == null)) {
+                throw new IllegalStateException("Ugyldig tolkerespons fra PDL");
+            }
+            return data;
+        } catch (JacksonException e) {
+            throw new IllegalStateException("Ugyldig tolkerespons fra PDL");
+        }
     }
 
     @Override

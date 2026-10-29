@@ -35,7 +35,7 @@ open class RepresentasjonClientImpl internal constructor(
             val fullmakter = try {
                 RestUtils.parseJsonArrayResponse(response, ReprFullmaktV2Data::class.java)
                     .orElseThrow { IllegalStateException("Mangler body i responsen fra representasjon") }
-            } catch (e: JacksonException) {
+            } catch (_: JacksonException) {
                 // Parserfeil kan inneholde persondata, og skal ikke videreføres som årsak.
                 throw IllegalStateException("Ugyldig fullmaktsrespons fra representasjon")
             }
@@ -43,6 +43,33 @@ open class RepresentasjonClientImpl internal constructor(
                 throw IllegalStateException("Ugyldig fullmaktsrespons fra representasjon")
             }
             return fullmakter
+        }
+    }
+
+    @Throws(IOException::class)
+    override fun hentRepresenteresAv(personIdent: String?): ReprKanRepresenteresAvData {
+        val request = Request.Builder()
+            .url(joinPaths(reprUrl, "/api/v2/internbruker/kan-representeres-av"))
+            .header(ACCEPT, APPLICATION_JSON_VALUE)
+            .header(AUTHORIZATION, createBearerToken(userTokenProvider.get()))
+            .post(RestUtils.toJsonRequestBody(PersonIdentDTO(personIdent)))
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                TODO(
+                    "Kast ResponseStatusException med HTTP-statusen fra response.code " +
+                    "og en fast melding uten responsbody"
+                )
+            }
+            val representeresAv = try {
+                RestUtils.parseJsonResponse(response, ReprKanRepresenteresAvData::class.java)
+                    .orElseThrow { IllegalStateException("Mangler body i responsen fra kan-representeres-av") }
+            } catch (_: JacksonException) {
+                // Parserfeil kan inneholde persondata, og skal ikke videreføres som årsak.
+                throw IllegalStateException("Ugyldig respons fra kan-representeres-av")
+            }
+            return representeresAv
         }
     }
 }
