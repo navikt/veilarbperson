@@ -1,12 +1,13 @@
 package no.nav.veilarbperson.utils.mappers;
 
 import no.nav.common.types.identer.Fnr;
+import no.nav.common.json.JsonUtils;
 import no.nav.veilarbperson.client.pdl.HentPerson;
-import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.client.pdl.domain.VergemaalEllerFullmaktOmfangType;
 import no.nav.veilarbperson.client.pdl.domain.Vergetype;
-import no.nav.veilarbperson.config.PdlClientTestConfig;
+import no.nav.veilarbperson.client.representasjon.ReprFullmaktV2Data;
 import no.nav.veilarbperson.domain.PersonNavn;
+import no.nav.veilarbperson.domain.FullmaktDTO;
 import no.nav.veilarbperson.domain.VergeData;
 import no.nav.veilarbperson.utils.TestUtils;
 import no.nav.veilarbperson.utils.VergeOgFullmaktDataMapper;
@@ -16,23 +17,71 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Optional.ofNullable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static no.nav.veilarbperson.domain.FullmaktDTO.OmraadeHandlingType.*;
 
-public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
+public class VergeOgFullmaktDataMapperTest {
 
     private static Fnr FNR = TestUtils.fodselsnummerForDato("1980-01-01");
 
-    public HentPerson.Verge hentVerge(Fnr fnr) {
-        configurePdlResponse("pdl-hentVerge-response.json");
-        return getPdlClient().hentVerge(new PdlRequest(fnr, null));
+    @Test
+    public void fullmaktsrettigheterSamlesUtenDuplikaterOgUtenImplisittLesing() {
+        var omraader = VergeOgFullmaktDataMapper.omraadeMapper(
+                List.of("AAP", "DAG", "AAP"), List.of("DAG", "PEN", "PEN"));
+
+        assertEquals(List.of("AAP", "DAG", "PEN"), omraader.stream().map(FullmaktDTO.OmraadeMedHandling::getTema).toList());
+        assertEquals(List.of(LES), omraader.get(0).getHandling());
+        assertEquals(List.of(LES, SKRIV), omraader.get(1).getHandling());
+        assertEquals(List.of(SKRIV), omraader.get(2).getHandling());
+        assertTrue(omraader.stream().noneMatch(omraade -> omraade.getHandling().contains(KOMMUNISER)));
+    }
+
+    @Test
+    public void bareLesingBareSkrivingOgIngenRettigheter() {
+        assertEquals(List.of(LES), VergeOgFullmaktDataMapper.omraadeMapper(List.of("*"), List.of()).getFirst().getHandling());
+        assertEquals(List.of(SKRIV), VergeOgFullmaktDataMapper.omraadeMapper(List.of(), List.of("*")).getFirst().getHandling());
+        assertTrue(VergeOgFullmaktDataMapper.omraadeMapper(List.of(), List.of()).isEmpty());
+    }
+
+    @Test
+    public void fullmaktMapperIdentifikatorerDatoerOgFullstendigeNavn() {
+        Fnr fullmektig = Fnr.of("02020212345");
+        LocalDate fra = LocalDate.of(2026, 11, 1);
+        LocalDate til = fra.plusYears(1);
+        var navn = Map.of(
+                FNR, new PersonNavn().setFornavn("Giver").setMellomnavn("Mellom").setEtternavn("Testesen"),
+                fullmektig, new PersonNavn().setFornavn("Mektig").setEtternavn("Testesen"));
+        var fullmakter = List.of(
+                new ReprFullmaktV2Data(FNR, fullmektig, fra, til, List.of("AAP"), List.of()),
+                new ReprFullmaktV2Data(FNR, fullmektig, fra, null, List.of(), List.of()));
+
+        var resultat = VergeOgFullmaktDataMapper.toFullmaktDTO(fullmakter, navn).getFullmakt();
+
+        assertEquals(FNR.get(), resultat.getFirst().getFullmaktsgiver());
+        assertEquals(fullmektig.get(), resultat.getFirst().getFullmektig());
+        assertEquals("Giver Mellom Testesen", resultat.getFirst().getFullmaktsgiverNavn());
+        assertEquals("Mektig Testesen", resultat.getFirst().getFullmektigsNavn());
+        assertEquals(fra, resultat.getFirst().getGyldigFraOgMed());
+        assertEquals(til, resultat.getFirst().getGyldigTilOgMed());
+        assertNull(resultat.getLast().getGyldigTilOgMed());
+        assertTrue(resultat.getLast().getOmraade().isEmpty());
+        assertThrows(NullPointerException.class, () -> VergeOgFullmaktDataMapper.toFullmaktDTO(fullmakter, Map.of()));
+    }
+
+    private HentPerson.Verge hentVerge() {
+        var response = JsonUtils.getMapper().readTree(TestUtils.readTestResourceFile("pdl-hentVerge-response.json"));
+        return JsonUtils.getMapper().treeToValue(response.get("data").get("hentPerson"), HentPerson.Verge.class);
     }
 
     @Test
     public void vergetypeOgOmfangEnumMapperTest() {
-        List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVerge(FNR).getVergemaalEllerFremtidsfullmakt();
+        List<HentPerson.VergemaalEllerFremtidsfullmakt> vergemaal = hentVerge().getVergemaalEllerFremtidsfullmakt();
 
         VergemaalEllerFullmaktOmfangType omfang1 = ofNullable(vergemaal.get(0).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
         VergemaalEllerFullmaktOmfangType omfang2 = ofNullable(vergemaal.get(1).getVergeEllerFullmektig()).map(HentPerson.VergeEllerFullmektig::getOmfang).get();
@@ -46,7 +95,7 @@ public class VergeOgFullmaktDataMapperTest extends PdlClientTestConfig {
 
     @Test
     public void toVergeOgFullmaktDataTest() {
-        HentPerson.Verge vergeOgFullmaktFraPdl = hentVerge(FNR);
+        HentPerson.Verge vergeOgFullmaktFraPdl = hentVerge();
         VergeData.VergemaalEllerFremtidsfullmakt vergeOgFullmaktDataFirst = VergeOgFullmaktDataMapper.toVergemaalEllerFremtidsfullmakt(vergeOgFullmaktFraPdl.getVergemaalEllerFremtidsfullmakt().getFirst(), null);
 
         assertEquals(Vergetype.MIDLERTIDIG_FOR_VOKSEN, vergeOgFullmaktDataFirst.getType());
