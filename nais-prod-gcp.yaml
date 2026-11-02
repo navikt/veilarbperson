@@ -61,6 +61,8 @@ spec:
           cluster: prod-gcp
         - application: inngar
           namespace: dab
+        - application: beslutteroversikt
+          namespace: obo
     outbound:
       rules:
         - application: kodeverk-api
