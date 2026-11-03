@@ -445,7 +445,6 @@ public class PersonService {
         if (personNavn.getNavn().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fant ikke navn til person");
         }
-        log.info("Ferdig med hentNavn i PersonService");
         return PersonDataMapper.navnMapper(personNavn.getNavn());
     }
 

@@ -1,6 +1,7 @@
 package no.nav.veilarbperson.client;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.http.Fault;
 import no.nav.common.json.JsonUtils;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.*;
@@ -12,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -238,6 +240,143 @@ public class PdlClientImplTest {
 
         String response = pdlClient.rawRequest(jsonRequest, PDL_AUTH, null);
         assertEquals(hentPersonResponseJson, response);
+    }
+
+    @Test
+    public void henteTolkTilVisittkort_senderSammeQueryOgBehandlingsnummer() throws IOException {
+        String response = TestUtils.readTestResourceFile("pdl-hentTilrettelagtKommunikasjon-response.json");
+        PdlClientImpl client = tolkeClient(200, response);
+
+        HentPerson.HentSpraakTolk data = client.hentTilrettelagtKommunikasjonVisittkort(new PdlRequest(FNR, "B643"));
+
+        assertEquals("EN", data.getTilrettelagtKommunikasjon().getFirst().getTalespraaktolk().getSpraak());
+        assertEquals("NO", data.getTilrettelagtKommunikasjon().getFirst().getTegnspraaktolk().getSpraak());
+        String query = FileUtils.getResourceFileAsString("graphql/hentTilrettelagtKommunikasjon.gql");
+        String request = JsonUtils.toJson(new GqlRequest<>(query, new GqlVariables.HentTilrettelagtKommunikasjon(FNR)));
+        verify(postRequestedFor(urlEqualTo("/graphql"))
+                .withHeader("Authorization", equalTo("Bearer " + PDL_AUTH))
+                .withHeader("behandlingsnummer", equalTo("B643"))
+                .withHeader("Tema", equalTo("GEN"))
+                .withRequestBody(equalToJson(request)));
+    }
+
+    @Test
+    public void henteTolkTilVisittkort_akseptererTomListe() throws IOException {
+        PdlClientImpl client = tolkeClient(200, """
+                {"data":{"hentPerson":{"tilrettelagtKommunikasjon":[]}}}
+                """);
+
+        assertTrue(client.hentTilrettelagtKommunikasjonVisittkort(new PdlRequest(FNR, "B643"))
+                .getTilrettelagtKommunikasjon().isEmpty());
+    }
+
+    @Test
+    public void henteTolkTilVisittkort_markererBareHttp5xxSomUtilgjengelig() {
+        for (int status : List.of(500, 502, 503, 504, 599)) {
+            PdlClientImpl client = tolkeClient(status, "sensitiv-feilbody");
+
+            PdlUtilgjengeligException feil = assertThrows(PdlUtilgjengeligException.class,
+                    () -> client.hentTilrettelagtKommunikasjonVisittkort(new PdlRequest(FNR, "B643")));
+
+            assertFalse(feil.toString().contains("sensitiv-feilbody"));
+            assertNull(feil.getCause());
+        }
+    }
+
+    @Test
+    public void henteTolkTilVisittkort_beholderAndreHttpStatuserUtenFeilbody() {
+        for (int status : List.of(400, 401, 403, 404, 429, 499)) {
+            PdlClientImpl client = tolkeClient(status, "sensitiv-feilbody");
+
+            ResponseStatusException feil = assertThrows(ResponseStatusException.class,
+                    () -> client.hentTilrettelagtKommunikasjonVisittkort(new PdlRequest(FNR, "B643")));
+
+            assertEquals(status, feil.getStatusCode().value());
+            assertFalse(feil.toString().contains("sensitiv-feilbody"));
+            assertNull(feil.getCause());
+        }
+    }
+
+    @Test
+    public void henteTolkTilVisittkort_graphqlFeilErIkkeUtilgjengeligKilde() {
+        PdlClientImpl client = tolkeClient(200, """
+                {"data":{"hentPerson":{"tilrettelagtKommunikasjon":[]}},
+                 "errors":[{"message":"sensitiv-feilbody"}]}
+                """);
+
+        ResponseStatusException feil = assertThrows(ResponseStatusException.class,
+                () -> client.hentTilrettelagtKommunikasjonVisittkort(new PdlRequest(FNR, "B643")));
+
+        assertEquals(500, feil.getStatusCode().value());
+        assertFalse(feil.toString().contains("sensitiv-feilbody"));
+        assertNull(feil.getCause());
+    }
+
+    @Test
+    public void henteTolkTilVisittkort_beholderGraphqlTilgangsfeil() {
+        PdlClientImpl client = tolkeClient(200, """
+                {"errors":[{"message":"Ikke tilgang til å se person"}]}
+                """);
+
+        ResponseStatusException feil = assertThrows(ResponseStatusException.class,
+                () -> client.hentTilrettelagtKommunikasjonVisittkort(new PdlRequest(FNR, "B643")));
+
+        assertEquals(403, feil.getStatusCode().value());
+    }
+
+    @Test
+    public void henteTolkTilVisittkort_ugyldigResponsErIkkeUtilgjengeligKilde() {
+        for (String response : List.of(
+                "", "null", "[]", "{", "{}", "{\"data\":null}",
+                "{\"data\":{\"hentPerson\":null}}",
+                "{\"data\":{\"hentPerson\":{}}}",
+                "{\"data\":{\"hentPerson\":{\"tilrettelagtKommunikasjon\":null}}}",
+                "{\"data\":{\"hentPerson\":{\"tilrettelagtKommunikasjon\":[null]}}}",
+                "{\"data\":{\"hentPerson\":{\"tilrettelagtKommunikasjon\":\"sensitiv-verdi\"}}}",
+                "{\"data\":{\"hentPerson\":{\"tilrettelagtKommunikasjon\":[{\"talespraaktolk\":\"sensitiv-verdi\"}]}}}",
+                "{\"errors\":[]}",
+                "{\"errors\":\"sensitiv-verdi\"}"
+        )) {
+            PdlClientImpl client = tolkeClient(200, response);
+
+            IllegalStateException feil = assertThrows(IllegalStateException.class,
+                    () -> client.hentTilrettelagtKommunikasjonVisittkort(new PdlRequest(FNR, "B643")));
+
+            assertFalse(feil.toString().contains("sensitiv-verdi"));
+            assertNull(feil.getCause());
+        }
+        PdlClientImpl client = tolkeClient(204, "");
+        assertThrows(IllegalStateException.class,
+                () -> client.hentTilrettelagtKommunikasjonVisittkort(new PdlRequest(FNR, "B643")));
+    }
+
+    @Test
+    public void henteTolkTilVisittkort_transportfeilPropageres() {
+        PdlClientImpl client = tolkeClient(200, "");
+        givenThat(post(urlEqualTo("/graphql"))
+                .willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
+
+        assertThrows(IOException.class,
+                () -> client.hentTilrettelagtKommunikasjonVisittkort(new PdlRequest(FNR, "B643")));
+    }
+
+    @Test
+    public void eksisterendeTolkemetode_beholderDataOgHttpFeil() {
+        String response = TestUtils.readTestResourceFile("pdl-hentTilrettelagtKommunikasjon-response.json");
+        PdlClientImpl client = tolkeClient(200, response);
+        assertEquals("EN", client.hentTilrettelagtKommunikasjon(new PdlRequest(FNR, "B643"))
+                .getTilrettelagtKommunikasjon().getFirst().getTalespraaktolk().getSpraak());
+
+        PdlClientImpl gammelClient = tolkeClient(503, "gammel-feilbody");
+        ResponseStatusException feil = assertThrows(ResponseStatusException.class,
+                () -> gammelClient.hentTilrettelagtKommunikasjon(new PdlRequest(FNR, "B643")));
+        assertEquals(503, feil.getStatusCode().value());
+        assertEquals("gammel-feilbody", feil.getReason());
+    }
+
+    private PdlClientImpl tolkeClient(int status, String response) {
+        givenThat(post(urlEqualTo("/graphql")).willReturn(aResponse().withStatus(status).withBody(response)));
+        return new PdlClientImpl("http://localhost:" + wireMockRule.port(), mock(AuthService.class), () -> PDL_AUTH, () -> PDL_AUTH);
     }
 
     @Test

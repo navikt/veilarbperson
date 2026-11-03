@@ -12,5 +12,15 @@ data class PersonVisittkortData(
     val diskresjonskode: String? = null,
     val egenAnsatt: Boolean = false,
     val sikkerhetstiltak: String? = null,
-    val telefon: List<Telefon> = emptyList()
+    val telefon: List<Telefon> = emptyList(),
+    val etiketter: List<Etiketter> = emptyList()
 )
+
+enum class Etiketter {
+    VERGEMAAL_OPPFOLGING,
+    FULLMEKTIG_OPPFOLGING,
+    SPRAAKTOLK,
+    TALETOLK,
+    REPRESENTASJON_UKJENT,
+    TOLK_UKJENT
+}

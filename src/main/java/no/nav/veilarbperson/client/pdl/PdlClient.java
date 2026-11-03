@@ -4,6 +4,7 @@ import no.nav.common.health.HealthCheck;
 import no.nav.common.types.identer.Fnr;
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface PdlClient extends HealthCheck {
@@ -20,6 +21,8 @@ public interface PdlClient extends HealthCheck {
     HentPerson.GeografiskTilknytning hentGeografiskTilknytning(PdlRequest pdlRequest);
 
     HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjon(PdlRequest pdlRequest);
+
+    HentPerson.HentSpraakTolk hentTilrettelagtKommunikasjonVisittkort(PdlRequest pdlRequest) throws IOException;
 
     List<HentPerson.Adressebeskyttelse> hentAdressebeskyttelse(PdlRequest pdlRequest);
 
