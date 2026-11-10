@@ -1,0 +1,29 @@
+query HentVisittkortEtiketter(
+    $ident: ID!,
+    $hentDod: Boolean!,
+    $hentDiskresjonskode: Boolean!,
+    $hentSikkerhetstiltak: Boolean!,
+    $hentTolk: Boolean!,
+    $hentTegnspraaktolk: Boolean!,
+    $hentTalespraaktolk: Boolean!
+) {
+    hentPerson(ident: $ident) {
+        doedsfall @include(if: $hentDod) {
+            doedsdato
+        }
+        adressebeskyttelse @include(if: $hentDiskresjonskode) {
+            gradering
+        }
+        sikkerhetstiltak @include(if: $hentSikkerhetstiltak) {
+            beskrivelse
+        }
+        tilrettelagtKommunikasjon @include(if: $hentTolk) {
+            tegnspraaktolk @include(if: $hentTegnspraaktolk) {
+                spraak
+            }
+            talespraaktolk @include(if: $hentTalespraaktolk) {
+                spraak
+            }
+        }
+    }
+}

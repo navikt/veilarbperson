@@ -5,87 +5,116 @@ import no.nav.common.health.HealthCheckUtils
 import no.nav.common.rest.client.RestClient
 import no.nav.common.rest.client.RestUtils
 import no.nav.common.utils.UrlUtils
-import no.nav.veilarbperson.utils.deserializeJsonOrThrow
+import no.nav.veilarbperson.client.VisittkortKildeHttpClient
+import no.nav.veilarbperson.client.VisittkortKildeKontraktException
+import no.nav.veilarbperson.client.kildeFelt
+import no.nav.veilarbperson.client.kildeListe
+import no.nav.veilarbperson.client.kildeObjekt
+import no.nav.veilarbperson.client.kildeTekst
+import no.nav.veilarbperson.utils.objectMapper
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
+import tools.jackson.core.JacksonException
+import tools.jackson.databind.JsonNode
 import java.time.ZonedDateTime
+import java.time.format.DateTimeParseException
 import java.util.*
 import java.util.function.Supplier
 
 const val NAV_CONSUMER_ID = "Nav-Consumer-Id"
 
-class OppslagArbeidssoekerregisteretClientImpl(
+data class ArbeidssokerVisittkortData(val registrert: Boolean, val profilering: ProfilertTil? = null)
+
+class OppslagArbeidssoekerregisteretClientImpl @JvmOverloads constructor(
     private val url: String,
     private val machineToMachinetokenSupplier: Supplier<String>,
-    private val consumerId: String
+    private val consumerId: String,
+    private val client: OkHttpClient = RestClient.baseClient()
 ): OppslagArbeidssoekerregisteretClient {
 
-    private val client: OkHttpClient = RestClient.baseClient()
+    private val httpClient = VisittkortKildeHttpClient(client)
 
-    override fun hentArbeidssokerPerioder(identitetsnummer: String): List<ArbeidssokerperiodeResponse>? {
-        val request: Request = Request.Builder()
-            .url(UrlUtils.joinPaths(url, "/api/v1/veileder/arbeidssoekerperioder"))
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${machineToMachinetokenSupplier.get()}")
-            .header(NAV_CONSUMER_ID, consumerId)
-            .post(RestUtils.toJsonRequestBody(ArbeidssoekerperiodeRequest(identitetsnummer)))
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            if (response.code == HttpStatus.NOT_FOUND.value()) {
-                return null
-            }
-
-            RestUtils.throwIfNotSuccessful(response)
-
-            return response.deserializeJsonOrThrow()
-        }
-    }
+    override fun hentArbeidssokerPerioder(identitetsnummer: String): List<ArbeidssokerperiodeResponse>? =
+        post("/api/v1/veileder/arbeidssoekerperioder", ArbeidssoekerperiodeRequest(identitetsnummer), ::validerPeriode)
 
     override fun hentOpplysningerOmArbeidssoeker(
         identitetsnummer: String,
         periodeId: UUID
-    ): List<OpplysningerOmArbeidssoekerResponse>? {
-        val request: Request = Request.Builder()
-            .url(UrlUtils.joinPaths(url, "/api/v1/veileder/opplysninger-om-arbeidssoeker"))
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${machineToMachinetokenSupplier.get()}")
-            .header(NAV_CONSUMER_ID, consumerId)
-            .post(RestUtils.toJsonRequestBody(OpplysningerOmArbeidssoekerRequest(identitetsnummer, periodeId)))
-            .build()
+    ): List<OpplysningerOmArbeidssoekerResponse>? =
+        post(
+            "/api/v1/veileder/opplysninger-om-arbeidssoeker",
+            OpplysningerOmArbeidssoekerRequest(identitetsnummer, periodeId),
+            ::validerOpplysninger
+        )
 
-        client.newCall(request).execute().use { response ->
-            if (response.code == HttpStatus.NOT_FOUND.value()) {
-                return null
-            }
-
-            RestUtils.throwIfNotSuccessful(response)
-
-            return response.deserializeJsonOrThrow()
-        }
-    }
-
-    override fun hentProfilering(identitetsnummer: String, periodeId: UUID): List<ProfileringResponse>? {
-        val request: Request = Request.Builder()
-            .url(UrlUtils.joinPaths(url, "/api/v1/veileder/profilering"))
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${machineToMachinetokenSupplier.get()}")
-            .header(NAV_CONSUMER_ID, consumerId)
-            .post(RestUtils.toJsonRequestBody(ProfileringRequest(identitetsnummer, periodeId)))
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            if (response.code == HttpStatus.NOT_FOUND.value()) {
-                return null
-            }
-
-            RestUtils.throwIfNotSuccessful(response)
-
-            return response.deserializeJsonOrThrow()
-        }
-    }
+    override fun hentProfilering(identitetsnummer: String, periodeId: UUID): List<ProfileringResponse>? =
+        post("/api/v1/veileder/profilering", ProfileringRequest(identitetsnummer, periodeId), ::validerProfilering)
 
     override fun checkHealth(): HealthCheckResult {
         return HealthCheckUtils.pingUrl(UrlUtils.joinPaths(url, "/internal/isReady"), client)
+    }
+
+    private inline fun <reified T : Any> post(
+        path: String,
+        body: Any,
+        valider: (JsonNode) -> Unit
+    ): List<T>? {
+        val request: Request = Request.Builder()
+            .url(UrlUtils.joinPaths(url, path))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer ${machineToMachinetokenSupplier.get()}")
+            .header(HttpHeaders.ACCEPT, "application/json")
+            .header(NAV_CONSUMER_ID, consumerId)
+            .post(RestUtils.toJsonRequestBody(body))
+            .build()
+
+        return httpClient.hent(request, setOf(404))?.kildeListe()?.map {
+            try {
+                valider(it.kildeObjekt())
+                objectMapper.treeToValue(it, T::class.java) ?: throw VisittkortKildeKontraktException()
+            } catch (_: JacksonException) {
+                throw VisittkortKildeKontraktException()
+            }
+        }
+    }
+}
+
+private fun validerPeriode(periode: JsonNode) {
+    periode.kildeFelt("periodeId").validerUuid()
+    periode.kildeFelt("startet").validerTidspunkt()
+    periode.get("avsluttet")?.takeUnless { it.isNull }?.validerTidspunkt()
+}
+
+// Kotlins null-sjekk dekker ikke elementer i lister og kart, så de valideres før dekoding.
+private fun validerOpplysninger(opplysninger: JsonNode) {
+    opplysninger.kildeFelt("opplysningerOmArbeidssoekerId").validerUuid()
+    opplysninger.kildeFelt("sendtInnAv").validerTidspunkt()
+    opplysninger.kildeFelt("jobbsituasjon").kildeListe().forEach { jobbsituasjon ->
+        jobbsituasjon.kildeObjekt().kildeFelt("detaljer").kildeObjekt().forEach { it.kildeTekst() }
+    }
+}
+
+private fun validerProfilering(profilering: JsonNode) {
+    profilering.kildeFelt("opplysningerOmArbeidssoekerId").validerUuid()
+    profilering.kildeFelt("sendtInnAv").validerTidspunkt()
+    val verdi = profilering.kildeFelt("profilertTil").kildeTekst()
+    if (ProfilertTil.entries.none { it.name == verdi }) throw VisittkortKildeKontraktException()
+}
+
+// Jackson tillater ellers blant annet tall som tidspunkt og enum-ordinaler.
+private fun JsonNode.validerTidspunkt() {
+    try {
+        ZonedDateTime.parse(kildeObjekt().kildeFelt("tidspunkt").kildeTekst())
+    } catch (_: DateTimeParseException) {
+        throw VisittkortKildeKontraktException()
+    }
+}
+
+private fun JsonNode.validerUuid() {
+    try {
+        UUID.fromString(kildeTekst())
+    } catch (_: IllegalArgumentException) {
+        throw VisittkortKildeKontraktException()
     }
 }
 

@@ -1,5 +1,6 @@
 type Query {
     person(fnr: ID!, behandlingsnummer: String!): PersonVisittkort
+    visittkortEtiketter(fnr: ID!, behandlingsnummer: String): VisittkortEtiketter
 }
 
 type PersonVisittkort {
@@ -20,4 +21,154 @@ type Telefon {
     telefonNr: String
     registrertDato: String
     master: String
+}
+
+type VisittkortEtiketter {
+    dod: DodEtikett
+    diskresjonskode: DiskresjonskodeEtikett
+    utmeldingskandidat: UtmeldingskandidatEtikett
+    sikkerhetstiltak: SikkerhetstiltakResultat
+    skjerming: SkjermingEtikett
+    vergemaalOppfolging: VergemaalOppfolgingEtikett
+    fullmaktOppfolging: FullmaktOppfolgingEtikett
+    tegnspraaktolk: TegnspraaktolkEtikett
+    talespraaktolk: TalespraaktolkEtikett
+    kvp: KvpEtikett
+    manuellOppfolging: ManuellOppfolgingEtikett
+    reservertKrr: ReservertKrrEtikett
+    utdatertIKrr: UtdatertIKrrEtikett
+    ikkeUnderOppfolging: IkkeUnderOppfolgingEtikett
+    varsel: VarselEtikett
+    ikkeRegistrertKrr: IkkeRegistrertKrrEtikett
+    trengerOppfolgingsvedtak: TrengerOppfolgingsvedtakEtikett
+    sykmeldt: SykmeldtEtikett
+    iArbeidssokerregisteret: IArbeidssokerregisteretEtikett
+    antattGodeMuligheter: AntattGodeMuligheterEtikett
+    antattBehovForVeiledning: AntattBehovForVeiledningEtikett
+    oppgittHindringer: OppgittHindringerEtikett
+}
+
+type SikkerhetstiltakResultat {
+    etikett: SikkerhetstiltakEtikett!
+    beskrivelse: String
+}
+
+enum DodEtikett {
+    DOD
+    UKJENT_PERSONALIA
+}
+
+enum DiskresjonskodeEtikett {
+    KODE_6
+    KODE_7
+    KODE_19
+    UKJENT_PERSONALIA
+}
+
+enum UtmeldingskandidatEtikett {
+    ARBEIDSSOKERPERIODE_AVSLUTTET_IKKE_LEVERT_MELDEKORT
+    ARBEIDSSOKERPERIODE_AVSLUTTET_SVARTE_NEI_I_BEKREFTELSE
+    ARBEIDSSOKERPERIODE_AVSLUTTET_ANNET
+    FORLENGELSE_UTLOPT
+    AVSLUTTET_AAP_SAK
+    FOLKEREGISTERSTATUS_FORSVUNNET
+    FOLKEREGISTERSTATUS_OPPHORT
+    FOLKEREGISTERSTATUS_UKJENT
+    FOLKEREGISTERSTATUS_INGEN_STATUS
+    UKJENT_UTMELDINGSKANDIDAT
+}
+
+enum SikkerhetstiltakEtikett {
+    SIKKERHETSTILTAK
+    UKJENT_SIKKERHETSTILTAK
+}
+
+enum SkjermingEtikett {
+    SKJERMET
+    UKJENT_SKJERMING
+}
+
+enum VergemaalOppfolgingEtikett {
+    VERGEMAAL_OPPFOLGING
+    UKJENT_REPRESENTASJON
+}
+
+enum FullmaktOppfolgingEtikett {
+    FULLMAKT_OPPFOLGING
+    UKJENT_REPRESENTASJON
+}
+
+enum TegnspraaktolkEtikett {
+    TEGNSPRAAKTOLK
+    UKJENT_TOLKEBEHOV
+}
+
+enum TalespraaktolkEtikett {
+    TALESPRAAKTOLK
+    UKJENT_TOLKEBEHOV
+}
+
+enum KvpEtikett {
+    KVP
+    UKJENT_OPPFOLGING
+}
+
+enum ManuellOppfolgingEtikett {
+    MANUELL_OPPFOLGING
+    UKJENT_OPPFOLGING
+}
+
+enum ReservertKrrEtikett {
+    RESERVERT_KRR
+    UKJENT_KRR
+}
+
+enum UtdatertIKrrEtikett {
+    UTDATERT_I_KRR
+    UKJENT_KRR
+}
+
+enum IkkeUnderOppfolgingEtikett {
+    IKKE_UNDER_OPPFOLGING
+    UKJENT_OPPFOLGING
+}
+
+enum VarselEtikett {
+    VARSEL
+    UKJENT_VARSEL
+}
+
+enum IkkeRegistrertKrrEtikett {
+    IKKE_REGISTRERT_KRR
+    UKJENT_KRR
+}
+
+enum TrengerOppfolgingsvedtakEtikett {
+    TRENGER_OPPFOLGINGSVEDTAK
+    UKJENT_OPPFOLGINGSVEDTAK
+}
+
+enum SykmeldtEtikett {
+    SYKMELDT
+    UKJENT_OPPFOLGING
+}
+
+enum IArbeidssokerregisteretEtikett {
+    I_ARBEIDSSOKERREGISTERET
+    UKJENT_ARBEIDSSOKERREGISTER
+}
+
+enum AntattGodeMuligheterEtikett {
+    ANTATT_GODE_MULIGHETER
+    UKJENT_PROFILERING
+}
+
+enum AntattBehovForVeiledningEtikett {
+    ANTATT_BEHOV_FOR_VEILEDNING
+    UKJENT_PROFILERING
+}
+
+enum OppgittHindringerEtikett {
+    OPPGITT_HINDRINGER
+    UKJENT_PROFILERING
 }
