@@ -67,7 +67,7 @@ open class RepresentasjonClientImpl internal constructor(
             val fullmakter = try {
                 RestUtils.parseJsonArrayResponse(response, ReprFullmaktV2Data::class.java)
                     .orElseThrow { IllegalStateException("Mangler body i responsen fra representasjon") }
-            } catch (e: JacksonException) {
+            } catch (_: JacksonException) {
                 // Parserfeil kan inneholde persondata, og skal ikke videreføres som årsak.
                 throw IllegalStateException("Ugyldig fullmaktsrespons fra representasjon")
             }

@@ -225,7 +225,7 @@ public class PdlClientImpl implements PdlClient {
         if (errorsNode != null) {
             log.error("Kall mot PDL feilet:\n" + errorsNode.toPrettyString());
 
-            if (errorsNode.get(0).get("message").asText().equals("Ikke tilgang til å se person")) {
+            if ("Ikke tilgang til å se person".equals(errorsNode.path(0).path("message").stringValue())) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN);
             }
 

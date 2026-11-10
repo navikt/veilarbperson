@@ -54,7 +54,7 @@ data class PdlVisittkortEtiketterData(
             val diskresjonskode = if ("diskresjonskode" in felter) {
                 data.kildeFelt("adressebeskyttelse").kildeListe().firstOrNull()?.kildeObjekt()
                     ?.kildeFelt("gradering")?.kildeTekst()?.let { kode ->
-                        Diskresjonskode.values().firstOrNull { it.kode == kode }
+                        Diskresjonskode.entries.firstOrNull { it.kode == kode }
                             ?: throw VisittkortKildeKontraktException()
                     }
             } else null

@@ -30,8 +30,8 @@ class VisittkortKildeHttpClient(
                 throw VisittkortKildeHttpException(HttpStatusCode.valueOf(response.code))
             }
             if (response.code != 200) throw VisittkortKildeKontraktException()
-            val body = response.body?.string()
-            if (body == null || body.isEmpty()) {
+            val body = response.body.string()
+            if (body.isEmpty()) {
                 if (tomBodyErFravaer) return null
                 throw VisittkortKildeKontraktException()
             }
@@ -54,11 +54,6 @@ internal fun JsonNode.kildeListe(): List<JsonNode> {
 
 internal fun JsonNode.kildeTekst(): String =
     takeIf { it.isString }?.stringValue() ?: throw VisittkortKildeKontraktException()
-
-internal fun JsonNode.kildeBoolean(): Boolean {
-    if (!isBoolean) throw VisittkortKildeKontraktException()
-    return booleanValue()
-}
 
 internal fun JsonNode.kildeFelt(navn: String): JsonNode =
     get(navn) ?: throw VisittkortKildeKontraktException()

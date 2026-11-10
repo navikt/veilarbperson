@@ -145,6 +145,7 @@ data class BeskrivelseMedDetaljerResponse(
     val detaljer: Map<String, String>
 )
 
+@Suppress("unused")
 enum class JobbSituasjonBeskrivelseResponse {
     UKJENT_VERDI,
     UDEFINERT,
@@ -199,6 +200,7 @@ enum class ProfilertTil {
 }
 
 // Felles typer
+@Suppress("unused")
 enum class JaNeiVetIkke {
     JA, NEI, VET_IKKE
 }
@@ -215,6 +217,7 @@ data class BrukerResponse(
     val id: String?
 )
 
+@Suppress("unused")
 enum class BrukerType {
     UKJENT_VERDI, UDEFINERT, VEILEDER, SYSTEM, SLUTTBRUKER
 }

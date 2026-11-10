@@ -52,7 +52,7 @@ class VisittkortEtiketterService(
         )
         val varselKilde = if ("varsel" in felter) krevKonfigurert(varselClient) else null
         val pdl = if (felter.any { it in PDL_FELTER }) {
-            val nummer = requireNotNull(behandlingsnummer) { "Missing required treatment number" }
+            val nummer = requireNotNull(behandlingsnummer) { "Behandlingsnummer mangler" }
             kilde("pdl") { pdlClient.hentVisittkortEtiketter(PdlRequest(fnr, nummer), felter.intersect(PDL_FELTER)) }
         } else null
         val representasjon = if (felter.any { it in REPRESENTASJON_FELTER }) {
@@ -66,14 +66,14 @@ class VisittkortEtiketterService(
         } else null
         val kvp = if ("kvp" in felter) {
             when (oppfolging) {
-                is Hentet -> Hentet(checkNotNull(oppfolging.data.kvp) { "Missing required follow-up field" })
+                is Hentet -> Hentet(checkNotNull(oppfolging.data.kvp) { "Felt oppfolging mangler" })
                 Ukjent -> Ukjent
-                null -> error("Missing required visittkort source")
+                null -> error("Mangler påkrevd kilde")
             }
         } else null
         val vedtak = if (trengerProfilering ||
             (trengerVedtaksbehov && (oppfolging !is Hentet ||
-                checkNotNull(oppfolging.data.underOppfolging) { "Missing required follow-up field" }))) {
+                checkNotNull(oppfolging.data.underOppfolging) { "Felt oppfolging mangler" }))) {
             kilde("vedtak") { krevKonfigurert(vedtakClient).harGjeldendeVedtak(fnr) }
         } else null
         val hentProfilering = trengerProfilering && !(vedtak is Hentet && vedtak.data)
@@ -109,7 +109,7 @@ class VisittkortEtiketterService(
     }
 
     private fun utilgjengelig(kilde: String): VisittkortKildeResultat<Nothing> {
-        log.warn("Visittkort source unavailable: {}", kilde)
+        log.warn("Visittkort kilde(r) utilgjengelig: {}", kilde)
         meterRegistry.counter("visittkort_kilde_utilgjengelig", "kilde", kilde).increment()
         return Ukjent
     }

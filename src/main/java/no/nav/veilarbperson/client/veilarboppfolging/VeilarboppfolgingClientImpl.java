@@ -231,7 +231,7 @@ public class VeilarboppfolgingClientImpl implements VeilarboppfolgingClient {
         }
 
         private static UtmeldingskandidatEtikett utmeldingskandidatEtikett(String tag) {
-            for (UtmeldingskandidatEtikett etikett : UtmeldingskandidatEtikett.values()) {
+            for (UtmeldingskandidatEtikett etikett : UtmeldingskandidatEtikett.getEntries()) {
                 if (!etikett.getErUkjent() && etikett.name().equals(tag)) {
                     return etikett;
                 }
