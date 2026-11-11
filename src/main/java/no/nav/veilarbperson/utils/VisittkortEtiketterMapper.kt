@@ -1,10 +1,7 @@
 package no.nav.veilarbperson.utils
 
-import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerVisittkortData
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ProfilertTil
-import no.nav.veilarbperson.client.pdl.PdlVisittkortEtiketterData
 import no.nav.veilarbperson.client.pdl.domain.Diskresjonskode
-import no.nav.veilarbperson.client.representasjon.VisittkortRepresentasjonData
 import no.nav.veilarbperson.domain.visittkort.*
 import no.nav.veilarbperson.domain.visittkort.VisittkortKildeResultat.Hentet
 import no.nav.veilarbperson.domain.visittkort.VisittkortKildeResultat.Ukjent
@@ -12,15 +9,10 @@ import no.nav.veilarbperson.domain.visittkort.VisittkortKildeResultat.Ukjent
 object VisittkortEtiketterMapper {
     fun map(
         felter: Set<String>,
-        pdl: VisittkortKildeResultat<PdlVisittkortEtiketterData>? = null,
-        representasjon: VisittkortKildeResultat<VisittkortRepresentasjonData>? = null,
-        skjerming: VisittkortKildeResultat<Boolean>? = null,
-        oppfolging: VisittkortKildeResultat<OppfolgingEtikettgrunnlag>? = null,
-        arbeidssoker: VisittkortKildeResultat<ArbeidssokerVisittkortData>? = null,
-        gjeldendeVedtak: VisittkortKildeResultat<Boolean>? = null,
-        varsel: VisittkortKildeResultat<Boolean>? = null,
-        kvp: VisittkortKildeResultat<Boolean>? = null
+        grunnlag: VisittkortEtikettgrunnlag = VisittkortEtikettgrunnlag()
     ): VisittkortEtiketter {
+        val (pdl, representasjon, skjerming, oppfolging, arbeidssoker, gjeldendeVedtak, varsel) = grunnlag
+
         fun <T, E> etikett(
             felt: String,
             kilde: VisittkortKildeResultat<T>?,
@@ -84,8 +76,8 @@ object VisittkortEtiketterMapper {
             utmeldingskandidat = etikett(
                 "utmeldingskandidat", oppfolging, UtmeldingskandidatEtikett.UKJENT_UTMELDINGSKANDIDAT
             ) { it.utmeldingskandidat },
-            kvp = etikett("kvp", kvp, KvpEtikett.UKJENT_OPPFOLGING) {
-                KvpEtikett.KVP.takeIf { _ -> it }
+            kvp = etikett("kvp", oppfolging, KvpEtikett.UKJENT_OPPFOLGING) {
+                KvpEtikett.KVP.takeIf { _ -> it.kvp.paakrevd() }
             },
             manuellOppfolging = etikett(
                 "manuellOppfolging", oppfolging, ManuellOppfolgingEtikett.UKJENT_OPPFOLGING

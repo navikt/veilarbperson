@@ -16,6 +16,7 @@ import no.nav.veilarbperson.utils.FileUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.LinkedHashMap;
@@ -167,67 +168,68 @@ public class VeilarboppfolgingClientImpl implements VeilarboppfolgingClient {
         }
 
         OppfolgingEtikettgrunnlag les(JsonNode data) {
-            Boolean erKontorsperret = null;
-            Boolean erManuell = null;
-            Boolean reservertIKrr = null;
-            Boolean registrertIKrr = null;
-            Boolean kanVarslesKrr = null;
-            Boolean erSykmeldt = null;
-            if (brukerStatus()) {
-                JsonNode brukerStatus = objekt(data.get("brukerStatus"));
-                if (kvp) {
-                    erKontorsperret = boolsk(brukerStatus.get("erKontorsperret"));
-                }
-                if (manuell) {
-                    erManuell = boolsk(objekt(brukerStatus.get("manuell")).get("erManuell"));
-                }
-                if (krr()) {
-                    JsonNode krr = objekt(brukerStatus.get("krr"));
-                    if (kanVarsles) {
-                        kanVarslesKrr = boolsk(krr.get("kanVarsles"));
-                    }
-                    if (reservertKrr) {
-                        reservertIKrr = boolsk(krr.get("reservertIKrr"));
-                    }
-                    if (registrertKrr) {
-                        registrertIKrr = boolsk(krr.get("registrertIKrr"));
-                    }
-                }
-                if (sykmeldt) {
-                    JsonNode sykmeldtStatus = brukerStatus.get("sykmeldtStatus");
-                    if (sykmeldtStatus == null || !(sykmeldtStatus.isNull() || sykmeldtStatus.isString())) {
-                        throw new VisittkortKildeKontraktException();
-                    }
-                    erSykmeldt = !sykmeldtStatus.isNull();
-                }
-            }
-
-            Boolean underOppfolging = null;
-            if (oppfolging) {
-                JsonNode erUnderOppfolging = objekt(data.get("oppfolging")).get("erUnderOppfolging");
-                if (erUnderOppfolging == null) {
-                    throw new VisittkortKildeKontraktException();
-                }
-                if (kreverUnderOppfolging || !erUnderOppfolging.isNull()) {
-                    underOppfolging = boolsk(erUnderOppfolging);
-                }
-            }
-
-            UtmeldingskandidatEtikett etikett = null;
-            if (utmeldingskandidat) {
-                JsonNode tag = objekt(data.get("utmeldingskandidat")).get("tag");
-                if (tag == null || !(tag.isNull() || tag.isString())) {
-                    throw new VisittkortKildeKontraktException();
-                }
-                if (!tag.isNull()) {
-                    etikett = utmeldingskandidatEtikett(tag.stringValue());
-                }
-            }
+            BrukerStatus status = brukerStatus()
+                    ? lesBrukerStatus(objekt(data.get("brukerStatus")))
+                    : BrukerStatus.TOM;
+            Boolean underOppfolging = lesUnderOppfolging(data);
+            UtmeldingskandidatEtikett etikett = lesUtmeldingskandidat(data);
 
             return new OppfolgingEtikettgrunnlag(
-                    underOppfolging, erManuell, reservertIKrr, registrertIKrr,
-                    kanVarslesKrr, erSykmeldt, etikett, erKontorsperret
+                    underOppfolging, status.erManuell(), status.krr().reservertIKrr(), status.krr().registrertIKrr(),
+                    status.krr().kanVarsles(), status.erSykmeldt(), etikett, status.erKontorsperret()
             );
+        }
+
+        private BrukerStatus lesBrukerStatus(JsonNode brukerStatus) {
+            Boolean erKontorsperret = kvp ? boolsk(brukerStatus.get("erKontorsperret")) : null;
+            Boolean erManuell = manuell ? boolsk(objekt(brukerStatus.get("manuell")).get("erManuell")) : null;
+            KrrStatus krrStatus = lesKrr(brukerStatus);
+            Boolean erSykmeldt = sykmeldt ? lesSykmeldt(brukerStatus.get("sykmeldtStatus")) : null;
+            return new BrukerStatus(erKontorsperret, erManuell, krrStatus, erSykmeldt);
+        }
+
+        private KrrStatus lesKrr(JsonNode brukerStatus) {
+            if (!krr()) {
+                return KrrStatus.TOM;
+            }
+            JsonNode krr = objekt(brukerStatus.get("krr"));
+            Boolean kanVarslesKrr = kanVarsles ? boolsk(krr.get("kanVarsles")) : null;
+            Boolean reservertIKrr = reservertKrr ? boolsk(krr.get("reservertIKrr")) : null;
+            Boolean registrertIKrr = registrertKrr ? boolsk(krr.get("registrertIKrr")) : null;
+            return new KrrStatus(reservertIKrr, registrertIKrr, kanVarslesKrr);
+        }
+
+        private static boolean lesSykmeldt(JsonNode sykmeldtStatus) {
+            if (sykmeldtStatus == null || !(sykmeldtStatus.isNull() || sykmeldtStatus.isString())) {
+                throw new VisittkortKildeKontraktException();
+            }
+            return !sykmeldtStatus.isNull();
+        }
+
+        @Nullable
+        private Boolean lesUnderOppfolging(JsonNode data) {
+            if (!oppfolging) {
+                return null;
+            }
+            JsonNode erUnderOppfolging = objekt(data.get("oppfolging")).get("erUnderOppfolging");
+            if (erUnderOppfolging == null) {
+                throw new VisittkortKildeKontraktException();
+            }
+            if (kreverUnderOppfolging || !erUnderOppfolging.isNull()) {
+                return boolsk(erUnderOppfolging);
+            }
+            return null;
+        }
+
+        private UtmeldingskandidatEtikett lesUtmeldingskandidat(JsonNode data) {
+            if (!utmeldingskandidat) {
+                return null;
+            }
+            JsonNode tag = objekt(data.get("utmeldingskandidat")).get("tag");
+            if (tag == null || !(tag.isNull() || tag.isString())) {
+                throw new VisittkortKildeKontraktException();
+            }
+            return tag.isNull() ? null : utmeldingskandidatEtikett(tag.stringValue());
         }
 
         private static UtmeldingskandidatEtikett utmeldingskandidatEtikett(String tag) {
@@ -251,6 +253,14 @@ public class VeilarboppfolgingClientImpl implements VeilarboppfolgingClient {
                 throw new VisittkortKildeKontraktException();
             }
             return node.booleanValue();
+        }
+
+        private record KrrStatus(Boolean reservertIKrr, Boolean registrertIKrr, Boolean kanVarsles) {
+            static final KrrStatus TOM = new KrrStatus(null, null, null);
+        }
+
+        private record BrukerStatus(Boolean erKontorsperret, Boolean erManuell, KrrStatus krr, Boolean erSykmeldt) {
+            static final BrukerStatus TOM = new BrukerStatus(null, null, KrrStatus.TOM, null);
         }
     }
 }

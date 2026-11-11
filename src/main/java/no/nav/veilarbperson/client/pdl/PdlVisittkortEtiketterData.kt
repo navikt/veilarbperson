@@ -23,33 +23,10 @@ data class PdlVisittkortEtiketterData(
     companion object {
         @JvmStatic
         fun fraRespons(respons: JsonNode?, felter: Set<String>): PdlVisittkortEtiketterData {
-            val root = respons?.kildeObjekt() ?: throw VisittkortKildeKontraktException()
-            val errors = root.get("errors")
-            if (errors != null && !errors.isNull) {
-                val feil = errors.kildeListe()
-                if (feil.isEmpty()) throw VisittkortKildeKontraktException()
-                if (feil.any {
-                    it.path("extensions").path("code").stringValueOpt().orElse(null) in setOf("unauthorized", "forbidden") ||
-                        it.path("message").stringValueOpt().orElse(null) == "Ikke tilgang til å se person"
-                }) {
-                    throw ResponseStatusException(HttpStatus.FORBIDDEN)
-                }
-                throw VisittkortKildeKontraktException()
-            }
-            val data = root.kildeFelt("data").kildeObjekt().kildeFelt("hentPerson")
-            if (data.isNull) throw ResponseStatusException(HttpStatus.NOT_FOUND)
-            data.kildeObjekt()
-
+            val data = personFraRespons(respons)
             val dod = if ("dod" in felter) {
                 data.kildeFelt("doedsfall").kildeListe().firstOrNull()?.kildeObjekt()
-                    ?.kildeFelt("doedsdato")?.valgfriKildeTekst()?.let {
-                        try {
-                            LocalDate.parse(it)
-                            true
-                        } catch (_: DateTimeParseException) {
-                            throw VisittkortKildeKontraktException()
-                        }
-                    } ?: false
+                    ?.kildeFelt("doedsdato")?.valgfriKildeTekst()?.let(::harGyldigDoedsdato) ?: false
             } else false
             val diskresjonskode = if ("diskresjonskode" in felter) {
                 data.kildeFelt("adressebeskyttelse").kildeListe().firstOrNull()?.kildeObjekt()
@@ -71,6 +48,33 @@ data class PdlVisittkortEtiketterData(
                 "talespraaktolk" in felter && tolk.harTolk("talespraaktolk")
             )
         }
+
+        private fun personFraRespons(respons: JsonNode?): JsonNode {
+            val root = respons?.kildeObjekt() ?: throw VisittkortKildeKontraktException()
+            val errors = root.get("errors")
+            if (errors != null && !errors.isNull) {
+                val feil = errors.kildeListe()
+                if (feil.isEmpty()) throw VisittkortKildeKontraktException()
+                if (feil.any {
+                    it.path("extensions").path("code").stringValueOpt().orElse(null) in setOf("unauthorized", "forbidden") ||
+                        it.path("message").stringValueOpt().orElse(null) == "Ikke tilgang til å se person"
+                }) {
+                    throw ResponseStatusException(HttpStatus.FORBIDDEN)
+                }
+                throw VisittkortKildeKontraktException()
+            }
+            val data = root.kildeFelt("data").kildeObjekt().kildeFelt("hentPerson")
+            if (data.isNull) throw ResponseStatusException(HttpStatus.NOT_FOUND)
+            return data.kildeObjekt()
+        }
+
+        private fun harGyldigDoedsdato(dato: String): Boolean =
+            try {
+                LocalDate.parse(dato)
+                true
+            } catch (_: DateTimeParseException) {
+                throw VisittkortKildeKontraktException()
+            }
 
         private fun JsonNode?.harTolk(felt: String): Boolean {
             if (this == null) return false

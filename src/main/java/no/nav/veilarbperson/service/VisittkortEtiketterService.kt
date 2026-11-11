@@ -6,11 +6,14 @@ import no.nav.veilarbperson.client.VisittkortKildeIkkeKonfigurertException
 import no.nav.veilarbperson.client.VisittkortKildeUtilgjengeligException
 import no.nav.veilarbperson.client.nom.SkjermetClient
 import no.nav.veilarbperson.client.pdl.PdlClient
+import no.nav.veilarbperson.client.pdl.PdlVisittkortEtiketterData
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClient
 import no.nav.veilarbperson.client.veilarbdialog.VisittkortVarselClient
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient
 import no.nav.veilarbperson.client.veilarbvedtaksstotte.VisittkortVedtakClient
+import no.nav.veilarbperson.domain.visittkort.OppfolgingEtikettgrunnlag
+import no.nav.veilarbperson.domain.visittkort.VisittkortEtikettgrunnlag
 import no.nav.veilarbperson.domain.visittkort.VisittkortEtiketter
 import no.nav.veilarbperson.domain.visittkort.VisittkortKildeResultat
 import no.nav.veilarbperson.domain.visittkort.VisittkortKildeResultat.Hentet
@@ -46,36 +49,16 @@ class VisittkortEtiketterService(
 
     private fun hentEtiketter(fnr: Fnr, behandlingsnummer: String?, felter: Set<String>): VisittkortEtiketter {
         val trengerProfilering = felter.any { it in PROFILERING_FELTER }
-        val trengerVedtaksbehov = "trengerOppfolgingsvedtak" in felter
-        val oppfolgingsfelter = felter.intersect(
-            OPPFOLGING_FELTER + PROFILERING_FELTER + "trengerOppfolgingsvedtak"
-        )
         val varselKilde = if ("varsel" in felter) krevKonfigurert(varselClient) else null
-        val pdl = if (felter.any { it in PDL_FELTER }) {
-            val nummer = requireNotNull(behandlingsnummer) { "Behandlingsnummer mangler" }
-            kilde("pdl") { pdlClient.hentVisittkortEtiketter(PdlRequest(fnr, nummer), felter.intersect(PDL_FELTER)) }
-        } else null
+        val pdl = hentPdl(fnr, behandlingsnummer, felter)
         val representasjon = if (felter.any { it in REPRESENTASJON_FELTER }) {
             kilde("representasjon") { representasjonClient.hentOppfolgingsrepresentasjon(fnr) }
         } else null
         val skjerming = if ("skjerming" in felter) {
             kilde("skjerming") { requireNotNull(skjermetClient.hentSkjermet(fnr)) }
         } else null
-        val oppfolging = if (oppfolgingsfelter.isNotEmpty()) {
-            kilde("oppfolging") { oppfolgingClient.hentEtikettgrunnlag(fnr, oppfolgingsfelter) }
-        } else null
-        val kvp = if ("kvp" in felter) {
-            when (oppfolging) {
-                is Hentet -> Hentet(checkNotNull(oppfolging.data.kvp) { "Felt oppfolging mangler" })
-                Ukjent -> Ukjent
-                null -> error("Mangler påkrevd kilde")
-            }
-        } else null
-        val vedtak = if (trengerProfilering ||
-            (trengerVedtaksbehov && (oppfolging !is Hentet ||
-                checkNotNull(oppfolging.data.underOppfolging) { "Felt oppfolging mangler" }))) {
-            kilde("vedtak") { krevKonfigurert(vedtakClient).harGjeldendeVedtak(fnr) }
-        } else null
+        val oppfolging = hentOppfolging(fnr, felter)
+        val vedtak = hentVedtak(fnr, felter, trengerProfilering, oppfolging)
         val hentProfilering = trengerProfilering && !(vedtak is Hentet && vedtak.data)
         val arbeidssoker = if ("iArbeidssokerregisteret" in felter || hentProfilering) {
             kilde("arbeidssokerregister") { arbeidssokerService.hentVisittkortData(fnr, hentProfilering) }
@@ -83,13 +66,52 @@ class VisittkortEtiketterService(
         val varsel = varselKilde?.let { kilde("dialog") { it.harGjeldendeEskaleringsvarsel(fnr) } }
 
         return VisittkortEtiketterMapper.map(
-            felter, pdl, representasjon, skjerming, oppfolging, arbeidssoker, vedtak, varsel, kvp
+            felter,
+            VisittkortEtikettgrunnlag(pdl, representasjon, skjerming, oppfolging, arbeidssoker, vedtak, varsel)
         ).also { resultat ->
             resultat.ukjenteFelter().forEach {
                 meterRegistry.counter("visittkort_etikett_ukjent", "etikett", it).increment()
             }
         }
     }
+
+    private fun hentPdl(
+        fnr: Fnr,
+        behandlingsnummer: String?,
+        felter: Set<String>
+    ): VisittkortKildeResultat<PdlVisittkortEtiketterData>? {
+        val pdlFelter = felter.intersect(PDL_FELTER)
+        if (pdlFelter.isEmpty()) return null
+        val nummer = requireNotNull(behandlingsnummer) { "Behandlingsnummer mangler" }
+        return kilde("pdl") { pdlClient.hentVisittkortEtiketter(PdlRequest(fnr, nummer), pdlFelter) }
+    }
+
+    private fun hentOppfolging(
+        fnr: Fnr,
+        felter: Set<String>
+    ): VisittkortKildeResultat<OppfolgingEtikettgrunnlag>? {
+        val oppfolgingsfelter = felter.intersect(
+            OPPFOLGING_FELTER + PROFILERING_FELTER + "trengerOppfolgingsvedtak"
+        )
+        if (oppfolgingsfelter.isEmpty()) return null
+        val oppfolging = kilde("oppfolging") { oppfolgingClient.hentEtikettgrunnlag(fnr, oppfolgingsfelter) }
+        if ("kvp" in felter && oppfolging is Hentet) {
+            checkNotNull(oppfolging.data.kvp) { "Felt oppfolging mangler" }
+        }
+        return oppfolging
+    }
+
+    private fun hentVedtak(
+        fnr: Fnr,
+        felter: Set<String>,
+        trengerProfilering: Boolean,
+        oppfolging: VisittkortKildeResultat<OppfolgingEtikettgrunnlag>?
+    ): VisittkortKildeResultat<Boolean>? =
+        if (trengerProfilering ||
+            ("trengerOppfolgingsvedtak" in felter && (oppfolging !is Hentet ||
+                checkNotNull(oppfolging.data.underOppfolging) { "Felt oppfolging mangler" }))) {
+            kilde("vedtak") { krevKonfigurert(vedtakClient).harGjeldendeVedtak(fnr) }
+        } else null
 
     private fun <T : Any> krevKonfigurert(client: T?): T =
         client ?: throw VisittkortKildeIkkeKonfigurertException()

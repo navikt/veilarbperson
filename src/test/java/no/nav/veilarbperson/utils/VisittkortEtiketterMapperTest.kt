@@ -17,14 +17,15 @@ class VisittkortEtiketterMapperTest {
     fun `gyldig fravaer gir null for alle 22 felt`() {
         val resultat = VisittkortEtiketterMapper.map(
             ALLE_FELTER,
-            pdl = Hentet(PdlVisittkortEtiketterData()),
-            representasjon = Hentet(VisittkortRepresentasjonData(false, false)),
-            skjerming = Hentet(false),
-            oppfolging = Hentet(oppfolging()),
-            arbeidssoker = Hentet(ArbeidssokerVisittkortData(false)),
-            gjeldendeVedtak = Hentet(true),
-            varsel = Hentet(false),
-            kvp = Hentet(false)
+            VisittkortEtikettgrunnlag(
+                pdl = Hentet(PdlVisittkortEtiketterData()),
+                representasjon = Hentet(VisittkortRepresentasjonData(false, false)),
+                skjerming = Hentet(false),
+                oppfolging = Hentet(oppfolging()),
+                arbeidssoker = Hentet(ArbeidssokerVisittkortData(false)),
+                gjeldendeVedtak = Hentet(true),
+                varsel = Hentet(false)
+            )
         )
 
         assertThat(resultat).isEqualTo(VisittkortEtiketter())
@@ -33,7 +34,7 @@ class VisittkortEtiketterMapperTest {
     @Test
     fun `kildeutfall ukjent er forskjellig fra fravaer for alle 22 felt`() {
         val resultat = VisittkortEtiketterMapper.map(
-            ALLE_FELTER, Ukjent, Ukjent, Ukjent, Ukjent, Ukjent, Ukjent, Ukjent, Ukjent
+            ALLE_FELTER, VisittkortEtikettgrunnlag(Ukjent, Ukjent, Ukjent, Ukjent, Ukjent, Ukjent, Ukjent)
         )
 
         assertThat(resultat.ukjenteFelter().toSet()).isEqualTo(ALLE_FELTER)
@@ -45,9 +46,11 @@ class VisittkortEtiketterMapperTest {
         val resultat = VisittkortEtiketterMapper.map(
             setOf("dod", "diskresjonskode", "sikkerhetstiltak", "tegnspraaktolk", "talespraaktolk",
                 "vergemaalOppfolging", "fullmaktOppfolging", "skjerming"),
-            pdl = Hentet(PdlVisittkortEtiketterData(true, Diskresjonskode.FORTROLIG, "Kildebeskrivelse", true, true)),
-            representasjon = Hentet(VisittkortRepresentasjonData(true, true)),
-            skjerming = Hentet(true)
+            VisittkortEtikettgrunnlag(
+                pdl = Hentet(PdlVisittkortEtiketterData(true, Diskresjonskode.FORTROLIG, "Kildebeskrivelse", true, true)),
+                representasjon = Hentet(VisittkortRepresentasjonData(true, true)),
+                skjerming = Hentet(true)
+            )
         )
 
         assertThat(resultat.dod).isEqualTo(DodEtikett.DOD)
@@ -71,14 +74,17 @@ class VisittkortEtiketterMapperTest {
             Diskresjonskode.STRENGT_FORTROLIG_UTLAND to DiskresjonskodeEtikett.KODE_19
         )) {
             assertThat(VisittkortEtiketterMapper.map(
-                setOf("diskresjonskode"), pdl = Hentet(PdlVisittkortEtiketterData(diskresjonskode = kode))
+                setOf("diskresjonskode"),
+                VisittkortEtikettgrunnlag(pdl = Hentet(PdlVisittkortEtiketterData(diskresjonskode = kode)))
             ).diskresjonskode).isEqualTo(forventet)
         }
     }
 
     @Test
     fun `bare etterspurte felt mappes og manglende etterspurt kilde feiler`() {
-        val resultat = VisittkortEtiketterMapper.map(setOf("skjerming"), skjerming = Hentet(true))
+        val resultat = VisittkortEtiketterMapper.map(
+            setOf("skjerming"), VisittkortEtikettgrunnlag(skjerming = Hentet(true))
+        )
         assertThat(resultat).isEqualTo(VisittkortEtiketter(skjerming = SkjermingEtikett.SKJERMET))
         assertThrows<IllegalStateException> { VisittkortEtiketterMapper.map(setOf("dod")) }
     }
@@ -91,10 +97,12 @@ class VisittkortEtiketterMapperTest {
                     for (reservert in listOf(false, true)) {
                         val resultat = VisittkortEtiketterMapper.map(
                             setOf("utdatertIKrr"),
-                            oppfolging = Hentet(oppfolging().copy(
-                                registrertKrr = registrert, kanVarsles = kanVarsles,
-                                manuell = manuell, reservasjonKrr = reservert
-                            ))
+                            VisittkortEtikettgrunnlag(
+                                oppfolging = Hentet(oppfolging().copy(
+                                    registrertKrr = registrert, kanVarsles = kanVarsles,
+                                    manuell = manuell, reservasjonKrr = reservert
+                                ))
+                            )
                         )
                         assertThat(resultat.utdatertIKrr).isEqualTo(
                             UtdatertIKrrEtikett.UTDATERT_I_KRR.takeIf {
@@ -112,13 +120,14 @@ class VisittkortEtiketterMapperTest {
         val resultat = VisittkortEtiketterMapper.map(
             setOf("kvp", "manuellOppfolging", "reservertKrr", "ikkeUnderOppfolging",
                 "ikkeRegistrertKrr", "sykmeldt", "varsel", "iArbeidssokerregisteret"),
-            oppfolging = Hentet(oppfolging().copy(
-                underOppfolging = false, manuell = true,
-                reservasjonKrr = true, registrertKrr = false, sykmeldt = true
-            )),
-            arbeidssoker = Hentet(ArbeidssokerVisittkortData(true)),
-            varsel = Hentet(true),
-            kvp = Hentet(true)
+            VisittkortEtikettgrunnlag(
+                oppfolging = Hentet(oppfolging().copy(
+                    underOppfolging = false, manuell = true, kvp = true,
+                    reservasjonKrr = true, registrertKrr = false, sykmeldt = true
+                )),
+                arbeidssoker = Hentet(ArbeidssokerVisittkortData(true)),
+                varsel = Hentet(true)
+            )
         )
 
         assertThat(resultat.kvp).isEqualTo(KvpEtikett.KVP)
@@ -138,7 +147,8 @@ class VisittkortEtiketterMapperTest {
         assertThat(tagger).hasSize(9)
         for (tag in tagger) {
             val resultat = VisittkortEtiketterMapper.map(
-                setOf("utmeldingskandidat"), oppfolging = Hentet(oppfolging().copy(utmeldingskandidat = tag))
+                setOf("utmeldingskandidat"),
+                VisittkortEtikettgrunnlag(oppfolging = Hentet(oppfolging().copy(utmeldingskandidat = tag)))
             )
             assertThat(resultat.utmeldingskandidat).isEqualTo(tag)
             assertThat(resultat.ukjenteFelter()).isEmpty()
@@ -147,10 +157,16 @@ class VisittkortEtiketterMapperTest {
 
     @Test
     fun `KVP mappes uten andre oppfolgingsopplysninger`() {
-        assertThat(VisittkortEtiketterMapper.map(setOf("kvp"), kvp = Hentet(true)).kvp)
+        assertThat(VisittkortEtiketterMapper.map(
+            setOf("kvp"), VisittkortEtikettgrunnlag(oppfolging = Hentet(OppfolgingEtikettgrunnlag(kvp = true)))
+        ).kvp)
             .isEqualTo(KvpEtikett.KVP)
-        assertThat(VisittkortEtiketterMapper.map(setOf("kvp"), kvp = Hentet(false)).kvp).isNull()
-        assertThat(VisittkortEtiketterMapper.map(setOf("kvp"), kvp = Ukjent).kvp)
+        assertThat(VisittkortEtiketterMapper.map(
+            setOf("kvp"), VisittkortEtikettgrunnlag(oppfolging = Hentet(OppfolgingEtikettgrunnlag(kvp = false)))
+        ).kvp).isNull()
+        assertThat(VisittkortEtiketterMapper.map(
+            setOf("kvp"), VisittkortEtikettgrunnlag(oppfolging = Ukjent)
+        ).kvp)
             .isEqualTo(KvpEtikett.UKJENT_OPPFOLGING)
         assertThrows<IllegalStateException> { VisittkortEtiketterMapper.map(setOf("kvp")) }
     }
@@ -161,8 +177,10 @@ class VisittkortEtiketterMapperTest {
             for (harVedtak in listOf(false, true, null)) {
                 val resultat = VisittkortEtiketterMapper.map(
                     setOf("trengerOppfolgingsvedtak"),
-                    oppfolging = underOppfolging?.let { Hentet(oppfolging().copy(underOppfolging = it)) } ?: Ukjent,
-                    gjeldendeVedtak = harVedtak?.let { Hentet(it) } ?: Ukjent
+                    VisittkortEtikettgrunnlag(
+                        oppfolging = underOppfolging?.let { Hentet(oppfolging().copy(underOppfolging = it)) } ?: Ukjent,
+                        gjeldendeVedtak = harVedtak?.let { Hentet(it) } ?: Ukjent
+                    )
                 )
                 val forventet = when {
                     underOppfolging == false || harVedtak == true -> null
@@ -175,7 +193,7 @@ class VisittkortEtiketterMapperTest {
         }
         assertThat(VisittkortEtiketterMapper.map(
             setOf("trengerOppfolgingsvedtak"),
-            oppfolging = Hentet(oppfolging().copy(underOppfolging = false))
+            VisittkortEtikettgrunnlag(oppfolging = Hentet(oppfolging().copy(underOppfolging = false)))
         ).trengerOppfolgingsvedtak).isNull()
     }
 
@@ -189,9 +207,11 @@ class VisittkortEtiketterMapperTest {
         )) {
             val resultat = VisittkortEtiketterMapper.map(
                 profilfelter,
-                oppfolging = Hentet(oppfolging().copy(underOppfolging = false)),
-                arbeidssoker = Hentet(ArbeidssokerVisittkortData(true, profilering)),
-                gjeldendeVedtak = Hentet(false)
+                VisittkortEtikettgrunnlag(
+                    oppfolging = Hentet(oppfolging().copy(underOppfolging = false)),
+                    arbeidssoker = Hentet(ArbeidssokerVisittkortData(true, profilering)),
+                    gjeldendeVedtak = Hentet(false)
+                )
             )
             assertThat(listOf(
                 resultat.antattGodeMuligheter, resultat.antattBehovForVeiledning, resultat.oppgittHindringer
@@ -199,7 +219,7 @@ class VisittkortEtiketterMapperTest {
             assertThat(resultat.ukjenteFelter()).isEmpty()
         }
         assertThat(VisittkortEtiketterMapper.map(
-            profilfelter, oppfolging = Ukjent, gjeldendeVedtak = Hentet(true)
+            profilfelter, VisittkortEtikettgrunnlag(oppfolging = Ukjent, gjeldendeVedtak = Hentet(true))
         )).isEqualTo(VisittkortEtiketter())
     }
 
@@ -207,7 +227,7 @@ class VisittkortEtiketterMapperTest {
     fun `feilet PDL endrer ikke vellykket representasjon og beholder ingen gammel beskrivelse`() {
         val resultat = VisittkortEtiketterMapper.map(
             setOf("sikkerhetstiltak", "fullmaktOppfolging"),
-            pdl = Ukjent, representasjon = Hentet(VisittkortRepresentasjonData(false, true))
+            VisittkortEtikettgrunnlag(pdl = Ukjent, representasjon = Hentet(VisittkortRepresentasjonData(false, true)))
         )
         assertThat(resultat.sikkerhetstiltak?.etikett)
             .isEqualTo(SikkerhetstiltakEtikett.UKJENT_SIKKERHETSTILTAK)
@@ -219,18 +239,20 @@ class VisittkortEtiketterMapperTest {
     fun `delvis oppfolgingsgrunnlag krever bare verdiene som faktisk brukes`() {
         val resultat = VisittkortEtiketterMapper.map(
             setOf("manuellOppfolging"),
-            oppfolging = Hentet(OppfolgingEtikettgrunnlag(manuell = true))
+            VisittkortEtikettgrunnlag(oppfolging = Hentet(OppfolgingEtikettgrunnlag(manuell = true)))
         )
         assertThat(resultat).isEqualTo(
             VisittkortEtiketter(manuellOppfolging = ManuellOppfolgingEtikett.MANUELL_OPPFOLGING)
         )
 
-        for (felt in setOf("manuellOppfolging", "reservertKrr", "utdatertIKrr",
+        for (felt in setOf("kvp", "manuellOppfolging", "reservertKrr", "utdatertIKrr",
             "ikkeUnderOppfolging", "ikkeRegistrertKrr", "sykmeldt", "trengerOppfolgingsvedtak")) {
             assertThrows<IllegalStateException> {
                 VisittkortEtiketterMapper.map(
-                    setOf(felt), oppfolging = Hentet(OppfolgingEtikettgrunnlag()),
-                    gjeldendeVedtak = Hentet(false)
+                    setOf(felt), VisittkortEtikettgrunnlag(
+                        oppfolging = Hentet(OppfolgingEtikettgrunnlag()),
+                        gjeldendeVedtak = Hentet(false)
+                    )
                 )
             }
         }
@@ -240,9 +262,11 @@ class VisittkortEtiketterMapperTest {
     fun `profilering krever gyldig oppfolgingsgrunnlag men ikke et boolsk oppfolgingsflagg`() {
         val resultat = VisittkortEtiketterMapper.map(
             setOf("antattGodeMuligheter"),
-            oppfolging = Hentet(OppfolgingEtikettgrunnlag()),
-            arbeidssoker = Hentet(ArbeidssokerVisittkortData(true, ProfilertTil.ANTATT_GODE_MULIGHETER)),
-            gjeldendeVedtak = Hentet(false)
+            VisittkortEtikettgrunnlag(
+                oppfolging = Hentet(OppfolgingEtikettgrunnlag()),
+                arbeidssoker = Hentet(ArbeidssokerVisittkortData(true, ProfilertTil.ANTATT_GODE_MULIGHETER)),
+                gjeldendeVedtak = Hentet(false)
+            )
         )
         assertThat(resultat.antattGodeMuligheter).isEqualTo(AntattGodeMuligheterEtikett.ANTATT_GODE_MULIGHETER)
     }
@@ -258,7 +282,7 @@ class VisittkortEtiketterMapperTest {
 
         fun oppfolging() = OppfolgingEtikettgrunnlag(
             underOppfolging = true, manuell = false, reservasjonKrr = false,
-            registrertKrr = true, kanVarsles = true, sykmeldt = false, utmeldingskandidat = null
+            registrertKrr = true, kanVarsles = true, sykmeldt = false, utmeldingskandidat = null, kvp = false
         )
     }
 }

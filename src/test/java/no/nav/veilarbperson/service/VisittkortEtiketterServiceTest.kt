@@ -1,7 +1,5 @@
 package no.nav.veilarbperson.service
 
-import no.nav.veilarbperson.client.VisittkortKildeIkkeKonfigurertException
-import no.nav.veilarbperson.client.VisittkortKildeHttpException
 import no.nav.veilarbperson.client.VisittkortKildeKontraktException
 import no.nav.veilarbperson.client.VisittkortKildeUtilgjengeligException
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerVisittkortData
@@ -16,11 +14,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
-import org.springframework.boot.test.context.runner.ApplicationContextRunner
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import java.io.IOException
-import java.util.function.Supplier
 
 class VisittkortEtiketterServiceTest : VisittkortEtiketterServiceTestBase() {
 
@@ -38,6 +34,36 @@ class VisittkortEtiketterServiceTest : VisittkortEtiketterServiceTestBase() {
         verify(vedtak).harGjeldendeVedtak(TEST_FNR)
         verify(varsel).harGjeldendeEskaleringsvarsel(TEST_FNR)
         verifyNoMoreInteractions(pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, vedtak, varsel)
+    }
+
+    @Test
+    fun `kilderekkefolge og ett oppfolgingsresultat beholdes for alle felt`() {
+        service.hent(TEST_FNR, "B643", ALLE_FELTER)
+
+        inOrder(pdl, representasjon, skjerming, oppfolgingClient, vedtak, arbeidssoker, varsel) {
+            verify(pdl).hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), VisittkortEtiketterService.PDL_FELTER)
+            verify(representasjon).hentOppfolgingsrepresentasjon(TEST_FNR)
+            verify(skjerming).hentSkjermet(TEST_FNR)
+            verify(oppfolgingClient).hentEtikettgrunnlag(TEST_FNR,
+                VisittkortEtiketterService.OPPFOLGING_FELTER +
+                    VisittkortEtiketterService.PROFILERING_FELTER + "trengerOppfolgingsvedtak")
+            verify(vedtak).harGjeldendeVedtak(TEST_FNR)
+            verify(arbeidssoker).hentVisittkortData(TEST_FNR, true)
+            verify(varsel).harGjeldendeEskaleringsvarsel(TEST_FNR)
+        }
+        assertThat(registry.get("visittkort_kilde_varighet").tag("kilde", "oppfolging").timer().count())
+            .isEqualTo(1L)
+    }
+
+    @Test
+    fun `manglende etterspurt KVP stopper foer vedtak profilering og varsel`() {
+        whenever(oppfolgingClient.hentEtikettgrunnlag(any(), any())).thenReturn(OppfolgingEtikettgrunnlag())
+
+        assertThrows<IllegalStateException> {
+            service.hent(TEST_FNR, null, setOf("kvp", "antattGodeMuligheter", "varsel"))
+        }
+        verifyNoInteractions(pdl, representasjon, skjerming, vedtak, arbeidssoker, varsel)
+        assertThat(registry.find("visittkort_kilde_utilgjengelig").counter()).isNull()
     }
 
     @Test

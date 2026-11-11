@@ -1,21 +1,15 @@
 package no.nav.veilarbperson.client
 
-import graphql.ExecutionInput
-import graphql.GraphQL
 import no.nav.common.json.JsonUtils
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ProfilertTil
 import no.nav.veilarbperson.client.pdl.domain.Diskresjonskode
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest
 import no.nav.veilarbperson.client.veilarbdialog.VisittkortVarselClientImpl
-import no.nav.veilarbperson.client.veilarbvedtaksstotte.VisittkortVedtakClientImpl
 import no.nav.veilarbperson.utils.TestData.TEST_FNR
-import okhttp3.Request
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
-import tools.jackson.core.type.TypeReference
-import java.io.IOException
 
 class VisittkortKildeClientTest : VisittkortKildeClientTestBase() {
 
@@ -86,6 +80,39 @@ class VisittkortKildeClientTest : VisittkortKildeClientTestBase() {
         assertThat(assertThrows<ResponseStatusException> {
             client.hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), setOf("dod"))
         }.statusCode.value()).isEqualTo(403)
+    }
+
+    @Test
+    fun `PDL beholder tilgangsfeil og personfravaer foer feltdekoding`() {
+        val svar = listOf(
+            """{"errors":[{"extensions":{"code":"unauthorized"}}],"data":{"hentPerson":{}}}""" to 403,
+            """{"errors":[{"extensions":{"code":"forbidden"}}],"data":{"hentPerson":{}}}""" to 403,
+            """{"data":{"hentPerson":null}}""" to 404
+        )
+        for ((body, status) in svar) {
+            val feil = assertThrows<ResponseStatusException> {
+                pdl(200 to body).hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), setOf("dod"))
+            }
+            assertThat(feil.statusCode.value()).isEqualTo(status)
+        }
+    }
+
+    @Test
+    fun `PDL validerer bare etterspurte felt og tillater eksplisitt null errors`() {
+        val resultat = pdl(200 to """
+            {"errors":null,"data":{"hentPerson":{
+              "doedsfall":[{"doedsdato":null}],
+              "adressebeskyttelse":false,
+              "sikkerhetstiltak":null,
+              "tilrettelagtKommunikasjon":"sensitive-unused-value"
+            }}}
+        """.trimIndent()).hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), setOf("dod"))
+
+        assertThat(resultat.dod).isFalse()
+        assertThat(resultat.diskresjonskode).isNull()
+        assertThat(resultat.sikkerhetstiltak).isNull()
+        assertThat(resultat.tegnspraaktolk).isFalse()
+        assertThat(resultat.talespraaktolk).isFalse()
     }
 
     @Test
