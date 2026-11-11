@@ -21,9 +21,11 @@ import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeids
 import no.nav.veilarbperson.client.pam.PamClient;
 import no.nav.veilarbperson.client.pdl.HentPerson;
 import no.nav.veilarbperson.client.pdl.PdlClient;
+import no.nav.veilarbperson.client.pdl.PdlVisittkortEtiketterData;
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.client.veilarboppfolging.UnderOppfolging;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
+import no.nav.veilarbperson.domain.visittkort.OppfolgingEtikettgrunnlag;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +39,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static no.nav.veilarbperson.utils.TestData.TEST_AKTOR_ID;
 import static no.nav.veilarbperson.utils.TestData.TEST_FNR;
@@ -172,6 +175,16 @@ public class ClientTestConfig {
             }
 
             @Override
+            public boolean hentKvpStatus(Fnr fnr) {
+                return false;
+            }
+
+            @Override
+            public OppfolgingEtikettgrunnlag hentEtikettgrunnlag(Fnr fnr, Set<String> felter) {
+                return new OppfolgingEtikettgrunnlag(false, false, false, true, true, false, null, false);
+            }
+
+            @Override
             public HealthCheckResult checkHealth() {
                 return HealthCheckResult.healthy();
             }
@@ -190,6 +203,11 @@ public class ClientTestConfig {
             @Override
             public HentPerson.Person hentPersonVisittkort(PdlRequest pdlRequest) {
                 return null;
+            }
+
+            @Override
+            public PdlVisittkortEtiketterData hentVisittkortEtiketter(PdlRequest pdlRequest, Set<String> felter) {
+                return new PdlVisittkortEtiketterData();
             }
 
             @Override

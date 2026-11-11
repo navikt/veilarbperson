@@ -10,6 +10,7 @@ import no.nav.common.json.JsonUtils;
 import no.nav.common.rest.client.RestClient;
 import no.nav.common.rest.client.RestUtils;
 import no.nav.common.types.identer.Fnr;
+import no.nav.veilarbperson.client.VisittkortKildeHttpClient;
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest;
 import no.nav.veilarbperson.service.AuthService;
 import no.nav.veilarbperson.utils.FileUtils;
@@ -21,6 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import static java.util.Collections.emptyList;
@@ -42,6 +45,8 @@ public class PdlClientImpl implements PdlClient {
 
     private final String hentPersonVisittkortQuery;
 
+    private final String hentVisittkortEtiketterQuery;
+
     private final String hentVergeQuery;
 
     private final String hentPersonNavnQuery;
@@ -62,13 +67,18 @@ public class PdlClientImpl implements PdlClient {
     private final Supplier<String> systemTokenProvider;
 
     public PdlClientImpl(String pdlUrl, AuthService authService, Supplier<String> userTokenProvider, Supplier<String> systemTokenProvider) {
+        this(pdlUrl, authService, userTokenProvider, systemTokenProvider, RestClient.baseClient());
+    }
+
+    public PdlClientImpl(String pdlUrl, AuthService authService, Supplier<String> userTokenProvider, Supplier<String> systemTokenProvider, OkHttpClient client) {
         this.pdlUrl = pdlUrl;
-        this.client = RestClient.baseClient();
+        this.client = client;
         this.authService = authService;
         this.userTokenProvider = userTokenProvider;
         this.systemTokenProvider = systemTokenProvider;
         this.hentPersonQuery = FileUtils.getResourceFileAsString("graphql/hentPerson.gql");
         this.hentPersonVisittkortQuery = FileUtils.getResourceFileAsString("graphql/hentPersonVisittkort.gql");
+        this.hentVisittkortEtiketterQuery = FileUtils.getResourceFileAsString("graphql/hentVisittkortEtiketter.gql");
         this.hentPersonBolkQuery = FileUtils.getResourceFileAsString("graphql/hentPersonBolk.gql");
         this.hentPersonNavnQuery = FileUtils.getResourceFileAsString("graphql/hentPersonNavn.gql");
         this.hentVergeQuery = FileUtils.getResourceFileAsString("graphql/hentVerge.gql");
@@ -88,6 +98,27 @@ public class PdlClientImpl implements PdlClient {
     public HentPerson.Person hentPersonVisittkort(PdlRequest pdlRequest) {
         var request = new GqlRequest<>(hentPersonVisittkortQuery, new GqlVariables.HentPerson(pdlRequest.fnr(), false));
         return graphqlRequest(request, authService.erSystemBruker() ? systemTokenProvider.get() : userTokenProvider.get(), pdlRequest.behandlingsnummer(), HentPerson.class).hentPerson;
+    }
+
+    @Override
+    public PdlVisittkortEtiketterData hentVisittkortEtiketter(PdlRequest pdlRequest, Set<String> felter) {
+        var variables = Map.of(
+                "ident", pdlRequest.fnr().get(),
+                "hentDod", felter.contains("dod"),
+                "hentDiskresjonskode", felter.contains("diskresjonskode"),
+                "hentSikkerhetstiltak", felter.contains("sikkerhetstiltak"),
+                "hentTolk", felter.contains("tegnspraaktolk") || felter.contains("talespraaktolk"),
+                "hentTegnspraaktolk", felter.contains("tegnspraaktolk"),
+                "hentTalespraaktolk", felter.contains("talespraaktolk"));
+        Request request = new Request.Builder()
+                .url(joinPaths(pdlUrl, "/graphql"))
+                .header(AUTHORIZATION, createBearerToken(userTokenProvider.get()))
+                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                .header("Tema", "GEN")
+                .header("behandlingsnummer", pdlRequest.behandlingsnummer())
+                .post(RestUtils.toJsonRequestBody(Map.of("query", hentVisittkortEtiketterQuery, "variables", variables)))
+                .build();
+        return PdlVisittkortEtiketterData.fraRespons(new VisittkortKildeHttpClient(client).hent(request), felter);
     }
 
     @Override
@@ -194,7 +225,7 @@ public class PdlClientImpl implements PdlClient {
         if (errorsNode != null) {
             log.error("Kall mot PDL feilet:\n" + errorsNode.toPrettyString());
 
-            if (errorsNode.get(0).get("message").asText().equals("Ikke tilgang til å se person")) {
+            if ("Ikke tilgang til å se person".equals(errorsNode.path(0).path("message").stringValue())) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN);
             }
 

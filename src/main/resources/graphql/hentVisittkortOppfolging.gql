@@ -1,0 +1,32 @@
+query HentVisittkortOppfolging(
+    $fnr: String!,
+    $hentBrukerStatus: Boolean!,
+    $hentKvp: Boolean!,
+    $hentManuell: Boolean!,
+    $hentKrr: Boolean!,
+    $hentKanVarsles: Boolean!,
+    $hentReservertKrr: Boolean!,
+    $hentRegistrertKrr: Boolean!,
+    $hentSykmeldt: Boolean!,
+    $hentOppfolging: Boolean!,
+    $hentUtmeldingskandidat: Boolean!
+) {
+    brukerStatus(fnr: $fnr) @include(if: $hentBrukerStatus) {
+        erKontorsperret @include(if: $hentKvp)
+        manuell @include(if: $hentManuell) {
+            erManuell
+        }
+        krr @include(if: $hentKrr) {
+            kanVarsles @include(if: $hentKanVarsles)
+            reservertIKrr @include(if: $hentReservertKrr)
+            registrertIKrr @include(if: $hentRegistrertKrr)
+        }
+        sykmeldtStatus @include(if: $hentSykmeldt)
+    }
+    oppfolging(fnr: $fnr) @include(if: $hentOppfolging) {
+        erUnderOppfolging
+    }
+    utmeldingskandidat(fnr: $fnr) @include(if: $hentUtmeldingskandidat) {
+        tag
+    }
+}
