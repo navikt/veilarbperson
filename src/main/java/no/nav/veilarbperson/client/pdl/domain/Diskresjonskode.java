@@ -36,13 +36,13 @@ public enum Diskresjonskode {
     }
 
     public static String mapKodeTilTall(String gradering) {
-        if(UGRADERT.kode.equals(gradering)){
+        if (UGRADERT.name().equals(gradering)) {
             return UGRADERT.tallVerdi;
-        } else if (FORTROLIG.kode.equals(gradering)) {
+        } else if (FORTROLIG.name().equals(gradering)) {
             return FORTROLIG.tallVerdi;
-        } else if (STRENGT_FORTROLIG.kode.equals(gradering)){
+        } else if (STRENGT_FORTROLIG.name().equals(gradering)) {
             return STRENGT_FORTROLIG.tallVerdi;
-        } else if (STRENGT_FORTROLIG_UTLAND.kode.equals(gradering)) {
+        } else if (STRENGT_FORTROLIG_UTLAND.name().equals(gradering)) {
             return STRENGT_FORTROLIG_UTLAND.tallVerdi;
         } else {
             return null;
