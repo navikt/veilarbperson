@@ -163,6 +163,12 @@ public class PersonServiceTest extends PdlClientTestConfig {
 
         String kode7Bruker = "FORTROLIG";
         assertEquals("7", Diskresjonskode.mapKodeTilTall(kode7Bruker));
+
+        String kode19Bruker = "STRENGT_FORTROLIG_UTLAND";
+        assertEquals("19", Diskresjonskode.mapKodeTilTall(kode19Bruker));
+
+        assertNull(Diskresjonskode.mapKodeTilTall(null));
+        assertNull(Diskresjonskode.mapKodeTilTall("UKJENT"));
     }
 
     @Test
