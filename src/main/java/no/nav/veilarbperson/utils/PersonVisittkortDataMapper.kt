@@ -26,8 +26,7 @@ object PersonVisittkortDataMapper {
             dodsdato = PersonDataMapper.getFirstElement(person.doedsfall)?.doedsdato?.toString(),
             kjonn = PersonDataMapper.getFirstElement(person.kjoenn)?.kjoenn,
             diskresjonskode = PersonDataMapper.getFirstElement(person.adressebeskyttelse)
-                ?.gradering
-                ?.let { Diskresjonskode.mapKodeTilTall(it) },
+                ?.gradering,
             egenAnsatt = erSkjermet,
             sikkerhetstiltak = PersonDataMapper.getFirstElement(person.sikkerhetstiltak)?.beskrivelse,
             telefon = telefoner
