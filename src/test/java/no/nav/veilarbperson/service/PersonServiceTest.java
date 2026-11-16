@@ -158,10 +158,10 @@ public class PersonServiceTest extends PdlClientTestConfig {
         assertEquals(Diskresjonskode.UGRADERT.toString(), gradering);
         assertNull(diskresjonskode);
 
-        String kode6Bruker = "STRENGT_FORTROLIG";
+        String kode6Bruker = "Strengt fortrolig";
         assertEquals("6", Diskresjonskode.mapKodeTilTall(kode6Bruker));
 
-        String kode7Bruker = "FORTROLIG";
+        String kode7Bruker = "Fortrolig";
         assertEquals("7", Diskresjonskode.mapKodeTilTall(kode7Bruker));
     }
 

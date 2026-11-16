@@ -7,10 +7,10 @@ import static no.nav.common.client.norg2.Norg2Client.Diskresjonskode.SPSF;
 
 public enum Diskresjonskode {
 
-    UGRADERT("UGRADERT", null, null),
-    FORTROLIG("FORTROLIG", "7", SPFO),
-    STRENGT_FORTROLIG("STRENGT_FORTROLIG", "6", SPSF),
-    STRENGT_FORTROLIG_UTLAND("STRENGT_FORTROLIG_UTLAND", "19", SPSF);
+    UGRADERT("Ugradert", null, null),
+    FORTROLIG("Fortrolig", "7", SPFO),
+    STRENGT_FORTROLIG("Strengt fortrolig", "6", SPSF),
+    STRENGT_FORTROLIG_UTLAND("Strengt fortrolig utland", "19", SPSF);
 
     public final String kode;
     public final String tallVerdi;
