@@ -7,10 +7,10 @@ import static no.nav.common.client.norg2.Norg2Client.Diskresjonskode.SPSF;
 
 public enum Diskresjonskode {
 
-    UGRADERT("UGRADERT", null, null),
-    FORTROLIG("FORTROLIG", "7", SPFO),
-    STRENGT_FORTROLIG("STRENGT_FORTROLIG", "6", SPSF),
-    STRENGT_FORTROLIG_UTLAND("STRENGT_FORTROLIG_UTLAND", "19", SPSF);
+    UGRADERT("Ugradert", null, null),
+    FORTROLIG("Fortrolig", "7", SPFO),
+    STRENGT_FORTROLIG("Strengt fortrolig", "6", SPSF),
+    STRENGT_FORTROLIG_UTLAND("Strengt fortrolig utland", "19", SPSF);
 
     public final String kode;
     public final String tallVerdi;
@@ -36,13 +36,13 @@ public enum Diskresjonskode {
     }
 
     public static String mapKodeTilTall(String gradering) {
-        if(UGRADERT.kode.equals(gradering)){
+        if (UGRADERT.name().equals(gradering)) {
             return UGRADERT.tallVerdi;
-        } else if (FORTROLIG.kode.equals(gradering)) {
+        } else if (FORTROLIG.name().equals(gradering)) {
             return FORTROLIG.tallVerdi;
-        } else if (STRENGT_FORTROLIG.kode.equals(gradering)){
+        } else if (STRENGT_FORTROLIG.name().equals(gradering)) {
             return STRENGT_FORTROLIG.tallVerdi;
-        } else if (STRENGT_FORTROLIG_UTLAND.kode.equals(gradering)) {
+        } else if (STRENGT_FORTROLIG_UTLAND.name().equals(gradering)) {
             return STRENGT_FORTROLIG_UTLAND.tallVerdi;
         } else {
             return null;

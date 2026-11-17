@@ -37,6 +37,65 @@ class PersonVisittkortServiceTest {
         assertThat(result.etternavn).isEqualTo("Nordmann")
         assertThat(result.fodselsdato).isEqualTo("1980-01-15")
         assertThat(result.egenAnsatt).isFalse()
+        assertThat(result.diskresjonskode).isNull()
+    }
+
+    @Test
+    fun kjente_graderinger_returnerer_visningstekst() {
+        val forventedeTekster = mapOf(
+            "UGRADERT" to "Ugradert",
+            "FORTROLIG" to "Fortrolig",
+            "STRENGT_FORTROLIG" to "Strengt fortrolig",
+            "STRENGT_FORTROLIG_UTLAND" to "Strengt fortrolig utland"
+        )
+        whenever(skjermetClient.hentSkjermet(any())).thenReturn(false)
+        whenever(digdirClient.hentKontaktInfo(any())).thenReturn(null)
+
+        forventedeTekster.forEach { (gradering, forventetTekst) ->
+            val person = lagTestPerson().apply {
+                adressebeskyttelse = listOf(HentPerson.Adressebeskyttelse().apply {
+                    this.gradering = gradering
+                })
+            }
+            whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(person)
+
+            val result = service.hentVisittkortData(TEST_FNR, "B643")
+
+            assertThat(result.diskresjonskode).isEqualTo(forventetTekst)
+        }
+    }
+
+    @Test
+    fun ukjente_graderinger_returneres_uendret() {
+        whenever(skjermetClient.hentSkjermet(any())).thenReturn(false)
+        whenever(digdirClient.hentKontaktInfo(any())).thenReturn(null)
+
+        listOf("NY_GRADERING", "", "fortrolig", " FORTROLIG ").forEach { gradering ->
+            val person = lagTestPerson().apply {
+                adressebeskyttelse = listOf(HentPerson.Adressebeskyttelse().apply {
+                    this.gradering = gradering
+                })
+            }
+            whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(person)
+
+            val result = service.hentVisittkortData(TEST_FNR, "B643")
+
+            assertThat(result.diskresjonskode).isEqualTo(gradering)
+        }
+    }
+
+    @Test
+    fun manglende_gradering_returnerer_null() {
+        val person = lagTestPerson().apply {
+            adressebeskyttelse = listOf(HentPerson.Adressebeskyttelse())
+        }
+        whenever(pdlClient.hentPersonVisittkort(any())).thenReturn(person)
+        whenever(skjermetClient.hentSkjermet(any())).thenReturn(false)
+        whenever(digdirClient.hentKontaktInfo(any())).thenReturn(null)
+
+        val result = service.hentVisittkortData(TEST_FNR, "B643")
+
+        assertThat(result.diskresjonskode).isNull()
     }
 
     @Test

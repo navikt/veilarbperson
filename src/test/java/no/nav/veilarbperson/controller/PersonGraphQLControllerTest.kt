@@ -73,6 +73,23 @@ internal class PersonGraphQLControllerTest {
     }
 
     @Test
+    fun returnerer_diskresjonskode_som_visningstekst() {
+        whenever(personVisittkortService.hentVisittkortData(any(), any())).thenReturn(
+            PersonVisittkortData(diskresjonskode = "Fortrolig")
+        )
+
+        graphQlTester.document("""
+            query {
+                person(fnr: "$TEST_FNR", behandlingsnummer: "B643") {
+                    diskresjonskode
+                }
+            }
+        """)
+            .execute()
+            .path("person.diskresjonskode").entity<String>().isEqualTo("Fortrolig")
+    }
+
+    @Test
     fun returnerer_null_felt_naar_service_returnerer_tomme_verdier() {
         whenever(personVisittkortService.hentVisittkortData(any(), any())).thenReturn(
             PersonVisittkortData()
@@ -82,12 +99,14 @@ internal class PersonGraphQLControllerTest {
             query {
                 person(fnr: "$TEST_FNR", behandlingsnummer: "B643") {
                     fornavn
+                    diskresjonskode
                     egenAnsatt
                 }
             }
         """)
             .execute()
             .path("person.fornavn").valueIsNull()
+            .path("person.diskresjonskode").valueIsNull()
             .path("person.egenAnsatt").entity<Boolean>().isEqualTo(false)
     }
 
