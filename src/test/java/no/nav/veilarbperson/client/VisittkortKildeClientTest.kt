@@ -25,11 +25,11 @@ class VisittkortKildeClientTest : VisittkortKildeClientTestBase() {
         assertThat(request.header("Authorization")).isEqualTo("Bearer test-token")
         assertThat(request.header("behandlingsnummer")).isEqualTo("B643")
         val body = JsonUtils.getMapper().readTree(request.bodyTekst())
-        assertThat(body.path("variables").path("ident").asText()).isEqualTo(TEST_FNR.get())
+        assertThat(body.path("variables").path("ident").stringValue()).isEqualTo(TEST_FNR.get())
         assertThat(body.path("variables").path("hentDod").booleanValue()).isTrue()
         assertThat(body.path("variables").path("hentDiskresjonskode").booleanValue()).isFalse()
         assertThat(body.path("variables").path("hentTolk").booleanValue()).isFalse()
-        assertThat(body.path("query").asText()).doesNotContain("telefon", "navn")
+        assertThat(body.path("query").stringValue()).doesNotContain("telefon", "navn")
     }
 
     @Test
@@ -117,7 +117,7 @@ class VisittkortKildeClientTest : VisittkortKildeClientTestBase() {
 
     @Test
     fun `PDL gjenbruker diskresjonskoder og avviser ukjent gradering`() {
-        for (kode in Diskresjonskode.values()) {
+        for (kode in Diskresjonskode.entries) {
             val resultat = pdl(200 to """{"data":{"hentPerson":{"adressebeskyttelse":[{"gradering":"${kode.name}"}]}}}""")
                 .hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), setOf("diskresjonskode"))
             assertThat(resultat.diskresjonskode).isEqualTo(kode)

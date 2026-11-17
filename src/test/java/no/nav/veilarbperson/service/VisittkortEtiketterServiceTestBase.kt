@@ -5,7 +5,6 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.veilarbperson.client.VisittkortKildeHttpClient
 import no.nav.veilarbperson.client.nom.SkjermetClient
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerVisittkortData
-import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ProfilertTil
 import no.nav.veilarbperson.client.pdl.PdlClient
 import no.nav.veilarbperson.client.pdl.PdlVisittkortEtiketterData
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClient
@@ -15,7 +14,6 @@ import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl
 import no.nav.veilarbperson.client.veilarbvedtaksstotte.VisittkortVedtakClient
 import no.nav.veilarbperson.client.veilarbvedtaksstotte.VisittkortVedtakClientImpl
-import no.nav.veilarbperson.domain.visittkort.OppfolgingEtikettgrunnlag
 import no.nav.veilarbperson.utils.VisittkortEtiketterMapperTest.Companion.oppfolging
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
