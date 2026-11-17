@@ -1,5 +1,9 @@
 package no.nav.veilarbperson.config;
 
+import io.getunleash.DefaultUnleash;
+import io.getunleash.Unleash;
+import io.getunleash.UnleashContext;
+import io.getunleash.util.UnleashConfig;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
@@ -160,6 +164,22 @@ public class ClientConfig {
                                    PoaoTilgangClient poaoTilgangClient){
         return new AuthService(aktorOppslagClient, authContextHolder, environmentProperties, aadOboTokenClient,
                 poaoTilgangClient, null);
+    }
+
+    @Value("${NAIS_POD_NAME:local}") String podName;
+    @Value("${UNLEASH_SERVER_API_URL}") String unleashUrl;
+    @Value("${UNLEASH_SERVER_API_TOKEN}") String unleashApiToken;
+    @Bean
+    public Unleash unleashClient() {
+        return new DefaultUnleash(UnleashConfig.builder()
+                .appName(APPLICATION_NAME)
+                .instanceId(podName)
+                .unleashAPI(unleashUrl)
+                .apiKey(unleashApiToken)
+                .unleashContextProvider(() -> UnleashContext.builder()
+                .environment("development")
+                .build())
+        .build());
     }
 
 }

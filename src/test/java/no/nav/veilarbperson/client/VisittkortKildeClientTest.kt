@@ -118,7 +118,7 @@ class VisittkortKildeClientTest : VisittkortKildeClientTestBase() {
     @Test
     fun `PDL gjenbruker diskresjonskoder og avviser ukjent gradering`() {
         for (kode in Diskresjonskode.values()) {
-            val resultat = pdl(200 to """{"data":{"hentPerson":{"adressebeskyttelse":[{"gradering":"${kode.kode}"}]}}}""")
+            val resultat = pdl(200 to """{"data":{"hentPerson":{"adressebeskyttelse":[{"gradering":"${kode.name}"}]}}}""")
                 .hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), setOf("diskresjonskode"))
             assertThat(resultat.diskresjonskode).isEqualTo(kode)
         }

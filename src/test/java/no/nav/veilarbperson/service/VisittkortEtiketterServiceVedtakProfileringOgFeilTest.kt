@@ -1,9 +1,9 @@
 package no.nav.veilarbperson.service
 
+import io.getunleash.Unleash
 import no.nav.veilarbperson.client.VisittkortKildeIkkeKonfigurertException
 import no.nav.veilarbperson.client.VisittkortKildeHttpException
 import no.nav.veilarbperson.client.VisittkortKildeKontraktException
-import no.nav.veilarbperson.client.VisittkortKildeUtilgjengeligException
 import no.nav.veilarbperson.client.nom.SkjermetClient
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerVisittkortData
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ProfilertTil
@@ -17,18 +17,18 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.*
+import org.springframework.beans.factory.getBean
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import java.io.IOException
-import java.util.function.Supplier
 
 class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtiketterServiceTestBase() {
 
     @Test
     fun `ukonfigurert kilde gir eksplisitt feil og ikke ukjent eller fravaer`() {
         val utenNyeKilder = VisittkortEtiketterService(
-            pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, null, null, registry
+            pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, null, null, registry, unleash
         )
 
         assertThat(utenNyeKilder.hent(TEST_FNR, null, setOf("manuellOppfolging")).manuellOppfolging).isNull()
@@ -47,15 +47,16 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
     fun `manglende nye kildebeaner hindrer ikke oppstart av eksisterende API`() {
         ApplicationContextRunner()
             .withUserConfiguration(VisittkortEtiketterService::class.java)
-            .withBean(PdlClient::class.java, Supplier { pdl })
-            .withBean(RepresentasjonClient::class.java, Supplier { representasjon })
-            .withBean(SkjermetClient::class.java, Supplier { skjerming })
-            .withBean(OppslagArbeidssoekerregisteretService::class.java, Supplier { arbeidssoker })
-            .withBean(VeilarboppfolgingClient::class.java, Supplier { oppfolgingClient })
-            .withBean(io.micrometer.core.instrument.MeterRegistry::class.java, Supplier { registry })
+            .withBean(PdlClient::class.java, { pdl })
+            .withBean(RepresentasjonClient::class.java, { representasjon })
+            .withBean(SkjermetClient::class.java, { skjerming })
+            .withBean(OppslagArbeidssoekerregisteretService::class.java, { arbeidssoker })
+            .withBean(VeilarboppfolgingClient::class.java, { oppfolgingClient })
+            .withBean(io.micrometer.core.instrument.MeterRegistry::class.java, { registry })
+            .withBean(Unleash::class.java, { unleash })
             .run { context ->
                 assertThat(context).hasNotFailed().hasSingleBean(VisittkortEtiketterService::class.java)
-                val serviceFraContext = context.getBean(VisittkortEtiketterService::class.java)
+                val serviceFraContext = context.getBean<VisittkortEtiketterService>()
                 assertThrows<VisittkortKildeIkkeKonfigurertException> {
                     serviceFraContext.hent(TEST_FNR, null, setOf("trengerOppfolgingsvedtak"))
                 }
@@ -70,7 +71,7 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
             OppfolgingEtikettgrunnlag(kvp = true), OppfolgingEtikettgrunnlag(kvp = false)
         )
         val kunKvp = VisittkortEtiketterService(
-            pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, null, null, registry
+            pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, null, null, registry, unleash
         )
 
         assertThat(kunKvp.hent(TEST_FNR, null, setOf("kvp")).kvp).isEqualTo(KvpEtikett.KVP)
@@ -110,7 +111,7 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
             var antallKall = 0
             val klient = vedtakFraHttp(200, body) { antallKall++ }
             val medEkteVedtaksKlient = VisittkortEtiketterService(
-                pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, klient, null, registry
+                pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, klient, null, registry, unleash
             )
 
             val resultat = medEkteVedtaksKlient.hent(TEST_FNR, null,
@@ -133,7 +134,7 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
         )
         val medFeilendeVedtak = VisittkortEtiketterService(
             pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker,
-            vedtakFraHttp(500, "source unavailable"), null, registry
+            vedtakFraHttp(500, "source unavailable"), null, registry, unleash
         )
 
         val resultat = medFeilendeVedtak.hent(TEST_FNR, null,
@@ -149,8 +150,8 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
         var antallKall = 0
         val medEkteOppfolging = VisittkortEtiketterService(
             pdl, representasjon, skjerming,
-            oppfolgingFraHttp(200, VisittkortEtiketterServiceTestBase.FULL_OPPFOLGING) { antallKall++ },
-            arbeidssoker, vedtak, varsel, registry
+            oppfolgingFraHttp(200, FULL_OPPFOLGING) { antallKall++ },
+            arbeidssoker, vedtak, varsel, registry, unleash
         )
 
         val resultat = medEkteOppfolging.hent(TEST_FNR, "B643", ALLE_FELTER)
@@ -174,7 +175,7 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
         val medEkteOppfolging = VisittkortEtiketterService(
             pdl, representasjon, skjerming,
             oppfolgingFraHttp(200, """{"data":{"oppfolging":{"erUnderOppfolging":false}}}"""),
-            arbeidssoker, null, null, registry
+            arbeidssoker, null, null, registry, unleash
         )
 
         assertThat(medEkteOppfolging.hent(TEST_FNR, null, setOf("trengerOppfolgingsvedtak"))
@@ -190,7 +191,7 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
         val medEkteOppfolging = VisittkortEtiketterService(
             pdl, representasjon, skjerming,
             oppfolgingFraHttp(200, """{"data":{"oppfolging":{"erUnderOppfolging":null}}}"""),
-            arbeidssoker, vedtak, null, registry
+            arbeidssoker, vedtak, null, registry, unleash
         )
 
         assertThat(medEkteOppfolging.hent(TEST_FNR, null, setOf("antattGodeMuligheter")).antattGodeMuligheter)
@@ -204,7 +205,7 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
         val medEkteOppfolging = VisittkortEtiketterService(
             pdl, representasjon, skjerming,
             oppfolgingFraHttp(503, "sensitive-source-message") { antallKall++ },
-            arbeidssoker, vedtak, varsel, registry
+            arbeidssoker, vedtak, varsel, registry, unleash
         )
 
         val resultat = medEkteOppfolging.hent(TEST_FNR, null,
@@ -221,7 +222,7 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
     fun `ekte ugyldige oppfolgingssvar og tilgangsfeil stopper oppslaget uten ukjent`() {
         fun serviceMedSvar(status: Int, body: String) = VisittkortEtiketterService(
             pdl, representasjon, skjerming, oppfolgingFraHttp(status, body),
-            arbeidssoker, vedtak, varsel, registry
+            arbeidssoker, vedtak, varsel, registry, unleash
         )
         val felter = setOf("ikkeUnderOppfolging", "varsel")
         for (body in listOf(

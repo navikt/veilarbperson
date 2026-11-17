@@ -89,6 +89,9 @@ spec:
         - host: pdl-api.dev-fss-pub.nais.io
         - host: regoppslag.dev-fss-pub.nais.io
         - host: pam-cv-api-gcp.intern.dev.nav.no
+        - host: obo-unleash-api.nav.cloud.nais.io
+  envFrom:
+    - secret: veilarbperson-unleash-api-token
   env:
     - name: KODEVERK_URL
       value: http://kodeverk-api.team-rocket

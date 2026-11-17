@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.service
 
+import io.getunleash.Unleash
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.veilarbperson.client.VisittkortKildeHttpClient
 import no.nav.veilarbperson.client.nom.SkjermetClient
@@ -34,9 +35,9 @@ abstract class VisittkortEtiketterServiceTestBase {
     protected val vedtak = mock<VisittkortVedtakClient>()
     protected val varsel = mock<VisittkortVarselClient>()
     protected val registry = SimpleMeterRegistry()
+    protected val unleash = mock<Unleash>()
     protected val service = VisittkortEtiketterService(
-        pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, vedtak, varsel, registry
-    )
+        pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, vedtak, varsel, registry, unleash)
 
     @BeforeEach
     fun gyldigeKildesvar() {
@@ -44,6 +45,7 @@ abstract class VisittkortEtiketterServiceTestBase {
         whenever(representasjon.hentOppfolgingsrepresentasjon(any())).thenReturn(VisittkortRepresentasjonData(false, false))
         whenever(oppfolgingClient.hentEtikettgrunnlag(any(), any())).thenReturn(oppfolging().copy(kvp = false))
         whenever(arbeidssoker.hentVisittkortData(any(), any())).thenReturn(ArbeidssokerVisittkortData(false))
+        whenever(unleash.isEnabled("veilarbperson.visittkort_etiketter_test_feil")).thenReturn(false)
     }
 
     protected fun oppfolgingFraHttp(status: Int, body: String, vedKall: () -> Unit = {}): VeilarboppfolgingClient =

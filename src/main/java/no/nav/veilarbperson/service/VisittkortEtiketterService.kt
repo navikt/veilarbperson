@@ -1,7 +1,9 @@
 package no.nav.veilarbperson.service
 
+import io.getunleash.Unleash
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.common.types.identer.Fnr
+import no.nav.common.utils.EnvironmentUtils
 import no.nav.veilarbperson.client.VisittkortKildeIkkeKonfigurertException
 import no.nav.veilarbperson.client.VisittkortKildeUtilgjengeligException
 import no.nav.veilarbperson.client.nom.SkjermetClient
@@ -33,14 +35,20 @@ class VisittkortEtiketterService(
     private val arbeidssokerService: OppslagArbeidssoekerregisteretService,
     private val vedtakClient: VisittkortVedtakClient?,
     private val varselClient: VisittkortVarselClient?,
-    private val meterRegistry: MeterRegistry
+    private val meterRegistry: MeterRegistry,
+    private val unleashClient: Unleash
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
     fun hent(fnr: Fnr, behandlingsnummer: String?, felter: Set<String>): VisittkortEtiketter {
         val start = System.nanoTime()
         return try {
-            hentEtiketter(fnr, behandlingsnummer, felter)
+            if (EnvironmentUtils.isDevelopment().orElse(false) &&
+                unleashClient.isEnabled("veilarbperson.visittkort_etiketter_test_feil")
+                ) {
+                hentEtiketterAlleFeilet(felter)
+            } else {
+                hentEtiketter(fnr, behandlingsnummer, felter)}
         } finally {
             meterRegistry.timer("visittkort_etiketter_varighet")
                 .record(System.nanoTime() - start, TimeUnit.NANOSECONDS)
@@ -135,6 +143,19 @@ class VisittkortEtiketterService(
         meterRegistry.counter("visittkort_kilde_utilgjengelig", "kilde", kilde).increment()
         return Ukjent
     }
+private fun hentEtiketterAlleFeilet(felter: Set<String>): VisittkortEtiketter =
+        VisittkortEtiketterMapper.map(
+            felter,
+            VisittkortEtikettgrunnlag(
+                pdl = Ukjent,
+                representasjon = Ukjent,
+                skjerming = Ukjent,
+                oppfolging = Ukjent,
+                arbeidssoker = Ukjent,
+                gjeldendeVedtak = Ukjent,
+                varsel = Ukjent
+            )
+        )
 
     companion object {
         val PDL_FELTER = setOf("dod", "diskresjonskode", "sikkerhetstiltak", "tegnspraaktolk", "talespraaktolk")

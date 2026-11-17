@@ -1,5 +1,6 @@
 package no.nav.veilarbperson.service
 
+import no.nav.common.utils.EnvironmentUtils
 import no.nav.veilarbperson.client.VisittkortKildeKontraktException
 import no.nav.veilarbperson.client.VisittkortKildeUtilgjengeligException
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerVisittkortData
@@ -13,10 +14,12 @@ import no.nav.veilarbperson.utils.VisittkortEtiketterMapperTest.Companion.oppfol
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.*
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import java.io.IOException
+import java.util.Optional
 
 class VisittkortEtiketterServiceTest : VisittkortEtiketterServiceTestBase() {
 
@@ -186,4 +189,34 @@ class VisittkortEtiketterServiceTest : VisittkortEtiketterServiceTestBase() {
         verify(skjerming, times(2)).hentSkjermet(TEST_FNR)
     }
 
+    @Test
+    fun `aktivert feilflagg i dev gir ukjent for alle felter uten kildeoppslag`() {
+        mockStatic(EnvironmentUtils::class.java).use { miljo ->
+            miljo.`when`<Optional<Boolean>> { EnvironmentUtils.isDevelopment() }.thenReturn(Optional.of(true))
+            whenever(unleash.isEnabled("veilarbperson.visittkort_etiketter_test_feil")).thenReturn(true)
+
+            val resultat = service.hent(TEST_FNR, "B643", ALLE_FELTER)
+
+            assertThat(resultat.ukjenteFelter().toSet()).isEqualTo(ALLE_FELTER)
+            assertThat(resultat.sikkerhetstiltak?.beskrivelse).isNull()
+            verify(unleash).isEnabled("veilarbperson.visittkort_etiketter_test_feil")
+            verifyNoInteractions(pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, vedtak, varsel)
+        }
+    }
+
+    @Test
+    fun `avslatt feilflagg i dev beholder normalflyten`() {
+        mockStatic(EnvironmentUtils::class.java).use { miljo ->
+            miljo.`when`<Optional<Boolean>> { EnvironmentUtils.isDevelopment() }.thenReturn(Optional.of(true))
+            whenever(skjerming.hentSkjermet(TEST_FNR)).thenReturn(true)
+
+            val resultat = service.hent(TEST_FNR, null, setOf("skjerming"))
+
+            assertThat(resultat.skjerming).isEqualTo(SkjermingEtikett.SKJERMET)
+            assertThat(resultat.ukjenteFelter()).isEmpty()
+            verify(unleash).isEnabled("veilarbperson.visittkort_etiketter_test_feil")
+            verify(skjerming).hentSkjermet(TEST_FNR)
+            verifyNoInteractions(pdl, representasjon, oppfolgingClient, arbeidssoker, vedtak, varsel)
+        }
+    }
 }
