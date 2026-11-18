@@ -81,6 +81,10 @@ spec:
           namespace: repr
         - application: logging
           namespace: nais-system
+        - application: veilarbvedtaksstotte
+          namespace: obo
+        - application: veilarbdialog
+          namespace: dab
       external:
         - host: pdl-api.prod-fss-pub.nais.io
         - host: veilarboppfolging.prod-fss-pub.nais.io
@@ -131,4 +135,12 @@ spec:
       value: http://norg2.org/norg2
     - name: NORG2_SCOPE
       value: api://prod-gcp.org.norg2/.default
+    - name: VEILARBVEDTAKSSTOTTE_URL
+      value: http://veilarbvedtaksstotte.obo/veilarbvedtaksstotte
+    - name: VEILARBVEDTAKSSTOTTE_SCOPE
+      value: api://prod-gcp.obo.veilarbvedtaksstotte/.default
+    - name: VEILARBDIALOG_URL
+      value: http://veilarbdialog.dab/veilarbdialog
+    - name: VEILARBDIALOG_SCOPE
+      value: api://prod-gcp.dab.veilarbdialog/.default
 
