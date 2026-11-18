@@ -174,7 +174,7 @@ public class ClientConfig {
         return new DefaultUnleash(UnleashConfig.builder()
                 .appName(APPLICATION_NAME)
                 .instanceId(podName)
-                .unleashAPI(unleashUrl)
+                .unleashAPI(unleashUrl + "/api/")
                 .apiKey(unleashApiToken)
                 .unleashContextProvider(() -> UnleashContext.builder()
                 .environment("development")
