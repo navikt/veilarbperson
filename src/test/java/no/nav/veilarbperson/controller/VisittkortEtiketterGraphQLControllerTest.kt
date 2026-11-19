@@ -66,6 +66,46 @@ class VisittkortEtiketterGraphQLControllerTest {
     }
 
     @Test
+    fun `adressebeskyttelse returnerer enum null og ukjent med nytt feltnavn`() {
+        for (etikett in listOf(
+            AdressebeskyttelseEtikett.KODE_6,
+            AdressebeskyttelseEtikett.KODE_7,
+            AdressebeskyttelseEtikett.KODE_19,
+            AdressebeskyttelseEtikett.UKJENT_PERSONALIA,
+            null
+        )) {
+            whenever(service.hent(any(), anyOrNull(), any()))
+                .thenReturn(VisittkortEtiketter(adressebeskyttelse = etikett))
+            val resultat = graphQlTester.document(query("adressebeskyttelse")).execute()
+                .path("visittkortEtiketter.adressebeskyttelse")
+            if (etikett == null) resultat.valueIsNull()
+            else resultat.entity(String::class.java).isEqualTo(etikett.name)
+        }
+        verify(service, times(5)).hent(TEST_FNR, "B643", setOf("adressebeskyttelse"))
+    }
+
+    @Test
+    fun `adressebeskyttelse krever behandlingsnummer foer tilgang og kildeoppslag`() {
+        graphQlTester.document("""
+            { visittkortEtiketter(fnr: "${TEST_FNR.get()}") { adressebeskyttelse } }
+        """.trimIndent()).execute().errors().satisfy {
+            assertThat(it.single().extensions?.get("code")).isEqualTo("UGYLDIG_FORESPORSEL")
+        }.path("visittkortEtiketter").valueIsNull()
+
+        verify(authService, never()).sjekkLesetilgang(any())
+        verifyNoInteractions(service)
+    }
+
+    @Test
+    fun `gammelt etikettfeltnavn avvises uten tilgangsoppslag eller tjenestekall`() {
+        graphQlTester.document(query("diskresjonskode")).execute().errors().satisfy {
+            assertThat(it.single().message).contains("diskresjonskode", "VisittkortEtiketter")
+        }
+
+        verifyNoInteractions(authService, service)
+    }
+
+    @Test
     fun `ekstern og systembruker avvises foer person og kildeoppslag`() {
         whenever(authService.erInternBruker()).thenReturn(false)
 

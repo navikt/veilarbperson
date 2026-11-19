@@ -25,7 +25,7 @@ type Telefon {
 
 type VisittkortEtiketter {
     dod: DodEtikett
-    diskresjonskode: DiskresjonskodeEtikett
+    adressebeskyttelse: AdressebeskyttelseEtikett
     utmeldingskandidat: UtmeldingskandidatEtikett
     sikkerhetstiltak: SikkerhetstiltakResultat
     skjerming: SkjermingEtikett
@@ -58,7 +58,7 @@ enum DodEtikett {
     UKJENT_PERSONALIA
 }
 
-enum DiskresjonskodeEtikett {
+enum AdressebeskyttelseEtikett {
     KODE_6
     KODE_7
     KODE_19

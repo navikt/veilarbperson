@@ -158,7 +158,7 @@ private fun hentEtiketterAlleFeilet(felter: Set<String>): VisittkortEtiketter =
         )
 
     companion object {
-        val PDL_FELTER = setOf("dod", "diskresjonskode", "sikkerhetstiltak", "tegnspraaktolk", "talespraaktolk")
+        val PDL_FELTER = setOf("dod", "adressebeskyttelse", "sikkerhetstiltak", "tegnspraaktolk", "talespraaktolk")
         val REPRESENTASJON_FELTER = setOf("vergemaalOppfolging", "fullmaktOppfolging")
         val PROFILERING_FELTER = setOf("antattGodeMuligheter", "antattBehovForVeiledning", "oppgittHindringer")
         val OPPFOLGING_FELTER = setOf(

@@ -38,12 +38,12 @@ object VisittkortEtiketterMapper {
             dod = etikett("dod", pdl, DodEtikett.UKJENT_PERSONALIA) {
                 DodEtikett.DOD.takeIf { _ -> it.dod }
             },
-            diskresjonskode = etikett("diskresjonskode", pdl, DiskresjonskodeEtikett.UKJENT_PERSONALIA) {
-                when (it.diskresjonskode) {
+            adressebeskyttelse = etikett("adressebeskyttelse", pdl, AdressebeskyttelseEtikett.UKJENT_PERSONALIA) {
+                when (it.adressebeskyttelse) {
                     null, Diskresjonskode.UGRADERT -> null
-                    Diskresjonskode.FORTROLIG -> DiskresjonskodeEtikett.KODE_7
-                    Diskresjonskode.STRENGT_FORTROLIG -> DiskresjonskodeEtikett.KODE_6
-                    Diskresjonskode.STRENGT_FORTROLIG_UTLAND -> DiskresjonskodeEtikett.KODE_19
+                    Diskresjonskode.FORTROLIG -> AdressebeskyttelseEtikett.KODE_7
+                    Diskresjonskode.STRENGT_FORTROLIG -> AdressebeskyttelseEtikett.KODE_6
+                    Diskresjonskode.STRENGT_FORTROLIG_UTLAND -> AdressebeskyttelseEtikett.KODE_19
                 }
             },
             sikkerhetstiltak = etikett(

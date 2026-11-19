@@ -27,7 +27,8 @@ class VisittkortKildeClientTest : VisittkortKildeClientTestBase() {
         val body = JsonUtils.getMapper().readTree(request.bodyTekst())
         assertThat(body.path("variables").path("ident").stringValue()).isEqualTo(TEST_FNR.get())
         assertThat(body.path("variables").path("hentDod").booleanValue()).isTrue()
-        assertThat(body.path("variables").path("hentDiskresjonskode").booleanValue()).isFalse()
+        assertThat(body.path("variables").has("hentAdressebeskyttelse")).isTrue()
+        assertThat(body.path("variables").path("hentAdressebeskyttelse").booleanValue()).isFalse()
         assertThat(body.path("variables").path("hentTolk").booleanValue()).isFalse()
         assertThat(body.path("query").stringValue()).doesNotContain("telefon", "navn")
     }
@@ -44,12 +45,17 @@ class VisittkortKildeClientTest : VisittkortKildeClientTestBase() {
         """.trimIndent())
 
         val resultat = client.hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"),
-            setOf("dod", "diskresjonskode", "sikkerhetstiltak", "tegnspraaktolk", "talespraaktolk"))
+            setOf("dod", "adressebeskyttelse", "sikkerhetstiltak", "tegnspraaktolk", "talespraaktolk"))
         assertThat(resultat.dod).isTrue()
-        assertThat(resultat.diskresjonskode).isEqualTo(Diskresjonskode.STRENGT_FORTROLIG_UTLAND)
+        assertThat(resultat.adressebeskyttelse).isEqualTo(Diskresjonskode.STRENGT_FORTROLIG_UTLAND)
         assertThat(resultat.sikkerhetstiltak).isEqualTo("Kildebeskrivelse")
         assertThat(resultat.tegnspraaktolk).isTrue()
         assertThat(resultat.talespraaktolk).isTrue()
+        val body = JsonUtils.getMapper().readTree(requests.single().bodyTekst())
+        assertThat(body.path("variables").path("hentAdressebeskyttelse").booleanValue()).isTrue()
+        assertThat(body.path("query").stringValue()).contains(
+            "adressebeskyttelse @include(if: ${'$'}hentAdressebeskyttelse)"
+        )
     }
 
     @Test
@@ -109,22 +115,22 @@ class VisittkortKildeClientTest : VisittkortKildeClientTestBase() {
         """.trimIndent()).hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), setOf("dod"))
 
         assertThat(resultat.dod).isFalse()
-        assertThat(resultat.diskresjonskode).isNull()
+        assertThat(resultat.adressebeskyttelse).isNull()
         assertThat(resultat.sikkerhetstiltak).isNull()
         assertThat(resultat.tegnspraaktolk).isFalse()
         assertThat(resultat.talespraaktolk).isFalse()
     }
 
     @Test
-    fun `PDL gjenbruker diskresjonskoder og avviser ukjent gradering`() {
+    fun `PDL gjenbruker graderinger for adressebeskyttelse og avviser ukjent gradering`() {
         for (kode in Diskresjonskode.entries) {
             val resultat = pdl(200 to """{"data":{"hentPerson":{"adressebeskyttelse":[{"gradering":"${kode.name}"}]}}}""")
-                .hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), setOf("diskresjonskode"))
-            assertThat(resultat.diskresjonskode).isEqualTo(kode)
+                .hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), setOf("adressebeskyttelse"))
+            assertThat(resultat.adressebeskyttelse).isEqualTo(kode)
         }
         val feil = assertThrows<VisittkortKildeKontraktException> {
             pdl(200 to """{"data":{"hentPerson":{"adressebeskyttelse":[{"gradering":"sensitive-invalid"}]}}}""")
-                .hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), setOf("diskresjonskode"))
+                .hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), setOf("adressebeskyttelse"))
         }
         assertThat(feil.toString()).doesNotContain("sensitive")
         assertThat(feil.cause).isNull()

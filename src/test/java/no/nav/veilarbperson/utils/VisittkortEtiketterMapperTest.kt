@@ -44,7 +44,7 @@ class VisittkortEtiketterMapperTest {
     @Test
     fun `personalia tolking og representasjon har egne enumverdier`() {
         val resultat = VisittkortEtiketterMapper.map(
-            setOf("dod", "diskresjonskode", "sikkerhetstiltak", "tegnspraaktolk", "talespraaktolk",
+            setOf("dod", "adressebeskyttelse", "sikkerhetstiltak", "tegnspraaktolk", "talespraaktolk",
                 "vergemaalOppfolging", "fullmaktOppfolging", "skjerming"),
             VisittkortEtikettgrunnlag(
                 pdl = Hentet(PdlVisittkortEtiketterData(true, Diskresjonskode.FORTROLIG, "Kildebeskrivelse", true, true)),
@@ -54,7 +54,7 @@ class VisittkortEtiketterMapperTest {
         )
 
         assertThat(resultat.dod).isEqualTo(DodEtikett.DOD)
-        assertThat(resultat.diskresjonskode).isEqualTo(DiskresjonskodeEtikett.KODE_7)
+        assertThat(resultat.adressebeskyttelse).isEqualTo(AdressebeskyttelseEtikett.KODE_7)
         assertThat(resultat.sikkerhetstiltak).isEqualTo(
             SikkerhetstiltakResultat(SikkerhetstiltakEtikett.SIKKERHETSTILTAK, "Kildebeskrivelse")
         )
@@ -66,17 +66,17 @@ class VisittkortEtiketterMapperTest {
     }
 
     @Test
-    fun `diskresjonskoder 6 7 og 19 skilles fra ugradert`() {
+    fun `adressebeskyttelse med kode 6 7 og 19 skilles fra ugradert`() {
         for ((kode, forventet) in mapOf(
             Diskresjonskode.UGRADERT to null,
-            Diskresjonskode.FORTROLIG to DiskresjonskodeEtikett.KODE_7,
-            Diskresjonskode.STRENGT_FORTROLIG to DiskresjonskodeEtikett.KODE_6,
-            Diskresjonskode.STRENGT_FORTROLIG_UTLAND to DiskresjonskodeEtikett.KODE_19
+            Diskresjonskode.FORTROLIG to AdressebeskyttelseEtikett.KODE_7,
+            Diskresjonskode.STRENGT_FORTROLIG to AdressebeskyttelseEtikett.KODE_6,
+            Diskresjonskode.STRENGT_FORTROLIG_UTLAND to AdressebeskyttelseEtikett.KODE_19
         )) {
             assertThat(VisittkortEtiketterMapper.map(
-                setOf("diskresjonskode"),
-                VisittkortEtikettgrunnlag(pdl = Hentet(PdlVisittkortEtiketterData(diskresjonskode = kode)))
-            ).diskresjonskode).isEqualTo(forventet)
+                setOf("adressebeskyttelse"),
+                VisittkortEtikettgrunnlag(pdl = Hentet(PdlVisittkortEtiketterData(adressebeskyttelse = kode)))
+            ).adressebeskyttelse).isEqualTo(forventet)
         }
     }
 
@@ -273,7 +273,7 @@ class VisittkortEtiketterMapperTest {
 
     companion object {
         val ALLE_FELTER = setOf(
-            "dod", "diskresjonskode", "utmeldingskandidat", "sikkerhetstiltak", "skjerming",
+            "dod", "adressebeskyttelse", "utmeldingskandidat", "sikkerhetstiltak", "skjerming",
             "vergemaalOppfolging", "fullmaktOppfolging", "tegnspraaktolk", "talespraaktolk", "kvp",
             "manuellOppfolging", "reservertKrr", "utdatertIKrr", "ikkeUnderOppfolging", "varsel",
             "ikkeRegistrertKrr", "trengerOppfolgingsvedtak", "sykmeldt", "iArbeidssokerregisteret",

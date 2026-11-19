@@ -1,7 +1,7 @@
 query HentVisittkortEtiketter(
     $ident: ID!,
     $hentDod: Boolean!,
-    $hentDiskresjonskode: Boolean!,
+    $hentAdressebeskyttelse: Boolean!,
     $hentSikkerhetstiltak: Boolean!,
     $hentTolk: Boolean!,
     $hentTegnspraaktolk: Boolean!,
@@ -11,7 +11,7 @@ query HentVisittkortEtiketter(
         doedsfall @include(if: $hentDod) {
             doedsdato
         }
-        adressebeskyttelse @include(if: $hentDiskresjonskode) {
+        adressebeskyttelse @include(if: $hentAdressebeskyttelse) {
             gradering
         }
         sikkerhetstiltak @include(if: $hentSikkerhetstiltak) {

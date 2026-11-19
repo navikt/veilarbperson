@@ -105,7 +105,7 @@ public class PdlClientImpl implements PdlClient {
         var variables = Map.of(
                 "ident", pdlRequest.fnr().get(),
                 "hentDod", felter.contains("dod"),
-                "hentDiskresjonskode", felter.contains("diskresjonskode"),
+                "hentAdressebeskyttelse", felter.contains("adressebeskyttelse"),
                 "hentSikkerhetstiltak", felter.contains("sikkerhetstiltak"),
                 "hentTolk", felter.contains("tegnspraaktolk") || felter.contains("talespraaktolk"),
                 "hentTegnspraaktolk", felter.contains("tegnspraaktolk"),

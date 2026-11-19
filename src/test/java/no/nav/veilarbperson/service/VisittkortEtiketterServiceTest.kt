@@ -78,6 +78,27 @@ class VisittkortEtiketterServiceTest : VisittkortEtiketterServiceTestBase() {
     }
 
     @Test
+    fun `adressebeskyttelse henter bare PDL`() {
+        service.hent(TEST_FNR, "B643", setOf("adressebeskyttelse"))
+
+        verify(pdl).hentVisittkortEtiketter(PdlRequest(TEST_FNR, "B643"), setOf("adressebeskyttelse"))
+        verifyNoInteractions(representasjon, skjerming, oppfolgingClient, arbeidssoker, vedtak, varsel)
+    }
+
+    @Test
+    fun `utilgjengelig PDL gir ukjent adressebeskyttelse og metrikk med samme feltnavn`() {
+        whenever(pdl.hentVisittkortEtiketter(any(), any())).thenThrow(VisittkortKildeUtilgjengeligException())
+
+        val resultat = service.hent(TEST_FNR, "B643", setOf("adressebeskyttelse"))
+
+        assertThat(resultat.adressebeskyttelse).isEqualTo(AdressebeskyttelseEtikett.UKJENT_PERSONALIA)
+        assertThat(resultat.ukjenteFelter()).containsExactly("adressebeskyttelse")
+        assertThat(registry.get("visittkort_etikett_ukjent").tag("etikett", "adressebeskyttelse").counter().count())
+            .isEqualTo(1.0)
+        verifyNoInteractions(representasjon, skjerming, oppfolgingClient, arbeidssoker, vedtak, varsel)
+    }
+
+    @Test
     fun `bare registeretikett trenger ikke oppfolging profilering eller vedtak`() {
         service.hent(TEST_FNR, null, setOf("iArbeidssokerregisteret"))
 

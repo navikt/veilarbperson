@@ -8,7 +8,7 @@ enum class DodEtikett(override val erUkjent: Boolean = false) : Etikettverdi {
     DOD, UKJENT_PERSONALIA(true)
 }
 
-enum class DiskresjonskodeEtikett(override val erUkjent: Boolean = false) : Etikettverdi {
+enum class AdressebeskyttelseEtikett(override val erUkjent: Boolean = false) : Etikettverdi {
     KODE_6, KODE_7, KODE_19, UKJENT_PERSONALIA(true)
 }
 
@@ -108,7 +108,7 @@ enum class OppgittHindringerEtikett(override val erUkjent: Boolean = false) : Et
 
 data class VisittkortEtiketter(
     val dod: DodEtikett? = null,
-    val diskresjonskode: DiskresjonskodeEtikett? = null,
+    val adressebeskyttelse: AdressebeskyttelseEtikett? = null,
     val utmeldingskandidat: UtmeldingskandidatEtikett? = null,
     val sikkerhetstiltak: SikkerhetstiltakResultat? = null,
     val skjerming: SkjermingEtikett? = null,
@@ -132,7 +132,7 @@ data class VisittkortEtiketter(
 ) {
     fun ukjenteFelter(): List<String> = listOf(
         "dod" to dod,
-        "diskresjonskode" to diskresjonskode,
+        "adressebeskyttelse" to adressebeskyttelse,
         "utmeldingskandidat" to utmeldingskandidat,
         "sikkerhetstiltak" to sikkerhetstiltak?.etikett,
         "skjerming" to skjerming,

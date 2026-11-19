@@ -15,7 +15,7 @@ import java.time.format.DateTimeParseException
 
 data class PdlVisittkortEtiketterData(
     val dod: Boolean = false,
-    val diskresjonskode: Diskresjonskode? = null,
+    val adressebeskyttelse: Diskresjonskode? = null,
     val sikkerhetstiltak: String? = null,
     val tegnspraaktolk: Boolean = false,
     val talespraaktolk: Boolean = false
@@ -28,7 +28,7 @@ data class PdlVisittkortEtiketterData(
                 data.kildeFelt("doedsfall").kildeListe().firstOrNull()?.kildeObjekt()
                     ?.kildeFelt("doedsdato")?.valgfriKildeTekst()?.let(::harGyldigDoedsdato) ?: false
             } else false
-            val diskresjonskode = if ("diskresjonskode" in felter) {
+            val adressebeskyttelse = if ("adressebeskyttelse" in felter) {
                 data.kildeFelt("adressebeskyttelse").kildeListe().firstOrNull()?.kildeObjekt()
                     ?.kildeFelt("gradering")?.kildeTekst()?.let { kode ->
                         Diskresjonskode.entries.firstOrNull { it.name == kode }
@@ -43,7 +43,7 @@ data class PdlVisittkortEtiketterData(
                 data.kildeFelt("tilrettelagtKommunikasjon").kildeListe().firstOrNull()?.kildeObjekt()
             } else null
             return PdlVisittkortEtiketterData(
-                dod, diskresjonskode, sikkerhetstiltak,
+                dod, adressebeskyttelse, sikkerhetstiltak,
                 "tegnspraaktolk" in felter && tolk.harTolk("tegnspraaktolk"),
                 "talespraaktolk" in felter && tolk.harTolk("talespraaktolk")
             )
