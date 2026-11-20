@@ -1,5 +1,9 @@
 package no.nav.veilarbperson.config;
 
+import io.getunleash.DefaultUnleash;
+import io.getunleash.Unleash;
+import io.getunleash.UnleashContext;
+import io.getunleash.util.UnleashConfig;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.auth.context.AuthContextHolder;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
@@ -15,6 +19,7 @@ import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.token_client.client.MachineToMachineTokenClient;
 import no.nav.poao_tilgang.client.PoaoTilgangClient;
+import no.nav.veilarbperson.client.VisittkortKildeHttpClient;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
@@ -31,7 +36,13 @@ import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl;
+import no.nav.veilarbperson.client.veilarbdialog.VisittkortVarselClient;
+import no.nav.veilarbperson.client.veilarbdialog.VisittkortVarselClientImpl;
+import no.nav.veilarbperson.client.veilarbvedtaksstotte.VisittkortVedtakClient;
+import no.nav.veilarbperson.client.veilarbvedtaksstotte.VisittkortVedtakClientImpl;
 import no.nav.veilarbperson.service.AuthService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
@@ -109,6 +120,26 @@ public class ClientConfig {
         );
     }
 
+    @Bean
+    @ConditionalOnProperty(name = {"VEILARBVEDTAKSSTOTTE_URL", "VEILARBVEDTAKSSTOTTE_SCOPE"})
+    public VisittkortVedtakClient visittkortVedtakClient(
+            @Value("${VEILARBVEDTAKSSTOTTE_URL}") String url,
+            @Value("${VEILARBVEDTAKSSTOTTE_SCOPE}") String scope,
+            AuthService authService
+    ) {
+        return new VisittkortVedtakClientImpl(url, () -> authService.getAadOboTokenForTjeneste(scope), new VisittkortKildeHttpClient());
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = {"VEILARBDIALOG_URL", "VEILARBDIALOG_SCOPE"})
+    public VisittkortVarselClient visittkortVarselClient(
+            @Value("${VEILARBDIALOG_URL}") String url,
+            @Value("${VEILARBDIALOG_SCOPE}") String scope,
+            AuthService authService
+    ) {
+        return new VisittkortVarselClientImpl(url, () -> authService.getAadOboTokenForTjeneste(scope), new VisittkortKildeHttpClient());
+    }
+
 
     @Bean
     public AzureAdMachineToMachineTokenClient azureAdMachineToMachineTokenClient() {
@@ -133,6 +164,22 @@ public class ClientConfig {
                                    PoaoTilgangClient poaoTilgangClient){
         return new AuthService(aktorOppslagClient, authContextHolder, environmentProperties, aadOboTokenClient,
                 poaoTilgangClient, null);
+    }
+
+    @Value("${NAIS_POD_NAME:local}") String podName;
+    @Value("${UNLEASH_SERVER_API_URL}") String unleashUrl;
+    @Value("${UNLEASH_SERVER_API_TOKEN}") String unleashApiToken;
+    @Bean
+    public Unleash unleashClient() {
+        return new DefaultUnleash(UnleashConfig.builder()
+                .appName(APPLICATION_NAME)
+                .instanceId(podName)
+                .unleashAPI(unleashUrl + "/api")
+                .apiKey(unleashApiToken)
+                .unleashContextProvider(() -> UnleashContext.builder()
+                .environment("development")
+                .build())
+        .build());
     }
 
 }

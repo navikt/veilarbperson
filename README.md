@@ -30,6 +30,15 @@ Eksempelspørring:
 
 `behandlingsnummer` er påkrevd og skal være konsumentens eget B-nummer fra behandlingskatalogen.
 
+# GraphQL — visittkortetiketter
+
+`visittkortEtiketter` samler opptil 22 etiketter fra sju kilder via `POST /veilarbperson/graphql`.
+Konsumenten velger feltene, og bare nødvendige kilder kalles.
+
+Oppslaget krever intern bruker og lesetilgang til personen. Behandlingsnummer er påkrevd for PDL-felt.
+
+Se [filoversikt og kodeflyt](visittkort-etiketter-pr-beskrivelse.md) for kildeavhengigheter, mapping og feilhåndtering.
+
 # PDL
 PDL dok anbefaler å bruke Altair programvare for å kjøre graphql eller for å gjøre oppslag mot PDL. 
 

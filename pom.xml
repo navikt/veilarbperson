@@ -25,6 +25,7 @@
         <poao-tilgang.version>4.2026.10.02_08.32-32a40f5f5ced</poao-tilgang.version>
         <!-- Midlertidig override pga Tomcat-CVE-er. Fjernes når Spring Boot henter ny versjon -->
         <tomcat.version>11.0.25</tomcat.version>
+        <unleash.version>12.3.0</unleash.version>
     </properties>
 
     <build>
@@ -209,7 +210,17 @@
             <artifactId>audit-log</artifactId>
             <version>${common.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.getunleash</groupId>
+            <artifactId>unleash-client-java</artifactId>
+            <version>${unleash.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.squareup.okhttp3</groupId>
+                    <artifactId>okhttp</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>no.nav.poao-tilgang</groupId>
             <artifactId>client</artifactId>
