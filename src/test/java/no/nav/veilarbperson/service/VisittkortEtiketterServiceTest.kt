@@ -240,4 +240,29 @@ class VisittkortEtiketterServiceTest : VisittkortEtiketterServiceTestBase() {
             verifyNoInteractions(pdl, representasjon, oppfolgingClient, arbeidssoker, vedtak, varsel)
         }
     }
+
+    @Test
+    fun `aktivert feilflagg i prod beholder normalflyten uten flaggoppslag`() {
+        assertNormalflytUtenFlaggoppslag(Optional.of(false))
+    }
+
+    @Test
+    fun `aktivert feilflagg i ukjent miljo beholder normalflyten uten flaggoppslag`() {
+        assertNormalflytUtenFlaggoppslag(Optional.empty())
+    }
+
+    private fun assertNormalflytUtenFlaggoppslag(development: Optional<Boolean>) {
+        mockStatic(EnvironmentUtils::class.java).use { miljo ->
+            miljo.`when`<Optional<Boolean>> { EnvironmentUtils.isDevelopment() }.thenReturn(development)
+            whenever(unleash.isEnabled("veilarbperson.visittkort_etiketter_test_feil")).thenReturn(true)
+            whenever(skjerming.hentSkjermet(TEST_FNR)).thenReturn(true)
+
+            val resultat = service.hent(TEST_FNR, null, setOf("skjerming"))
+
+            assertThat(resultat.skjerming).isEqualTo(SkjermingEtikett.SKJERMET)
+            assertThat(resultat.ukjenteFelter()).isEmpty()
+            verify(skjerming).hentSkjermet(TEST_FNR)
+            verifyNoInteractions(unleash, pdl, representasjon, oppfolgingClient, arbeidssoker, vedtak, varsel)
+        }
+    }
 }
