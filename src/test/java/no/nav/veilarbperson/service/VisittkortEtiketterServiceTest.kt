@@ -3,7 +3,6 @@ package no.nav.veilarbperson.service
 import no.nav.common.utils.EnvironmentUtils
 import no.nav.veilarbperson.client.VisittkortKildeKontraktException
 import no.nav.veilarbperson.client.VisittkortKildeUtilgjengeligException
-import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerVisittkortData
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ProfilertTil
 import no.nav.veilarbperson.client.pdl.domain.PdlRequest
 import no.nav.veilarbperson.client.representasjon.VisittkortRepresentasjonData
@@ -33,7 +32,7 @@ class VisittkortEtiketterServiceTest : VisittkortEtiketterServiceTestBase() {
         verify(oppfolgingClient).hentEtikettgrunnlag(TEST_FNR,
             VisittkortEtiketterService.OPPFOLGING_FELTER +
                 VisittkortEtiketterService.PROFILERING_FELTER + "trengerOppfolgingsvedtak")
-        verify(arbeidssoker).hentVisittkortData(TEST_FNR, true)
+        verify(arbeidssoker).hentSisteArbeidssoekerPeriode(TEST_FNR)
         verify(vedtak).harGjeldendeVedtak(TEST_FNR)
         verify(varsel).harGjeldendeEskaleringsvarsel(TEST_FNR)
         verifyNoMoreInteractions(pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, vedtak, varsel)
@@ -51,7 +50,7 @@ class VisittkortEtiketterServiceTest : VisittkortEtiketterServiceTestBase() {
                 VisittkortEtiketterService.OPPFOLGING_FELTER +
                     VisittkortEtiketterService.PROFILERING_FELTER + "trengerOppfolgingsvedtak")
             verify(vedtak).harGjeldendeVedtak(TEST_FNR)
-            verify(arbeidssoker).hentVisittkortData(TEST_FNR, true)
+            verify(arbeidssoker).hentSisteArbeidssoekerPeriode(TEST_FNR)
             verify(varsel).harGjeldendeEskaleringsvarsel(TEST_FNR)
         }
         assertThat(registry.get("visittkort_kilde_varighet").tag("kilde", "oppfolging").timer().count())
@@ -102,7 +101,8 @@ class VisittkortEtiketterServiceTest : VisittkortEtiketterServiceTestBase() {
     fun `bare registeretikett trenger ikke oppfolging profilering eller vedtak`() {
         service.hent(TEST_FNR, null, setOf("iArbeidssokerregisteret"))
 
-        verify(arbeidssoker).hentVisittkortData(TEST_FNR, false)
+        verify(arbeidssoker).hentSisteArbeidssoekerPeriode(TEST_FNR)
+        verifyNoMoreInteractions(arbeidssoker)
         verifyNoInteractions(pdl, representasjon, skjerming, oppfolgingClient, vedtak, varsel)
     }
 
@@ -176,7 +176,8 @@ class VisittkortEtiketterServiceTest : VisittkortEtiketterServiceTestBase() {
         service.hent(TEST_FNR, null,
             VisittkortEtiketterService.PROFILERING_FELTER + "iArbeidssokerregisteret")
 
-        verify(arbeidssoker).hentVisittkortData(TEST_FNR, false)
+        verify(arbeidssoker).hentSisteArbeidssoekerPeriode(TEST_FNR)
+        verifyNoMoreInteractions(arbeidssoker)
     }
 
     @Test
@@ -192,9 +193,7 @@ class VisittkortEtiketterServiceTest : VisittkortEtiketterServiceTestBase() {
     @Test
     fun `profilering uten gjeldende vedtak krever ikke under oppfolging`() {
         whenever(oppfolgingClient.hentEtikettgrunnlag(any(), any())).thenReturn(oppfolging().copy(underOppfolging = false))
-        whenever(arbeidssoker.hentVisittkortData(any(), any())).thenReturn(
-            ArbeidssokerVisittkortData(true, ProfilertTil.ANTATT_GODE_MULIGHETER)
-        )
+        registrertMedProfilering(ProfilertTil.ANTATT_GODE_MULIGHETER)
 
         assertThat(service.hent(TEST_FNR, null, setOf("antattGodeMuligheter")).antattGodeMuligheter)
             .isEqualTo(AntattGodeMuligheterEtikett.ANTATT_GODE_MULIGHETER)

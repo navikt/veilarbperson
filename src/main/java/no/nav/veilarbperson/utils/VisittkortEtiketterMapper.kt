@@ -11,7 +11,7 @@ object VisittkortEtiketterMapper {
         felter: Set<String>,
         grunnlag: VisittkortEtikettgrunnlag = VisittkortEtikettgrunnlag()
     ): VisittkortEtiketter {
-        val (pdl, representasjon, skjerming, oppfolging, arbeidssoker, gjeldendeVedtak, varsel) = grunnlag
+        val (pdl, representasjon, skjerming, oppfolging, arbeidssoker, gjeldendeVedtak, varsel, arbeidssokerProfilering) = grunnlag
 
         fun <T, E> etikett(
             felt: String,
@@ -31,7 +31,7 @@ object VisittkortEtiketterMapper {
             oppfolging.sannhet { true }.og {
                 gjeldendeVedtak.sannhet { !it }
             }.og {
-                arbeidssoker.sannhet { it.profilering == verdi }
+                arbeidssokerProfilering.sannhet { it == verdi }
             }
 
         return VisittkortEtiketter(
@@ -110,7 +110,7 @@ object VisittkortEtiketterMapper {
             iArbeidssokerregisteret = etikett(
                 "iArbeidssokerregisteret", arbeidssoker, IArbeidssokerregisteretEtikett.UKJENT_ARBEIDSSOKERREGISTER
             ) {
-                IArbeidssokerregisteretEtikett.I_ARBEIDSSOKERREGISTERET.takeIf { _ -> it.registrert }
+                IArbeidssokerregisteretEtikett.I_ARBEIDSSOKERREGISTERET.takeIf { _ -> it }
             },
             trengerOppfolgingsvedtak = if ("trengerOppfolgingsvedtak" in felter) {
                 oppfolging.sannhet { it.underOppfolging.paakrevd() }.og {

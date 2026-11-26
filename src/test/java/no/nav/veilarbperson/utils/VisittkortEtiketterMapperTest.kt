@@ -1,6 +1,5 @@
 package no.nav.veilarbperson.utils
 
-import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerVisittkortData
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ProfilertTil
 import no.nav.veilarbperson.client.pdl.PdlVisittkortEtiketterData
 import no.nav.veilarbperson.client.pdl.domain.Diskresjonskode
@@ -22,7 +21,7 @@ class VisittkortEtiketterMapperTest {
                 representasjon = Hentet(VisittkortRepresentasjonData(false, false)),
                 skjerming = Hentet(false),
                 oppfolging = Hentet(oppfolging()),
-                arbeidssoker = Hentet(ArbeidssokerVisittkortData(false)),
+                arbeidssoker = Hentet(false),
                 gjeldendeVedtak = Hentet(true),
                 varsel = Hentet(false)
             )
@@ -34,7 +33,7 @@ class VisittkortEtiketterMapperTest {
     @Test
     fun `kildeutfall ukjent er forskjellig fra fravaer for alle 22 felt`() {
         val resultat = VisittkortEtiketterMapper.map(
-            ALLE_FELTER, VisittkortEtikettgrunnlag(Ukjent, Ukjent, Ukjent, Ukjent, Ukjent, Ukjent, Ukjent)
+            ALLE_FELTER, VisittkortEtikettgrunnlag(Ukjent, Ukjent, Ukjent, Ukjent, Ukjent, Ukjent, Ukjent, Ukjent)
         )
 
         assertThat(resultat.ukjenteFelter().toSet()).isEqualTo(ALLE_FELTER)
@@ -125,7 +124,7 @@ class VisittkortEtiketterMapperTest {
                     underOppfolging = false, manuell = true, kvp = true,
                     reservasjonKrr = true, registrertKrr = false, sykmeldt = true
                 )),
-                arbeidssoker = Hentet(ArbeidssokerVisittkortData(true)),
+                arbeidssoker = Hentet(true),
                 varsel = Hentet(true)
             )
         )
@@ -142,9 +141,10 @@ class VisittkortEtiketterMapperTest {
     }
 
     @Test
-    fun `alle ni utmeldingskandidattagger er positive og ikke kildefeil`() {
+    fun `alle ti utmeldingskandidattagger er positive og ikke kildefeil`() {
         val tagger = UtmeldingskandidatEtikett.entries.filter { !it.erUkjent }
-        assertThat(tagger).hasSize(9)
+        assertThat(tagger).hasSize(10)
+        assertThat(tagger).contains(UtmeldingskandidatEtikett.IKKE_LENGER_SYKMELDT_UTEN_ARBEIDSGIVER)
         for (tag in tagger) {
             val resultat = VisittkortEtiketterMapper.map(
                 setOf("utmeldingskandidat"),
@@ -209,8 +209,9 @@ class VisittkortEtiketterMapperTest {
                 profilfelter,
                 VisittkortEtikettgrunnlag(
                     oppfolging = Hentet(oppfolging().copy(underOppfolging = false)),
-                    arbeidssoker = Hentet(ArbeidssokerVisittkortData(true, profilering)),
-                    gjeldendeVedtak = Hentet(false)
+                    arbeidssoker = Hentet(true),
+                    gjeldendeVedtak = Hentet(false),
+                    profilering = Hentet(profilering)
                 )
             )
             assertThat(listOf(
@@ -264,8 +265,9 @@ class VisittkortEtiketterMapperTest {
             setOf("antattGodeMuligheter"),
             VisittkortEtikettgrunnlag(
                 oppfolging = Hentet(OppfolgingEtikettgrunnlag()),
-                arbeidssoker = Hentet(ArbeidssokerVisittkortData(true, ProfilertTil.ANTATT_GODE_MULIGHETER)),
-                gjeldendeVedtak = Hentet(false)
+                arbeidssoker = Hentet(true),
+                gjeldendeVedtak = Hentet(false),
+                profilering = Hentet(ProfilertTil.ANTATT_GODE_MULIGHETER)
             )
         )
         assertThat(resultat.antattGodeMuligheter).isEqualTo(AntattGodeMuligheterEtikett.ANTATT_GODE_MULIGHETER)

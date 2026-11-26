@@ -211,12 +211,13 @@ class VeilarboppfolgingEtiketterClientTest : VeilarboppfolgingEtiketterClientTes
     }
 
     @Test
-    fun `alle ni gyldige utmeldingskandidat tagger mappes`() {
+    fun `alle ti gyldige utmeldingskandidattagger mappes`() {
         val gyldige = UtmeldingskandidatEtikett.entries.filterNot { it.erUkjent }
-        assertThat(gyldige).hasSize(9)
+        assertThat(gyldige).hasSize(10)
         assertThat(gyldige).contains(
             UtmeldingskandidatEtikett.FOLKEREGISTERSTATUS_UKJENT,
-            UtmeldingskandidatEtikett.FOLKEREGISTERSTATUS_INGEN_STATUS
+            UtmeldingskandidatEtikett.FOLKEREGISTERSTATUS_INGEN_STATUS,
+            UtmeldingskandidatEtikett.IKKE_LENGER_SYKMELDT_UTEN_ARBEIDSGIVER
         )
 
         for (etikett in gyldige) {

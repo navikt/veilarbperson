@@ -4,8 +4,12 @@ import io.getunleash.Unleash
 import no.nav.veilarbperson.client.VisittkortKildeIkkeKonfigurertException
 import no.nav.veilarbperson.client.VisittkortKildeHttpException
 import no.nav.veilarbperson.client.VisittkortKildeKontraktException
+import no.nav.veilarbperson.client.VisittkortKildeClientTestBase.Companion.METADATA
+import no.nav.veilarbperson.client.VisittkortKildeClientTestBase.Companion.OPPLYSNINGER
+import no.nav.veilarbperson.client.VisittkortKildeClientTestBase.Companion.PERIODE
+import no.nav.veilarbperson.client.VisittkortKildeClientTestBase.Companion.PERIODE_ID
 import no.nav.veilarbperson.client.nom.SkjermetClient
-import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerVisittkortData
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClientImpl
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ProfilertTil
 import no.nav.veilarbperson.client.pdl.PdlClient
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClient
@@ -13,6 +17,11 @@ import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient
 import no.nav.veilarbperson.domain.visittkort.*
 import no.nav.veilarbperson.utils.TestData.TEST_FNR
 import no.nav.veilarbperson.utils.VisittkortEtiketterMapperTest.Companion.ALLE_FELTER
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -22,6 +31,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import java.io.IOException
+import java.net.SocketTimeoutException
 
 class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtiketterServiceTestBase() {
 
@@ -100,9 +110,7 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
 
     @Test
     fun `ekte vedtaksklient avklarer vedtaksbehov og profilering fra samme oppslag`() {
-        whenever(arbeidssoker.hentVisittkortData(any(), any())).thenReturn(
-            ArbeidssokerVisittkortData(true, ProfilertTil.ANTATT_GODE_MULIGHETER)
-        )
+        registrertMedProfilering(ProfilertTil.ANTATT_GODE_MULIGHETER)
         for ((body, harVedtak) in listOf(
             "" to false,
             "null" to false,
@@ -129,9 +137,7 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
 
     @Test
     fun `vedtak HTTP 500 blir ukjent behov og profilering aldri manglende vedtak`() {
-        whenever(arbeidssoker.hentVisittkortData(any(), any())).thenReturn(
-            ArbeidssokerVisittkortData(true, ProfilertTil.ANTATT_GODE_MULIGHETER)
-        )
+        registrertMedProfilering(ProfilertTil.ANTATT_GODE_MULIGHETER)
         val medFeilendeVedtak = VisittkortEtiketterService(
             pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker,
             vedtakFraHttp(500, "source unavailable"), null, registry, unleash
@@ -167,7 +173,7 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
         assertThat(registry.get("visittkort_kilde_varighet").tag("kilde", "oppfolging").timer().count())
             .isEqualTo(1)
         verify(vedtak).harGjeldendeVedtak(TEST_FNR)
-        verify(arbeidssoker).hentVisittkortData(TEST_FNR, true)
+        verify(arbeidssoker).hentSisteArbeidssoekerPeriode(TEST_FNR)
     }
 
     @Test
@@ -185,9 +191,7 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
 
     @Test
     fun `ekte oppfolgingsobjekt med ukjent oppfolgingsflagg kan gi profilering`() {
-        whenever(arbeidssoker.hentVisittkortData(any(), any())).thenReturn(
-            ArbeidssokerVisittkortData(true, ProfilertTil.ANTATT_GODE_MULIGHETER)
-        )
+        registrertMedProfilering(ProfilertTil.ANTATT_GODE_MULIGHETER)
         val medEkteOppfolging = VisittkortEtiketterService(
             pdl, representasjon, skjerming,
             oppfolgingFraHttp(200, """{"data":{"oppfolging":{"erUnderOppfolging":null}}}"""),
@@ -242,4 +246,75 @@ class VisittkortEtiketterServiceVedtakProfileringOgFeilTest : VisittkortEtikette
         verifyNoInteractions(vedtak, arbeidssoker, varsel)
     }
 
+    @Test
+    fun `profilering timeout beholder bekreftet registrering`() {
+        assertRegistreringBeholdes(PROFILERING_STI) { throw SocketTimeoutException("source timeout") }
+    }
+
+    @Test
+    fun `opplysninger timeout beholder bekreftet registrering`() {
+        assertRegistreringBeholdes(OPPLYSNINGER_STI) { throw SocketTimeoutException("source timeout") }
+    }
+
+    @Test
+    fun `profilering HTTP 500 beholder bekreftet registrering`() {
+        assertRegistreringBeholdes(PROFILERING_STI) { 500 to "source unavailable" }
+    }
+
+    @Test
+    fun `opplysninger HTTP 503 beholder bekreftet registrering`() {
+        assertRegistreringBeholdes(OPPLYSNINGER_STI) { 503 to "source unavailable" }
+    }
+
+    private fun assertRegistreringBeholdes(sti: String, svar: () -> Pair<Int, String>) {
+        val requests = mutableListOf<Request>()
+        val httpClient = OkHttpClient.Builder().addInterceptor { chain ->
+            val request = chain.request()
+            requests.add(request)
+            val (status, body) = if (request.url.encodedPath == sti) svar()
+            else 200 to when (request.url.encodedPath) {
+                PERIODE_STI -> PERIODE
+                OPPLYSNINGER_STI -> OPPLYSNINGER_SVAR
+                else -> error("Unexpected test request")
+            }
+            Response.Builder().request(request).protocol(Protocol.HTTP_1_1)
+                .code(status).message("Test response").body(body.toResponseBody()).build()
+        }.build()
+        val kildeClient = OppslagArbeidssoekerregisteretClientImpl(
+            "http://paw.test", { "test-token" }, "veilarbperson", httpClient
+        )
+        val medEkteArbeidssokerService = VisittkortEtiketterService(
+            pdl, representasjon, skjerming, oppfolgingClient,
+            OppslagArbeidssoekerregisteretService(kildeClient), vedtak, varsel, registry, unleash
+        )
+
+        val resultat = medEkteArbeidssokerService.hent(
+            TEST_FNR, null, VisittkortEtiketterService.PROFILERING_FELTER + "iArbeidssokerregisteret"
+        )
+
+        assertThat(resultat.iArbeidssokerregisteret)
+            .isEqualTo(IArbeidssokerregisteretEtikett.I_ARBEIDSSOKERREGISTERET)
+        assertThat(resultat.ukjenteFelter().toSet()).isEqualTo(VisittkortEtiketterService.PROFILERING_FELTER)
+        assertThat(requests.count { it.url.encodedPath == PERIODE_STI }).isEqualTo(1)
+        assertThat(requests.map { it.url.encodedPath }).containsExactlyElementsOf(
+            if (sti == OPPLYSNINGER_STI) listOf(PERIODE_STI, OPPLYSNINGER_STI)
+            else listOf(PERIODE_STI, OPPLYSNINGER_STI, PROFILERING_STI)
+        )
+        assertThat(registry.get("visittkort_kilde_utilgjengelig")
+            .tag("kilde", "arbeidssokerprofilering").counter().count()).isEqualTo(1.0)
+        assertThat(registry.find("visittkort_kilde_utilgjengelig")
+            .tag("kilde", "arbeidssokerregister").counter()).isNull()
+        assertThat(registry.get("visittkort_kilde_varighet")
+            .tag("kilde", "arbeidssokerregister").timer().count()).isEqualTo(1L)
+    }
+
+    companion object {
+        private const val PERIODE_STI = "/api/v1/veileder/arbeidssoekerperioder"
+        private const val OPPLYSNINGER_STI = "/api/v1/veileder/opplysninger-om-arbeidssoeker"
+        private const val PROFILERING_STI = "/api/v1/veileder/profilering"
+        private val OPPLYSNINGER_SVAR = """
+            [{"opplysningerOmArbeidssoekerId":"$OPPLYSNINGER","periodeId":"$PERIODE_ID",
+              "sendtInnAv":$METADATA,"utdanning":null,"helse":null,"annet":null,"jobbsituasjon":[]}]
+        """.trimIndent()
+    }
 }

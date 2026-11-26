@@ -6,6 +6,7 @@ import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.Arbeidssokerpe
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OppslagArbeidssoekerregisteretClient
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.OpplysningerOmArbeidssoekerResponse
 import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ProfileringResponse
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ProfilertTil
 import no.nav.veilarbperson.domain.OpplysningerOmArbeidssoekerMedProfilering
 import no.nav.veilarbperson.domain.mapToOpplyasningerOmArbeidssoekerMedNuskode
 import org.springframework.http.HttpStatusCode
@@ -41,9 +42,12 @@ class OppslagArbeidssoekerregisteretService(
         val aktivPeriode = hentSisteArbeidssoekerPeriode(fnr) ?: return ArbeidssokerVisittkortData(false)
         if (!medProfilering) return ArbeidssokerVisittkortData(true)
 
-        val sisteOpplysninger = hentSisteOpplysninger(fnr, aktivPeriode) ?: return ArbeidssokerVisittkortData(true)
-        val profilering = hentSisteMatchendeProfilering(fnr, aktivPeriode, sisteOpplysninger)
-        return ArbeidssokerVisittkortData(true, profilering?.profilertTil)
+        return ArbeidssokerVisittkortData(true, hentVisittkortProfilering(fnr, aktivPeriode))
+    }
+
+    fun hentVisittkortProfilering(fnr: Fnr, aktivPeriode: ArbeidssokerperiodeResponse): ProfilertTil? {
+        val sisteOpplysninger = hentSisteOpplysninger(fnr, aktivPeriode) ?: return null
+        return hentSisteMatchendeProfilering(fnr, aktivPeriode, sisteOpplysninger)?.profilertTil
     }
 
     private fun hentSisteOpplysninger(

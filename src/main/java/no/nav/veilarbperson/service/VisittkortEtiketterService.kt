@@ -68,14 +68,30 @@ class VisittkortEtiketterService(
         val oppfolging = hentOppfolging(fnr, felter)
         val vedtak = hentVedtak(fnr, felter, trengerProfilering, oppfolging)
         val hentProfilering = trengerProfilering && !(vedtak is Hentet && vedtak.data)
-        val arbeidssoker = if ("iArbeidssokerregisteret" in felter || hentProfilering) {
-            kilde("arbeidssokerregister") { arbeidssokerService.hentVisittkortData(fnr, hentProfilering) }
+        val periode = if ("iArbeidssokerregisteret" in felter || hentProfilering) {
+            kilde("arbeidssokerregister") { arbeidssokerService.hentSisteArbeidssoekerPeriode(fnr) }
+        } else null
+        val arbeidssoker = when (periode) {
+            is Hentet -> Hentet(periode.data != null)
+            Ukjent -> Ukjent
+            null -> null
+        }
+        val profilering = if (hentProfilering) {
+            when (periode) {
+                is Hentet -> periode.data?.let { aktivPeriode ->
+                    kilde("arbeidssokerprofilering") {
+                        arbeidssokerService.hentVisittkortProfilering(fnr, aktivPeriode)
+                    }
+                } ?: Hentet(null)
+                Ukjent -> Ukjent
+                null -> error("Missing required visittkort source")
+            }
         } else null
         val varsel = varselKilde?.let { kilde("dialog") { it.harGjeldendeEskaleringsvarsel(fnr) } }
 
         return VisittkortEtiketterMapper.map(
             felter,
-            VisittkortEtikettgrunnlag(pdl, representasjon, skjerming, oppfolging, arbeidssoker, vedtak, varsel)
+            VisittkortEtikettgrunnlag(pdl, representasjon, skjerming, oppfolging, arbeidssoker, vedtak, varsel, profilering)
         ).also { resultat ->
             resultat.ukjenteFelter().forEach {
                 meterRegistry.counter("visittkort_etikett_ukjent", "etikett", it).increment()
@@ -153,7 +169,8 @@ private fun hentEtiketterAlleFeilet(felter: Set<String>): VisittkortEtiketter =
                 oppfolging = Ukjent,
                 arbeidssoker = Ukjent,
                 gjeldendeVedtak = Ukjent,
-                varsel = Ukjent
+                varsel = Ukjent,
+                profilering = Ukjent
             )
         )
 

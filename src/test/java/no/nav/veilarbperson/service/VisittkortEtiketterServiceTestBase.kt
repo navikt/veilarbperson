@@ -4,7 +4,11 @@ import io.getunleash.Unleash
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.veilarbperson.client.VisittkortKildeHttpClient
 import no.nav.veilarbperson.client.nom.SkjermetClient
-import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerVisittkortData
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ArbeidssokerperiodeResponse
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.BrukerResponse
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.BrukerType
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.MetadataResponse
+import no.nav.veilarbperson.client.oppslagArbeidssoekerregisteret.ProfilertTil
 import no.nav.veilarbperson.client.pdl.PdlClient
 import no.nav.veilarbperson.client.pdl.PdlVisittkortEtiketterData
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClient
@@ -23,6 +27,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.time.ZonedDateTime
+import java.util.UUID
 
 abstract class VisittkortEtiketterServiceTestBase {
     protected val pdl = mock<PdlClient>()
@@ -36,14 +42,27 @@ abstract class VisittkortEtiketterServiceTestBase {
     protected val unleash = mock<Unleash>()
     protected val service = VisittkortEtiketterService(
         pdl, representasjon, skjerming, oppfolgingClient, arbeidssoker, vedtak, varsel, registry, unleash)
+    protected val aktivArbeidssokerperiode = ArbeidssokerperiodeResponse(
+        UUID.fromString("00000000-0000-0000-0000-000000000001"),
+        MetadataResponse(
+            ZonedDateTime.parse("2026-01-01T00:00:00Z"),
+            BrukerResponse(BrukerType.SLUTTBRUKER, null), "kilde", "aarsak"
+        ),
+        null
+    )
 
     @BeforeEach
     fun gyldigeKildesvar() {
         whenever(pdl.hentVisittkortEtiketter(any(), any())).thenReturn(PdlVisittkortEtiketterData())
         whenever(representasjon.hentOppfolgingsrepresentasjon(any())).thenReturn(VisittkortRepresentasjonData(false, false))
         whenever(oppfolgingClient.hentEtikettgrunnlag(any(), any())).thenReturn(oppfolging().copy(kvp = false))
-        whenever(arbeidssoker.hentVisittkortData(any(), any())).thenReturn(ArbeidssokerVisittkortData(false))
+        whenever(arbeidssoker.hentSisteArbeidssoekerPeriode(any())).thenReturn(null)
         whenever(unleash.isEnabled("veilarbperson.visittkort_etiketter_test_feil")).thenReturn(false)
+    }
+
+    protected fun registrertMedProfilering(profilering: ProfilertTil) {
+        whenever(arbeidssoker.hentSisteArbeidssoekerPeriode(any())).thenReturn(aktivArbeidssokerperiode)
+        whenever(arbeidssoker.hentVisittkortProfilering(any(), any())).thenReturn(profilering)
     }
 
     protected fun oppfolgingFraHttp(status: Int, body: String, vedKall: () -> Unit = {}): VeilarboppfolgingClient =
