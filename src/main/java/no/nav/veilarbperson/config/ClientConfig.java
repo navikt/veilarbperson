@@ -15,6 +15,7 @@ import no.nav.common.token_client.client.AzureAdMachineToMachineTokenClient;
 import no.nav.common.token_client.client.AzureAdOnBehalfOfTokenClient;
 import no.nav.common.token_client.client.MachineToMachineTokenClient;
 import no.nav.poao_tilgang.client.PoaoTilgangClient;
+import no.nav.veilarbperson.client.VisittkortKildeHttpClient;
 import no.nav.veilarbperson.client.digdir.DigdirClient;
 import no.nav.veilarbperson.client.digdir.DigdirClientImpl;
 import no.nav.veilarbperson.client.kodeverk.KodeverkClient;
@@ -31,7 +32,13 @@ import no.nav.veilarbperson.client.representasjon.RepresentasjonClient;
 import no.nav.veilarbperson.client.representasjon.RepresentasjonClientImpl;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClient;
 import no.nav.veilarbperson.client.veilarboppfolging.VeilarboppfolgingClientImpl;
+import no.nav.veilarbperson.client.veilarbdialog.VisittkortVarselClient;
+import no.nav.veilarbperson.client.veilarbdialog.VisittkortVarselClientImpl;
+import no.nav.veilarbperson.client.veilarbvedtaksstotte.VisittkortVedtakClient;
+import no.nav.veilarbperson.client.veilarbvedtaksstotte.VisittkortVedtakClientImpl;
 import no.nav.veilarbperson.service.AuthService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import static no.nav.veilarbperson.config.ApplicationConfig.APPLICATION_NAME;
@@ -107,6 +114,26 @@ public class ClientConfig {
                 () -> aadMachineToMachineTokenClient.createMachineToMachineToken(properties.getOppslagArbeidssoekerregisteretScope()),
                 APPLICATION_NAME
         );
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = {"VEILARBVEDTAKSSTOTTE_URL", "VEILARBVEDTAKSSTOTTE_SCOPE"})
+    public VisittkortVedtakClient visittkortVedtakClient(
+            @Value("${VEILARBVEDTAKSSTOTTE_URL}") String url,
+            @Value("${VEILARBVEDTAKSSTOTTE_SCOPE}") String scope,
+            AuthService authService
+    ) {
+        return new VisittkortVedtakClientImpl(url, () -> authService.getAadOboTokenForTjeneste(scope), new VisittkortKildeHttpClient());
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = {"VEILARBDIALOG_URL", "VEILARBDIALOG_SCOPE"})
+    public VisittkortVarselClient visittkortVarselClient(
+            @Value("${VEILARBDIALOG_URL}") String url,
+            @Value("${VEILARBDIALOG_SCOPE}") String scope,
+            AuthService authService
+    ) {
+        return new VisittkortVarselClientImpl(url, () -> authService.getAadOboTokenForTjeneste(scope), new VisittkortKildeHttpClient());
     }
 
 

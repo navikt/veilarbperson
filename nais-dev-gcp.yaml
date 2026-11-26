@@ -85,10 +85,17 @@ spec:
           namespace: repr
         - application: logging
           namespace: nais-system
+        - application: veilarbvedtaksstotte
+          namespace: obo
+        - application: veilarbdialog
+          namespace: dab
       external:
         - host: pdl-api.dev-fss-pub.nais.io
         - host: regoppslag.dev-fss-pub.nais.io
         - host: pam-cv-api-gcp.intern.dev.nav.no
+        - host: obo-unleash-api.nav.cloud.nais.io
+  envFrom:
+    - secret: veilarbperson-unleash-api-token
   env:
     - name: KODEVERK_URL
       value: http://kodeverk-api.team-rocket
@@ -134,4 +141,11 @@ spec:
       value: http://norg2.org/norg2
     - name: NORG2_SCOPE
       value: api://dev-gcp.org.norg2/.default
-
+    - name: VEILARBVEDTAKSSTOTTE_URL
+      value: http://veilarbvedtaksstotte.obo/veilarbvedtaksstotte
+    - name: VEILARBVEDTAKSSTOTTE_SCOPE
+      value: api://dev-gcp.obo.veilarbvedtaksstotte/.default
+    - name: VEILARBDIALOG_URL
+      value: http://veilarbdialog.dab/veilarbdialog
+    - name: VEILARBDIALOG_SCOPE
+      value: api://dev-gcp.dab.veilarbdialog/.default

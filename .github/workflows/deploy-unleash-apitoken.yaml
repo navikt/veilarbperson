@@ -1,0 +1,26 @@
+name: Deploy unleash-apitoken
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/deploy-unleash-apitoken.yaml"
+      - "unleash-apitoken-dev.yaml"
+  workflow_dispatch:
+
+jobs:
+  deploy-dev:
+    name: Deploy unleash-apitoken to dev-gcp
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7.0.1
+
+      - name: Deploy unleash-apitoken
+        uses: nais/deploy/actions/deploy@d003bddf74ce5b96fa3056ae60bd4b9b3bbc89ef # ratchet:nais/deploy/actions/deploy@v3
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: unleash-apitoken-dev.yaml
+          PRINT_PAYLOAD: true
